@@ -45,6 +45,12 @@ export const PostReducer = (state, action) => {
         posts: [action.payload, ...state.posts],
       }
 
+    case 'DELETE_POST':
+      return {
+        ...state,
+        posts: [...action.payload]
+      }
+
     case 'POST_PAGINATION':
       return {
         ...state,

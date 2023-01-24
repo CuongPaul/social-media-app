@@ -6,15 +6,20 @@ import {
   CardHeader,
   IconButton,
   Typography,
+  Menu,
+  MenuItem
 } from '@material-ui/core'
 import PostContent from './PostContent'
 import PostFooter from './PostFooter'
 import AvartarText from '../UI/AvartarText'
 import { MoreHoriz } from '@material-ui/icons'
 import { UIContext } from '../../App'
+import { deletePost } from '../../services/PostServices'
 
-function Post({ post }) {
-  const { uiState } = useContext(UIContext)
+function Post({ post, handleDeletePost }) {
+  const { uiState } = useContext(UIContext);
+  const [isOpen, setIsOpen] = useState(null);
+  
   return (
     <Card
       style={{
@@ -39,9 +44,27 @@ function Post({ post }) {
           )
         }
         action={
-          <IconButton>
-            <MoreHoriz />
-          </IconButton>
+          <div>
+            <IconButton onClick={(e) => setIsOpen(e.currentTarget)}>
+              <MoreHoriz />
+            </IconButton>
+
+            <Menu
+              id="post-action-menu"
+              anchorEl={isOpen}
+              open={Boolean(isOpen)}
+              onClose={() => setIsOpen(null)}
+            >
+              <MenuItem>Edit</MenuItem>
+              <MenuItem onClick={() => {
+                deletePost(post.id).then((res) => {
+                  if (res.data.message === "success") {
+                    handleDeletePost(post.id)
+                  }
+                })
+              }}>Delete</MenuItem>
+            </Menu>
+          </div>
         }
         title={
           post && (

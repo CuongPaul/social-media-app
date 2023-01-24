@@ -6,18 +6,25 @@ import Post from './Post'
 
 function Posts({ posts }) {
   const { postState } = useContext(PostContext)
+  const { postDispatch } = useContext(PostContext);
 
   const { fetchPosts } = useFetchPost()
 
   const handleFetchPosts = () => {
     fetchPosts()
   }
+  const handleDeletePost = (postId) => {
+    const newPosts = posts.filter(post => post.id !== postId);
+    
+    postDispatch({ type: 'DELETE_POST', payload: newPosts })
+  }
+
   return (
     <div>
       {posts.length
         ? posts.map((post) => (
             <div key={post.id}>
-              <Post post={post} />
+              <Post post={post} handleDeletePost={handleDeletePost} />
             </div>
           ))
         : null}

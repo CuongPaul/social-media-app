@@ -20,6 +20,25 @@ export const fetchAllPosts = async () => {
   }
 }
 
+export const deletePost = async (post_id) => {
+  let token = JSON.parse(localStorage.token)
+
+  try {
+    const response = await axios.delete(`${url}/api/post/${post_id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    if (response.data) {
+      return {
+        data: response.data,
+      }
+    }
+  } catch (err) {
+    console.log(err)
+  }
+}
+
 // export const fetchPostById = async (post_id) => {
 //   let token = JSON.parse(localStorage.token)
 
