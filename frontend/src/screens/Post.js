@@ -129,7 +129,7 @@ function Post() {
 
               {postState.post.image && (
                 <CardMedia
-                  component="img"
+                  component={postState.post.image.split('.').pop().substring(0, 3) === "mp4" ? "video" : "img"}
                   style={{
                     width: '100%',
                     height: '100%',
@@ -137,6 +137,7 @@ function Post() {
                   }}
                   image={postState.post.image}
                   title="Paella dish"
+                  controls
                 />
               )}
 

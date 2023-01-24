@@ -280,7 +280,7 @@ export default function PostFormDialog() {
               style={{ display: 'none' }}
               ref={fileRef}
               onChange={handleImageChange}
-              accept="image/*"
+              accept="image/*,video/*"
               capture="user"
             />
           </DialogActions>

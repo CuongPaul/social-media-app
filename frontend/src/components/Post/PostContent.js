@@ -45,10 +45,11 @@ function PostContent({ post }) {
       </CardContent>
       {post.image && (
         <CardMedia
-          component="img"
+          component={post.image.split('.').pop().substring(0, 3) === "mp4" ? "video" : "img"}
           style={{ width: '100%', maxHeight: '500px', objectFit: 'fill' }}
           image={post.image}
           title="Paella dish"
+          controls
         />
       )}
       {Object.keys(post.profilePostData).length ? (
