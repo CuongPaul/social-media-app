@@ -1,6 +1,6 @@
 import React, { lazy, useContext, useRef, useState } from 'react'
 import EmojiPicker from 'emoji-picker-react'
-import { UIContext, UserContext } from '../../../../App'
+import { UIContext, UserContext, PostContext } from '../../../../App'
 
 import FileField from './FileField'
 // import CameraField from './CameraField'
@@ -29,10 +29,12 @@ import PreviewImage from './PreviewImage'
 import useCreatePost from '../../hooks/useCreatePost'
 import { Alert } from '@material-ui/lab'
 import { Close } from '@material-ui/icons'
+import { editPost } from '../../../../services/PostServices'
 
 const CameraField = lazy(() => import('./CameraField'))
 export default function PostFormDialog() {
   const { uiState, uiDispatch } = useContext(UIContext)
+  const { postDispatch } = useContext(PostContext)
   const [blob, setBlob] = useState(null)
   const [postImage, setPostImage] = useState(null)
   const [previewImage, setPreviewImage] = useState('')
@@ -47,8 +49,8 @@ export default function PostFormDialog() {
   })
 
   const [postData, setPostData] = useState({
-    privacy: 'Public',
-    content: '',
+    privacy: uiState.post ? uiState.post.privacy : 'Public',
+    content: uiState.post ? uiState.post.content : '',
   })
 
   const { userState } = useContext(UserContext)
@@ -81,6 +83,7 @@ export default function PostFormDialog() {
   }
 
   function handleCloseDialog() {
+    uiDispatch({ type: 'EDIT_POST', payload: null })
     uiDispatch({ type: 'SET_POST_MODEL', payload: false })
   }
 
@@ -133,6 +136,15 @@ export default function PostFormDialog() {
     blob,
   })
 
+  const handleUpdatePost = (postId) => {
+    editPost({ ...postData, id: postId}).then((res) => {
+      if (res.data.message === "success") {
+        uiDispatch({ type: 'SET_POST_MODEL', payload: false })
+        postDispatch({ type: 'EDIT_POST', payload: { ...postData, id: postId} })
+      }
+    })
+  }
+
   return (
     <div>
       <Typography
@@ -172,7 +184,7 @@ export default function PostFormDialog() {
               <InputLabel>Privacy</InputLabel>
               <Select
                 native
-                value={postData.privacy}
+                defaultValue={uiState.post ? uiState.post.privacy : postData.privacy}
                 onChange={(e) =>
                   setPostData({ ...postData, privacy: e.target.value })
                 }
@@ -186,7 +198,7 @@ export default function PostFormDialog() {
               placeholder={`Whats in your mind ${userState.currentUser.name}`}
               multiline
               rows={8}
-              value={postData.content}
+              defaultValue={uiState.post ? uiState.post.content : postData.content}
               onChange={handleContentChange}
               style={{
                 background: !uiState.darkMode ? '#fff' : null,
@@ -260,7 +272,13 @@ export default function PostFormDialog() {
           <DialogActions>
             <Button
               disabled={loading}
-              onClick={handleSubmitPost}
+              onClick={() => {
+                if (uiState.post) {
+                  return handleUpdatePost(uiState.post.id);
+                }
+
+                return handleSubmitPost;
+              }}
               variant="contained"
               color="primary"
               style={{ width: '100%' }}
@@ -272,7 +290,7 @@ export default function PostFormDialog() {
                   style={{ color: '#fff' }}
                 />
               ) : (
-                ' Create Post'
+                uiState.post ? 'Update Post' : 'Create Post'
               )}
             </Button>
             <input

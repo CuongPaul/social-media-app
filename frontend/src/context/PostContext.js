@@ -51,6 +51,22 @@ export const PostReducer = (state, action) => {
         posts: [...action.payload]
       }
 
+    case 'EDIT_POST':
+      const { posts } = state;
+      posts.forEach(post => {
+        if (post.id === action.payload.id) {
+          post.privacy = action.payload.privacy;
+          post.content = action.payload.content;
+          
+          return;
+        }
+      });
+
+      return {
+        ...state,
+        posts: [...posts]
+      }
+
     case 'POST_PAGINATION':
       return {
         ...state,

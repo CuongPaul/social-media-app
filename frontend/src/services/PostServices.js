@@ -39,6 +39,25 @@ export const deletePost = async (post_id) => {
   }
 }
 
+export const editPost = async (post) => {
+  let token = JSON.parse(localStorage.token)
+
+  try {
+    const response = await axios.patch(`${url}/api/post/${post.id}`, post, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    if (response.data) {
+      return {
+        data: response.data,
+      }
+    }
+  } catch (err) {
+    console.log(err)
+  }
+}
+
 // export const fetchPostById = async (post_id) => {
 //   let token = JSON.parse(localStorage.token)
 

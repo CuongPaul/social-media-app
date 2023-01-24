@@ -3,12 +3,12 @@ const {
   createComment,
   fetchComments,
   likeDislikeComment,
-  createReply
 } = require('../controllers/Post/Comment')
 const {
   fetchAllPosts,
   fetchPostById,
   deletePost,
+  editPost,
 } = require('../controllers/Post/FetchPost')
 const {
   createPost,
@@ -20,6 +20,7 @@ router.post('/', authRequired, createPost)
 router.get('/', authRequired, fetchAllPosts)
 router.get('/:postId', authRequired, fetchPostById)
 router.delete('/:postId', authRequired, deletePost)
+router.patch('/:postId', authRequired, editPost)
 
 router.get('/comment/:commentId/like_dislike', authRequired, likeDislikeComment)
 

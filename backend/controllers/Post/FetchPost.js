@@ -1,10 +1,24 @@
 const Post = require('../../models/Post')
-const Comment = require('../../models/Comment')
 const FilterPostData = require('../../utils/FilterPostData')
 
 exports.deletePost = async (req, res) => {
   try {
     await Post.findByIdAndDelete(req.params.postId)
+      .populate('user')
+      .populate({ path: 'body.with'})
+
+    res.status(200).json({ message: "success" })
+  } catch (err) {
+    console.log(err)
+    return res.status(500).json({error:"Something went wrong"})
+  }
+}
+
+exports.editPost = async (req, res) => {
+  try {
+    const { privacy, content } = req.body;
+
+    await Post.findByIdAndUpdate(req.params.postId, { privacy, content })
       .populate('user')
       .populate({ path: 'body.with'})
 

@@ -17,7 +17,7 @@ import { UIContext } from '../../App'
 import { deletePost } from '../../services/PostServices'
 
 function Post({ post, handleDeletePost }) {
-  const { uiState } = useContext(UIContext);
+  const { uiState, uiDispatch } = useContext(UIContext);
   const [isOpen, setIsOpen] = useState(null);
   
   return (
@@ -55,7 +55,15 @@ function Post({ post, handleDeletePost }) {
               open={Boolean(isOpen)}
               onClose={() => setIsOpen(null)}
             >
-              <MenuItem>Edit</MenuItem>
+              <MenuItem 
+                onClick={() => {
+                  setIsOpen(null)
+                  uiDispatch({ type: 'EDIT_POST', payload: { privacy: post.privacy, content: post.content, id: post.id } })
+                  uiDispatch({ type: 'SET_POST_MODEL', payload: true })
+                }}
+              >
+                Edit
+              </MenuItem>
               <MenuItem onClick={() => {
                 deletePost(post.id).then((res) => {
                   if (res.data.message === "success") {

@@ -7,6 +7,7 @@ export const initialUIState = {
   notifications: [],
   loading: false,
   darkMode: false,
+  post: null,
 }
 
 export const UIReducer = (state, action) => {
@@ -15,6 +16,12 @@ export const UIReducer = (state, action) => {
       return {
         ...state,
         mdScreen: action.payload,
+      }
+
+    case 'EDIT_POST':
+      return {
+        ...state,
+        post: action.payload,
       }
 
     case 'SET_DRAWER':
