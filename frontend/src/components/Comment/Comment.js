@@ -2,19 +2,24 @@ import {
   Avatar,
   Button,
   Divider,
-  Paper,
+  CardMedia,
   Typography,
   List,
   ListItem,
   ListItemText,
   ListItemAvatar,
+  IconButton,
+  Menu,
+  MenuItem,
+  TextField,
 } from '@material-ui/core'
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
+import { MoreHoriz, SendOutlined } from '@material-ui/icons'
 import AvartarText from '../UI/AvartarText'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faThumbsUp as filledLike } from '@fortawesome/free-solid-svg-icons'
 import { faThumbsUp } from '@fortawesome/free-regular-svg-icons'
-import { likeDislikeComment } from '../../services/PostServices'
+import { likeDislikeComment, editComment } from '../../services/PostServices'
 import { PostContext, UserContext, UIContext } from '../../App'
 function Comment({ comment }) {
   const { postDispatch } = useContext(PostContext)
@@ -37,6 +42,15 @@ function Comment({ comment }) {
     return comment.likes.includes(userState.currentUser.id)
   }
 
+  const [isOpen, setIsOpen] = useState(null);
+  const [commentText, setCommentText] = useState(comment.body.text ? comment.body.text : '');
+  const [isEdit, setIsEdit] = useState(false);
+  const [error, setError] = useState(''); 
+  const handleEditComment = (e) => {
+    setError('')
+    setCommentText(e.target.value)
+  }
+  
   const listItems = (
     <ListItem alignItems="flex-start">
       <ListItemAvatar>
@@ -63,25 +77,80 @@ function Comment({ comment }) {
         }
         secondary={
           <>
-            {comment.body.text && comment.body.text}
+            {isEdit ?
+              <div style={{display: "flex"}}>
+                <TextField
+                  error={error ? true : false}
+                  helperText={error}
+                  value={commentText}
+                  onChange={handleEditComment}
+                  multiline
+                  rowsMax={4}
+                  style={{
+                    width: '100%',
+                    borderRadius: '20px',
+                    border: 'none',
+                    background: uiState.darkMode ? 'rgb(24,25,26)': 'rgb(240,242,245)',
+                    padding: '8px 16px',
+                  }}
+                />
+                <IconButton onClick={() => {
+                  editComment({ id: comment.id, body: { text: commentText } }).then((res) => {
+                    if (res.data.message === "success") {
+                      setIsEdit(false);
+                    }
+                  })
+                }}>
+                  <SendOutlined />
+                </IconButton>
+              </div> : 
+              commentText
+            }
 
             {comment.body.image && (
-              <Paper elevation={0} style={{ padding: '8px' }}>
-                <Avatar
-                  variant="square"
-                  style={{ width: '40%', height: '100%' }}
-                >
-                  <img
-                    src={comment.body.image}
-                    style={{ width: '100%', height: '100%' }}
-                    alt=""
-                  />
-                </Avatar>
-              </Paper>
+              <CardMedia
+                component={comment.body.image.split('.').pop().substring(0, 3) === "mp4" ? "video" : "img"}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain',
+                }}
+                image={comment.body.image}
+                title="Paella dish"
+                controls
+              />
             )}
           </>
         }
       />
+      <div>
+        <IconButton onClick={(e) => setIsOpen(e.currentTarget)}>
+          <MoreHoriz />
+        </IconButton>
+
+        <Menu
+          id="comment-action-menu"
+          anchorEl={isOpen}
+          open={Boolean(isOpen)}
+          onClose={() => setIsOpen(null)}
+        >
+          <MenuItem 
+            onClick={() => {
+              setIsOpen(null)
+              setIsEdit(true);
+            }}
+          >
+            Edit
+          </MenuItem>
+          <MenuItem onClick={() => {
+            // deleteComment(post.id).then((res) => {
+            //   if (res.data.message === "success") {
+            //     handleDeletePost(post.id)
+            //   }
+            // })
+          }}>Delete</MenuItem>
+        </Menu>
+      </div>
     </ListItem>
   )
   return (

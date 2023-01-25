@@ -75,6 +75,21 @@ exports.fetchComments = async (req, res) => {
   }
 }
 
+exports.editComment = async (req, res) => {
+  try {
+    const { content } = req.body;
+
+    await Comment.findByIdAndUpdate(req.params.commentId, { body: content })
+      .populate('user')
+      .populate({ path: 'body.with'})
+
+    res.status(200).json({ message: "success" })
+  } catch (err) {
+    console.log(err)
+    return res.status(500).json({error:"Something went wrong"})
+  }
+}
+
 exports.likeDislikeComment = async (req, res) => {
   try {
     const comment = await Comment.findById(req.params.commentId).populate(

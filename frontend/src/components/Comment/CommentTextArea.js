@@ -6,27 +6,49 @@ import {
   Paper,
   TextField,
 } from '@material-ui/core'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useRef } from 'react'
 import AvartarText from '../UI/AvartarText'
 import StyledBadge from '../UI/StyledBadge'
 import { UIContext, UserContext } from '../../App'
 import { SendOutlined } from '@material-ui/icons'
 import useCreateComment from '../../hooks/useCreateComment'
+import PreviewImage from '../Post/PostForm/PostDialog/PreviewImage';
+import FileField from '../Post/PostForm/PostDialog/FileField';
+
 function CommentTextArea({ post }) {
   const { userState } = useContext(UserContext)
   const { uiState } = useContext(UIContext)
 
   const [commentText, setCommentText] = useState('')
-  const [commentImage, setCommentImage] = useState()
+  const [commentImage, setCommentImage] = useState(null)
   const [error, setError] = useState('')
 
-  const { createComment, loading } = useCreateComment({
+  const fileRef = useRef();
+  const [previewImage, setPreviewImage] = useState('')
+
+  const handleImageChange = (e) => {
+    setCommentImage(e.target.files[0])
+
+    const reader = new FileReader()
+    reader.readAsDataURL(e.target.files[0])
+    reader.onload = () => {
+      setPreviewImage(reader.result)
+    }
+  }
+
+  function removeFileImage() {
+    setPreviewImage('')
+    setCommentImage(null)
+  }
+
+  const { handleSubmitComment, loading } = useCreateComment({
     post_id: post.id,
     commentText,
     setCommentText,
     setCommentImage,
     commentImage,
     setError,
+    removeFileImage,
   })
 
   const handleCommentChange = (e) => {
@@ -77,10 +99,18 @@ function CommentTextArea({ post }) {
               padding: '8px 16px',
             }}
           />
-         
+          <FileField fileRef={fileRef} />
+          <input
+            type="file"
+            style={{ display: 'none' }}
+            ref={fileRef}
+            onChange={handleImageChange}
+            accept="image/*,video/*"
+            capture="user"
+          />
         </Grid>
         <Grid item ms={2} sm={2} xs={2}>
-        <IconButton onClick={createComment}>
+        <IconButton onClick={handleSubmitComment}>
             <SendOutlined />
           </IconButton>
         </Grid>
@@ -100,6 +130,15 @@ function CommentTextArea({ post }) {
           <LinearProgress color="primary" style={{ width: '100%' }} />
         </Paper>
       ) : null}
+
+      {previewImage && (
+        <>
+          <PreviewImage
+            previewImage={previewImage}
+            removeFileImage={removeFileImage}
+          />
+        </>
+      )}
     </>
   )
 }

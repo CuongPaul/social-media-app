@@ -58,6 +58,25 @@ export const editPost = async (post) => {
   }
 }
 
+export const editComment = async (comment) => {
+  let token = JSON.parse(localStorage.token)
+
+  try {
+    const response = await axios.patch(`${url}/api/post/comment/${comment.id}`, {content: comment.body}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    if (response.data) {
+      return {
+        data: response.data,
+      }
+    }
+  } catch (err) {
+    console.log(err)
+  }
+}
+
 // export const fetchPostById = async (post_id) => {
 //   let token = JSON.parse(localStorage.token)
 

@@ -8,6 +8,8 @@ function PreviewImage({ previewImage, removeFileImage }) {
       <CardMedia
         image={previewImage}
         style={{ width: '100', height: '240px' }}
+        component={ previewImage.substring(0, previewImage.indexOf("/")) === "data:image" ? "img" : "video" }
+        controls
       />
       <div
         style={{
