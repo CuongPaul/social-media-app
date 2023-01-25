@@ -6,6 +6,9 @@ import {
   Paper,
   TextField,
 } from '@material-ui/core'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSmile } from '@fortawesome/free-solid-svg-icons'
+import EmojiPicker from 'emoji-picker-react'
 import React, { useContext, useState, useRef } from 'react'
 import AvartarText from '../UI/AvartarText'
 import StyledBadge from '../UI/StyledBadge'
@@ -22,6 +25,7 @@ function CommentTextArea({ post }) {
   const [commentText, setCommentText] = useState('')
   const [commentImage, setCommentImage] = useState(null)
   const [error, setError] = useState('')
+  const [showEmoji, setShowEmoji] = useState(false)
 
   const fileRef = useRef();
   const [previewImage, setPreviewImage] = useState('')
@@ -49,11 +53,17 @@ function CommentTextArea({ post }) {
     commentImage,
     setError,
     removeFileImage,
+    setShowEmoji,
   })
 
   const handleCommentChange = (e) => {
     setError('')
     setCommentText(e.target.value)
+  }
+
+  const onEmojiClick = (e, emojiObject) => {
+    setError('')
+    setCommentText(commentText + emojiObject.emoji)
   }
 
   return (
@@ -108,6 +118,15 @@ function CommentTextArea({ post }) {
             accept="image/*,video/*"
             capture="user"
           />
+          <IconButton onClick={() => setShowEmoji(!showEmoji)}>
+            <FontAwesomeIcon icon={faSmile} color="rgb(250,199,94)" />
+          </IconButton>
+          {showEmoji && (
+            <EmojiPicker
+              onEmojiClick={onEmojiClick}
+              className="emoji-container"
+            />
+          )}
         </Grid>
         <Grid item ms={2} sm={2} xs={2}>
         <IconButton onClick={handleSubmitComment}>

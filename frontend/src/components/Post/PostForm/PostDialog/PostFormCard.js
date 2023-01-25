@@ -1,4 +1,4 @@
-import React, { lazy, useContext, useRef, useState } from 'react'
+import React, { lazy, useContext, useRef, useState, useEffect } from 'react'
 import EmojiPicker from 'emoji-picker-react'
 import { UIContext, UserContext, PostContext } from '../../../../App'
 
@@ -48,10 +48,14 @@ export default function PostFormDialog() {
     date: '',
   })
 
-  const [postData, setPostData] = useState({
-    privacy: uiState.post ? uiState.post.privacy : 'Public',
-    content: uiState.post ? uiState.post.content : '',
-  })
+  const [postData, setPostData] = useState({ privacy: 'Public', content: '' })
+
+  useEffect(() => {
+    setPostData({
+      privacy: uiState.post ? uiState.post.privacy : 'Public',
+      content: uiState.post ? uiState.post.content : ''
+    })
+  }, [uiState.post])
 
   const { userState } = useContext(UserContext)
 
@@ -184,7 +188,7 @@ export default function PostFormDialog() {
               <InputLabel>Privacy</InputLabel>
               <Select
                 native
-                defaultValue={uiState.post ? uiState.post.privacy : postData.privacy}
+                value={postData.privacy}
                 onChange={(e) =>
                   setPostData({ ...postData, privacy: e.target.value })
                 }
@@ -198,7 +202,7 @@ export default function PostFormDialog() {
               placeholder={`Whats in your mind ${userState.currentUser.name}`}
               multiline
               rows={8}
-              defaultValue={uiState.post ? uiState.post.content : postData.content}
+              value={postData.content}
               onChange={handleContentChange}
               style={{
                 background: !uiState.darkMode ? '#fff' : null,
@@ -272,12 +276,12 @@ export default function PostFormDialog() {
           <DialogActions>
             <Button
               disabled={loading}
-              onClick={() => {
+              onClick={(e) => {
                 if (uiState.post) {
                   return handleUpdatePost(uiState.post.id);
                 }
 
-                return handleSubmitPost;
+                return handleSubmitPost(e);
               }}
               variant="contained"
               color="primary"

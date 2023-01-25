@@ -12,6 +12,7 @@ const useCreateComment = ({
   setCommentText,
   commentImage,
   removeFileImage,
+  setShowEmoji,
 }) => {
   const [loading, setLoading] = useState(false)
 
@@ -84,6 +85,7 @@ const useCreateComment = ({
       createComment();
     }
     removeFileImage();
+    setShowEmoji(false);
   }
 
   return {
