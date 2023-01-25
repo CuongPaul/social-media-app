@@ -131,7 +131,7 @@ function Home() {
       >
         <WritePostCard user={userState.currentUser} />
 
-        <Posts posts={postState.posts} />
+        <Posts posts={postState.posts.filter(item => item.privacy === "Public")} />
       </div>
     </div>
   )
