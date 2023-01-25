@@ -31,7 +31,7 @@ function Profile() {
       }
     }
 
-  }, [params.userId])
+  }, [params.userId, userState.currentUser])
 
   return <div>{user && <UserProfile user={user} />}</div>
 }

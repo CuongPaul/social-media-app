@@ -14,6 +14,7 @@ const {
 } = require('../controllers/User/Chat')
 const {
   sendFriendRequest,
+  sendUnfriendRequest,
   acceptFriendRequest,
   declineFriendRequest,
   cancelSendedFriendRequest,
@@ -35,6 +36,7 @@ router.get(
 
 router.get('/search', searchUsers)
 router.get('/friend_request/:userId/send', authRequired, sendFriendRequest)
+router.patch('/unfriend_request', authRequired, sendUnfriendRequest)
 router.get(
   '/friend_request/:requestId/accept',
   authRequired,

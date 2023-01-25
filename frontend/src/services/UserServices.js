@@ -139,6 +139,35 @@ export const acceptFriendRequest = async (request_id) => {
   }
 }
 
+export const unFriend = async ({userRequest, friendRequest}) => {
+  let token = JSON.parse(localStorage.token)
+  
+  try {
+    const newListFriendUserRequest = userRequest.friends.filter(item => item !== friendRequest.id);
+    const newListFriendFriendRequest = friendRequest.friends.filter(item => item !== userRequest.id);
+
+    const { data } = await axios.patch(`${url}/api/user/unfriend_request`, {
+      userRequest: {...userRequest, friends: [...newListFriendUserRequest]},
+      friendRequest: {...friendRequest, friends: [...newListFriendFriendRequest]}
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    if (data) {
+      return {
+        data,
+      }
+    }
+  } catch (err) {
+    if (err && err.response) {
+      return {
+        error: err.response.data.error,
+      }
+    }
+  }
+}
+
 
 export const declineFriendRequest = async (request_id) => {
   let token = JSON.parse(localStorage.token)

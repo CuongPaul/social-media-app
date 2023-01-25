@@ -201,6 +201,15 @@ export const UserReducer = (state, action) => {
         },
       }
 
+    case 'REMOVE_FRIEND':
+      return {
+        ...state,
+        currentUser: {
+          ...state.currentUser,
+          friends: [...action.payload],
+        },
+      }
+
     case 'ADD_SELECTED_USER_PROFILE':
       return {
         ...state,

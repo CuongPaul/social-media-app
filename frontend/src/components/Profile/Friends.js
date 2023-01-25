@@ -1,8 +1,12 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Paper, Grid, Typography, Button, Avatar } from '@material-ui/core'
 import AvartarText from '../UI/AvartarText'
+import { unFriend } from '../../services/UserServices';
+import { UserContext } from '../../App'
 
 function Friends({ user }) {
+  const { userDispatch } = useContext(UserContext);
+
   return (
     <Grid container spacing={2}>
       {user.friends &&
@@ -45,6 +49,16 @@ function Friends({ user }) {
                   backgroundColor: 'tomato',
                   color: '#fff',
                   marginTop: '16px',
+                }}
+                onClick={() => {
+                  const userRequest = {id: user.id, friends: user.friends.map(item => item.id)};
+                  const friendRequest = {id: friend.id, friends: friend.friends.map(item => item.id)};
+
+                  const newPayload = user.friends.filter(item => item.id !== friend.id);
+
+                  unFriend({userRequest, friendRequest}).then(res => {
+                    userDispatch({type:"REMOVE_FRIEND", payload: newPayload})
+                  })
                 }}
               >
                 Unfriend

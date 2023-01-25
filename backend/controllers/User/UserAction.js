@@ -70,6 +70,20 @@ exports.sendFriendRequest = async (req, res) => {
   }
 }
 
+exports.sendUnfriendRequest = async (req, res) => {
+  try {
+    const {userRequest, friendRequest} = req.body;
+    
+    await User.findByIdAndUpdate(userRequest.id, { friends: userRequest.friends });
+    await User.findByIdAndUpdate(friendRequest.id, { friends: friendRequest.friends })
+
+    res.status(200).json({ message: "success" })
+  } catch (err) {
+    console.log(err)
+    return res.status(500).json({error:"Something went wrong"})
+  }
+}
+
 exports.acceptFriendRequest = async (req, res) => {
   try {
     const friendsRequest = await FriendRequest.findById(req.params.requestId)
