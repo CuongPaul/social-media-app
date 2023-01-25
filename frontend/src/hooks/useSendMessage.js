@@ -1,23 +1,24 @@
 import { useContext, useState } from 'react'
 import axios from 'axios'
 import { ChatContext, UIContext } from '../App'
+import { storage } from '../firebase/firebase'
 
 const url = process.env.REACT_APP_ENDPOINT
 
-const useSendMessage = ({ textMessage, setTextMessage }) => {
+const useSendMessage = ({ textMessage, setTextMessage, setShowEmoji, messageImage, removeFileImage }) => {
   const [loading, setLoading] = useState(false)
 
   const { chatState, chatDispatch } = useContext(ChatContext)
   const { uiDispatch } = useContext(UIContext)
 
-  const sendMessage = async () => {
+  const sendMessage = async (uri = '') => {
     setLoading(true)
     let friendId = chatState.selectedFriend.id
     try {
       let token = JSON.parse(localStorage.getItem('token'))
       const response = await axios.post(
         `${url}/api/user/chat/${friendId}/send`,
-        { text: textMessage },
+        { text: textMessage, image: uri ? uri : '' },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -47,8 +48,38 @@ const useSendMessage = ({ textMessage, setTextMessage }) => {
     }
   }
 
+  const handleSubmitMessage = (e) => {
+    if (messageImage) {
+      let filename = `message/message-${Date.now()}-${messageImage.name}`
+      const uploadTask = storage.ref(`images/${filename}`).put(messageImage)
+      uploadTask.on(
+        'state_changed',
+        () => {
+          setLoading(true)
+        },
+        (err) => {
+          console.log('error from firebase')
+          setLoading(false)
+        },
+        () => {
+          storage
+            .ref('images')
+            .child(filename)
+            .getDownloadURL()
+            .then((uri) => {
+              sendMessage(uri)
+            })
+        },
+      )
+    } else {
+      sendMessage();
+    }
+    removeFileImage();
+    setShowEmoji(false);
+  }
+
   return {
-    sendMessage,
+    handleSubmitMessage,
     loading,
   }
 }

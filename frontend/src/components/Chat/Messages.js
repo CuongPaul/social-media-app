@@ -1,4 +1,4 @@
-import { Avatar, Grid, makeStyles, Paper, Typography } from '@material-ui/core'
+import { Grid, makeStyles, Paper, Typography, CardMedia } from '@material-ui/core'
 import React, { Fragment, useContext, useEffect, useRef } from 'react'
 import { ChatContext, UIContext, UserContext } from '../../App'
 import moment from 'moment'
@@ -67,13 +67,17 @@ function Messages() {
                       </Typography>
                     )}
                     {message.body.image && (
-                      <Avatar variant="square">
-                        <img
-                          src={message.body.image}
-                          width="100%"
-                          height="100%"
-                        />
-                      </Avatar>
+                      <CardMedia
+                        component={message.body.image.split('.').pop().substring(0, 3) === "mp4" ? "video" : "img"}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'contain',
+                        }}
+                        image={message.body.image}
+                        title="Paella dish"
+                        controls
+                      />
                     )}
                     <Typography className={classes.date}>
                       {moment(message.createdAt).fromNow()}
@@ -103,13 +107,17 @@ function Messages() {
                       </Typography>
                     )}
                     {message.body.image && (
-                      <Avatar variant="square">
-                        <img
-                          src={message.body.image}
-                          width="100%"
-                          height="100%"
-                        />
-                      </Avatar>
+                      <CardMedia
+                        component={message.body.image.split('.').pop().substring(0, 3) === "mp4" ? "video" : "img"}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'contain',
+                        }}
+                        image={message.body.image}
+                        title="Paella dish"
+                        controls
+                      />
                     )}
                     <Typography
                       className={classes.date}
