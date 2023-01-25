@@ -4,6 +4,7 @@ const {
   fetchComments,
   likeDislikeComment,
   editComment, 
+  deleteComment, 
 } = require('../controllers/Post/Comment')
 const {
   fetchAllPosts,
@@ -23,6 +24,7 @@ router.get('/:postId', authRequired, fetchPostById)
 router.delete('/:postId', authRequired, deletePost)
 router.patch('/:postId', authRequired, editPost)
 
+router.delete('/comment/:commentId', authRequired, deleteComment)
 router.patch('/comment/:commentId', authRequired, editComment)
 router.get('/comment/:commentId/like_dislike', authRequired, likeDislikeComment)
 

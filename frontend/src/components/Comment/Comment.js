@@ -19,10 +19,10 @@ import AvartarText from '../UI/AvartarText'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faThumbsUp as filledLike } from '@fortawesome/free-solid-svg-icons'
 import { faThumbsUp } from '@fortawesome/free-regular-svg-icons'
-import { likeDislikeComment, editComment } from '../../services/PostServices'
+import { likeDislikeComment, editComment, deleteComment } from '../../services/PostServices'
 import { PostContext, UserContext, UIContext } from '../../App'
 function Comment({ comment }) {
-  const { postDispatch } = useContext(PostContext)
+  const { postState, postDispatch } = useContext(PostContext)
   const { userState } = useContext(UserContext)
   const { uiDispatch, uiState } = useContext(UIContext)
 
@@ -143,11 +143,12 @@ function Comment({ comment }) {
             Edit
           </MenuItem>
           <MenuItem onClick={() => {
-            // deleteComment(post.id).then((res) => {
-            //   if (res.data.message === "success") {
-            //     handleDeletePost(post.id)
-            //   }
-            // })
+            deleteComment(comment.id).then((res) => {
+              if (res.data.message === "success") {
+                const newComments = postState.post.comments.filter(item => comment.id !== item.id);
+                postDispatch({ type: 'DELETE_COMMENT', payload: newComments })
+              }
+            })
           }}>Delete</MenuItem>
         </Menu>
       </div>

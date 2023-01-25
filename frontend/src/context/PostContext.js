@@ -45,6 +45,15 @@ export const PostReducer = (state, action) => {
         posts: [action.payload, ...state.posts],
       }
 
+    case 'DELETE_COMMENT':
+      return {
+        ...state,
+        post: {
+          ...state.post,
+          comments: [...action.payload],
+        }
+      }
+
     case 'DELETE_POST':
       return {
         ...state,

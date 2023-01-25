@@ -58,6 +58,25 @@ export const editPost = async (post) => {
   }
 }
 
+export const deleteComment = async (comment_id) => {
+  let token = JSON.parse(localStorage.token)
+
+  try {
+    const response = await axios.delete(`${url}/api/post/comment/${comment_id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    if (response.data) {
+      return {
+        data: response.data,
+      }
+    }
+  } catch (err) {
+    console.log(err)
+  }
+}
+
 export const editComment = async (comment) => {
   let token = JSON.parse(localStorage.token)
 

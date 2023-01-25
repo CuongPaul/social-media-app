@@ -75,6 +75,19 @@ exports.fetchComments = async (req, res) => {
   }
 }
 
+exports.deleteComment = async (req, res) => {
+  try {
+    await Comment.findByIdAndDelete(req.params.commentId)
+      .populate('user')
+      .populate({ path: 'body.with'})
+
+    res.status(200).json({ message: "success" })
+  } catch (err) {
+    console.log(err)
+    return res.status(500).json({error:"Something went wrong"})
+  }
+}
+
 exports.editComment = async (req, res) => {
   try {
     const { content } = req.body;
