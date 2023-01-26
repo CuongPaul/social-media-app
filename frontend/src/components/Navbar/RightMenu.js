@@ -1,6 +1,6 @@
-import React, { Fragment, useContext } from 'react'
+import React, { Fragment, useContext, useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
-import { UIContext, UserContext } from '../../App'
+import { UIContext, UserContext, ChatContext } from '../../App'
 
 import {
   Chip,
@@ -25,11 +25,23 @@ function RightMenu() {
   const { userState } = useContext(UserContext)
   const theme = useTheme()
   const xsScreen = useMediaQuery(theme.breakpoints.only('xs'))
-
+  const { chatState } = useContext(ChatContext)
+  const abc = new Set(chatState.messages.reduce((acc, cur) => [...acc, cur.sender.id], []));
+  const abcLength = [...abc].length;
+  const [amountMess, setUserMess] = useState(abcLength);
   const defaultPropsNotif = {
     color: 'error',
     children: <FontAwesomeIcon icon={faBell} size={xsScreen ? 'xs' : 'sm'} />,
   }
+  const defaultPropsMess = {
+    color: 'error',
+    children: <FontAwesomeIcon icon={faFacebookMessenger} size={xsScreen ? 'xs' : 'sm'} />,
+  }
+  useEffect(() => {
+    if (userState.currentUser.id === chatState.messages[0]?.receiver?.id) {
+      setUserMess(abcLength);
+    }
+  }, [abcLength])
 
   return (
     <Fragment>
@@ -68,15 +80,16 @@ function RightMenu() {
           backgroundColor: !uiState.darkMode ? '#F0F2F5' : null,
         }}
       >
-        <FontAwesomeIcon
-          icon={faFacebookMessenger}
-          size={xsScreen ? 'xs' : 'sm'}
+        <Badge
+          max={9}
+          badgeContent={amountMess}
+          {...defaultPropsMess}
         />
       </IconButton>
       <NotificationMenu>
         <Badge
           max={5}
-          badgeContent={uiState.notifications.length || '0'}
+          badgeContent={uiState.notifications.length}
           {...defaultPropsNotif}
         />
       </NotificationMenu>

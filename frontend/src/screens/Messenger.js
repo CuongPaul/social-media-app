@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {
   Avatar,
   Container,
@@ -18,6 +18,7 @@ import AvartarText from '../components/UI/AvartarText'
 function Messenger() {
   const { uiDispatch, uiState } = useContext(UIContext)
   const { chatState, chatDispatch } = useContext(ChatContext)
+  const [textValue, setTextValue] = useState("");
   useEffect(() => {
     uiDispatch({ type: 'SET_NAV_MENU', payload: true })
     uiDispatch({ type: 'SET_DRAWER', payload: false })
@@ -133,7 +134,7 @@ function Messenger() {
                     backgroundColor: uiState.darkMode && 'rgb(36,37,38)',
                   }}
                 >
-                  <Messages />
+                  <Messages setTextValue={setTextValue}/>
                 </Paper>
 
                 <div
@@ -144,7 +145,7 @@ function Messenger() {
                     width: '100%',
                   }}
                 >
-                  <MessageTextArea />
+                  <MessageTextArea textValue={textValue} />
                 </div>
               </Grid>
             ) : (

@@ -1,6 +1,6 @@
 import { IconButton, InputBase, Paper, makeStyles } from '@material-ui/core'
 import { Send } from '@material-ui/icons'
-import React, { useContext, useState, useRef } from 'react';
+import React, { useContext, useState, useRef, useEffect } from 'react';
 import { UIContext } from '../../App'
 import useSendMessage from '../../hooks/useSendMessage'
 import EmojiPicker from 'emoji-picker-react';
@@ -19,10 +19,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-function MessageTextArea() {
+function MessageTextArea({textValue}) {
   const { uiState } = useContext(UIContext)
   const classes = useStyles()
   const [textMessage, setTextMessage] = useState('')
+
+  useEffect(() => {
+    setTextMessage(textValue)
+  }, [textValue])
 
   const fileRef = useRef();
   const [showEmoji, setShowEmoji] = useState(false);

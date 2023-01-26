@@ -1,7 +1,8 @@
-import { Grid, makeStyles, Paper, Typography, CardMedia } from '@material-ui/core'
-import React, { Fragment, useContext, useEffect, useRef } from 'react'
+import { Grid, makeStyles, Paper, Typography, CardMedia, IconButton,  Menu, MenuItem } from '@material-ui/core'
+import React, { Fragment, useContext, useEffect, useRef, useState } from 'react'
 import { ChatContext, UIContext, UserContext } from '../../App'
 import moment from 'moment'
+import { MoreHoriz } from '@material-ui/icons'
 const useStyles = makeStyles((theme) => ({
   me: {
     padding: '8px',
@@ -29,10 +30,11 @@ const useStyles = makeStyles((theme) => ({
     margin: 'auto',
   },
 }))
-function Messages() {
+function Messages({setTextValue}) {
   const classes = useStyles()
 
   const scrollDiv = useRef(null)
+  const [isOpen, setIsOpen] = useState(null);
 
   const { chatState } = useContext(ChatContext)
   const { userState } = useContext(UserContext)
@@ -90,7 +92,7 @@ function Messages() {
                   md={12}
                   xs={12}
                   sm={12}
-                  style={{ marginTop: '16px' }}
+                  style={{ marginTop: '16px', display: "flex", flexDirection: "row-reverse" }}
                 >
                   <Paper
                     className={classes.me}
@@ -126,6 +128,37 @@ function Messages() {
                       {moment(message.createdAt).fromNow()}
                     </Typography>
                   </Paper>
+                  <Fragment key={message.id}>
+                    <IconButton onClick={(e) => setIsOpen(e.currentTarget)}>
+                      <MoreHoriz />
+                    </IconButton>
+
+                    <Menu
+                      id="message-action-menu"
+                      anchorEl={isOpen}
+                      open={Boolean(isOpen)}
+                      onClose={() => setIsOpen(null)}
+                    >
+                      <MenuItem 
+                        onClick={() => {
+                          setIsOpen(null)
+                          setTextValue(message.body.text);
+                        }}
+                      >
+                        Edit {message.body.text && message.body.text}
+                      </MenuItem>
+                      <MenuItem onClick={() => {
+                        // deleteMessage(message.id).then((res) => {
+                        //   if (res.data.message === "success") {
+                        //     const newComments = postState.post.comments.filter(item => message.id !== item.id);
+                        //     postDispatch({ type: 'DELETE_MESSAGE', payload: newComments })
+                        //   }
+                        // })
+                      }}>
+                        Delete
+                      </MenuItem>
+                    </Menu>
+                  </Fragment>
                 </Grid>
               )}
             </Fragment>
