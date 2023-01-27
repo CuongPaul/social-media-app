@@ -1,24 +1,43 @@
-const { Schema, model } = require('mongoose')
+import mongoose from "mongoose";
 
-const commentSchema = new Schema({
-  post: {
-    type: Schema.Types.ObjectId,
-    ref: 'Post',
-  },
+const { model, Schema } = mongoose;
 
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-  },
-  body: {
-    image: String,
-    text: {
-      type: String,
-      trim: true,
+const objectIdType = Schema.Types.ObjectId;
+const userIdRefType = { ref: "User", required: true, type: objectIdType };
+
+const commentSchema = new Schema(
+    {
+        user: userIdRefType,
+        post: {
+            ref: "Post",
+            required: true,
+            type: objectIdType,
+        },
+        body: {
+            required: true,
+            type: {
+                text: {
+                    trim: true,
+                    type: String,
+                },
+                image: {
+                    trim: true,
+                    type: String,
+                },
+            },
+        },
+        reacts: {
+            wow: [userIdRefType],
+            sad: [userIdRefType],
+            like: [userIdRefType],
+            love: [userIdRefType],
+            haha: [userIdRefType],
+            angry: [userIdRefType],
+        },
     },
-  },
+    { timestamps: true }
+);
 
-  likes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-})
+const commentModel = model("Comment", commentSchema);
 
-module.exports = model('Comment', commentSchema)
+export default commentModel;

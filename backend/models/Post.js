@@ -1,64 +1,54 @@
-const { Schema, model } = require('mongoose')
+import mongoose from "mongoose";
+
+const { model, Schema } = mongoose;
+
+const userIdRefType = { ref: "User", required: true, type: Schema.Types.ObjectId };
 
 const postSchema = new Schema(
-  {
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-    },
-    content: {
-      type: String,
-      trim: true,
-    },
-    body: {
-      feelings: {
-        type: String,
-        trim: true,
-      },
-      with: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: 'User',
+    {
+        content: {
+            trim: true,
+            type: String,
         },
-      ],
-      at: {
-        type: String,
-        trim: true,
-      },
-      date: String,
+        images: [
+            {
+                trim: true,
+                type: String,
+            },
+        ],
+        user: userIdRefType,
+        reacts: {
+            wow: [userIdRefType],
+            sad: [userIdRefType],
+            like: [userIdRefType],
+            love: [userIdRefType],
+            haha: [userIdRefType],
+            angry: [userIdRefType],
+        },
+        body: {
+            date: {
+                trim: true,
+                type: String,
+            },
+            location: {
+                trim: true,
+                type: String,
+            },
+            feelings: {
+                trim: true,
+                type: String,
+            },
+            with: [userIdRefType],
+        },
+        privacy: {
+            type: String,
+            default: "public",
+            enum: ["only_me", "public"],
+        },
     },
-    image: String,
-    isProfilePost: {
-      type: Boolean,
-      default: false,
-    },
+    { timestamps: true }
+);
 
-    profilePostData: {
-      coverImage: String,
-      profileImage: String,
-    },
+const postModel = model("Post", postSchema);
 
-    privacy: {
-      type: String,
-      enum: ['Only me', 'Public'],
-      default: 'Public',
-    },
-
-    likes: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-      },
-    ],
-
-    hearts: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-      },
-    ],
-  },
-  { timestamps: true },
-)
-
-module.exports = model('Post', postSchema)
+export default postModel;

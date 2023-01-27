@@ -1,21 +1,30 @@
-const { Schema, model } = require('mongoose')
+import mongoose from "mongoose";
+
+const { model, Schema } = mongoose;
+
+const userIdRefType = { ref: "User", required: true, type: Schema.Types.ObjectId };
 
 const chatSchema = new Schema(
-  {
-    sender: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+    {
+        sender: userIdRefType,
+        receiver: userIdRefType,
+        body: {
+            required: true,
+            type: {
+                text: {
+                    trim: true,
+                    type: String,
+                },
+                image: {
+                    trim: true,
+                    type: String,
+                },
+            },
+        },
     },
-    receiver: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-    },
-    body: {
-      type: Object,
-      required: true,
-    },
-  },
-  { timestamps: true },
-)
+    { timestamps: true }
+);
 
-module.exports = model('Chat', chatSchema)
+const chatModel = model("Chat", chatSchema);
+
+export default chatModel;

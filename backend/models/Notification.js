@@ -1,18 +1,25 @@
-const { Schema, model } = require("mongoose")
+import mongoose from "mongoose";
 
+const { model, Schema } = mongoose;
 
-const notificationSchema = new Schema({
-    body: {
-        type: String,
-        required: true
+const objectIdType = Schema.Types.ObjectId;
+
+const notificationSchema = new Schema(
+    {
+        body: {
+            trim: true,
+            type: String,
+            required: true,
+        },
+        user: {
+            ref: "User",
+            required: true,
+            type: objectIdType,
+        },
     },
+    { timestamps: true }
+);
 
-    user: {
-        type: Schema.Types.ObjectId,
-        ref: "User"
-    }
+const notificationtModel = model("Notification", notificationSchema);
 
-}, { timestamps: true })
-
-
-module.exports = model("Notification",notificationSchema)
+export default notificationtModel;

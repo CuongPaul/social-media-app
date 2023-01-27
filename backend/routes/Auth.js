@@ -1,14 +1,13 @@
-const router = require('express').Router()
-const SignupUser = require('../controllers/Auth/Signup')
-const LoginUser = require('../controllers/Auth/Login')
-const Logout = require('../controllers/Auth/Logout')
-const ChangePassword = require("../controllers/Auth/ChangePassword")
+import express from "express";
 
-const authRequired = require("../middleware/AuthRequired")
+import checkToken from "../middleware/check-token";
+import { login, logout, signup, updatePassword } from "../controllers/auth";
 
-router.post('/signup', SignupUser)
-router.post('/login', LoginUser)
-router.get("/logout",authRequired,Logout)
+const router = express.Router();
 
-router.put("/update_password",authRequired,ChangePassword)
-module.exports = router
+router.post("/login", login);
+router.post("/signup", signup);
+router.get("/logout", checkToken, logout);
+router.put("/update_password", checkToken, updatePassword);
+
+export default router;

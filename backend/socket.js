@@ -1,26 +1,20 @@
-const User = require('./models/User')
-const jwt = require('jsonwebtoken')
+import User from "./models/User";
 
-module.exports = (io) => {
-  io.on('connection', (socket) => {
-    if (io.req) {
-      socket.broadcast.emit('friend-login-status', { user_id: io.req.userId })
-      addSocketIdInDB(socket.id, io.req.userId)
+const socketServer = (io) => {
+    io.on("connection", async (socket) => {
+        if (io.req) {
+            const userId = io.req.user_id;
 
-      socket.on('disconnect', () => {
-        socket.broadcast.emit('friend-logout-status', {
-          user_id: io.req.userId,
-        })
-        io.req.userId = null
-      })
-    }
-  })
-}
+            socket.broadcast.emit("friend-login-status", { user_id: userId });
 
-async function addSocketIdInDB(socket_id, user_id) {
-  const user = await User.findById(user_id)
-  if (socket_id) {
-    user.socketId = socket_id
-  }
-  await user.save()
-}
+            await User.findByIdAndUpdate(userId, { socket_id: socket.id });
+
+            socket.on("disconnect", () => {
+                socket.broadcast.emit("friend-logout-status", { user_id: userId });
+                io.req.user_id = null;
+            });
+        }
+    });
+};
+
+export default socketServer;

@@ -1,63 +1,53 @@
-const mongoose = require('mongoose')
+import mongoose from "mongoose";
 
-const Schema = mongoose.Schema
+const { model, Schema } = mongoose;
 
-const UserSchema = new Schema(
-  {
-    name: {
-      type: String,
-      trim: true,
-      required: true,
-    },
-    email: {
-      type: String,
-      trim: true,
-      unique: true,
-      required: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
+const objectIdType = Schema.Types.ObjectId;
+const stringDefaultType = { trim: true, default: "", type: String };
 
-    profile_pic: {
-      type: String,
-      default: '',
+const userSchema = new Schema(
+    {
+        location: {
+            type: Object,
+        },
+        is_active: {
+            default: true,
+            type: Boolean,
+        },
+        name: {
+            trim: true,
+            type: String,
+            required: true,
+        },
+        password: {
+            trim: true,
+            type: String,
+            required: true,
+        },
+        email: {
+            trim: true,
+            type: String,
+            unique: true,
+            required: true,
+        },
+        jwt_token: [
+            {
+                trim: true,
+                type: String,
+            },
+        ],
+        bio: stringDefaultType,
+        education: stringDefaultType,
+        socket_id: stringDefaultType,
+        cover_image: stringDefaultType,
+        avatar_image: stringDefaultType,
+        friends: [{ ref: "User", type: objectIdType }],
     },
+    { timestamps: true }
+);
 
-    cover_image: {
-      type: String,
-      default: '',
-    },
+userSchema.index({ name: "text", email: "text" });
 
-    bio: {
-      type: String,
-      default: '',
-      trim: true,
-    },
-    active: {
-      type: Boolean,
-      default: false,
-    },
-    socketId: {
-      type: String,
-      default: '',
-    },
-    jwtToken: [String],
+const userModel = model("User", userSchema);
 
-    location: {
-      type: Object,
-    },
-    education: {
-      type: String,
-      trim: true,
-    },
-
-    friends: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-  },
-
-  { timestamps: true },
-)
-
-UserSchema.index({ name: 'text', email: 'text'})
-module.exports = mongoose.model('User', UserSchema)
+export default userModel;
