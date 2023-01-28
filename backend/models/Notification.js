@@ -2,19 +2,27 @@ import mongoose from "mongoose";
 
 const { model, Schema } = mongoose;
 
-const objectIdType = Schema.Types.ObjectId;
-
 const notificationSchema = new Schema(
     {
-        body: {
+        key: {
             trim: true,
             type: String,
+            required: true,
+        },
+        content: {
+            trim: true,
+            type: String,
+            required: true,
+        },
+        is_read: {
+            type: Boolean,
+            default: false,
             required: true,
         },
         user: {
             ref: "User",
             required: true,
-            type: objectIdType,
+            type: Schema.Types.ObjectId,
         },
     },
     { timestamps: true }

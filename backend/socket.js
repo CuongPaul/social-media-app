@@ -5,13 +5,18 @@ const socketServer = (io) => {
         if (io.req) {
             const userId = io.req.user_id;
 
-            socket.broadcast.emit("friend-login-status", { user_id: userId });
+            socket.broadcast.emit("user-online", { user_id: userId });
 
-            await User.findByIdAndUpdate(userId, { socket_id: socket.id });
+            await User.findByIdAndUpdate(userId, { $push: { socket_id: socket.id } });
 
-            socket.on("disconnect", () => {
-                socket.broadcast.emit("friend-logout-status", { user_id: userId });
-                io.req.user_id = null;
+            socket.on("disconnect", async () => {
+                const user = await User.findByIdAndUpdate(userId, {
+                    $pull: { socket_id: socket.id },
+                });
+
+                if (user.socket_id.length === 0) {
+                    socket.broadcast.emit("user-offline", { user_id: userId });
+                }
             });
         }
     });

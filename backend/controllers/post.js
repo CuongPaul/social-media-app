@@ -1,122 +1,127 @@
 import Post from "../models/Post";
-import { postFilter } from "../utils/filter-data";
-import { sendNotification } from "../helper/socket";
+import { postDataFilter } from "../utils/filter-data";
+import { sendNotification } from "../utils/send-notification";
 
 const createPost = async (req, res) => {
-    const { body, images, content, privacy } = req.body;
+    const { body, text, images, privacy } = req.body;
 
-    if (!images && !content && content.trim().length === 0) {
+    if ((!images || !images.length) && !text && text.trim().length === 0) {
         return res.status(422).json({ message: "Post image or write something" });
     }
 
     try {
         const newPost = new Post({
+            body,
+            text,
             images,
             privacy,
-            content,
             user: req.user_id,
-            body: {
-                date: body?.date,
-                with: body?.with,
-                feelings: body?.feelings,
-                location: body?.location,
-            },
         });
-
         const savePost = await newPost.save();
 
-        const postData = postFilter(savePost);
-
-        res.status(201).json({ message: "Create post is successfully", post: postData });
+        res.status(201).json({ message: "Create post is successfully" });
 
         await sendNotification({
             req,
             key: "new-post",
-            data: postData,
-            notif_body: `${savePost.user.name} has created new post`,
+            content: `${savePost.user.name} has created new post`,
         });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
 };
 
-const likeDislikePost = async (req, res) => {
+const reactPost = async (req, res) => {
     try {
-        const post = await Post.findById(req.params.postId)
-            .populate("user")
-            .populate({ path: "body.with", select: "_id name" });
+        const post = await Post.findById(req.params.postId).populate("react").populate("user");
+
         if (!post) {
-            return res.status(404).json({ error: "post not found" });
+            return res.status(400).json({ message: "Post is not exist" });
         }
 
-        let postData;
+        const key = req.query.key;
+        const indexUserId = post.react[key].indexOf(req.user_id);
 
-        const index = post.likes.indexOf(req.user_id);
-        if (index !== -1) {
-            post.likes.splice(index, 1);
-            await post.save();
-            postData = postFilter(post);
-            res.status(200).json({ message: "removed likes", post: postData });
-            await sendNotification({ req, key: "post-like-change", data: postData });
-            return;
-        }
+        indexUserId === -1
+            ? post.react[key].push(req.user_id)
+            : post.react[key].splice(indexUserId, 1);
 
-        post.likes.push(req.user_id);
         await post.save();
-        postData = postFilter(post);
-        res.status(200).json({ message: "add like", post: postData });
-        await sendNotification({ req, key: "post-like-change", data: postData });
+
+        postData = postDataFilter(post);
+
+        await sendNotification({
+            req,
+            key: "react-post",
+            content: `${post.user.name} reacted post`,
+        });
+
+        res.status(200).json({ message: "React post is changed", data: postData });
     } catch (err) {
-        console.log(err);
-        return res.status(500).json({ error: "Something went wrong" });
+        return res.status(500).json({ message: err.message });
     }
 };
 
 const deletePost = async (req, res) => {
     try {
-        await Post.findByIdAndDelete(req.params.postId)
-            .populate("user")
-            .populate({ path: "body.with" });
+        const post = await Post.findById(req.params.postId);
 
-        res.status(200).json({ message: "success" });
+        if (!post) {
+            return res.status(400).json({ message: "Post is not exists" });
+        }
+
+        await Message.deleteOne({ id: post.id });
+
+        res.status(200).json({ message: "Delete post is successfully" });
     } catch (err) {
-        console.log(err);
-        return res.status(500).json({ error: "Something went wrong" });
+        return res.status(500).json({ message: err.message });
     }
 };
 
 const editPost = async (req, res) => {
+    const { body, text, images, privacy } = req.body;
+
+    if ((!images || !images.length) && !text && text.trim().length === 0) {
+        return res.status(422).json({ message: "Post image or write something" });
+    }
+
     try {
-        const { privacy, content } = req.body;
+        const post = await Post.findById(req.params.postId);
 
-        await Post.findByIdAndUpdate(req.params.postId, { privacy, content })
-            .populate("user")
-            .populate({ path: "body.with" });
+        if (!post) {
+            return res.status(400).json({ message: "Post is not exists" });
+        }
 
-        res.status(200).json({ message: "success" });
+        post.body = body;
+        post.content = text;
+        post.images = images;
+        post.privacy = privacy;
+        post.save();
+
+        res.status(200).json({ message: "Edit post is successfully" });
     } catch (err) {
-        console.log(err);
-        return res.status(500).json({ error: "Something went wrong" });
+        return res.status(500).json({ message: err.message });
     }
 };
 
-const fetchPostById = async (req, res) => {
+const getPostsByUser = async (req, res) => {
     try {
-        const post = await Post.findById(req.params.postId)
-            .populate("user")
-            .populate({ path: "body.with" });
+        const posts = await Post.find({ user: req.params.userId });
 
-        let postData = postFilter(post);
+        if (!posts) {
+            return res.status(400).json({ message: "Post is not exists" });
+        }
 
-        res.status(200).json({ post: postData });
+        const postsData = posts.map((post) => postDataFilter(post));
+
+        res.status(200).json({ message: "Get post by user is successfully", data: postsData });
     } catch (err) {
-        console.log(err);
-        return res.status(500).json({ error: "Something went wrong" });
+        return res.status(500).json({ message: err.message });
     }
 };
 
-const getPosts = async (req, res) => {
-    const limit = 3;
+const getAllPost = async (req, res) => {
+    const limit = 5;
     const page = parseInt(req.query.page || 0);
 
     try {
@@ -125,9 +130,9 @@ const getPosts = async (req, res) => {
             .limit(limit)
             .skip(page * limit)
             .populate("user")
-            .populate({ path: "body.with" });
+            .populate("react");
 
-        const postsData = posts.map((post) => postFilter(post));
+        const postsData = posts.map((post) => postDataFilter(post));
 
         const postAmount = await Post.estimatedDocumentCount().exec();
 
@@ -137,10 +142,13 @@ const getPosts = async (req, res) => {
             pageAmount: Math.ceil(postAmount / limit),
         };
 
-        res.status(200).json({ posts: postsData, pagination: paginationData });
+        res.status(200).json({
+            message: "Get all post is successfully",
+            data: { posts: postsData, pagination: paginationData },
+        });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
 };
 
-export { createPost, likeDislikePost, deletePost, editPost, fetchPostById, getPosts };
+export { editPost, reactPost, createPost, deletePost, getAllPost, getPostsByUser };

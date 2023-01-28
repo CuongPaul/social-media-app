@@ -122,11 +122,11 @@ function App() {
                 console.log("connected");
             });
 
-            socketio.on("friend-logout-status", ({ user_id }) => {
+            socketio.on("user-offline", ({ user_id }) => {
                 userDispatch({ type: "FRIEND_LOGOUT", payload: user_id });
             });
 
-            socketio.on("friend-login-status", ({ user_id }) => {
+            socketio.on("user-online", ({ user_id }) => {
                 userDispatch({ type: "FRIEND_LOGIN", payload: user_id });
             });
 
@@ -171,7 +171,7 @@ function App() {
                 postDispatch({ type: "ADD_POST", payload: data });
             });
 
-            socketio.on("post-like-change", ({ data }) => {
+            socketio.on("react-post", ({ data }) => {
                 postDispatch({
                     type: "LIKE_UNLIKE_POST",
                     payload: data,
@@ -182,7 +182,7 @@ function App() {
                 postDispatch({ type: "ADD_POST_COMMENT", payload: data });
             });
 
-            socketio.on("comment-like-change", ({ data }) => {
+            socketio.on("react-comment", ({ data }) => {
                 postDispatch({
                     type: "LIKE_UNLIKE_COMMENT",
                     payload: data,
@@ -206,7 +206,7 @@ function App() {
             };
         }
     }, [userState.isLoggedIn]);
-
+    console.log(userState.isLoggedIn);
     return (
         <UIContext.Provider value={{ uiState, uiDispatch }}>
             <UserContext.Provider value={{ userState, userDispatch }}>

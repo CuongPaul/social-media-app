@@ -1,13 +1,13 @@
 import express from "express";
 
-import checkToken from "../middleware/check-token";
-import { login, logout, signup, updatePassword } from "../controllers/auth";
+import verifyToken from "../middleware/verify-token";
+import { signin, signup, signout, updatePassword } from "../controllers/auth";
 
 const router = express.Router();
 
-router.post("/login", login);
+router.post("/signin", signin);
 router.post("/signup", signup);
-router.get("/logout", checkToken, logout);
-router.put("/update_password", checkToken, updatePassword);
+router.get("/signout", verifyToken, signout);
+router.put("/update-password", verifyToken, updatePassword);
 
 export default router;

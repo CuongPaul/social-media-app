@@ -2,8 +2,7 @@ import mongoose from "mongoose";
 
 const { model, Schema } = mongoose;
 
-const objectIdType = Schema.Types.ObjectId;
-const userIdRefType = { ref: "User", required: true, type: objectIdType };
+const userIdRefType = { ref: "User", required: true, type: Schema.Types.ObjectId };
 
 const friendRequestSchema = new Schema(
     {

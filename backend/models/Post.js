@@ -2,11 +2,12 @@ import mongoose from "mongoose";
 
 const { model, Schema } = mongoose;
 
-const userIdRefType = { ref: "User", required: true, type: Schema.Types.ObjectId };
+const objectIdType = Schema.Types.ObjectId;
+const userIdRefType = { ref: "User", required: true, type: objectIdType };
 
 const postSchema = new Schema(
     {
-        content: {
+        text: {
             trim: true,
             type: String,
         },
@@ -17,19 +18,11 @@ const postSchema = new Schema(
             },
         ],
         user: userIdRefType,
-        reacts: {
-            wow: [userIdRefType],
-            sad: [userIdRefType],
-            like: [userIdRefType],
-            love: [userIdRefType],
-            haha: [userIdRefType],
-            angry: [userIdRefType],
+        react: {
+            ref: "React",
+            type: objectIdType,
         },
         body: {
-            date: {
-                trim: true,
-                type: String,
-            },
             location: {
                 trim: true,
                 type: String,
@@ -38,12 +31,11 @@ const postSchema = new Schema(
                 trim: true,
                 type: String,
             },
-            with: [userIdRefType],
+            tag_friends: [userIdRefType],
         },
         privacy: {
             type: String,
-            default: "public",
-            enum: ["only_me", "public"],
+            enum: ["friend", "public", "only_me"],
         },
     },
     { timestamps: true }

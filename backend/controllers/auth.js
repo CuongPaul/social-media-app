@@ -3,24 +3,19 @@ import jwt from "jsonwebtoken";
 
 import User from "../models/User";
 import isValidEmail from "../utils/validate-email";
+import { userDataFilter } from "../utils/filter-data";
 
-const login = async (req, res) => {
+const signin = async (req, res) => {
     const { email, password } = req.body;
 
-    const errorMessage = { email: "", password: "" };
-
     if (!email || email.trim().length === 0) {
-        errorMessage.email = "Email is require";
+        return res.status(422).json({ message: "Email is require" });
     }
     if (!password || password.trim().length === 0) {
-        errorMessage.password = "Password is require";
+        return res.status(422).json({ message: "Password is require" });
     }
     if (!isValidEmail(email)) {
-        errorMessage.email = "Email is not valid";
-    }
-
-    if (errorMessage.email || errorMessage.password) {
-        return res.status(422).json({ message: errorMessage });
+        return res.status(422).json({ message: "Email is not valid" });
     }
 
     try {
@@ -49,60 +44,36 @@ const login = async (req, res) => {
     }
 };
 
-const logout = async (req, res) => {
-    try {
-        const user = await User.findById(req.user_id);
-
-        if (user) {
-            const accountData = {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                avatar_image: user.avatar_image,
-            };
-
-            res.status(201).json({ message: "Logout is successfully", account: accountData });
-        } else {
-            res.status(404).json({ message: "User is not found" });
-        }
-    } catch (err) {
-        return res.status(500).json({ message: err.message });
-    }
-};
-
 const signup = async (req, res) => {
     const { name, email, password } = req.body;
 
-    const errorMessage = { email: "", password: "" };
-
     if (!name || name.trim().length === 0) {
-        error.name = "Name is require";
+        return res.status(422).json({ message: "Name is require" });
     }
     if (!email || email.trim().length === 0) {
-        errorMessage.email = "Email is require";
+        return res.status(422).json({ message: "Email is require" });
     }
     if (!password || password.trim().length === 0) {
-        errorMessage.password = "Password is require";
+        return res.status(422).json({ message: "Password is require" });
     }
     if (!isValidEmail(email)) {
-        errorMessage.email = "Email is not valid";
-    }
-
-    if (errorMessage.email || errorMessage.password) {
-        return res.status(422).json({ message: errorMessage });
+        return res.status(422).json({ message: "Email is not valid" });
     }
 
     try {
         const user = await User.findOne({ email });
 
-        if (user) {
+        if (!user) {
             return res.status(400).json({ message: "Email is already exists" });
         }
 
         const hashPassword = await bcrypt.hash(password, 8);
 
-        const newUser = new User({ name, email, password: hashPassword });
-
+        const newUser = new User({
+            name,
+            email,
+            password: hashPassword,
+        });
         const saveUser = await newUser.save();
 
         const token = jwt.sign({ user_id: saveUser.id }, process.env.JWT_SECRET, {
@@ -118,22 +89,46 @@ const signup = async (req, res) => {
     }
 };
 
+const signout = async (req, res) => {
+    try {
+        const user = await User.findByIdAndUpdate(req.user_id, { socket_id: [] });
+
+        if (!user) {
+            res.status(400).json({ message: "User is not found" });
+        }
+
+        const userData = userDataFilter(user);
+
+        res.status(201).json({ message: "Logout is successfully", user: userData });
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+};
+
 const updatePassword = async (req, res) => {
     const { new_password, current_password } = req.body;
+
+    if (!new_password || new_password.trim().length === 0) {
+        return res.status(422).json({ message: "New password is require" });
+    }
+    if (!current_password || current_password.trim().length === 0) {
+        return res.status(422).json({ message: "Current password is require" });
+    }
 
     try {
         const user = await User.findById(req.user_id);
 
-        const isMatchPassword = await bcrypt.compare(current_password, user.password);
+        if (!user) {
+            return res.status(400).json({ message: "User is not exist" });
+        }
 
+        const isMatchPassword = await bcrypt.compare(current_password, user.password);
         if (!isMatchPassword) {
             return res.status(400).json({ error: "Incorrect current password" });
         }
 
         const hashPassword = await bcrypt.hash(new_password, 8);
-
         user.password = hashPassword;
-
         await user.save();
 
         res.status(200).json({ message: "Update password is successfully" });
@@ -142,4 +137,4 @@ const updatePassword = async (req, res) => {
     }
 };
 
-export { login, logout, signup, updatePassword };
+export { signin, signup, signout, updatePassword };

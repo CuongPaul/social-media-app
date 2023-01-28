@@ -3,16 +3,15 @@ import mongoose from "mongoose";
 const { model, Schema } = mongoose;
 
 const objectIdType = Schema.Types.ObjectId;
+const userIdRefType = { ref: "User", type: objectIdType };
 const stringDefaultType = { trim: true, default: "", type: String };
 
 const userSchema = new Schema(
     {
-        location: {
-            type: Object,
-        },
         is_active: {
             default: true,
             type: Boolean,
+            required: true,
         },
         name: {
             trim: true,
@@ -30,18 +29,13 @@ const userSchema = new Schema(
             unique: true,
             required: true,
         },
-        jwt_token: [
-            {
-                trim: true,
-                type: String,
-            },
-        ],
-        bio: stringDefaultType,
+        friends: [userIdRefType],
+        hometown: stringDefaultType,
         education: stringDefaultType,
-        socket_id: stringDefaultType,
         cover_image: stringDefaultType,
+        socket_id: [stringDefaultType],
         avatar_image: stringDefaultType,
-        friends: [{ ref: "User", type: objectIdType }],
+        block_notification: [userIdRefType],
     },
     { timestamps: true }
 );

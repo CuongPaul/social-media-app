@@ -1,91 +1,87 @@
-import { useState, useContext, useEffect } from 'react'
-import axios from 'axios'
-import { UserContext, UIContext } from '../../../App'
-import { useHistory } from 'react-router-dom'
-import { fetchCurrentUser } from '../../../services/AuthService'
+import { useState, useContext, useEffect } from "react";
+import axios from "axios";
+import { UserContext, UIContext } from "../../../App";
+import { useHistory } from "react-router-dom";
+import { fetchCurrentUser } from "../../../services/AuthService";
 
-const url = process.env.REACT_APP_ENDPOINT
+const url = process.env.REACT_APP_ENDPOINT;
 
 const useLoginUser = (userData = null) => {
-  const { uiDispatch } = useContext(UIContext)
-  const { userDispatch } = useContext(UserContext)
+    const { uiDispatch } = useContext(UIContext);
+    const { userDispatch } = useContext(UserContext);
 
-  const history = useHistory()
+    const history = useHistory();
 
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const [initialState, setInitialState] = useState({
-    email: '',
-    password: '',
-  })
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [initialState, setInitialState] = useState({
+        email: "",
+        password: "",
+    });
 
-  useEffect(() => {
+    useEffect(() => {
+        setInitialState({ ...initialState, email: userData ? userData.email : "" });
+        return () => {};
+    }, []);
 
-    setInitialState({ ...initialState, email: userData ? userData.email : '' })
-    return () => {
+    const handlePasswordChange = (e) => {
+        setInitialState({ ...initialState, password: e.target.value });
+        setError({ ...error, password: "" });
+    };
 
-    }
-  }, [])
+    const handleEmailChange = (e) => {
+        setInitialState({ ...initialState, email: e.target.value });
+        setError({ ...error, email: "" });
+    };
 
-  const handlePasswordChange = (e) => {
-    setInitialState({ ...initialState, password: e.target.value })
-    setError({ ...error, password: '' })
-  }
+    async function handleLoginUser(e) {
+        e.preventDefault();
 
-  const handleEmailChange = (e) => {
-    setInitialState({ ...initialState, email: e.target.value })
-    setError({ ...error, email: '' })
-  }
+        setLoading(true);
+        try {
+            const { data } = await axios.post(`${url}/api/auth/signin`, initialState);
+            localStorage.setItem("token", JSON.stringify(data.data.token));
+            const me = await fetchCurrentUser();
+            setLoading(false);
 
-  async function handleLoginUser(e) {
-    e.preventDefault()
+            userDispatch({ type: "SET_CURRENT_USER", payload: me.data.user });
 
-    setLoading(true)
-    try {
-      const { data } = await axios.post(`${url}/api/auth/login`, initialState)
-      localStorage.setItem('token', JSON.stringify(data.data.token))
-      const me = await fetchCurrentUser()
-      setLoading(false)
+            uiDispatch({
+                type: "SET_MESSAGE",
+                payload: { color: "success", display: true, text: data.message },
+            });
 
-      userDispatch({ type: 'SET_CURRENT_USER', payload: me.data.user })
+            history.push("/home");
+        } catch (err) {
+            setLoading(false);
 
-      uiDispatch({
-        type: 'SET_MESSAGE',
-        payload: { color: 'success', display: true, text: data.message },
-      })
+            console.log(err);
+            if (err && err.response) {
+                if (err.response.status === 422) {
+                    setError({ ...err.response.data.error });
+                }
 
-
-      history.push('/home')
-    } catch (err) {
-      setLoading(false)
-
-      console.log(err)
-      if (err && err.response) {
-        if (err.response.status === 422) {
-          setError({ ...err.response.data.error })
+                if (err.response.status === 400) {
+                    uiDispatch({
+                        type: "SET_MESSAGE",
+                        payload: {
+                            color: "error",
+                            display: true,
+                            text: err.response.data.error,
+                        },
+                    });
+                }
+            }
         }
-
-        if (err.response.status === 400) {
-          uiDispatch({
-            type: 'SET_MESSAGE',
-            payload: {
-              color: 'error',
-              display: true,
-              text: err.response.data.error,
-            },
-          })
-        }
-      }
     }
-  }
 
-  return {
-    loading,
-    error,
-    handleLoginUser,
-    handleEmailChange,
-    handlePasswordChange,
-  }
-}
+    return {
+        loading,
+        error,
+        handleLoginUser,
+        handleEmailChange,
+        handlePasswordChange,
+    };
+};
 
-export default useLoginUser
+export default useLoginUser;

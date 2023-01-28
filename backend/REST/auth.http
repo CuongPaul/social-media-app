@@ -1,0 +1,45 @@
+@port = 4000
+@protocol = http
+@hostname = localhost
+@contentType = application/json
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjNkNjAyMDkyOTRlOGQwMmU3ZDcwODQ3IiwiaWF0IjoxNjc0OTY5NjA5LCJleHAiOjE2NzQ5Njk2MDl9.S5uSWxgLaAD27He-Ullf9g_QJ7lIKJ-1jajHn7JeQD4
+
+@host = {{hostname}}:{{port}}
+@baseUrl = {{protocol}}://{{host}}
+
+
+### Signin
+POST {{baseUrl}}/api/auth/signin
+Content-Type: {{contentType}}
+
+{
+    "password": "1234",
+    "email": "tacuong@gmail.com"
+}
+
+
+### Signup
+POST {{baseUrl}}/api/auth/signup
+Content-Type: {{contentType}}
+
+{
+    "name": "Ta Cuong",
+    "password": "1234",
+    "email": "tacuong@gmail.com"
+}
+
+### Signout
+GET {{baseUrl}}/api/auth/signout
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+
+### Update password
+PUT  {{baseUrl}}/api/auth/update-password
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+    "new_password": "12345",
+    "current_password": "1234"
+}

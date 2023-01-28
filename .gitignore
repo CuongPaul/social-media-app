@@ -2,10 +2,10 @@
 /data
 
 # testing
-/coverage
+*/coverage
 
 # production
-/build
+*/build
 
 # dependencies
 /.pnp

@@ -1,66 +1,111 @@
-const postFilter = (post) => {
-    const filterIdAndName = (data) => {
-        return data.map((user) => ({ id: user._id, name: user.name }));
-    };
-
-    return {
-        id: post._id,
-        images: post.images,
-        content: post.content,
-        privacy: post.privacy,
-        createdAt: post.createdAt,
-        user: {
-            id: post.user._id,
-            name: post.user.name,
-            active: post.user.active,
-            avatar_image: post.user.avatar_image,
-        },
-        body: {
-            date: post.body.date,
-            feelings: post.body.feelings,
-            location: post.body.location,
-            withs: filterIdAndName(post.body.with),
-        },
-        reacts: {
-            wow: filterIdAndName(post.reacts.wow),
-            sad: filterIdAndName(post.reacts.sad),
-            like: filterIdAndName(post.reacts.like),
-            love: filterIdAndName(post.reacts.love),
-            haha: filterIdAndName(post.reacts.haha),
-            angry: filterIdAndName(post.reacts.angry),
-        },
-    };
-};
-
-const userFilter = (user) => {
-    const friends = user.friends.map((friend) => ({ id: friend._id, name: friend.name }));
-
-    return {
-        friends,
-        id: user._id,
-        bio: user.bio,
+const filterInforUsers = (userData) =>
+    userData.map((user) => ({
+        id: user.id,
         name: user.name,
-        email: user.email,
-        location: user.location,
-        createdAt: user.createdAt,
-        education: user.education,
-        is_active: user.is_active,
-        cover_image: user.cover_image,
         avatar_image: user.avatar_image,
-    };
-};
+    }));
 
-const commentFilter = (comment) => ({
-    id: comment._id,
-    body: comment.body,
-    post: comment.post,
-    likes: comment.likes,
-    user: {
-        id: comment.user._id,
-        name: comment.user.name,
-        email: comment.user.email,
-        avatar_image: comment.user.avatar_image,
+const basicInforUser = (user) => ({
+    id: user.id,
+    name: user.name,
+    avatar_image: user.avatar_image,
+});
+
+const postDataFilter = (post) => ({
+    id: post.id,
+    text: post.text,
+    images: post.images,
+    privacy: post.privacy,
+    createdAt: post.createdAt,
+    user: basicInforUser(post.user),
+    react: {
+        wow: filterInforUsers(post.react.wow),
+        sad: filterInforUsers(post.react.sad),
+        like: filterInforUsers(post.react.like),
+        love: filterInforUsers(post.react.love),
+        haha: filterInforUsers(post.react.haha),
+        angry: filterInforUsers(post.react.angry),
+    },
+    body: {
+        feelings: post.body.feelings,
+        location: post.body.location,
+        tag_friends: filterInforUsers(post.body.tag_friends),
     },
 });
 
-export { postFilter, userFilter, commentFilter };
+const userDataFilter = (user) => ({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    hometown: user.hometown,
+    createdAt: user.createdAt,
+    education: user.education,
+    cover_image: user.cover_image,
+    avatar_image: user.avatar_image,
+    friends: filterInforUsers(user.friends),
+});
+
+const commentDataFilter = (comment) => ({
+    id: comment.id,
+    post: comment.post,
+    content: comment.content,
+    createdAt: comment.createdAt,
+    user: basicInforUser(comment.user),
+    react: {
+        wow: filterInforUsers(comment.react.wow),
+        sad: filterInforUsers(comment.react.sad),
+        like: filterInforUsers(comment.react.like),
+        love: filterInforUsers(comment.react.love),
+        haha: filterInforUsers(comment.react.haha),
+        angry: filterInforUsers(comment.react.angry),
+    },
+});
+
+const messageDataFilter = (message) => ({
+    id: message.id,
+    room: message.room,
+    content: message.content,
+    createdAt: message.createdAt,
+    sender: basicInforUser(message.sender),
+    react: {
+        wow: filterInforUsers(message.react.wow),
+        sad: filterInforUsers(message.react.sad),
+        like: filterInforUsers(message.react.like),
+        love: filterInforUsers(message.react.love),
+        haha: filterInforUsers(message.react.haha),
+        angry: filterInforUsers(message.react.angry),
+    },
+});
+
+const chatRoomDataFilter = (chatRoom) => ({
+    id: chatRoom.id,
+    name: chatRoom.name,
+    avatar_image: chatRoom.avatar_image,
+});
+
+const notificationDataFilter = (notification) => ({
+    id: notification.id,
+    key: notification.key,
+    user: notification.user,
+    content: notification.content,
+    is_read: notification.is_read,
+    createdAt: notification.createdAt,
+});
+
+const friendRequestDataFilter = (friendRequest) => ({
+    id: friendRequest.id,
+    createdAt: friendRequest.createdAt,
+    is_accepted: friendRequest.is_accepted,
+    sender: basicInforUser(friendRequest.sender),
+    receiver: basicInforUser(friendRequest.receiver),
+});
+
+export {
+    postDataFilter,
+    userDataFilter,
+    commentDataFilter,
+    messageDataFilter,
+    chatRoomDataFilter,
+    notificationDataFilter,
+    friendRequestDataFilter,
+};

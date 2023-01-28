@@ -4,18 +4,18 @@ const { model, Schema } = mongoose;
 
 const objectIdType = Schema.Types.ObjectId;
 
-const commentSchema = new Schema(
+const messageSchema = new Schema(
     {
         react: {
             ref: "React",
             type: objectIdType,
         },
-        post: {
-            ref: "Post",
+        room: {
             required: true,
+            ref: "ChatRoom",
             type: objectIdType,
         },
-        user: {
+        sender: {
             ref: "User",
             required: true,
             type: objectIdType,
@@ -37,6 +37,6 @@ const commentSchema = new Schema(
     { timestamps: true }
 );
 
-const commentModel = model("Comment", commentSchema);
+const messageModel = model("Message", messageSchema);
 
-export default commentModel;
+export default messageModel;
