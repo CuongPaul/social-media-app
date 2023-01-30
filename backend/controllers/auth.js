@@ -63,7 +63,7 @@ const signup = async (req, res) => {
     try {
         const user = await User.findOne({ email });
 
-        if (!user) {
+        if (user) {
             return res.status(400).json({ message: "Email is already exists" });
         }
 
