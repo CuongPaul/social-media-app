@@ -17,7 +17,7 @@ router.put("/unfriend/:friendId", verifyToken, unfriend);
 router.get("/sended", verifyToken, getSendedFriendRequests);
 router.get("/received", verifyToken, getReceivedFriendRequests);
 
-router.post("/:friendId", verifyToken, sendFriendRequest);
+router.post("/:receiverId", verifyToken, sendFriendRequest);
 router.put("/:friendRequestId", verifyToken, acceptFriendRequest);
 router.delete("/:friendRequestId", verifyToken, declineOrCancelRequest);
 

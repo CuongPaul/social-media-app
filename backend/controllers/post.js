@@ -2,10 +2,39 @@ import Post from "../models/Post";
 import { postDataFilter } from "../utils/filter-data";
 import { sendNotification } from "../utils/send-notification";
 
+const reactPost = async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.postId).populate("react").populate("user");
+
+        if (!post) {
+            return res.status(400).json({ message: "Post doesn't exist" });
+        }
+
+        const key = req.query.key;
+        const indexUserId = post.react[key].indexOf(req.user_id);
+
+        indexUserId === -1
+            ? post.react[key].push(req.user_id)
+            : post.react[key].splice(indexUserId, 1);
+
+        await post.save();
+
+        await sendNotification({
+            req,
+            key: "react-post",
+            content: `${post.user.name} ${key} your post`,
+        });
+
+        res.status(200).json({ message: "Successfully" });
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+};
+
 const createPost = async (req, res) => {
     const { body, text, images, privacy } = req.body;
 
-    if ((!images || !images.length) && !text && text.trim().length === 0) {
+    if ((!images || !images.length) && (!text || !text.trim().length)) {
         return res.status(422).json({ message: "Post image or write something" });
     }
 
@@ -19,44 +48,13 @@ const createPost = async (req, res) => {
         });
         const savePost = await newPost.save();
 
-        res.status(201).json({ message: "Create post is successfully" });
-
         await sendNotification({
             req,
             key: "new-post",
             content: `${savePost.user.name} has created new post`,
         });
-    } catch (err) {
-        return res.status(500).json({ message: err.message });
-    }
-};
 
-const reactPost = async (req, res) => {
-    try {
-        const post = await Post.findById(req.params.postId).populate("react").populate("user");
-
-        if (!post) {
-            return res.status(400).json({ message: "Post is not exist" });
-        }
-
-        const key = req.query.key;
-        const indexUserId = post.react[key].indexOf(req.user_id);
-
-        indexUserId === -1
-            ? post.react[key].push(req.user_id)
-            : post.react[key].splice(indexUserId, 1);
-
-        await post.save();
-
-        postData = postDataFilter(post);
-
-        await sendNotification({
-            req,
-            key: "react-post",
-            content: `${post.user.name} reacted post`,
-        });
-
-        res.status(200).json({ message: "React post is changed", data: postData });
+        res.status(201).json({ message: "Successfully" });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
@@ -72,16 +70,16 @@ const deletePost = async (req, res) => {
 
         await Message.deleteOne({ id: post.id });
 
-        res.status(200).json({ message: "Delete post is successfully" });
+        res.status(200).json({ message: "Successfully" });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
 };
 
-const editPost = async (req, res) => {
+const updatePost = async (req, res) => {
     const { body, text, images, privacy } = req.body;
 
-    if ((!images || !images.length) && !text && text.trim().length === 0) {
+    if ((!images || !images.length) && (!text || !text.trim().length)) {
         return res.status(422).json({ message: "Post image or write something" });
     }
 
@@ -98,52 +96,40 @@ const editPost = async (req, res) => {
         post.privacy = privacy;
         post.save();
 
-        res.status(200).json({ message: "Edit post is successfully" });
+        res.status(200).json({ message: "Successfully" });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
 };
 
 const getPostsByUser = async (req, res) => {
-    try {
-        const posts = await Post.find({ user: req.params.userId });
-
-        if (!posts) {
-            return res.status(400).json({ message: "Post is not exists" });
-        }
-
-        const postsData = posts.map((post) => postDataFilter(post));
-
-        res.status(200).json({ message: "Get post by user is successfully", data: postsData });
-    } catch (err) {
-        return res.status(500).json({ message: err.message });
-    }
-};
-
-const getAllPost = async (req, res) => {
     const limit = 5;
-    const page = parseInt(req.query.page || 0);
+    const page = parseInt(req.query.page) || 0;
 
     try {
-        const posts = await Post.find()
-            .sort({ createdAt: -1 })
+        const posts = await Post.find({ user: req.params.userId })
+            .sort()
             .limit(limit)
             .skip(page * limit)
             .populate("user")
             .populate("react");
 
+        if (!posts.length) {
+            return res.status(400).json({ message: "You don't have any posts" });
+        }
+
         const postsData = posts.map((post) => postDataFilter(post));
 
-        const postAmount = await Post.estimatedDocumentCount().exec();
+        const numberOfPost = await Post.estimatedDocumentCount();
 
         const paginationData = {
-            postAmount,
-            currentPage: page,
-            pageAmount: Math.ceil(postAmount / limit),
+            numberOfPost,
+            currentPageNumber: page,
+            pageAmount: Math.ceil(numberOfPost / limit),
         };
 
         res.status(200).json({
-            message: "Get all post is successfully",
+            message: "Successfully",
             data: { posts: postsData, pagination: paginationData },
         });
     } catch (err) {
@@ -151,4 +137,39 @@ const getAllPost = async (req, res) => {
     }
 };
 
-export { editPost, reactPost, createPost, deletePost, getAllPost, getPostsByUser };
+const getPostsByCurrentUser = async (req, res) => {
+    const limit = 5;
+    const page = parseInt(req.query.page) || 0;
+
+    try {
+        const posts = await Post.find({ user: req.user_id })
+            .sort()
+            .limit(limit)
+            .skip(page * limit)
+            .populate("user")
+            .populate("react");
+
+        if (!posts.length) {
+            return res.status(400).json({ message: "You don't have any posts" });
+        }
+
+        const postsData = posts.map((post) => postDataFilter(post));
+
+        const numberOfPost = await Post.estimatedDocumentCount();
+
+        const paginationData = {
+            numberOfPost,
+            currentPageNumber: page,
+            pageAmount: Math.ceil(numberOfPost / limit),
+        };
+
+        res.status(200).json({
+            message: "Successfully",
+            data: { posts: postsData, pagination: paginationData },
+        });
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+};
+
+export { reactPost, createPost, deletePost, updatePost, getPostsByUser, getPostsByCurrentUser };

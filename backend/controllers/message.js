@@ -1,13 +1,12 @@
 import Message from "../models/Message";
 import ChatRoom from "../models/ChatRoom";
-
 import { messageDataFilter } from "../utils/filter-data";
 
 const sendMessage = async (req, res) => {
     const roomId = req.params.roomId;
     const { text, image } = req.body;
 
-    if ((!text || text.trim().length === 0) && !image) {
+    if ((!text || !text.trim().length) && (!image || !image.trim().length)) {
         return res.status(422).json({ error: "Don`t send empty message" });
     }
 
@@ -15,7 +14,7 @@ const sendMessage = async (req, res) => {
         const chatRoom = await ChatRoom.findById(roomId);
 
         if (!chatRoom) {
-            return res.status(404).json({ error: "Room is not found" });
+            return res.status(404).json({ error: "Group doesn't exist" });
         }
 
         const newMessage = new Message({
@@ -27,9 +26,9 @@ const sendMessage = async (req, res) => {
 
         const messageData = messageDataFilter(saveMessage);
 
-        res.status(201).json({ message: "Send message is successfully" });
-
         req.io.to(roomId).emit("new-message", { data: messageData });
+
+        res.status(201).json({ message: "Successfully" });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
@@ -41,7 +40,7 @@ const getMessages = async (req, res) => {
 
         const messageData = messages.map((message) => messageDataFilter(message));
 
-        res.status(200).json({ message: "Get message is successfully", data: messageData });
+        res.status(200).json({ message: "Successfully", data: messageData });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
@@ -49,10 +48,12 @@ const getMessages = async (req, res) => {
 
 const reactMessage = async (req, res) => {
     try {
-        const message = await Message.findById(req.params.postId).populate("react");
+        const message = await Message.findById(req.params.messageId)
+            .populate("react")
+            .populate("user");
 
         if (!message) {
-            return res.status(404).json({ message: "Message is not exist" });
+            return res.status(404).json({ message: "Message doesn't exist" });
         }
 
         const key = req.query.key;
@@ -64,21 +65,13 @@ const reactMessage = async (req, res) => {
 
         await message.save();
 
-        messageData = messageDataFilter(message);
-
-        await sendNotification({
-            req,
-            key: "react-message",
-            content: `${message.user.name} reacted message`,
-        });
-
-        res.status(200).json({ message: "React message is changed", data: messageData });
+        res.status(200).json({ message: "Successfully" });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
 };
 
-const deleteMessages = async (req, res) => {
+const deleteMessage = async (req, res) => {
     try {
         const message = await Message.findById(req.params.meassageId);
 
@@ -88,7 +81,7 @@ const deleteMessages = async (req, res) => {
 
         await Message.deleteOne({ id: message.id });
 
-        res.status(200).json({ message: "Delete message request is successfully" });
+        res.status(200).json({ message: "Successfully" });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
@@ -97,7 +90,7 @@ const deleteMessages = async (req, res) => {
 const updateMessages = async (req, res) => {
     const { text, image } = req.body;
 
-    if ((!text || text.trim().length === 0) && !image) {
+    if ((!text || !text.trim().length) && (!image || !image.trim().length)) {
         return res.status(422).json({ error: "Don`t send empty message" });
     }
 
@@ -112,10 +105,10 @@ const updateMessages = async (req, res) => {
         message.image = image;
         await message.save();
 
-        res.status(200).json({ message: "Update message is successfully" });
+        res.status(200).json({ message: "Successfully" });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
 };
 
-export { sendMessage, getMessages, reactMessage, deleteMessages, updateMessages };
+export { sendMessage, getMessages, reactMessage, deleteMessage, updateMessages };

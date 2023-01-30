@@ -7,10 +7,10 @@ const getUserById = async (req, res) => {
         const user = await User.findById(req.params.userId).populate("friends");
 
         if (!user) {
-            return res.status(404).json({ error: "User is not exist" });
+            return res.status(400).json({ error: "User doesn't exist" });
         }
 
-        res.status(200).json({ message: "Get user is successfully", data: userDataFilter(user) });
+        res.status(200).json({ message: "Successfully", data: userDataFilter(user) });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
@@ -22,9 +22,13 @@ const searchUsers = async (req, res) => {
             "friends"
         );
 
+        if (!users.length) {
+            return res.status(400).json({ message: "User not found" });
+        }
+
         const usersData = users.map((user) => userDataFilter(user));
 
-        res.status(200).json({ message: "Search user is successfully", data: usersData });
+        res.status(200).json({ message: "Successfully", data: usersData });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
@@ -33,11 +37,11 @@ const searchUsers = async (req, res) => {
 const updateProfile = async (req, res) => {
     const { name, email, hometown, education } = req.body;
 
-    if (!name || name.trim().length === 0) {
-        return res.status(422).json({ message: "Name is require" });
+    if (!name || !name.trim().length) {
+        return res.status(422).json({ message: "Name is required" });
     }
-    if (!email || email.trim().length === 0) {
-        return res.status(422).json({ message: "Email is require" });
+    if (!email || !email.trim().length) {
+        return res.status(422).json({ message: "Email is required" });
     }
     if (!isValidEmail(email)) {
         return res.status(422).json({ message: "Email is not valid" });
@@ -51,7 +55,7 @@ const updateProfile = async (req, res) => {
             education,
         });
 
-        res.status(200).json({ message: "Update profile is successfully" });
+        res.status(200).json({ message: "Update profile successfully" });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
@@ -62,11 +66,11 @@ const getCurrentUser = async (req, res) => {
         const user = await User.findById(req.user_id).populate("friends");
 
         if (!user) {
-            return res.status(404).json({ error: "User is not exist" });
+            return res.status(404).json({ error: "User doesn't exist" });
         }
 
         res.status(200).json({
-            message: "Get current is successfully",
+            message: "Successfully",
             data: userDataFilter(user),
         });
     } catch (err) {
@@ -75,12 +79,12 @@ const getCurrentUser = async (req, res) => {
 };
 
 const updateCoverImage = async (req, res) => {
-    try {
-        const { cover_image } = req.body;
+    const { cover_image } = req.body;
 
+    try {
         await User.findByIdAndUpdate(req.user_id, { cover_image });
 
-        res.status(200).json({ message: "Update cover image is successfully" });
+        res.status(200).json({ message: "Successfully" });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
@@ -98,21 +102,23 @@ const getRecommendUsers = async (req, res) => {
 
         const recommendUsers = await User.find({ id: { $in: recommendUserId } });
 
-        const usersData = userDataFilter(recommendUsers);
+        const recommendUsersData = recommendUsers.map((recommendUser) =>
+            userDataFilter(recommendUser)
+        );
 
-        res.status(200).json({ message: "Get recommend user is successfully", users: usersData });
+        res.status(200).json({ message: "Successfully", data: recommendUsersData });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
 };
 
 const updateAvatarImage = async (req, res) => {
-    try {
-        const { avatar_image } = req.body;
+    const { avatar_image } = req.body;
 
+    try {
         await User.findByIdAndUpdate(req.user_id, { avatar_image });
 
-        res.status(200).json({ message: "Update avatar is successfully" });
+        res.status(200).json({ message: "Successfully" });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }

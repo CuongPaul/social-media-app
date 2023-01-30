@@ -5,10 +5,16 @@ import { sendNotification } from "../utils/send-notification";
 
 const reactComment = async (req, res) => {
     try {
-        const comment = await Comment.findById(req.params.commentId).populate("user");
-
+        const comment = await Comment.findById(req.params.commentId)
+            .populate("react")
+            .populate("user");
         if (!comment) {
-            return res.status(400).json({ message: "Comment is not exist" });
+            return res.status(400).json({ message: "Comment doesn't exist" });
+        }
+
+        const post = await Post.findById(comment.post);
+        if (!post) {
+            return res.status(404).json({ message: "Post doesn't exist" });
         }
 
         const key = req.query.key;
@@ -20,33 +26,30 @@ const reactComment = async (req, res) => {
 
         await comment.save();
 
-        commentData = commentDataFilter(comment);
-
         await sendNotification({
             req,
             key: "react-comment",
-            content: `${comment.user.name} reacted comment`,
+            content: `${comment.user.name} ${key} your comment`,
         });
 
-        res.status(200).json({ message: "React comment is changed", data: commentData });
+        res.status(200).json({ message: "Successfully" });
     } catch (err) {
-        console.log(err);
-        return res.status(500).json({ error: "Something went wrong" });
+        return res.status(500).json({ message: err.message });
     }
 };
 
 const createComment = async (req, res) => {
     const { text, image } = req.body;
 
-    if ((!text || !text.trim().length === 0) && (!image || !image.trim().length === 0)) {
-        return res.status(422).json({ message: "Comment image or write something" });
+    if ((!text || !text.trim().length) && (!image || !image.trim().length)) {
+        return res.status(422).json({ message: "Post image or write something" });
     }
 
     try {
         const post = await Post.findById(req.params.postId);
 
         if (!post) {
-            return res.status(400).json({ message: "Post is not exist" });
+            return res.status(400).json({ message: "Post doesn't exist" });
         }
 
         const newComment = new Comment({
@@ -58,9 +61,9 @@ const createComment = async (req, res) => {
 
         const commentData = commentDataFilter(saveComment);
 
-        res.status(201).json({ message: "Create comment is successfully", data: commentData });
+        await sendNotification({ req, key: "comment-post", data: commentData });
 
-        await sendNotification({ req, key: "post-comment", data: commentData });
+        res.status(201).json({ message: "Successfully" });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
@@ -70,15 +73,16 @@ const deleteComment = async (req, res) => {
     const commentId = req.params.commentId;
 
     try {
-        const comment = await Comment.find(commentId);
+        const comment = await Comment.findById(commentId);
 
-        if (!comment) {
-            return res.status(400).json({ message: "Comment is not exist" });
+        const post = await Post.findById(comment.post);
+        if (!post) {
+            return res.status(404).json({ message: "Post doesn't exist" });
         }
 
         await Comment.deleteOne({ id: commentId });
 
-        res.status(200).json({ message: "Delete comment is successfully" });
+        res.status(200).json({ message: "Delete comment successfully" });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
@@ -87,26 +91,23 @@ const deleteComment = async (req, res) => {
 const updateComment = async (req, res) => {
     const { text, image } = req.body;
 
-    if ((!text || !text.trim().length === 0) && (!image || !image.trim().length === 0)) {
-        return res.status(422).json({ message: "Comment image or write something" });
+    if ((!text || !text.trim().length) && (!image || !image.trim().length)) {
+        return res.status(422).json({ message: "Post image or write something" });
     }
 
     try {
         const comment = await Comment.findById(req.params.commentId);
-        if (!comment) {
-            return res.status(404).json({ error: "Comment is not exists" });
-        }
 
         const post = await Post.findById(comment.post);
         if (!post) {
-            return res.status(404).json({ error: "Post is not exists" });
+            return res.status(404).json({ error: "Post doesn't exist" });
         }
 
         comment.text = text;
         comment.image = image;
         await comment.save();
 
-        res.status(200).json({ message: "Update comment is successfully" });
+        res.status(200).json({ message: "Update comment successfully" });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
@@ -114,26 +115,27 @@ const updateComment = async (req, res) => {
 
 const getCommentsByPost = async (req, res) => {
     const limit = 5;
-    const page = parseInt(req.query.page || 0);
+    const page = parseInt(req.query.page) || 0;
 
     try {
         const comments = await Comment.find({ post: req.params.postId })
-            .sort({ createdAt: -1 })
+            .sort()
             .limit(limit)
             .skip(page * limit)
             .populate("user");
 
         const commentsData = comments.map((comment) => commentDataFilter(comment));
-        const commentAmount = await Comment.countDocuments({ post: req.params.postId });
+
+        const numberOfCommentsPerPost = await Comment.countDocuments({ post: req.params.postId });
 
         const paginationData = {
-            commentAmount,
-            currentPage: page,
-            pageAmount: Math.ceil(commentAmount / limit),
+            currentPageNumber: page,
+            numberOfCommentsPerPost,
+            numberOfPage: Math.ceil(numberOfCommentsPerPost / limit),
         };
 
         res.status(200).json({
-            message: "Get chat is successfully",
+            message: "Successfully",
             data: { comments: commentsData, pagination: paginationData },
         });
     } catch (err) {

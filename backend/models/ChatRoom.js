@@ -15,7 +15,7 @@ const chatRoomSchema = new Schema(
             default: "",
             type: String,
         },
-        public: {
+        is_public: {
             default: true,
             type: Boolean,
         },
