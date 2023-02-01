@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 
 import User from "../models/User";
 import isValidEmail from "../utils/validate-email";
-import { userDataFilter } from "../utils/filter-data";
 
 const signin = async (req, res) => {
     const { email, password } = req.body;
@@ -84,11 +83,9 @@ const signup = async (req, res) => {
 
 const signout = async (req, res) => {
     try {
-        const user = await User.findByIdAndUpdate(req.user_id, { socket_id: [] });
+        await User.findByIdAndUpdate(req.user_id, { socket_id: [] });
 
-        const userData = userDataFilter(user);
-
-        res.status(201).json({ message: "You are logged out", user: userData });
+        res.status(201).json({ message: "You are logged out" });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }

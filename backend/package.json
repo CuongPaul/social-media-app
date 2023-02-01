@@ -1,13 +1,16 @@
 {
     "name": "social-media-app-backend",
     "version": "1.0.0",
-    "description": "Social media app",
+    "description": "",
     "main": "index.js",
     "type": "module",
     "scripts": {
-        "start": "node index.js",
+        "test": "echo \"Error: no test specified\" && exit 1",
         "dev": "nodemon --experimental-modules --es-module-specifier-resolution=node index.js"
     },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
     "devDependencies": {
         "nodemon": "^2.0.20"
     },
@@ -20,15 +23,5 @@
         "multer": "^1.4.4-lts.1",
         "socket.io": "^2.5.0",
         "dotenv": "^16.0.3"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/CuongPaul/social-media-app.git"
-    },
-    "author": "",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/CuongPaul/social-media-app/issues"
-    },
-    "homepage": "https://github.com/CuongPaul/social-media-app#readme"
+    }
 }

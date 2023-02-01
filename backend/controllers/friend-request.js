@@ -63,24 +63,6 @@ const sendFriendRequest = async (req, res) => {
     }
 };
 
-const declineOrCancelRequest = async (req, res) => {
-    const friendRequestId = req.params.friendRequestId;
-
-    try {
-        const friendRequest = await FriendRequest.findById(friendRequestId);
-
-        if (!friendRequest) {
-            return res.status(400).json({ message: "Request is not sended yet" });
-        }
-
-        await FriendRequest.deleteOne({ id: friendRequest.id });
-
-        res.status(200).json({ message: "Delete friend request successfully" });
-    } catch (err) {
-        return res.status(500).json({ message: err.message });
-    }
-};
-
 const acceptFriendRequest = async (req, res) => {
     try {
         const friendRequest = await FriendRequest.findById(req.params.friendRequestId).populate(
@@ -97,6 +79,24 @@ const acceptFriendRequest = async (req, res) => {
         res.status(200).json({
             message: `You and ${friendRequest.sender.name} are already friends`,
         });
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+};
+
+const declineOrCancelRequest = async (req, res) => {
+    const friendRequestId = req.params.friendRequestId;
+
+    try {
+        const friendRequest = await FriendRequest.findById(friendRequestId);
+
+        if (!friendRequest) {
+            return res.status(400).json({ message: "Request is not sended yet" });
+        }
+
+        await FriendRequest.deleteOne({ id: friendRequest.id });
+
+        res.status(200).json({ message: "Delete friend request successfully" });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }

@@ -1,4 +1,5 @@
 import Post from "../models/Post";
+import React from "../models/React";
 import { postDataFilter } from "../utils/filter-data";
 import { sendNotification } from "../utils/send-notification";
 
@@ -39,12 +40,16 @@ const createPost = async (req, res) => {
     }
 
     try {
+        const emptyReact = new React({ wow: [], sad: [], like: [], love: [], haha: [], angry: [] });
+        const saveEmptyReact = await emptyReact.save();
+
         const newPost = new Post({
             body,
             text,
             images,
             privacy,
             user: req.user_id,
+            react: saveEmptyReact.id,
         });
         const savePost = await newPost.save();
 

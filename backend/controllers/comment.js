@@ -1,4 +1,5 @@
 import Post from "../models/Post";
+import React from "../models/React";
 import Comment from "../models/Comment";
 import { commentDataFilter } from "../utils/filter-data";
 import { sendNotification } from "../utils/send-notification";
@@ -52,10 +53,14 @@ const createComment = async (req, res) => {
             return res.status(400).json({ message: "Post doesn't exist" });
         }
 
+        const emptyReact = new React({ wow: [], sad: [], like: [], love: [], haha: [], angry: [] });
+        const saveEmptyReact = await emptyReact.save();
+
         const newComment = new Comment({
             post: post.id,
             user: req.user_id,
             content: { text, image },
+            react: saveEmptyReact.id,
         });
         const saveComment = await newComment.save();
 

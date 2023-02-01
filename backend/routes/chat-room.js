@@ -5,20 +5,20 @@ import {
     createChatRoom,
     deleteChatRoom,
     searchChatRooms,
-    getChatRoomsByUser,
     updateNameChatRoom,
     addMembersToChatRoom,
     updateAvatarChatRoom,
     removeMemberChatRoom,
     updatePrivacyChatRoom,
+    getChatRoomsByCurrentUser,
 } from "../controllers/chat-room";
 import verifyToken from "../middleware/verify-token";
 
 const router = express.Router();
 
 router.post("/", verifyToken, createChatRoom);
-router.get("/", verifyToken, getChatRoomsByUser);
 router.get("/search", verifyToken, searchChatRooms);
+router.get("/", verifyToken, getChatRoomsByCurrentUser);
 router.put("/join-chat/:chatRoomId", verifyToken, joinChatRoom);
 router.put("/leave-chat/:chatRoomId", verifyToken, leaveChatRoom);
 

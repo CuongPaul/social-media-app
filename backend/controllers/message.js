@@ -1,3 +1,4 @@
+import React from "../models/React";
 import Message from "../models/Message";
 import ChatRoom from "../models/ChatRoom";
 import { messageDataFilter } from "../utils/filter-data";
@@ -17,10 +18,14 @@ const sendMessage = async (req, res) => {
             return res.status(404).json({ error: "Group doesn't exist" });
         }
 
+        const emptyReact = new React({ wow: [], sad: [], like: [], love: [], haha: [], angry: [] });
+        const saveEmptyReact = await emptyReact.save();
+
         const newMessage = new Message({
             room: roomId,
             sender: req.user_id,
             content: { text, image },
+            react: saveEmptyReact.id,
         });
         const saveMessage = await newMessage.save();
 

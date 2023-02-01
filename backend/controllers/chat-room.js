@@ -50,7 +50,7 @@ const createChatRoom = async (req, res) => {
     }
 
     try {
-        const newChatRoom = new ChatRoom({ name, members });
+        const newChatRoom = new ChatRoom({ name, members, admin: req.user_id });
         await newChatRoom.save();
 
         res.status(200).json({ message: "Group created successfully" });
@@ -93,22 +93,6 @@ const searchChatRooms = async (req, res) => {
 
         const chatRoomsData = chatRooms.map((chatRoom) => chatRoomDataFilter(chatRoom));
 
-        res.status(200).json({ message: "Successfully", data: { chatRoomsData } });
-    } catch (err) {
-        return res.status(500).json({ message: err.message });
-    }
-};
-
-const getChatRoomsByUser = async (req, res) => {
-    try {
-        const chatRooms = await ChatRoom.find({ members: { $elemMatch: req.user_id } });
-
-        if (!chatRooms.length) {
-            return res.status(400).json({ message: "You're not in any chats" });
-        }
-
-        const chatRoomsData = chatRooms.map((chatRoom) => chatRoomDataFilter(chatRoom));
-
         res.status(200).json({ message: "Successfully", data: chatRoomsData });
     } catch (err) {
         return res.status(500).json({ message: err.message });
@@ -126,7 +110,7 @@ const updateNameChatRoom = async (req, res) => {
         const chatRoom = await ChatRoom.findById(req.params.chatRoomId);
 
         if (!chatRoom) {
-            return res.status(400).json({ message: "Room doesn't exist" });
+            return res.status(400).json({ message: "Group doesn't exist" });
         }
         if (chatRoom.admin !== req.user_id) {
             return res.status(400).json({ message: "You don't have permission" });
@@ -152,7 +136,7 @@ const updateAvatarChatRoom = async (req, res) => {
         const chatRoom = await ChatRoom.findById(req.params.chatRoomId);
 
         if (!chatRoom) {
-            return res.status(400).json({ message: "Room doesn't exist" });
+            return res.status(400).json({ message: "Group doesn't exist" });
         }
         if (chatRoom.admin !== req.user_id) {
             return res.status(400).json({ message: "You don't have permission" });
@@ -198,7 +182,7 @@ const removeMemberChatRoom = async (req, res) => {
         const chatRoom = await ChatRoom.findById(req.params.chatRoomId);
 
         if (!chatRoom) {
-            return res.status(400).json({ message: "Room doesn't exist" });
+            return res.status(400).json({ message: "Group doesn't exist" });
         }
         if (chatRoom.admin !== req.user_id) {
             return res.status(400).json({ message: "You don't have permission" });
@@ -222,7 +206,7 @@ const updatePrivacyChatRoom = async (req, res) => {
         const chatRoom = await ChatRoom.findById(req.params.chatRoomId);
 
         if (!chatRoom) {
-            return res.status(400).json({ message: "Room doesn't exist" });
+            return res.status(400).json({ message: "Group doesn't exist" });
         }
         if (chatRoom.admin !== req.user_id) {
             return res.status(400).json({ message: "You don't have permission" });
@@ -237,16 +221,32 @@ const updatePrivacyChatRoom = async (req, res) => {
     }
 };
 
+const getChatRoomsByCurrentUser = async (req, res) => {
+    try {
+        const chatRooms = await ChatRoom.find({ members: { $elemMatch: req.user_id } });
+
+        if (!chatRooms.length) {
+            return res.status(400).json({ message: "You're not in any chats" });
+        }
+
+        const chatRoomsData = chatRooms.map((chatRoom) => chatRoomDataFilter(chatRoom));
+
+        res.status(200).json({ message: "Successfully", data: chatRoomsData });
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+};
+
 export {
     joinChatRoom,
     leaveChatRoom,
     createChatRoom,
     deleteChatRoom,
     searchChatRooms,
-    getChatRoomsByUser,
     updateNameChatRoom,
-    addMembersToChatRoom,
     updateAvatarChatRoom,
+    addMembersToChatRoom,
     removeMemberChatRoom,
     updatePrivacyChatRoom,
+    getChatRoomsByCurrentUser,
 };
