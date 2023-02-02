@@ -8,7 +8,7 @@ const reactPost = async (req, res) => {
         const post = await Post.findById(req.params.postId).populate("react").populate("user");
 
         if (!post) {
-            return res.status(400).json({ message: "Post doesn't exist" });
+            return res.status(404).json({ message: "Post doesn't exist" });
         }
 
         const key = req.query.key;
@@ -70,7 +70,7 @@ const deletePost = async (req, res) => {
         const post = await Post.findById(req.params.postId);
 
         if (!post) {
-            return res.status(400).json({ message: "Post is not exists" });
+            return res.status(404).json({ message: "Post is not exists" });
         }
 
         await Message.deleteOne({ id: post.id });
@@ -92,7 +92,7 @@ const updatePost = async (req, res) => {
         const post = await Post.findById(req.params.postId);
 
         if (!post) {
-            return res.status(400).json({ message: "Post is not exists" });
+            return res.status(404).json({ message: "Post is not exists" });
         }
 
         post.body = body;
@@ -120,7 +120,7 @@ const getPostsByUser = async (req, res) => {
             .populate("react");
 
         if (!posts.length) {
-            return res.status(400).json({ message: "You don't have any posts" });
+            return res.status(404).json({ message: "You don't have any posts" });
         }
 
         const postsData = posts.map((post) => postDataFilter(post));
@@ -155,7 +155,7 @@ const getPostsByCurrentUser = async (req, res) => {
             .populate("react");
 
         if (!posts.length) {
-            return res.status(400).json({ message: "You don't have any posts" });
+            return res.status(404).json({ message: "You don't have any posts" });
         }
 
         const postsData = posts.map((post) => postDataFilter(post));

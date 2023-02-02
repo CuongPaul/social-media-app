@@ -12,7 +12,7 @@ const unfriend = async (req, res) => {
         const friend = await User.findById(friendId);
 
         if (!friend) {
-            return res.status(400).json({ message: "Friend doesn't exist" });
+            return res.status(404).json({ message: "Friend doesn't exist" });
         }
 
         const indexUserId = friend.friends.indeindexOf(useId);
@@ -42,7 +42,7 @@ const sendFriendRequest = async (req, res) => {
         const receiver = await User.findById(receiverId);
 
         if (!receiver) {
-            return res.status(400).json({ message: "Friend doesn't exist" });
+            return res.status(404).json({ message: "Friend doesn't exist" });
         }
 
         const newFriendRequest = new FriendRequest({
@@ -70,7 +70,7 @@ const acceptFriendRequest = async (req, res) => {
         );
 
         if (!friendRequest) {
-            return res.status(400).json({ message: "Request is not sended yet" });
+            return res.status(404).json({ message: "Request is not sended yet" });
         }
 
         friendRequest.is_accepted = true;
@@ -91,7 +91,7 @@ const declineOrCancelRequest = async (req, res) => {
         const friendRequest = await FriendRequest.findById(friendRequestId);
 
         if (!friendRequest) {
-            return res.status(400).json({ message: "Request is not sended yet" });
+            return res.status(404).json({ message: "Request is not sended yet" });
         }
 
         await FriendRequest.deleteOne({ id: friendRequest.id });
@@ -110,7 +110,7 @@ const getSendedFriendRequests = async (req, res) => {
         });
 
         if (!friendRequests.length) {
-            return res.status(400).json({ message: "You don't send any friend request" });
+            return res.status(404).json({ message: "You don't send any friend request" });
         }
 
         const friendRequestsData = friendRequests.map((friendRequest) =>
@@ -134,7 +134,7 @@ const getReceivedFriendRequests = async (req, res) => {
         });
 
         if (!friendRequests.length) {
-            return res.status(400).json({ message: "You don't have any friend requests" });
+            return res.status(404).json({ message: "You don't have any friend requests" });
         }
 
         const friendRequestsData = friendRequests.map((friendRequest) =>

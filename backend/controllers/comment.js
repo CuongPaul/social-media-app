@@ -10,7 +10,7 @@ const reactComment = async (req, res) => {
             .populate("react")
             .populate("user");
         if (!comment) {
-            return res.status(400).json({ message: "Comment doesn't exist" });
+            return res.status(404).json({ message: "Comment doesn't exist" });
         }
 
         const post = await Post.findById(comment.post);
@@ -50,7 +50,7 @@ const createComment = async (req, res) => {
         const post = await Post.findById(req.params.postId);
 
         if (!post) {
-            return res.status(400).json({ message: "Post doesn't exist" });
+            return res.status(404).json({ message: "Post doesn't exist" });
         }
 
         const emptyReact = new React({ wow: [], sad: [], like: [], love: [], haha: [], angry: [] });

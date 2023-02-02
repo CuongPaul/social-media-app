@@ -16,16 +16,16 @@ const verifyToken = (req, res, next) => {
 
                     next();
                 } else {
-                    return res.status(400).json({ error: "Not logged in" });
+                    return res.status(401).json({ error: "Not logged in" });
                 }
             } catch (err) {
-                return res.status(400).json({ error: "Token is expired or invalid" });
+                return res.status(401).json({ error: "Token is expired or invalid" });
             }
         } else {
-            return res.status(400).json({ error: "Not logged in" });
+            return res.status(401).json({ error: "Not logged in" });
         }
     } else {
-        return res.status(400).json({ error: "Not logged in" });
+        return res.status(401).json({ error: "Not logged in" });
     }
 };
 

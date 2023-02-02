@@ -21,13 +21,13 @@ const signin = async (req, res) => {
         const user = await User.findOne({ email });
 
         if (!user) {
-            return res.status(400).json({ message: "Email doesn't exist" });
+            return res.status(404).json({ message: "Email doesn't exist" });
         }
 
         const isMatchPassword = await bcrypt.compare(password, user.password);
 
         if (!isMatchPassword) {
-            return res.status(400).json({ message: "Password is incorrect" });
+            return res.status(404).json({ message: "Password is incorrect" });
         }
 
         const token = jwt.sign({ user_id: user.id }, process.env.JWT_SECRET, {
@@ -63,7 +63,7 @@ const signup = async (req, res) => {
         const user = await User.findOne({ email });
 
         if (user) {
-            return res.status(400).json({ message: "Email already exists" });
+            return res.status(404).json({ message: "Email already exists" });
         }
 
         const hashPassword = await bcrypt.hash(password, 8);
@@ -105,13 +105,13 @@ const updatePassword = async (req, res) => {
         const user = await User.findById(req.user_id);
 
         if (!user) {
-            return res.status(400).json({ message: "User doesn't exist" });
+            return res.status(404).json({ message: "User doesn't exist" });
         }
 
         const isMatchPassword = await bcrypt.compare(current_password, user.password);
 
         if (!isMatchPassword) {
-            return res.status(400).json({ error: "Incorrect current password" });
+            return res.status(404).json({ error: "Incorrect current password" });
         }
 
         const hashPassword = await bcrypt.hash(new_password, 8);

@@ -35,7 +35,7 @@ const userSchema = new Schema(
         cover_image: stringDefaultType,
         socket_id: [stringDefaultType],
         avatar_image: stringDefaultType,
-        block_notification: [userIdRefType],
+        block_user_notification: [userIdRefType],
     },
     { timestamps: true }
 );

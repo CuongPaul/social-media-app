@@ -8,7 +8,7 @@ const sendNotification = async ({ key, req, content }) => {
     for (let i = 0; i < user.friends.length; i++) {
         const friend = user.friends[i];
 
-        if (!user.block_notification.includes(friend.id)) {
+        if (!user.block_user_notification.includes(friend.id)) {
             const newNotification = new Notification({ key, content, user: friend.id });
             const saveNotification = await newNotification.save();
 

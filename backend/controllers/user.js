@@ -7,7 +7,7 @@ const getUserById = async (req, res) => {
         const user = await User.findById(req.params.userId).populate("friends");
 
         if (!user) {
-            return res.status(400).json({ error: "User doesn't exist" });
+            return res.status(404).json({ error: "User doesn't exist" });
         }
 
         res.status(200).json({ message: "Successfully", data: userDataFilter(user) });
@@ -23,7 +23,7 @@ const searchUsers = async (req, res) => {
         );
 
         if (!users.length) {
-            return res.status(400).json({ message: "User not found" });
+            return res.status(404).json({ message: "User not found" });
         }
 
         const usersData = users.map((user) => userDataFilter(user));
