@@ -3,13 +3,47 @@ import axios from "axios";
 const baseURL = process.env.REACT_APP_BASE_API_URL;
 const token = localStorage.token && JSON.parse(localStorage.token);
 
-const reactPost = async ({ postId, reactType }) => {
+const sendMessage = async (roomId) => {
+    try {
+        const { data } = await axios({
+            method: "POST",
+            url: `/${roomId}`,
+            baseURL: `${baseURL}/api/message`,
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        return data.data;
+    } catch (err) {
+        return {
+            errorMessage: err.response.data.message,
+        };
+    }
+};
+
+const getMessages = async (roomId) => {
+    try {
+        const { data } = await axios({
+            method: "GET",
+            url: `/${roomId}`,
+            baseURL: `${baseURL}/api/message`,
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        return data.data;
+    } catch (err) {
+        return {
+            errorMessage: err.response.data.message,
+        };
+    }
+};
+
+const reactMessage = async ({ messageId, reactType }) => {
     try {
         const { data } = await axios({
             method: "POST",
             params: { key: reactType },
-            url: `/react-post/${postId}`,
-            baseURL: `${baseURL}/api/post`,
+            baseURL: `${baseURL}/api/message`,
+            url: `/react-message/${messageId}`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -21,30 +55,12 @@ const reactPost = async ({ postId, reactType }) => {
     }
 };
 
-const createPost = async (postInfo) => {
+const deleteMessage = async (meassageId) => {
     try {
         const { data } = await axios({
-            url: `/`,
-            method: "POST",
-            data: postInfo,
-            baseURL: `${baseURL}/api/post`,
-            headers: { Authorization: `Bearer ${token}` },
-        });
-
-        return data.data;
-    } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
-    }
-};
-
-const deletePost = async (postId) => {
-    try {
-        const { data } = await axios({
-            url: `/${postId}`,
             method: "DELETE",
-            baseURL: `${baseURL}/api/post`,
+            url: `/${meassageId}`,
+            baseURL: `${baseURL}/api/message`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -56,46 +72,12 @@ const deletePost = async (postId) => {
     }
 };
 
-const updatePost = async (postId) => {
+const updateMessages = async (meassageId) => {
     try {
         const { data } = await axios({
             method: "PUT",
-            url: `/${postId}`,
-            baseURL: `${baseURL}/api/post`,
-            headers: { Authorization: `Bearer ${token}` },
-        });
-
-        return data.data;
-    } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
-    }
-};
-
-const getAllPosts = async () => {
-    try {
-        const { data } = await axios({
-            url: `/`,
-            method: "GET",
-            baseURL: `${baseURL}/api/post`,
-            headers: { Authorization: `Bearer ${token}` },
-        });
-
-        return data.data;
-    } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
-    }
-};
-
-const getPostsByUser = async (userId) => {
-    try {
-        const { data } = await axios({
-            method: "GET",
-            url: `/${userId}`,
-            baseURL: `${baseURL}/api/post`,
+            url: `/${meassageId}`,
+            baseURL: `${baseURL}/api/message`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -108,10 +90,9 @@ const getPostsByUser = async (userId) => {
 };
 
 export {
-    reactPost,
-    createPost,
-    deletePost,
-    updatePost,
-    getAllPosts,
-    getPostsByUser,
+    sendMessage,
+    getMessages,
+    reactMessage,
+    deleteMessage,
+    updateMessages,
 };

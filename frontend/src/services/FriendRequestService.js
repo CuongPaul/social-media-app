@@ -3,65 +3,12 @@ import axios from "axios";
 const baseURL = process.env.REACT_APP_BASE_API_URL;
 const token = localStorage.token && JSON.parse(localStorage.token);
 
-const reactPost = async ({ postId, reactType }) => {
-    try {
-        const { data } = await axios({
-            method: "POST",
-            params: { key: reactType },
-            url: `/react-post/${postId}`,
-            baseURL: `${baseURL}/api/post`,
-            headers: { Authorization: `Bearer ${token}` },
-        });
-
-        return data.data;
-    } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
-    }
-};
-
-const createPost = async (postInfo) => {
-    try {
-        const { data } = await axios({
-            url: `/`,
-            method: "POST",
-            data: postInfo,
-            baseURL: `${baseURL}/api/post`,
-            headers: { Authorization: `Bearer ${token}` },
-        });
-
-        return data.data;
-    } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
-    }
-};
-
-const deletePost = async (postId) => {
-    try {
-        const { data } = await axios({
-            url: `/${postId}`,
-            method: "DELETE",
-            baseURL: `${baseURL}/api/post`,
-            headers: { Authorization: `Bearer ${token}` },
-        });
-
-        return data.data;
-    } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
-    }
-};
-
-const updatePost = async (postId) => {
+const unfriend = async (friendId) => {
     try {
         const { data } = await axios({
             method: "PUT",
-            url: `/${postId}`,
-            baseURL: `${baseURL}/api/post`,
+            url: `/unfriend/${friendId}`,
+            baseURL: `${baseURL}/api/friend-request`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -73,12 +20,12 @@ const updatePost = async (postId) => {
     }
 };
 
-const getAllPosts = async () => {
+const sendFriendRequest = async (receiverId) => {
     try {
         const { data } = await axios({
-            url: `/`,
-            method: "GET",
-            baseURL: `${baseURL}/api/post`,
+            method: "POST",
+            url: `/${receiverId}`,
+            baseURL: `${baseURL}/api/friend-request`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -90,12 +37,63 @@ const getAllPosts = async () => {
     }
 };
 
-const getPostsByUser = async (userId) => {
+const acceptFriendRequest = async (friendRequestId) => {
+    try {
+        const { data } = await axios({
+            method: "PUT",
+            url: `/${friendRequestId}`,
+            baseURL: `${baseURL}/api/friend-request`,
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        return data.data;
+    } catch (err) {
+        return {
+            errorMessage: err.response.data.message,
+        };
+    }
+};
+
+const declineOrCancelRequest = async (friendRequestId) => {
+    try {
+        const { data } = await axios({
+            method: "DELETE",
+            url: `/${friendRequestId}`,
+            baseURL: `${baseURL}/api/friend-request`,
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        return data.data;
+    } catch (err) {
+        return {
+            errorMessage: err.response.data.message,
+        };
+    }
+};
+
+const getSendedFriendRequests = async () => {
     try {
         const { data } = await axios({
             method: "GET",
-            url: `/${userId}`,
-            baseURL: `${baseURL}/api/post`,
+            url: `/sended`,
+            baseURL: `${baseURL}/api/friend-request`,
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        return data.data;
+    } catch (err) {
+        return {
+            errorMessage: err.response.data.message,
+        };
+    }
+};
+
+const getReceivedFriendRequests = async () => {
+    try {
+        const { data } = await axios({
+            method: "GET",
+            url: `/received`,
+            baseURL: `${baseURL}/api/friend-request`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -108,10 +106,10 @@ const getPostsByUser = async (userId) => {
 };
 
 export {
-    reactPost,
-    createPost,
-    deletePost,
-    updatePost,
-    getAllPosts,
-    getPostsByUser,
+    unfriend,
+    sendFriendRequest,
+    acceptFriendRequest,
+    declineOrCancelRequest,
+    getSendedFriendRequests,
+    getReceivedFriendRequests,
 };

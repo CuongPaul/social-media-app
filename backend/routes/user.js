@@ -4,7 +4,6 @@ import {
     getUserById,
     searchUsers,
     updateProfile,
-    getCurrentUser,
     updateCoverImage,
     getRecommendUsers,
     updateAvatarImage,
@@ -14,7 +13,6 @@ import verifyToken from "../middleware/verify-token";
 const router = express.Router();
 
 router.get("/search", searchUsers);
-router.get("/me", verifyToken, getCurrentUser);
 router.get("/:userId", verifyToken, getUserById);
 router.put("/update-profile", verifyToken, updateProfile);
 router.put("/cover-image", verifyToken, updateCoverImage);

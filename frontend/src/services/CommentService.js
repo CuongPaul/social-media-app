@@ -3,13 +3,13 @@ import axios from "axios";
 const baseURL = process.env.REACT_APP_BASE_API_URL;
 const token = localStorage.token && JSON.parse(localStorage.token);
 
-const reactPost = async ({ postId, reactType }) => {
+const reactComment = async ({ commentId, reactType }) => {
     try {
         const { data } = await axios({
-            method: "POST",
+            method: "GET",
             params: { key: reactType },
-            url: `/react-post/${postId}`,
-            baseURL: `${baseURL}/api/post`,
+            baseURL: `${baseURL}/api/comment`,
+            url: `/react-comment/${commentId}`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -21,13 +21,13 @@ const reactPost = async ({ postId, reactType }) => {
     }
 };
 
-const createPost = async (postInfo) => {
+const createComment = async ({ postId, commentInfo }) => {
     try {
         const { data } = await axios({
-            url: `/`,
             method: "POST",
-            data: postInfo,
-            baseURL: `${baseURL}/api/post`,
+            url: `/${postId}`,
+            data: commentInfo,
+            baseURL: `${baseURL}/api/comment`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -39,12 +39,12 @@ const createPost = async (postInfo) => {
     }
 };
 
-const deletePost = async (postId) => {
+const deleteComment = async (commentId) => {
     try {
         const { data } = await axios({
-            url: `/${postId}`,
             method: "DELETE",
-            baseURL: `${baseURL}/api/post`,
+            url: `/${commentId}`,
+            baseURL: `${baseURL}/api/comment`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -56,46 +56,29 @@ const deletePost = async (postId) => {
     }
 };
 
-const updatePost = async (postId) => {
+const updateComment = async (commentId) => {
     try {
         const { data } = await axios({
             method: "PUT",
+            url: `/${commentId}`,
+            baseURL: `${baseURL}/api/comment`,
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        return data.data;
+    } catch (err) {
+        return {
+            errorMessage: err.response.data.message,
+        };
+    }
+};
+
+const getCommentsByPost = async (postId) => {
+    try {
+        const { data } = await axios({
+            method: "GET",
             url: `/${postId}`,
-            baseURL: `${baseURL}/api/post`,
-            headers: { Authorization: `Bearer ${token}` },
-        });
-
-        return data.data;
-    } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
-    }
-};
-
-const getAllPosts = async () => {
-    try {
-        const { data } = await axios({
-            url: `/`,
-            method: "GET",
-            baseURL: `${baseURL}/api/post`,
-            headers: { Authorization: `Bearer ${token}` },
-        });
-
-        return data.data;
-    } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
-    }
-};
-
-const getPostsByUser = async (userId) => {
-    try {
-        const { data } = await axios({
-            method: "GET",
-            url: `/${userId}`,
-            baseURL: `${baseURL}/api/post`,
+            baseURL: `${baseURL}/api/comment`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -108,10 +91,9 @@ const getPostsByUser = async (userId) => {
 };
 
 export {
-    reactPost,
-    createPost,
-    deletePost,
-    updatePost,
-    getAllPosts,
-    getPostsByUser,
+    reactComment,
+    createComment,
+    deleteComment,
+    updateComment,
+    getCommentsByPost,
 };

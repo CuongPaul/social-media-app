@@ -5,7 +5,9 @@ import { sendNotification } from "../utils/send-notification";
 
 const reactPost = async (req, res) => {
     try {
-        const post = await Post.findById(req.params.postId).populate("react").populate("user");
+        const post = await Post.findById(req.params.postId)
+            .populate("react")
+            .populate("user");
 
         if (!post) {
             return res.status(404).json({ message: "Post doesn't exist" });
@@ -36,11 +38,20 @@ const createPost = async (req, res) => {
     const { body, text, images, privacy } = req.body;
 
     if ((!images || !images.length) && (!text || !text.trim().length)) {
-        return res.status(422).json({ message: "Post image or write something" });
+        return res
+            .status(422)
+            .json({ message: "Post image or write something" });
     }
 
     try {
-        const emptyReact = new React({ wow: [], sad: [], like: [], love: [], haha: [], angry: [] });
+        const emptyReact = new React({
+            wow: [],
+            sad: [],
+            like: [],
+            love: [],
+            haha: [],
+            angry: [],
+        });
         const saveEmptyReact = await emptyReact.save();
 
         const newPost = new Post({
@@ -85,7 +96,9 @@ const updatePost = async (req, res) => {
     const { body, text, images, privacy } = req.body;
 
     if ((!images || !images.length) && (!text || !text.trim().length)) {
-        return res.status(422).json({ message: "Post image or write something" });
+        return res
+            .status(422)
+            .json({ message: "Post image or write something" });
     }
 
     try {
@@ -107,20 +120,59 @@ const updatePost = async (req, res) => {
     }
 };
 
+const getAllPosts = async (req, res) => {
+    const limit = 5;
+    const page = parseInt(req.query.page) || 0;
+
+    try {
+        const posts = await Post.find()
+            .sort({ createdAt: -1 })
+            .limit(limit)
+            .skip(page * limit)
+            .populate("user")
+            .populate("react");
+
+        if (!posts.length) {
+            return res
+                .status(404)
+                .json({ message: "You don't have any posts" });
+        }
+
+        const postsData = posts.map((post) => postDataFilter(post));
+
+        const numberOfPost = await Post.estimatedDocumentCount();
+
+        const paginationData = {
+            numberOfPost,
+            currentPageNumber: page,
+            pageAmount: Math.ceil(numberOfPost / limit),
+        };
+
+        res.status(200).json({
+            message: "Successfully",
+            data: { posts: postsData, pagination: paginationData },
+        });
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+};
+
 const getPostsByUser = async (req, res) => {
     const limit = 5;
     const page = parseInt(req.query.page) || 0;
 
     try {
         const posts = await Post.find({ user: req.params.userId })
-            .sort()
+            .sort({ createdAt: -1 })
             .limit(limit)
             .skip(page * limit)
             .populate("user")
             .populate("react");
 
         if (!posts.length) {
-            return res.status(404).json({ message: "You don't have any posts" });
+            return res
+                .status(404)
+                .json({ message: "You don't have any posts" });
         }
 
         const postsData = posts.map((post) => postDataFilter(post));
@@ -142,39 +194,11 @@ const getPostsByUser = async (req, res) => {
     }
 };
 
-const getPostsByCurrentUser = async (req, res) => {
-    const limit = 5;
-    const page = parseInt(req.query.page) || 0;
-
-    try {
-        const posts = await Post.find({ user: req.user_id })
-            .sort()
-            .limit(limit)
-            .skip(page * limit)
-            .populate("user")
-            .populate("react");
-
-        if (!posts.length) {
-            return res.status(404).json({ message: "You don't have any posts" });
-        }
-
-        const postsData = posts.map((post) => postDataFilter(post));
-
-        const numberOfPost = await Post.estimatedDocumentCount();
-
-        const paginationData = {
-            numberOfPost,
-            currentPageNumber: page,
-            pageAmount: Math.ceil(numberOfPost / limit),
-        };
-
-        res.status(200).json({
-            message: "Successfully",
-            data: { posts: postsData, pagination: paginationData },
-        });
-    } catch (err) {
-        return res.status(500).json({ message: err.message });
-    }
+export {
+    reactPost,
+    createPost,
+    deletePost,
+    updatePost,
+    getAllPosts,
+    getPostsByUser,
 };
-
-export { reactPost, createPost, deletePost, updatePost, getPostsByUser, getPostsByCurrentUser };

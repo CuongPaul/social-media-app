@@ -3,65 +3,12 @@ import axios from "axios";
 const baseURL = process.env.REACT_APP_BASE_API_URL;
 const token = localStorage.token && JSON.parse(localStorage.token);
 
-const signin = async (userInfo) => {
+const readNotification = async (notificationId) => {
     try {
         const { data } = await axios({
-            method: "POST",
-            url: "/signin",
-            data: userInfo,
-            baseURL: `${baseURL}/api/auth`,
-        });
-
-        return data.data;
-    } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
-    }
-};
-
-const signup = async (userInfo) => {
-    try {
-        const { data } = await axios({
-            method: "POST",
-            url: "/signup",
-            data: userInfo,
-            baseURL: `${baseURL}/api/auth`,
-        });
-
-        return data.data;
-    } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
-    }
-};
-
-const signout = async () => {
-    try {
-        const { data } = await axios({
-            method: "GET",
-            url: "/signout",
-            baseURL: `${baseURL}/api/auth`,
-            headers: { Authorization: `Bearer ${token}` },
-        });
-
-        return data.data;
-    } catch (err) {
-        localStorage.token && localStorage.removeItem("token");
-
-        return {
-            errorMessage: err.response.data.message,
-        };
-    }
-};
-
-const updatePassword = async () => {
-    try {
-        const { data } = await axios({
-            method: "GET",
-            url: "/update-password",
-            baseURL: `${baseURL}/api/auth`,
+            method: "PUT",
+            url: `/${notificationId}`,
+            baseURL: `${baseURL}/api/notification`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -73,4 +20,60 @@ const updatePassword = async () => {
     }
 };
 
-export { signin, signup, signout, updatePassword };
+const readAllNotification = async () => {
+    try {
+        const { data } = await axios({
+            method: "PUT",
+            url: `/read-all`,
+            baseURL: `${baseURL}/api/notification`,
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        return data.data;
+    } catch (err) {
+        return {
+            errorMessage: err.response.data.message,
+        };
+    }
+};
+
+const getNotificationsByKey = async (notificationKey) => {
+    try {
+        const { data } = await axios({
+            method: "PUT",
+            url: `/get-by-key/${notificationKey}`,
+            baseURL: `${baseURL}/api/notification`,
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        return data.data;
+    } catch (err) {
+        return {
+            errorMessage: err.response.data.message,
+        };
+    }
+};
+
+const getNotificationsByCurrentUser = async () => {
+    try {
+        const { data } = await axios({
+            url: `/`,
+            method: "GET",
+            baseURL: `${baseURL}/api/notification`,
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        return data.data;
+    } catch (err) {
+        return {
+            errorMessage: err.response.data.message,
+        };
+    }
+};
+
+export {
+    readNotification,
+    readAllNotification,
+    getNotificationsByKey,
+    getNotificationsByCurrentUser,
+};

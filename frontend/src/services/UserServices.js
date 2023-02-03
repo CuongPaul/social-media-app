@@ -1,215 +1,119 @@
 import axios from "axios";
-const url = process.env.REACT_APP_BASE_API_URL;
 
-export const fetchUserById = async (user_id) => {
-    let token = JSON.parse(localStorage.token);
+const baseURL = process.env.REACT_APP_BASE_API_URL;
+const token = localStorage.token && JSON.parse(localStorage.token);
+
+const getUserById = async (userId) => {
     try {
-        const { data } = await axios.get(`${url}/api/user/${user_id}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+        const { data } = await axios({
+            method: "GET",
+            url: `/${userId}`,
+            baseURL: `${baseURL}/api/user`,
+            headers: { Authorization: `Bearer ${token}` },
         });
-        if (data) {
-            return {
-                data,
-            };
-        }
+
+        return data.data;
     } catch (err) {
-        if (err && err.response) {
-            return {
-                error: err.response.data.error,
-            };
-        }
+        return {
+            errorMessage: err.response.data.message,
+        };
     }
 };
 
-export const fetchRecommandedUsers = async () => {
-    let token = JSON.parse(localStorage.token);
+const searchUsers = async (userName) => {
     try {
-        const { data } = await axios.get(`${url}/api/user/recommanded_users`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+        const { data } = await axios({
+            method: "GET",
+            url: `/search`,
+            params: { name: userName },
+            baseURL: `${baseURL}/api/user`,
         });
-        if (data) {
-            return {
-                data,
-            };
-        }
+
+        return data.data;
     } catch (err) {
-        if (err && err.response) {
-            return {
-                error: err.response.data.error,
-            };
-        }
+        return {
+            errorMessage: err.response.data.message,
+        };
     }
 };
 
-export const sendFriendRequest = async (user_id) => {
-    let token = JSON.parse(localStorage.token);
+const updateProfile = async (userInfo) => {
     try {
-        const { data } = await axios.get(`${url}/api/user/friend_request/${user_id}/send`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+        const { data } = await axios({
+            method: "PUT",
+            data: userInfo,
+            url: `/update-profile`,
+            baseURL: `${baseURL}/api/user`,
+            headers: { Authorization: `Bearer ${token}` },
         });
-        if (data) {
-            return {
-                data,
-            };
-        }
+
+        return data.data;
     } catch (err) {
-        if (err && err.response) {
-            return {
-                error: err.response.data.error,
-            };
-        }
+        return {
+            errorMessage: err.response.data.message,
+        };
     }
 };
 
-export const fetchIncommingFriendRequests = async () => {
-    let token = JSON.parse(localStorage.token);
+const updateCoverImage = async (imageURL) => {
     try {
-        const { data } = await axios.get(`${url}/api/user/friend_request/received`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+        const { data } = await axios({
+            method: "PUT",
+            url: `/cover-image`,
+            baseURL: `${baseURL}/api/user`,
+            data: { cover_image: imageURL },
+            headers: { Authorization: `Bearer ${token}` },
         });
-        if (data) {
-            return {
-                data,
-            };
-        }
+
+        return data.data;
     } catch (err) {
-        if (err && err.response) {
-            return {
-                error: err.response.data.error,
-            };
-        }
+        return {
+            errorMessage: err.response.data.message,
+        };
     }
 };
 
-export const fetchSendedFriendRequests = async () => {
-    let token = JSON.parse(localStorage.token);
+const getRecommendUsers = async () => {
     try {
-        const { data } = await axios.get(`${url}/api/user/friend_request/sended`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+        const { data } = await axios({
+            method: "GET",
+            url: `/recommend-users`,
+            baseURL: `${baseURL}/api/user`,
+            headers: { Authorization: `Bearer ${token}` },
         });
-        if (data) {
-            return {
-                data,
-            };
-        }
+
+        return data.data;
     } catch (err) {
-        if (err && err.response) {
-            return {
-                error: err.response.data.error,
-            };
-        }
+        return {
+            errorMessage: err.response.data.message,
+        };
     }
 };
 
-export const acceptFriendRequest = async (request_id) => {
-    let token = JSON.parse(localStorage.token);
+const updateAvatarImage = async (imageURL) => {
     try {
-        const { data } = await axios.get(`${url}/api/user/friend_request/${request_id}/accept`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+        const { data } = await axios({
+            method: "PUT",
+            url: `/avatar-image`,
+            baseURL: `${baseURL}/api/user`,
+            data: { avatar_image: imageURL },
+            headers: { Authorization: `Bearer ${token}` },
         });
-        if (data) {
-            return {
-                data,
-            };
-        }
+
+        return data.data;
     } catch (err) {
-        if (err && err.response) {
-            return {
-                error: err.response.data.error,
-            };
-        }
+        return {
+            errorMessage: err.response.data.message,
+        };
     }
 };
 
-export const unFriend = async ({ userRequest, friendRequest }) => {
-    let token = JSON.parse(localStorage.token);
-
-    try {
-        const newListFriendUserRequest = userRequest.friends.filter(
-            (item) => item !== friendRequest.id
-        );
-        const newListFriendFriendRequest = friendRequest.friends.filter(
-            (item) => item !== userRequest.id
-        );
-
-        const { data } = await axios.patch(
-            `${url}/api/user/unfriend_request`,
-            {
-                userRequest: { ...userRequest, friends: [...newListFriendUserRequest] },
-                friendRequest: { ...friendRequest, friends: [...newListFriendFriendRequest] },
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
-        if (data) {
-            return {
-                data,
-            };
-        }
-    } catch (err) {
-        if (err && err.response) {
-            return {
-                error: err.response.data.error,
-            };
-        }
-    }
-};
-
-export const declineFriendRequest = async (request_id) => {
-    let token = JSON.parse(localStorage.token);
-    try {
-        const { data } = await axios.get(`${url}/api/user/friend_request/${request_id}/decline`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        if (data) {
-            return {
-                data,
-            };
-        }
-    } catch (err) {
-        if (err && err.response) {
-            return {
-                error: err.response.data.error,
-            };
-        }
-    }
-};
-
-export const cancelFriendRequest = async (request_id) => {
-    let token = JSON.parse(localStorage.token);
-    try {
-        const { data } = await axios.get(`${url}/api/user/friend_request/${request_id}/cancel`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        if (data) {
-            return {
-                data,
-            };
-        }
-    } catch (err) {
-        if (err && err.response) {
-            return {
-                error: err.response.data.error,
-            };
-        }
-    }
+export {
+    getUserById,
+    searchUsers,
+    updateProfile,
+    getCurrentUser,
+    updateCoverImage,
+    getRecommendUsers,
+    updateAvatarImage,
 };
