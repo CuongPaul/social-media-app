@@ -1,17 +1,16 @@
 #root,
 html,
 body {
-  margin: 0;
+    margin: 0;
+}
+
+.MuiAppBar-root {
+    z-index: "10000";
 }
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 html {
-  scroll-behavior: smooth;
-}
-
-
-.MuiAppBar-root{
-  z-index: "10000";
+    scroll-behavior: smooth;
 }

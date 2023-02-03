@@ -1,5 +1,5 @@
 import axios from "axios";
-const url = process.env.REACT_APP_ENDPOINT;
+const url = process.env.REACT_APP_BASE_API_URL;
 
 export const fetchCurrentUser = async () => {
     let token = localStorage.token && JSON.parse(localStorage.token);
@@ -28,7 +28,7 @@ export const loginUser = async (userData, loading, setLoading) => {
     try {
         setLoading(true);
         const { data } = await axios.post(
-            `${process.env.REACT_APP_ENDPOINT}/api/auth/signin`,
+            `${process.env.REACT_APP_BASE_API_URL}/api/auth/signin`,
             userData
         );
         setLoading(false);

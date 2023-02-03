@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { UIContext, UserContext } from "../App";
 import axios from "axios";
-const url = process.env.REACT_APP_ENDPOINT;
+const url = process.env.REACT_APP_BASE_API_URL;
 
 const useUpdateProfile = () => {
     const [loading, setLoading] = useState(false);

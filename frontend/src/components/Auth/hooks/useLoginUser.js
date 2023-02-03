@@ -4,8 +4,7 @@ import { UserContext, UIContext } from "../../../App";
 import { useHistory } from "react-router-dom";
 import { fetchCurrentUser } from "../../../services/AuthService";
 
-const url = process.env.REACT_APP_ENDPOINT;
-
+const url = process.env.REACT_APP_BASE_API_URL;
 const useLoginUser = (userData = null) => {
     const { uiDispatch } = useContext(UIContext);
     const { userDispatch } = useContext(UserContext);

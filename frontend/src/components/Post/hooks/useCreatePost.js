@@ -3,7 +3,7 @@ import axios from "axios";
 import { UIContext, PostContext } from "../../../App";
 import { useHistory } from "react-router-dom";
 import { storage } from "../../../firebase/firebase";
-const url = process.env.REACT_APP_ENDPOINT;
+const url = process.env.REACT_APP_BASE_API_URL;
 
 const useCreatePost = ({ postData, body, isImageCaptured, postImage, blob }) => {
     const history = useHistory();
