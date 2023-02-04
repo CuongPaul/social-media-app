@@ -64,6 +64,36 @@ const updateProfile = async (req, res) => {
     }
 };
 
+const updatePassword = async (req, res) => {
+    const { new_password, current_password } = req.body;
+
+    if (!new_password || !new_password.trim().length) {
+        return res.status(422).json({ message: "New password is required" });
+    }
+    if (!current_password || !current_password.trim().length) {
+        return res.status(422).json({ message: "Current password is required" });
+    }
+
+    try {
+        const user = await User.findById(req.user_id);
+
+        const isMatchPassword = await bcrypt.compare(current_password, user.password);
+
+        if (!isMatchPassword) {
+            return res.status(404).json({ error: "Incorrect current password" });
+        }
+
+        const hashPassword = await bcrypt.hash(new_password, 8);
+
+        user.password = hashPassword;
+        await user.save();
+
+        res.status(200).json({ message: "Password has been updated" });
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+};
+
 const updateCoverImage = async (req, res) => {
     const { cover_image } = req.body;
 
@@ -124,6 +154,7 @@ export {
     getUserById,
     searchUsers,
     updateProfile,
+    updatePassword,
     updateCoverImage,
     getRecommendUsers,
     updateAvatarImage,

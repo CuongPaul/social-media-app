@@ -31,11 +31,11 @@ const userSchema = new Schema(
         },
         friends: [userIdRefType],
         hometown: stringDefaultType,
+        block_user: [userIdRefType],
         education: stringDefaultType,
         cover_image: stringDefaultType,
         socket_id: [stringDefaultType],
         avatar_image: stringDefaultType,
-        block_user_notification: [userIdRefType],
     },
     { timestamps: true }
 );

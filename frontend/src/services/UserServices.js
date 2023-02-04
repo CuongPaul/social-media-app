@@ -55,6 +55,23 @@ const updateProfile = async (userInfo) => {
     }
 };
 
+const updatePassword = async () => {
+    try {
+        const { data } = await axios({
+            method: "GET",
+            url: "/update-password",
+            baseURL: `${baseURL}/api/auth`,
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        return data.data;
+    } catch (err) {
+        return {
+            errorMessage: err.response.data.message,
+        };
+    }
+};
+
 const updateCoverImage = async (imageURL) => {
     try {
         const { data } = await axios({
@@ -112,7 +129,7 @@ export {
     getUserById,
     searchUsers,
     updateProfile,
-    getCurrentUser,
+    updatePassword,
     updateCoverImage,
     getRecommendUsers,
     updateAvatarImage,

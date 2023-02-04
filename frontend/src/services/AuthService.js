@@ -56,21 +56,4 @@ const signout = async () => {
     }
 };
 
-const updatePassword = async () => {
-    try {
-        const { data } = await axios({
-            method: "GET",
-            url: "/update-password",
-            baseURL: `${baseURL}/api/auth`,
-            headers: { Authorization: `Bearer ${token}` },
-        });
-
-        return data.data;
-    } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
-    }
-};
-
-export { signin, signup, signout, updatePassword };
+export { signin, signup, signout };
