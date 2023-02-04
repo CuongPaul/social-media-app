@@ -20,10 +20,11 @@ const sendMessage = async (roomId) => {
     }
 };
 
-const getMessages = async (roomId) => {
+const getMessages = async ({roomId, page}) => {
     try {
         const { data } = await axios({
             method: "GET",
+            params: { page },
             url: `/${roomId}`,
             baseURL: `${baseURL}/api/message`,
             headers: { Authorization: `Bearer ${token}` },

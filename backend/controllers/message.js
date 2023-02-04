@@ -40,12 +40,30 @@ const sendMessage = async (req, res) => {
 };
 
 const getMessages = async (req, res) => {
+    const limit = 25;
+    const page = parseInt(req.query.page) || 0;
+
     try {
-        const messages = await Message.find({ room: req.params.roomId }).populate("sender");
+        const messages = await Message.find({ room: req.params.roomId })
+            .sort()
+            .limit(limit)
+            .skip(page * limit)
+            .populate("sender");
 
         const messageData = messages.map((message) => messageDataFilter(message));
 
-        res.status(200).json({ message: "Successfully", data: messageData });
+        const numberOfMessagePerRoom = await Message.countDocuments({ room: req.params.roomId });
+
+        const paginationData = {
+            numberOfMessagePerRoom,
+            currentPageNumber: page,
+            numberOfPage: Math.ceil(numberOfMessagePerRoom / limit),
+        };
+
+        res.status(200).json({
+            message: "Successfully",
+            data: { message: messageData, pagination: paginationData },
+        });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
