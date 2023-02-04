@@ -1,6 +1,7 @@
 import express from "express";
 
 import {
+    unfriend,
     getUserById,
     searchUsers,
     updateProfile,
@@ -15,6 +16,7 @@ const router = express.Router();
 
 router.get("/search", searchUsers);
 router.get("/:userId", verifyToken, getUserById);
+router.put("/unfriend/:friendId", verifyToken, unfriend);
 router.put("/update-profile", verifyToken, updateProfile);
 router.put("/cover-image", verifyToken, updateCoverImage);
 router.put("/avatar-image", verifyToken, updateAvatarImage);

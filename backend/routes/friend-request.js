@@ -1,7 +1,6 @@
 import express from "express";
 
 import {
-    unfriend,
     sendFriendRequest,
     acceptFriendRequest,
     declineOrCancelRequest,
@@ -11,8 +10,6 @@ import {
 import verifyToken from "../middleware/verify-token";
 
 const router = express.Router();
-
-router.put("/unfriend/:friendId", verifyToken, unfriend);
 
 router.get("/sended", verifyToken, getSendedFriendRequests);
 router.get("/received", verifyToken, getReceivedFriendRequests);

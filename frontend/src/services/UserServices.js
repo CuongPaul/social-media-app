@@ -3,6 +3,23 @@ import axios from "axios";
 const baseURL = process.env.REACT_APP_BASE_API_URL;
 const token = localStorage.token && JSON.parse(localStorage.token);
 
+const unfriend = async (friendId) => {
+    try {
+        const { data } = await axios({
+            method: "PUT",
+            url: `/unfriend/${friendId}`,
+            baseURL: `${baseURL}/api/friend-request`,
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        return data.data;
+    } catch (err) {
+        return {
+            errorMessage: err.response.data.message,
+        };
+    }
+};
+
 const getUserById = async (userId) => {
     try {
         const { data } = await axios({
@@ -126,6 +143,7 @@ const updateAvatarImage = async (imageURL) => {
 };
 
 export {
+    unfriend,
     getUserById,
     searchUsers,
     updateProfile,

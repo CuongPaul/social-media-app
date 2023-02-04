@@ -2,6 +2,36 @@ import User from "../models/User";
 import isValidEmail from "../utils/validate-email";
 import { userDataFilter } from "../utils/filter-data";
 
+const unfriend = async (req, res) => {
+    const useId = req.user_id;
+    const friendId = req.params.friendId;
+
+    try {
+        const user = await User.findById(useId);
+        const friend = await User.findById(friendId);
+
+        if (!friend) {
+            return res.status(404).json({ message: "Friend doesn't exist" });
+        }
+
+        const indexUserId = friend.friends.indeindexOf(useId);
+        const indexFriendId = user.friends.indeindexOf(friendId);
+
+        if (indexUserId !== -1) {
+            friend.friends.splice(indexUserId, 1);
+            await friend.save();
+        }
+        if (indexFriendId !== -1) {
+            user.friends.splice(indexFriendId, 1);
+            await user.save();
+        }
+
+        res.status(201).json({ message: "Unfriended successfully" });
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+};
+
 const getUserById = async (req, res) => {
     try {
         const user = await User.findById(req.params.userId).populate("friends");
@@ -151,6 +181,7 @@ const updateAvatarImage = async (req, res) => {
 };
 
 export {
+    unfriend,
     getUserById,
     searchUsers,
     updateProfile,
