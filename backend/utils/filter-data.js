@@ -1,15 +1,10 @@
-const filterInforUsers = (userData) =>
-    userData.map((user) => ({
-        id: user.id,
-        name: user.name,
-        avatar_image: user.avatar_image,
-    }));
-
 const basicInforUser = (user) => ({
     id: user.id,
     name: user.name,
     avatar_image: user.avatar_image,
 });
+
+const filterInforUsers = (userData) => userData?.map((user) => basicInforUser(user));
 
 const postDataFilter = (post) => ({
     id: post.id,

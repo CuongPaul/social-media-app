@@ -51,7 +51,6 @@ function TagUserCard({ body, setBody }) {
             </Tooltip>
 
             <Dialog
-                disableBackdropClick
                 disableEscapeKeyDown
                 fullWidth
                 scroll="body"

@@ -1,10 +1,11 @@
 import axios from "axios";
 
 const baseURL = process.env.REACT_APP_BASE_API_URL;
-const token = localStorage.token && JSON.parse(localStorage.token);
 
 const sendFriendRequest = async (receiverId) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "POST",
             url: `/${receiverId}`,
@@ -12,16 +13,16 @@ const sendFriendRequest = async (receiverId) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const acceptFriendRequest = async (friendRequestId) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "PUT",
             url: `/${friendRequestId}`,
@@ -29,16 +30,16 @@ const acceptFriendRequest = async (friendRequestId) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const declineOrCancelRequest = async (friendRequestId) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "DELETE",
             url: `/${friendRequestId}`,
@@ -46,16 +47,16 @@ const declineOrCancelRequest = async (friendRequestId) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const getSendedFriendRequests = async () => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "GET",
             url: `/sended`,
@@ -63,16 +64,16 @@ const getSendedFriendRequests = async () => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const getReceivedFriendRequests = async () => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "GET",
             url: `/received`,
@@ -80,11 +81,9 @@ const getReceivedFriendRequests = async () => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 

@@ -91,9 +91,9 @@ export const PostReducer = (state, action) => {
             };
 
         case "LIKE_UNLIKE_POST":
-            let l_postIndex = state.posts.findIndex((post) => post.id == action.payload.id);
+            let l_postIndex = state.posts.findIndex((post) => post.id === action.payload.id);
             state.posts[l_postIndex] = action.payload;
-            if (state.post.id == action.payload.id) {
+            if (state.post.id === action.payload.id) {
                 state.post = action.payload;
             }
 
@@ -119,7 +119,7 @@ export const PostReducer = (state, action) => {
 
         case "LIKE_UNLIKE_COMMENT":
             let index1 = state.post.comments.findIndex(
-                (comment) => comment.id == action.payload.id
+                (comment) => comment.id === action.payload.id
             );
             state.post.comments[index1] = action.payload;
 

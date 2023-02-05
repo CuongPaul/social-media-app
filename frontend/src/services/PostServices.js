@@ -1,10 +1,11 @@
 import axios from "axios";
 
 const baseURL = process.env.REACT_APP_BASE_API_URL;
-const token = localStorage.token && JSON.parse(localStorage.token);
 
 const reactPost = async ({ postId, reactType }) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "POST",
             params: { key: reactType },
@@ -13,16 +14,16 @@ const reactPost = async ({ postId, reactType }) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const createPost = async (postInfo) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             url: `/`,
             method: "POST",
@@ -31,16 +32,16 @@ const createPost = async (postInfo) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const deletePost = async (postId) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             url: `/${postId}`,
             method: "DELETE",
@@ -48,16 +49,16 @@ const deletePost = async (postId) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const updatePost = async (postId) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "PUT",
             url: `/${postId}`,
@@ -65,16 +66,16 @@ const updatePost = async (postId) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const getAllPosts = async () => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             url: `/`,
             method: "GET",
@@ -82,16 +83,16 @@ const getAllPosts = async () => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const getPostsByUser = async (userId) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "GET",
             url: `/${userId}`,
@@ -99,19 +100,10 @@ const getPostsByUser = async (userId) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
-export {
-    reactPost,
-    createPost,
-    deletePost,
-    updatePost,
-    getAllPosts,
-    getPostsByUser,
-};
+export { reactPost, createPost, deletePost, updatePost, getAllPosts, getPostsByUser };

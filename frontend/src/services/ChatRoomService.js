@@ -1,10 +1,11 @@
 import axios from "axios";
 
 const baseURL = process.env.REACT_APP_BASE_API_URL;
-const token = localStorage.token && JSON.parse(localStorage.token);
 
 const joinChatRoom = async (chatRoomId) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "PUT",
             url: `/join-chat/${chatRoomId}`,
@@ -12,16 +13,16 @@ const joinChatRoom = async (chatRoomId) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const leaveChatRoom = async (chatRoomId) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "PUT",
             url: `/leave-chat/${chatRoomId}`,
@@ -29,16 +30,16 @@ const leaveChatRoom = async (chatRoomId) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const createChatRoom = async (newChatRoomInfo) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             url: `/`,
             method: "POST",
@@ -47,16 +48,16 @@ const createChatRoom = async (newChatRoomInfo) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const deleteChatRoom = async (chatRoomId) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "DELETE",
             url: `//${chatRoomId}`,
@@ -64,16 +65,16 @@ const deleteChatRoom = async (chatRoomId) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const searchChatRooms = async (chatRoomName) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "GET",
             url: "/chat-room/search",
@@ -82,16 +83,16 @@ const searchChatRooms = async (chatRoomName) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const updateNameChatRoom = async ({ chatRoomId, chatRoomName }) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "PUT",
             data: { name: chatRoomName },
@@ -100,16 +101,16 @@ const updateNameChatRoom = async ({ chatRoomId, chatRoomName }) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const updateAvatarChatRoom = async ({ chatRoomId, chatRoomAvatar }) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "PUT",
             baseURL: `${baseURL}/api/chat-room`,
@@ -118,16 +119,16 @@ const updateAvatarChatRoom = async ({ chatRoomId, chatRoomAvatar }) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const addMembersToChatRoom = async ({ chatRoomId, members }) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "PUT",
             data: { members },
@@ -136,16 +137,16 @@ const addMembersToChatRoom = async ({ chatRoomId, members }) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const removeMemberChatRoom = async ({ chatRoomId, memberId }) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "PUT",
             params: { memberId },
@@ -154,16 +155,16 @@ const removeMemberChatRoom = async ({ chatRoomId, memberId }) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const updatePrivacyChatRoom = async (chatRoomId) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "PUT",
             baseURL: `${baseURL}/api/chat-room`,
@@ -171,16 +172,16 @@ const updatePrivacyChatRoom = async (chatRoomId) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const getChatRoomsByCurrentUser = async () => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             url: `/`,
             method: "GET",
@@ -188,11 +189,9 @@ const getChatRoomsByCurrentUser = async () => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 

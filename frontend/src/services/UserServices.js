@@ -1,10 +1,11 @@
 import axios from "axios";
 
 const baseURL = process.env.REACT_APP_BASE_API_URL;
-const token = localStorage.token && JSON.parse(localStorage.token);
 
 const unfriend = async (friendId) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "PUT",
             url: `/unfriend/${friendId}`,
@@ -12,16 +13,16 @@ const unfriend = async (friendId) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const getUserById = async (userId) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "GET",
             url: `/${userId}`,
@@ -29,11 +30,9 @@ const getUserById = async (userId) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
@@ -46,16 +45,16 @@ const searchUsers = async (userName) => {
             baseURL: `${baseURL}/api/user`,
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const updateProfile = async (userInfo) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "PUT",
             data: userInfo,
@@ -64,16 +63,16 @@ const updateProfile = async (userInfo) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const updatePassword = async () => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "GET",
             url: "/update-password",
@@ -81,16 +80,42 @@ const updatePassword = async () => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
+    }
+};
+
+const getCurrentUser = async () => {
+    try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
+        const { data } = await axios({
+            url: `/`,
+            method: "GET",
+            timeout: 3 * 1000,
+            baseURL: `${baseURL}/api/user`,
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        return data;
+    } catch (err) {
+        if (err.response) {
+            return { status: err.response.status, error: err.response.data.error };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
 const updateCoverImage = async (imageURL) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "PUT",
             url: `/cover-image`,
@@ -99,16 +124,16 @@ const updateCoverImage = async (imageURL) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const getRecommendUsers = async () => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "GET",
             url: `/recommend-users`,
@@ -116,16 +141,16 @@ const getRecommendUsers = async () => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const updateAvatarImage = async (imageURL) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "PUT",
             url: `/avatar-image`,
@@ -134,11 +159,9 @@ const updateAvatarImage = async (imageURL) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
@@ -148,6 +171,7 @@ export {
     searchUsers,
     updateProfile,
     updatePassword,
+    getCurrentUser,
     updateCoverImage,
     getRecommendUsers,
     updateAvatarImage,

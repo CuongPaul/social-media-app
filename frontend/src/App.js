@@ -7,18 +7,18 @@ import React, {
     useReducer,
     createContext,
 } from "react";
+import io from "socket.io-client";
 import jwtDecode from "jwt-decode";
 import { Alert } from "@material-ui/lab";
-import { ThemeProvider } from "@material-ui/core/styles";
-import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
-import { Snackbar, useMediaQuery, useTheme, createMuiTheme } from "@material-ui/core";
+import { createTheme, ThemeProvider } from "@material-ui/core/styles";
+import { Snackbar, useTheme, useMediaQuery } from "@material-ui/core";
+import { Route, Switch, Redirect, BrowserRouter as Router } from "react-router-dom";
 
 import Loader from "./components/Loader";
-import { handleListenEvent } from "./socket";
 import Navbar from "./components/Navbar/Navbar";
 import ProtectedRoute from "./utils/protected-route";
 import BottomNav from "./components/Navbar/BottomNav";
-import { fetchCurrentUser } from "./services/AuthService";
+import { getCurrentUser } from "./services/UserServices";
 import { initialUIState, UIReducer } from "./context/UIContext";
 import { UserReducer, initialUserState } from "./context/UserContext";
 import { PostReducer, initialPostState } from "./context/PostContext";
@@ -37,7 +37,8 @@ const Profile = lazy(() => import("./screens/Profile"));
 const Settings = lazy(() => import("./screens/Settings"));
 const Messenger = lazy(() => import("./screens/Messenger"));
 
-function App() {
+const App = () => {
+    const token = localStorage.token && JSON.parse(localStorage.token);
     const [uiState, uiDispatch] = useReducer(UIReducer, initialUIState);
     const [userState, userDispatch] = useReducer(UserReducer, initialUserState);
     const [postState, postDispatch] = useReducer(PostReducer, initialPostState);
@@ -47,7 +48,7 @@ function App() {
     const mdScreen = useMediaQuery(theme.breakpoints.up("md"));
     const Theme = useMemo(
         () =>
-            createMuiTheme({
+            createTheme({
                 active: { success: "rgb(63,162,76)" },
                 palette: {
                     primary: { main: "rgb(1,133,243)" },
@@ -62,37 +63,126 @@ function App() {
         uiDispatch({ type: "SET_USER_SCREEN", payload: mdScreen });
     }, [mdScreen]);
 
-    useEffect(async () => {
-        const token = localStorage.token && JSON.parse(localStorage.token);
-        const accounts = localStorage.accounts ? JSON.parse(localStorage.accounts) : [];
+    useEffect(() => {
+        const loadCurrentUser = async () => {
+            if (token) {
+                const decodeToken = jwtDecode(token);
 
-        userDispatch({ type: "RECENT_ACCOUNTS", payload: accounts });
+                if (decodeToken.exp * 1000 > Date.now()) {
+                    userDispatch({ type: "LOGOUT_USER" });
+                } else {
+                    const { data } = await getCurrentUser();
 
-        if (token) {
-            const decodeToken = jwtDecode(token);
+                    if (data) {
+                        userDispatch({
+                            payload: data,
+                            type: "SET_CURRENT_USER",
+                        });
 
-            if (decodeToken.exp * 1000 < Date.now()) {
-                userDispatch({ type: "LOGOUT_USER" });
-            } else {
-                const currentUser = await fetchCurrentUser();
-                if (currentUser && currentUser.data) {
-                    userDispatch({
-                        type: "SET_CURRENT_USER",
-                        payload: currentUser.data.user,
-                    });
-
-                    uiDispatch({
-                        type: "SET_NOTIFICATIONS",
-                        payload: currentUser.data.notifications,
-                    });
+                        uiDispatch({
+                            payload: data,
+                            type: "SET_NOTIFICATIONS",
+                        });
+                    }
                 }
             }
+        };
+
+        function loadRecentAccounts() {
+            const accounts = localStorage.accounts ? JSON.parse(localStorage.accounts) : [];
+            userDispatch({ type: "RECENT_ACCOUNTS", payload: accounts });
         }
-    }, []);
+
+        loadCurrentUser();
+        loadRecentAccounts();
+    }, [token]);
 
     useEffect(() => {
         if (userState.isLoggedIn) {
-            handleListenEvent({ uiDispatch, userDispatch, postDispatch, chatDispatch });
+            const socketIO = io(`${process.env.REACT_APP_BASE_API_URL}`);
+
+            userDispatch({ type: "SET_SOCKETIO", payload: socketIO });
+
+            socketIO.on("connect", () => console.log("Ta Cuong"));
+
+            socketIO.on("user-offline", ({ user_id }) => {
+                userDispatch({ type: "FRIEND_OFFLINE", payload: user_id });
+            });
+
+            socketIO.on("user-online", ({ user_id }) => {
+                userDispatch({ type: "FRIEND_ONLINE", payload: user_id });
+            });
+
+            socketIO.on("friend-request-status", ({ sender }) => {
+                userDispatch({
+                    type: "ADD_FRIENDS_REQUEST_RECEIVED",
+                    payload: sender,
+                });
+            });
+
+            socketIO.on("sended-friend-request-cancel", ({ requestId }) => {
+                userDispatch({
+                    type: "REMOVE_FRIENDS_REQUEST_RECEIVED",
+                    payload: requestId,
+                });
+            });
+
+            socketIO.on("friend-request-accept-status", ({ user, request_id }) => {
+                userDispatch({
+                    type: "ADD_FRIEND",
+                    payload: user,
+                });
+                userDispatch({
+                    type: "REMOVE_FRIENDS_REQUEST_RECEIVED",
+                    payload: request_id,
+                });
+                userDispatch({
+                    type: "REMOVE_FRIENDS_REQUEST_SENDED",
+                    payload: request_id,
+                });
+            });
+
+            socketIO.on("received-friend-request-decline", ({ requestId }) => {
+                userDispatch({
+                    type: "REMOVE_FRIENDS_REQUEST_SENDED",
+                    payload: requestId,
+                });
+            });
+
+            socketIO.on("new-post", ({ data }) => {
+                postDispatch({ type: "ADD_POST", payload: data });
+            });
+
+            socketIO.on("react-post", ({ data }) => {
+                postDispatch({
+                    type: "LIKE_UNLIKE_POST",
+                    payload: data,
+                });
+            });
+
+            socketIO.on("post-comment", ({ data }) => {
+                postDispatch({ type: "ADD_POST_COMMENT", payload: data });
+            });
+
+            socketIO.on("react-comment", ({ data }) => {
+                postDispatch({
+                    type: "LIKE_UNLIKE_COMMENT",
+                    payload: data,
+                });
+            });
+
+            socketIO.on("new-message", ({ data }) => {
+                chatDispatch({ type: "ADD_MESSAGE", payload: data });
+            });
+
+            socketIO.on("notification", ({ data }) => {
+                uiDispatch({ type: "ADD_NOTIFICATION", payload: data });
+            });
+
+            return () => {
+                socketIO.disconnect();
+                userDispatch({ type: "SET_SOCKETIO", payload: null });
+            };
         }
     }, [userState.isLoggedIn]);
 
@@ -192,6 +282,6 @@ function App() {
             </UserContext.Provider>
         </UIContext.Provider>
     );
-}
+};
 
 export default App;

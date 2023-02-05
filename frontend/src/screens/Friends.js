@@ -8,10 +8,10 @@ import UserProfile from "../components/Profile/UserProfile";
 import Friend from "../components/Friends/Friend";
 import useFriendAction from "../hooks/useFriendActions";
 import {
-    fetchIncommingFriendRequests,
-    fetchRecommandedUsers,
-    fetchSendedFriendRequests,
-} from "../services/UserServices";
+    getReceivedFriendRequests,
+    getSendedFriendRequests,
+} from "../services/FriendRequestService";
+import { getRecommendUsers } from "../services/UserServices";
 const useStyles = makeStyles((theme) => ({
     sidebarContainer: {
         display: "flex",
@@ -57,7 +57,7 @@ function Friends() {
     useEffect(() => {
         uiDispatch({ type: "SET_NAV_MENU", payload: true });
         async function sendedFriendRequest() {
-            const res = await fetchSendedFriendRequests();
+            const res = await getSendedFriendRequests();
             if (res.data) {
                 userDispatch({
                     type: "SET_FRIENDS_REQUEST_SENDED",
@@ -67,7 +67,7 @@ function Friends() {
         }
 
         async function incommingFriendRequest() {
-            const res = await fetchIncommingFriendRequests();
+            const res = await getReceivedFriendRequests();
             if (res && res.data) {
                 userDispatch({
                     type: "SET_FRIENDS_REQUEST_RECEIVED",
@@ -77,7 +77,7 @@ function Friends() {
         }
 
         async function recommandedUser() {
-            const res = await fetchRecommandedUsers();
+            const res = await getRecommendUsers();
             if (res && res.data) {
                 userDispatch({
                     type: "SET_USERS",
@@ -94,7 +94,7 @@ function Friends() {
             userDispatch({ type: "REMOVE_SELECTED_USER_PROFILE", payload: null });
             uiDispatch({ type: "SET_NAV_MENU", payload: false });
         };
-    }, []);
+    }, [uiDispatch, userDispatch]);
 
     const { acceptFriendRequest, declineFriendRequest, cancelFriendRequest } = useFriendAction();
 
@@ -209,6 +209,7 @@ function Friends() {
                 >
                     <Avatar variant="square" className={classes.avatar}>
                         <img
+                            alt="avatar"
                             src={require("../assets/select-friends.svg")}
                             className={classes.image}
                         />

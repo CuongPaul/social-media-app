@@ -1,10 +1,11 @@
 import axios from "axios";
 
 const baseURL = process.env.REACT_APP_BASE_API_URL;
-const token = localStorage.token && JSON.parse(localStorage.token);
 
 const sendMessage = async (roomId) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "POST",
             url: `/${roomId}`,
@@ -12,16 +13,16 @@ const sendMessage = async (roomId) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
-const getMessages = async ({roomId, page}) => {
+const getMessages = async ({ roomId, page }) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "GET",
             params: { page },
@@ -30,16 +31,16 @@ const getMessages = async ({roomId, page}) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const reactMessage = async ({ messageId, reactType }) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "POST",
             params: { key: reactType },
@@ -48,16 +49,16 @@ const reactMessage = async ({ messageId, reactType }) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const deleteMessage = async (meassageId) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "DELETE",
             url: `/${meassageId}`,
@@ -65,16 +66,16 @@ const deleteMessage = async (meassageId) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
 const updateMessages = async (meassageId) => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "PUT",
             url: `/${meassageId}`,
@@ -82,18 +83,10 @@ const updateMessages = async (meassageId) => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 
-export {
-    sendMessage,
-    getMessages,
-    reactMessage,
-    deleteMessage,
-    updateMessages,
-};
+export { sendMessage, getMessages, reactMessage, deleteMessage, updateMessages };

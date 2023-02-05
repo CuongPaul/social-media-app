@@ -1,4 +1,4 @@
-import { Avatar, Grid, Paper, Typography } from "@material-ui/core";
+import { Avatar, Grid, Typography } from "@material-ui/core";
 import React from "react";
 
 function FriendNotSelected() {
@@ -19,6 +19,7 @@ function FriendNotSelected() {
         >
             <Avatar style={{ width: "100px", height: "100px" }}>
                 <img
+                    alt="avatar"
                     src={require("../../assets/select-friends.svg")}
                     style={{ width: "100%", height: "100%" }}
                 />

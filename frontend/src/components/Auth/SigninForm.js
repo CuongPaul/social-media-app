@@ -1,36 +1,18 @@
 import React, { Fragment } from "react";
 import { Button, TextField, FormControl, CircularProgress } from "@material-ui/core";
 
-import useSignup from "../../hooks/useSignup";
+import useSignin from "../../hooks/useSignin";
 
-const SignupForm = () => {
-    const {
-        error,
-        loading,
-        handleSignup,
-        handleChangeName,
-        handleChangeEmail,
-        handleChangePassword,
-    } = useSignup();
+const SigninForm = () => {
+    const { error, loading, handleSignin, handleChangeEmail, handleChangePassword } = useSignin();
 
     return (
         <Fragment>
-            <form onSubmit={handleSignup}>
-                <FormControl style={{ width: "100%" }}>
-                    <TextField
-                        label="Name"
-                        variant="outlined"
-                        style={{ marginTop: "16px" }}
-                        error={error?.name ? true : false}
-                        helperText={error?.name ? error.name : null}
-                        onChange={(e) => handleChangeName(e.target.value)}
-                    />
-                </FormControl>
+            <form onSubmit={handleSignin}>
                 <FormControl style={{ width: "100%" }}>
                     <TextField
                         label="Email"
                         variant="outlined"
-                        style={{ marginTop: "16px" }}
                         error={error?.email ? true : false}
                         helperText={error?.email ? error.email : null}
                         onChange={(e) => handleChangeEmail(e.target.value)}
@@ -65,7 +47,7 @@ const SignupForm = () => {
                             style={{ color: "#fff" }}
                         />
                     ) : (
-                        " Sign up"
+                        "Sign in"
                     )}
                 </Button>
             </form>
@@ -73,4 +55,4 @@ const SignupForm = () => {
     );
 };
 
-export default SignupForm;
+export default SigninForm;

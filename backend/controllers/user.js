@@ -124,6 +124,19 @@ const updatePassword = async (req, res) => {
     }
 };
 
+const getCurrentUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.user_id).populate("friends");
+
+        res.status(200).json({
+            message: "Successfully",
+            data: userDataFilter(user),
+        });
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+};
+
 const updateCoverImage = async (req, res) => {
     const { cover_image } = req.body;
 
@@ -140,15 +153,10 @@ const getRecommendUsers = async (req, res) => {
     try {
         const user = await User.findById(req.user_id).populate("friends");
 
-        const userIdRelatedtToFriends = user.friends.map(
-            (friend) => friend.friends
-        );
+        const userIdRelatedtToFriends = user.friends.map((friend) => friend.friends);
 
         const recommendUserId = new Set([
-            ...userIdRelatedtToFriends.reduce(
-                (acc, cur) => acc.concat(cur),
-                []
-            ),
+            ...userIdRelatedtToFriends.reduce((acc, cur) => acc.concat(cur), []),
         ]);
 
         const recommendUsers = await User.find({
@@ -186,6 +194,7 @@ export {
     searchUsers,
     updateProfile,
     updatePassword,
+    getCurrentUser,
     updateCoverImage,
     getRecommendUsers,
     updateAvatarImage,

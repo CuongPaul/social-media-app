@@ -29,7 +29,7 @@ import PreviewImage from "./PreviewImage";
 import useCreatePost from "../../hooks/useCreatePost";
 import { Alert } from "@material-ui/lab";
 import { Close } from "@material-ui/icons";
-import { editPost } from "../../../../services/PostServices";
+import { updatePost } from "../../../../services/PostServices";
 
 const CameraField = lazy(() => import("./CameraField"));
 export default function PostFormDialog() {
@@ -141,7 +141,7 @@ export default function PostFormDialog() {
     });
 
     const handleUpdatePost = (postId) => {
-        editPost({ ...postData, id: postId }).then((res) => {
+        updatePost({ ...postData, id: postId }).then((res) => {
             if (res.data.message === "success") {
                 uiDispatch({ type: "SET_POST_MODEL", payload: false });
                 postDispatch({ type: "EDIT_POST", payload: { ...postData, id: postId } });
@@ -169,7 +169,6 @@ export default function PostFormDialog() {
                 <DialogLoading loading={loading} text="Uploading Post..." />
             ) : (
                 <Dialog
-                    disableBackdropClick
                     disableEscapeKeyDown
                     fullWidth
                     scroll="body"

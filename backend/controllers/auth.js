@@ -8,21 +8,25 @@ import { userDataFilter } from "../utils/filter-data";
 const signin = async (req, res) => {
     const { email, password } = req.body;
 
+    const errMessages = {};
     if (!email || !email.trim().length) {
-        return res.status(422).json({ message: "Email is required" });
+        errMessages.email = "Email is required";
     }
     if (!password || !password.trim().length) {
-        return res.status(422).json({ message: "Password is required" });
+        errMessages.password = "Password is required";
     }
     if (!isValidEmail(email)) {
-        return res.status(422).json({ message: "Email is not valid" });
+        errMessages.email = "Email is not valid";
+    }
+    if (errMessages.email || errMessages.password) {
+        return res.status(422).json({ error: errMessages });
     }
 
     try {
         const user = await User.findOne({ email });
 
         if (!user) {
-            return res.status(404).json({ message: "Email doesn't exist" });
+            return res.status(400).json({ message: "Email doesn't exist" });
         }
 
         const isMatchPassword = await bcrypt.compare(password, user.password);
@@ -47,33 +51,33 @@ const signin = async (req, res) => {
 const signup = async (req, res) => {
     const { name, email, password } = req.body;
 
+    const errMessages = {};
     if (!name || !name.trim().length) {
-        return res.status(422).json({ message: "Name is required" });
+        errMessages.name = "Name is required";
     }
     if (!email || !email.trim().length) {
-        return res.status(422).json({ message: "Email is required" });
+        errMessages.email = "Email is required";
     }
     if (!password || !password.trim().length) {
-        return res.status(422).json({ message: "Password is required" });
+        errMessages.password = "Password is required";
     }
     if (!isValidEmail(email)) {
-        return res.status(422).json({ message: "Email is not valid" });
+        errMessages.email = "Email is not valid";
+    }
+    if (errMessages.name || errMessages.email || errMessages.password) {
+        return res.status(422).json({ error: errMessages });
     }
 
     try {
         const user = await User.findOne({ email });
 
         if (user) {
-            return res.status(404).json({ message: "Email already exists" });
+            return res.status(400).json({ error: "Email already exists" });
         }
 
         const hashPassword = await bcrypt.hash(password, 8);
 
-        const newUser = new User({
-            name,
-            email,
-            password: hashPassword,
-        });
+        const newUser = new User({ name, email, password: hashPassword });
         await newUser.save();
 
         res.status(201).json({ message: "Account successfully created" });

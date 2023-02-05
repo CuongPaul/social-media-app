@@ -5,9 +5,7 @@ import { sendNotification } from "../utils/send-notification";
 
 const reactPost = async (req, res) => {
     try {
-        const post = await Post.findById(req.params.postId)
-            .populate("react")
-            .populate("user");
+        const post = await Post.findById(req.params.postId).populate("react").populate("user");
 
         if (!post) {
             return res.status(404).json({ message: "Post doesn't exist" });
@@ -38,9 +36,7 @@ const createPost = async (req, res) => {
     const { body, text, images, privacy } = req.body;
 
     if ((!images || !images.length) && (!text || !text.trim().length)) {
-        return res
-            .status(422)
-            .json({ message: "Post image or write something" });
+        return res.status(422).json({ message: "Post image or write something" });
     }
 
     try {
@@ -96,9 +92,7 @@ const updatePost = async (req, res) => {
     const { body, text, images, privacy } = req.body;
 
     if ((!images || !images.length) && (!text || !text.trim().length)) {
-        return res
-            .status(422)
-            .json({ message: "Post image or write something" });
+        return res.status(422).json({ message: "Post image or write something" });
     }
 
     try {
@@ -133,9 +127,7 @@ const getAllPosts = async (req, res) => {
             .populate("react");
 
         if (!posts.length) {
-            return res
-                .status(404)
-                .json({ message: "You don't have any posts" });
+            return res.status(404).json({ message: "You don't have any posts" });
         }
 
         const postsData = posts.map((post) => postDataFilter(post));
@@ -170,9 +162,7 @@ const getPostsByUser = async (req, res) => {
             .populate("react");
 
         if (!posts.length) {
-            return res
-                .status(404)
-                .json({ message: "You don't have any posts" });
+            return res.status(404).json({ message: "You don't have any posts" });
         }
 
         const postsData = posts.map((post) => postDataFilter(post));
@@ -194,11 +184,4 @@ const getPostsByUser = async (req, res) => {
     }
 };
 
-export {
-    reactPost,
-    createPost,
-    deletePost,
-    updatePost,
-    getAllPosts,
-    getPostsByUser,
-};
+export { reactPost, createPost, deletePost, updatePost, getAllPosts, getPostsByUser };

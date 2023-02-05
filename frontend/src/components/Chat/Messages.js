@@ -1,172 +1,199 @@
-import { Grid, makeStyles, Paper, Typography, CardMedia, IconButton,  Menu, MenuItem } from '@material-ui/core'
-import React, { Fragment, useContext, useEffect, useRef, useState } from 'react'
-import { ChatContext, UIContext, UserContext } from '../../App'
-import moment from 'moment'
-import { MoreHoriz } from '@material-ui/icons'
+import {
+    Grid,
+    makeStyles,
+    Paper,
+    Typography,
+    CardMedia,
+    IconButton,
+    Menu,
+    MenuItem,
+} from "@material-ui/core";
+import React, { Fragment, useContext, useEffect, useRef, useState } from "react";
+import { ChatContext, UIContext, UserContext } from "../../App";
+import moment from "moment";
+import { MoreHoriz } from "@material-ui/icons";
 const useStyles = makeStyles((theme) => ({
-  me: {
-    padding: '8px',
-    maxWidth: '60%',
-    float: 'right',
-    marginTop: '16px',
-  },
+    me: {
+        padding: "8px",
+        maxWidth: "60%",
+        float: "right",
+        marginTop: "16px",
+    },
 
-  partner: {
-    padding: '8px',
-    maxWidth: '60%',
+    partner: {
+        maxWidth: "60%",
+        margin: "auto",
+        float: "left",
+        padding: "8px",
+        marginTop: "16px",
+    },
+    date: {
+        fontSize: "12px",
 
-    margin: 'auto',
-    float: 'left',
-    padding: '8px',
-    marginTop: '16px',
-  },
-  date: {
-    fontSize: '12px',
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        padding: "8px",
+        margin: "auto",
+    },
+}));
+function Messages({ setTextValue }) {
+    const classes = useStyles();
 
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    padding: '8px',
-    margin: 'auto',
-  },
-}))
-function Messages({setTextValue}) {
-  const classes = useStyles()
+    const scrollDiv = useRef(null);
+    const [isOpen, setIsOpen] = useState(null);
 
-  const scrollDiv = useRef(null)
-  const [isOpen, setIsOpen] = useState(null);
+    const { chatState } = useContext(ChatContext);
+    const { userState } = useContext(UserContext);
+    const { uiState } = useContext(UIContext);
 
-  const { chatState } = useContext(ChatContext)
-  const { userState } = useContext(UserContext)
-  const { uiState } = useContext(UIContext)
+    useEffect(() => {
+        scrollToBottom();
+    }, [chatState.messages.length]);
 
-  useEffect(() => {
-    scrollToBottom()
-  }, [chatState.messages.length])
+    function scrollToBottom() {
+        scrollDiv.current.scrollIntoView({ behavior: "smooth" });
+    }
+    return (
+        <Grid container>
+            {chatState.messages.length
+                ? chatState.messages.map((message) => (
+                      <Fragment key={message.id}>
+                          {userState.currentUser.id !== message.sender.id ? (
+                              <Grid item xs={12} md={12} sm={12}>
+                                  <Paper
+                                      className={classes.partner}
+                                      style={{
+                                          backgroundColor: uiState.darkMode
+                                              ? "seagreen"
+                                              : "rgb(240,242,245)",
+                                          color: uiState.darkMode && "#fff",
+                                      }}
+                                  >
+                                      {message.body.text && (
+                                          <Typography style={{ wordWrap: "break-word" }}>
+                                              {message.body.text}
+                                          </Typography>
+                                      )}
+                                      {message.body.image && (
+                                          <CardMedia
+                                              component={
+                                                  message.body.image
+                                                      .split(".")
+                                                      .pop()
+                                                      .substring(0, 3) === "mp4"
+                                                      ? "video"
+                                                      : "img"
+                                              }
+                                              style={{
+                                                  width: "100%",
+                                                  height: "100%",
+                                                  objectFit: "contain",
+                                              }}
+                                              image={message.body.image}
+                                              title="Paella dish"
+                                              controls
+                                          />
+                                      )}
+                                      <Typography className={classes.date}>
+                                          {moment(message.createdAt).fromNow()}
+                                      </Typography>
+                                  </Paper>
+                              </Grid>
+                          ) : (
+                              <Grid
+                                  item
+                                  md={12}
+                                  xs={12}
+                                  sm={12}
+                                  style={{
+                                      marginTop: "16px",
+                                      display: "flex",
+                                      flexDirection: "row-reverse",
+                                  }}
+                              >
+                                  <Paper
+                                      className={classes.me}
+                                      style={{
+                                          backgroundColor: uiState.darkMode
+                                              ? "rgb(1,133,243)"
+                                              : "rgb(220,245,198)",
+                                          color: uiState.darkMode && "#fff",
+                                      }}
+                                  >
+                                      {message.body.text && (
+                                          <Typography style={{ wordWrap: "break-word" }}>
+                                              {message.body.text}
+                                          </Typography>
+                                      )}
+                                      {message.body.image && (
+                                          <CardMedia
+                                              component={
+                                                  message.body.image
+                                                      .split(".")
+                                                      .pop()
+                                                      .substring(0, 3) === "mp4"
+                                                      ? "video"
+                                                      : "img"
+                                              }
+                                              style={{
+                                                  width: "100%",
+                                                  height: "100%",
+                                                  objectFit: "contain",
+                                              }}
+                                              image={message.body.image}
+                                              title="Paella dish"
+                                              controls
+                                          />
+                                      )}
+                                      <Typography
+                                          className={classes.date}
+                                          style={{ color: uiState.darkMode ? "#fff" : "#00000099" }}
+                                      >
+                                          {moment(message.createdAt).fromNow()}
+                                      </Typography>
+                                  </Paper>
+                                  <Fragment key={message.id}>
+                                      <IconButton onClick={(e) => setIsOpen(e.currentTarget)}>
+                                          <MoreHoriz />
+                                      </IconButton>
 
-  function scrollToBottom() {
-    scrollDiv.current.scrollIntoView({ behavior: 'smooth' })
-  }
-  return (
-    <Grid container>
-      {chatState.messages.length
-        ? chatState.messages.map((message) => (
-            <Fragment key={message.id}>
-              {userState.currentUser.id !== message.sender.id ? (
-                <Grid item xs={12} md={12} sm={12}>
-                  <Paper
-                    className={classes.partner}
-                    style={{
-                      backgroundColor: uiState.darkMode
-                        ? 'seagreen'
-                        : 'rgb(240,242,245)',
-                      color: uiState.darkMode && '#fff',
-                    }}
-                  >
-                    {message.body.text && (
-                      <Typography style={{ wordWrap: 'break-word' }}>
-                        {message.body.text}
-                      </Typography>
-                    )}
-                    {message.body.image && (
-                      <CardMedia
-                        component={message.body.image.split('.').pop().substring(0, 3) === "mp4" ? "video" : "img"}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'contain',
-                        }}
-                        image={message.body.image}
-                        title="Paella dish"
-                        controls
-                      />
-                    )}
-                    <Typography className={classes.date}>
-                      {moment(message.createdAt).fromNow()}
-                    </Typography>
-                  </Paper>
-                </Grid>
-              ) : (
-                <Grid
-                  item
-                  md={12}
-                  xs={12}
-                  sm={12}
-                  style={{ marginTop: '16px', display: "flex", flexDirection: "row-reverse" }}
-                >
-                  <Paper
-                    className={classes.me}
-                    style={{
-                      backgroundColor: uiState.darkMode
-                        ? 'rgb(1,133,243)'
-                        : 'rgb(220,245,198)',
-                      color: uiState.darkMode && '#fff',
-                    }}
-                  >
-                    {message.body.text && (
-                      <Typography style={{ wordWrap: 'break-word' }}>
-                        {message.body.text}
-                      </Typography>
-                    )}
-                    {message.body.image && (
-                      <CardMedia
-                        component={message.body.image.split('.').pop().substring(0, 3) === "mp4" ? "video" : "img"}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'contain',
-                        }}
-                        image={message.body.image}
-                        title="Paella dish"
-                        controls
-                      />
-                    )}
-                    <Typography
-                      className={classes.date}
-                      style={{ color: uiState.darkMode ? '#fff' : '#00000099' }}
-                    >
-                      {moment(message.createdAt).fromNow()}
-                    </Typography>
-                  </Paper>
-                  <Fragment key={message.id}>
-                    <IconButton onClick={(e) => setIsOpen(e.currentTarget)}>
-                      <MoreHoriz />
-                    </IconButton>
-
-                    <Menu
-                      id="message-action-menu"
-                      anchorEl={isOpen}
-                      open={Boolean(isOpen)}
-                      onClose={() => setIsOpen(null)}
-                    >
-                      <MenuItem 
-                        onClick={() => {
-                          setIsOpen(null)
-                          setTextValue(message.body.text);
-                        }}
-                      >
-                        Edit {message.body.text && message.body.text}
-                      </MenuItem>
-                      <MenuItem onClick={() => {
-                        // deleteMessage(message.id).then((res) => {
-                        //   if (res.data.message === "success") {
-                        //     const newComments = postState.post.comments.filter(item => message.id !== item.id);
-                        //     postDispatch({ type: 'DELETE_MESSAGE', payload: newComments })
-                        //   }
-                        // })
-                      }}>
-                        Delete
-                      </MenuItem>
-                    </Menu>
-                  </Fragment>
-                </Grid>
-              )}
-            </Fragment>
-          ))
-        : null}
-      <div ref={scrollDiv} />
-    </Grid>
-  )
+                                      <Menu
+                                          id="message-action-menu"
+                                          anchorEl={isOpen}
+                                          open={Boolean(isOpen)}
+                                          onClose={() => setIsOpen(null)}
+                                      >
+                                          <MenuItem
+                                              onClick={() => {
+                                                  setIsOpen(null);
+                                                  setTextValue(message.body.text);
+                                              }}
+                                          >
+                                              Edit {message.body.text && message.body.text}
+                                          </MenuItem>
+                                          <MenuItem
+                                              onClick={() => {
+                                                  // deleteMessage(message.id).then((res) => {
+                                                  //   if (res.data.message === "success") {
+                                                  //     const newComments = postState.post.comments.filter(item => message.id !== item.id);
+                                                  //     postDispatch({ type: 'DELETE_MESSAGE', payload: newComments })
+                                                  //   }
+                                                  // })
+                                              }}
+                                          >
+                                              Delete
+                                          </MenuItem>
+                                      </Menu>
+                                  </Fragment>
+                              </Grid>
+                          )}
+                      </Fragment>
+                  ))
+                : null}
+            <div ref={scrollDiv} />
+        </Grid>
+    );
 }
 
-export default Messages
+export default Messages;

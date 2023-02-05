@@ -48,7 +48,7 @@ function Home() {
             uiDispatch({ type: "SET_NAV_MENU", payload: false });
             uiDispatch({ type: "SET_DRAWER", payload: false });
         };
-    }, []);
+    }, [fetchPosts, uiDispatch]);
 
     return (
         <div>
@@ -74,6 +74,7 @@ function Home() {
                                             }}
                                         >
                                             <img
+                                                alt="avatar"
                                                 src={userState.currentUser.profile_pic}
                                                 width="100%"
                                                 height="100%"

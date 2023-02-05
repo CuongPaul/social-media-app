@@ -65,7 +65,7 @@ const UserReducer = (state, action) => {
             }
 
         case "UPDATE_USER":
-            const newItemUser_2 = state.users.findIndex((user) => user.id == action.payload.id);
+            const newItemUser_2 = state.users.findIndex((user) => user.id === action.payload.id);
 
             if (newItemUser_2 !== -1) {
                 state.users[newItemUser_2] = action.payload;
@@ -93,7 +93,7 @@ const UserReducer = (state, action) => {
 
         case "FRIEND_OFFLINE":
             const indexOfFriendOffline = state.currentUser.friends.findIndex(
-                (user) => user.id == action.payload
+                (user) => user.id === action.payload
             );
 
             if (indexOfFriendOffline !== -1) {
@@ -104,7 +104,7 @@ const UserReducer = (state, action) => {
 
         case "FRIEND_ONLINE":
             const indexOfFriendOnline = state.currentUser.friends.findIndex(
-                (user) => user.id == action.payload
+                (user) => user.id === action.payload
             );
 
             if (indexOfFriendOnline !== -1) {

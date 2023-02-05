@@ -1,4 +1,4 @@
-import { faMap, faSmile } from "@fortawesome/free-solid-svg-icons";
+import { faMap } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     Button,
@@ -26,7 +26,6 @@ function LocationField({ body, setBody }) {
             </Tooltip>
 
             <Dialog
-                disableBackdropClick
                 disableEscapeKeyDown
                 fullWidth
                 scroll="body"

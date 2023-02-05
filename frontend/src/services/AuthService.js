@@ -1,7 +1,6 @@
 import axios from "axios";
 
 const baseURL = process.env.REACT_APP_BASE_API_URL;
-const token = localStorage.token && JSON.parse(localStorage.token);
 
 const signin = async (userInfo) => {
     try {
@@ -9,14 +8,21 @@ const signin = async (userInfo) => {
             method: "POST",
             url: "/signin",
             data: userInfo,
+            timeout: 3 * 1000,
             baseURL: `${baseURL}/api/auth`,
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        if (err.response) {
+            return { status: err.response.status, error: err.response.data.error };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -26,19 +32,28 @@ const signup = async (userInfo) => {
             method: "POST",
             url: "/signup",
             data: userInfo,
+            timeout: 3 * 1000,
             baseURL: `${baseURL}/api/auth`,
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        return {
-            errorMessage: err.response.data.message,
-        };
+        if (err.response) {
+            return { status: err.response.status, error: err.response.data.error };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
 const signout = async () => {
     try {
+        const token = localStorage.token && JSON.parse(localStorage.token);
+
         const { data } = await axios({
             method: "GET",
             url: "/signout",
@@ -46,13 +61,9 @@ const signout = async () => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        return data.data;
+        return data;
     } catch (err) {
-        localStorage.token && localStorage.removeItem("token");
-
-        return {
-            errorMessage: err.response.data.message,
-        };
+        throw new Error(err.response.data.message);
     }
 };
 

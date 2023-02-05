@@ -1,10 +1,9 @@
-import { Avatar, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import React from "react";
-import AvartarText from "../../../UI/AvartarText";
 
 function CustomHeaderText({ userState, body }) {
     function filterUserById(user_id) {
-        return userState.users.find((usr) => usr.id == user_id);
+        return userState.users.find((usr) => usr.id === user_id);
     }
     return (
         <Typography>
