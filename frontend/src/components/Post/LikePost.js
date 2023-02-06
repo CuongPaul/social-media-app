@@ -1,5 +1,5 @@
-import React, { Fragment, useContext } from "react";
 import { Button } from "@material-ui/core";
+import React, { Fragment, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThumbsUp } from "@fortawesome/free-regular-svg-icons";
 import { faThumbsUp as filledLike } from "@fortawesome/free-solid-svg-icons";
@@ -7,10 +7,10 @@ import { faThumbsUp as filledLike } from "@fortawesome/free-solid-svg-icons";
 import { PostContext, UIContext, UserContext } from "../../App";
 import { reactPost } from "../../services/PostServices";
 
-function LikePost({ post }) {
-    const { postDispatch } = useContext(PostContext);
+const LikePost = ({ post }) => {
     const { uiDispatch } = useContext(UIContext);
     const { userState } = useContext(UserContext);
+    const { postDispatch } = useContext(PostContext);
 
     const isLiked = () => {
         return post.likes.includes(userState.currentUser.id);
@@ -64,6 +64,6 @@ function LikePost({ post }) {
             </Button>
         </Fragment>
     );
-}
+};
 
 export default LikePost;

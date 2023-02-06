@@ -2,20 +2,20 @@ import mongoose from "mongoose";
 
 const { model, Schema } = mongoose;
 
-const userIdRefType = { ref: "User", type: Schema.Types.ObjectId };
+const UserIdRefType = { ref: "user", type: Schema.Types.ObjectId };
 
 const reactSchema = new Schema(
     {
-        wow: [userIdRefType],
-        sad: [userIdRefType],
-        like: [userIdRefType],
-        love: [userIdRefType],
-        haha: [userIdRefType],
-        angry: [userIdRefType],
+        wow: [UserIdRefType],
+        sad: [UserIdRefType],
+        like: [UserIdRefType],
+        love: [UserIdRefType],
+        haha: [UserIdRefType],
+        angry: [UserIdRefType],
     },
-    { timestamps: true }
+    { timestamps: true, versionKey: false }
 );
 
-const reactModel = model("React", reactSchema);
+const React = model("react", reactSchema);
 
-export default reactModel;
+export default React;

@@ -1,17 +1,18 @@
+import React from "react";
 import {
+    Paper,
     Avatar,
+    IconButton,
+    Typography,
     CardHeader,
     DialogContent,
-    IconButton,
-    Paper,
-    Typography,
 } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
-import React from "react";
+
 import AvartarText from "../../../UI/AvartarText";
 import CustomHeaderText from "./CustomHeaderText";
 
-function DialogHeader({ userState, handleCloseDialog, body }) {
+const DialogHeader = ({ userState, handleCloseDialog, body }) => {
     return (
         <div>
             <CardHeader
@@ -53,6 +54,6 @@ function DialogHeader({ userState, handleCloseDialog, body }) {
             </DialogContent>
         </div>
     );
-}
+};
 
 export default DialogHeader;

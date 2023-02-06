@@ -2,41 +2,19 @@ import mongoose from "mongoose";
 
 const { model, Schema } = mongoose;
 
-const objectIdType = Schema.Types.ObjectId;
+const ObjectIdType = Schema.Types.ObjectId;
 
 const commentSchema = new Schema(
     {
-        react: {
-            ref: "React",
-            type: objectIdType,
-        },
-        post: {
-            ref: "Post",
-            required: true,
-            type: objectIdType,
-        },
-        user: {
-            ref: "User",
-            required: true,
-            type: objectIdType,
-        },
-        content: {
-            required: true,
-            type: {
-                text: {
-                    trim: true,
-                    type: String,
-                },
-                image: {
-                    trim: true,
-                    type: String,
-                },
-            },
-        },
+        image: { trim: true, type: String },
+        react: { ref: "react", type: ObjectIdType },
+        text: { trim: true, type: String, required: true },
+        post: { ref: "post", required: true, type: ObjectIdType },
+        user: { ref: "user", required: true, type: ObjectIdType },
     },
-    { timestamps: true }
+    { timestamps: true, versionKey: false }
 );
 
-const commentModel = model("Comment", commentSchema);
+const Comment = model("comment", commentSchema);
 
-export default commentModel;
+export default Comment;

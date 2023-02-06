@@ -1,52 +1,55 @@
 import { useContext, useState } from "react";
-import axios from "axios";
-import { UIContext, PostContext } from "../../../App";
 import { useHistory } from "react-router-dom";
-import { storage } from "../../../firebase/firebase";
-const url = process.env.REACT_APP_BASE_API_URL;
+
+import { storage } from "../firebase/firebase";
+import { UIContext, PostContext } from "../App";
+import { createPost as createPostApi } from "../services/PostServices";
 
 const useCreatePost = ({ postData, body, isImageCaptured, postImage, blob }) => {
-    const history = useHistory();
-
-    const [loading, setLoading] = useState(false);
     const { uiDispatch } = useContext(UIContext);
     const { postDispatch } = useContext(PostContext);
 
+    const history = useHistory();
+    const [error, setError] = useState();
+    const [loading, setLoading] = useState(false);
+
     const createPost = async (data) => {
         setLoading(true);
-        let token = localStorage.token && JSON.parse(localStorage.getItem("token"));
+
         try {
-            const response = await axios.post(`${url}/api/post/`, data, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            const { status, message } = await createPostApi(data);
 
             setLoading(false);
-            postDispatch({ type: "ADD_POST", payload: response.data.post });
-            uiDispatch({
-                type: "SET_MESSAGE",
-                payload: {
-                    color: "success",
-                    display: true,
-                    text: response.data.message,
-                },
-            });
-            uiDispatch({ type: "SET_POST_MODEL", payload: false });
-            history.push("/");
-        } catch (err) {
-            setLoading(false);
-            if (err && err.response) {
+
+            if (message) {
+                postDispatch({ type: "ADD_POST", payload: data });
                 uiDispatch({
                     type: "SET_MESSAGE",
                     payload: {
                         display: true,
-                        text: err.response.data.error,
-                        color: "error",
+                        text: message,
+                        color: "success",
                     },
                 });
+                uiDispatch({ type: "SET_POST_MODEL", payload: false });
+                history.push("/");
+            } else {
+                if (status === 422) {
+                    setError({ ...error });
+                } else {
+                    uiDispatch({
+                        type: "SET_MESSAGE",
+                        payload: { text: error, display: true, color: "error" },
+                    });
+                }
             }
-            console.log(err);
+        } catch (err) {
+            setLoading(false);
+
+            uiDispatch({
+                type: "SET_MESSAGE",
+                payload: { text: err.message, display: true, color: "error" },
+            });
         }
     };
 

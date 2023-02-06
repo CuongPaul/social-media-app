@@ -1,35 +1,34 @@
-import React, { useContext, useState } from "react";
-import { UserContext, UIContext } from "../../App";
-import { signout } from "../../services/AuthService";
-import { Link, useHistory } from "react-router-dom";
 import {
     Menu,
-    IconButton,
     List,
+    Avatar,
+    Switch,
     ListItem,
+    useTheme,
+    Typography,
+    IconButton,
     ListItemIcon,
     ListItemText,
-    Typography,
-    Avatar,
-    useTheme,
     useMediaQuery,
-    Switch,
 } from "@material-ui/core";
+import React, { useContext, useState } from "react";
+import { Link, useHistory } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
-import {
-    Settings as SettingsIcon,
-    ExitToApp as LogoutIcon,
-} from "@material-ui/icons";
-import AvartarText from "../UI/AvartarText";
 import { faMoon, faSun } from "@fortawesome/free-regular-svg-icons";
-function ProfileMenu() {
-    const history = useHistory();
-    const { userState, userDispatch } = useContext(UserContext);
+import { Settings as SettingsIcon, ExitToApp as LogoutIcon } from "@material-ui/icons";
+
+import AvartarText from "../UI/AvartarText";
+import { UserContext, UIContext } from "../../App";
+import { signout } from "../../services/AuthService";
+
+const ProfileMenu = () => {
     const { uiState, uiDispatch } = useContext(UIContext);
-    const [profileMenu, setProfileMenu] = useState(null);
+    const { userState, userDispatch } = useContext(UserContext);
 
     const theme = useTheme();
+    const history = useHistory();
+    const [profileMenu, setProfileMenu] = useState(null);
     const xsScreen = useMediaQuery(theme.breakpoints.only("xs"));
 
     const handleUserLogout = () => {
@@ -58,6 +57,7 @@ function ProfileMenu() {
                 console.log(err);
             });
     };
+
     return (
         <div>
             <IconButton
@@ -68,10 +68,7 @@ function ProfileMenu() {
                 }}
                 onClick={(e) => setProfileMenu(e.currentTarget)}
             >
-                <FontAwesomeIcon
-                    icon={faChevronDown}
-                    size={xsScreen ? "xs" : "sm"}
-                />
+                <FontAwesomeIcon icon={faChevronDown} size={xsScreen ? "xs" : "sm"} />
             </IconButton>
 
             <Menu
@@ -83,11 +80,7 @@ function ProfileMenu() {
                 elevation={7}
             >
                 <List>
-                    <ListItem
-                        button
-                        component={Link}
-                        to={`/profile/${userState.currentUser.id}`}
-                    >
+                    <ListItem button component={Link} to={`/profile/${userState?.currentUser.id}`}>
                         <ListItemIcon>
                             {userState.currentUser.profile_pic ? (
                                 <Avatar
@@ -106,18 +99,12 @@ function ProfileMenu() {
                             ) : (
                                 <AvartarText
                                     text={userState.currentUser.name}
-                                    bg={
-                                        userState.currentUser.active
-                                            ? "seagreen"
-                                            : "tomato"
-                                    }
+                                    bg={userState.currentUser.active ? "seagreen" : "tomato"}
                                 />
                             )}
                         </ListItemIcon>
                         <ListItemText style={{ marginLeft: "8px" }}>
-                            <Typography
-                                style={{ fontSize: "17px", fontWeight: "700" }}
-                            >
+                            <Typography style={{ fontSize: "17px", fontWeight: "700" }}>
                                 {userState.currentUser.name}
                             </Typography>
                             <Typography>See Your Profile</Typography>
@@ -136,10 +123,7 @@ function ProfileMenu() {
                             </Avatar>
                         </ListItemIcon>
                         <ListItemText>
-                            <Typography style={{ fontSize: "15px" }}>
-                                {" "}
-                                Settings
-                            </Typography>
+                            <Typography style={{ fontSize: "15px" }}> Settings</Typography>
                         </ListItemText>
                     </ListItem>
 
@@ -185,16 +169,13 @@ function ProfileMenu() {
                             </Avatar>
                         </ListItemIcon>
                         <ListItemText>
-                            <Typography style={{ fontSize: "15px" }}>
-                                {" "}
-                                Logout
-                            </Typography>
+                            <Typography style={{ fontSize: "15px" }}> Logout</Typography>
                         </ListItemText>
                     </ListItem>
                 </List>
             </Menu>
         </div>
     );
-}
+};
 
 export default ProfileMenu;

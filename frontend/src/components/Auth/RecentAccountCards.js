@@ -27,7 +27,8 @@ const RecentAccountCards = ({ account }) => {
 
     const [isOpenLoginCard, setIsOpenLoginCard] = useState(false);
 
-    const { error, loading, handleSignin, handleChangePassword } = useSignin(account);
+    const { error, loading, handleSignin, handleChangePassword } =
+        useSignin(account);
 
     const handleRemoveAccount = (account_id) => {
         userDispatch({ type: "REMOVE_RECENT_ACCOUNT", payload: account_id });
@@ -46,7 +47,10 @@ const RecentAccountCards = ({ account }) => {
             <Card style={{ position: "relative" }}>
                 <CardActionArea onClick={() => setIsOpenLoginCard(true)}>
                     {account.avatar_image ? (
-                        <CardMedia style={{ height: "150px" }} image={account.avatar_image} />
+                        <CardMedia
+                            style={{ height: "150px" }}
+                            image={account.avatar_image}
+                        />
                     ) : (
                         <CardMedia
                             style={{
@@ -113,7 +117,6 @@ const RecentAccountCards = ({ account }) => {
                                 </IconButton>
                             }
                         />
-
                         {account.avatar_image ? (
                             <CardMedia
                                 style={{
@@ -175,7 +178,11 @@ const RecentAccountCards = ({ account }) => {
                                         style={{ marginTop: "16px" }}
                                         onChange={handleChangePassword}
                                         error={error?.password ? true : false}
-                                        helperText={error?.password ? error.password : null}
+                                        helperText={
+                                            error?.password
+                                                ? error.password
+                                                : null
+                                        }
                                     />
                                 </FormControl>
                                 <Button

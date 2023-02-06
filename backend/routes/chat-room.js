@@ -1,33 +1,85 @@
 import express from "express";
+import { validate } from "express-validation";
 
 import {
-    joinChatRoom,
-    leaveChatRoom,
-    createChatRoom,
-    deleteChatRoom,
-    searchChatRooms,
-    updateNameChatRoom,
-    addMembersToChatRoom,
-    updateAvatarChatRoom,
-    removeMemberChatRoom,
-    updatePrivacyChatRoom,
-    getChatRoomsByCurrentUser,
+    changeAdminValidation,
+    joinChatRoomValidation,
+    leaveChatRoomValidation,
+    createChatRoomValidation,
+    deleteChatRoomValidation,
+    searchChatRoomsValidation,
+    updateNameChatRoomValidation,
+    updateAvatarChatRoomValidation,
+    updateMemberChatRoomValidation,
+    updatePrivacyChatRoomValidation,
+} from "../validator/chat-room";
+import {
+    changeAdminController,
+    joinChatRoomController,
+    leaveChatRoomController,
+    createChatRoomController,
+    deleteChatRoomController,
+    searchChatRoomsController,
+    getChatRoomsByUserController,
+    updateNameChatRoomController,
+    updateAvatarChatRoomController,
+    updateMemberChatRoomController,
+    updatePrivacyChatRoomController,
 } from "../controllers/chat-room";
 import verifyToken from "../middleware/verify-token";
 
 const router = express.Router();
 
-router.post("/", verifyToken, createChatRoom);
-router.get("/search", verifyToken, searchChatRooms);
-router.get("/", verifyToken, getChatRoomsByCurrentUser);
-router.put("/join-chat/:chatRoomId", verifyToken, joinChatRoom);
-router.put("/leave-chat/:chatRoomId", verifyToken, leaveChatRoom);
-
-router.delete("/:chatRoomId", verifyToken, deleteChatRoom);
-router.put("/update-name/:chatRoomId", verifyToken, updateNameChatRoom);
-router.put("/add-member/:chatRoomId", verifyToken, addMembersToChatRoom);
-router.put("/update-avatar/:chatRoomId", verifyToken, updateAvatarChatRoom);
-router.put("/remove-member/:chatRoomId", verifyToken, removeMemberChatRoom);
-router.put("/update-privacy/:chatRoomId", verifyToken, updatePrivacyChatRoom);
+router.put(
+    "/change-admin/:chatRoomId",
+    validate(changeAdminValidation),
+    verifyToken,
+    changeAdminController
+);
+router.put(
+    "/join-chat/:chatRoomId",
+    validate(joinChatRoomValidation),
+    verifyToken,
+    joinChatRoomController
+);
+router.put(
+    "/leave-chat/:chatRoomId",
+    validate(leaveChatRoomValidation),
+    verifyToken,
+    leaveChatRoomController
+);
+router.delete(
+    "/:chatRoomId",
+    validate(deleteChatRoomValidation),
+    verifyToken,
+    deleteChatRoomController
+);
+router.put(
+    "/update-name/:chatRoomId",
+    validate(updateNameChatRoomValidation),
+    verifyToken,
+    updateNameChatRoomController
+);
+router.put(
+    "/update-member/:chatRoomId",
+    validate(updateMemberChatRoomValidation),
+    verifyToken,
+    updateMemberChatRoomController
+);
+router.put(
+    "/update-avatar/:chatRoomId",
+    validate(updateAvatarChatRoomValidation),
+    verifyToken,
+    updateAvatarChatRoomController
+);
+router.put(
+    "/update-privacy/:chatRoomId",
+    validate(updatePrivacyChatRoomValidation),
+    verifyToken,
+    updatePrivacyChatRoomController
+);
+router.get("/", verifyToken, getChatRoomsByUserController);
+router.post("/", validate(createChatRoomValidation), verifyToken, createChatRoomController);
+router.get("/search", validate(searchChatRoomsValidation), verifyToken, searchChatRoomsController);
 
 export default router;

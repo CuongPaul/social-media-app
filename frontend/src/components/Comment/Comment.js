@@ -1,32 +1,39 @@
 import {
+    Menu,
+    List,
     Avatar,
     Button,
     Divider,
-    CardMedia,
-    Typography,
-    List,
     ListItem,
-    ListItemText,
-    ListItemAvatar,
-    IconButton,
-    Menu,
     MenuItem,
     TextField,
+    CardMedia,
+    Typography,
+    IconButton,
+    ListItemText,
+    ListItemAvatar,
 } from "@material-ui/core";
 import React, { useContext, useState } from "react";
 import { MoreHoriz, SendOutlined } from "@material-ui/icons";
-import AvartarText from "../UI/AvartarText";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faThumbsUp as filledLike } from "@fortawesome/free-solid-svg-icons";
 import { faThumbsUp } from "@fortawesome/free-regular-svg-icons";
-import { reactComment, updateComment, deleteComment } from "../../services/CommentService";
+import { faThumbsUp as filledLike } from "@fortawesome/free-solid-svg-icons";
+
+import AvartarText from "../UI/AvartarText";
 import { PostContext, UserContext, UIContext } from "../../App";
-function Comment({ comment }) {
-    const { postState, postDispatch } = useContext(PostContext);
+import { reactComment, updateComment, deleteComment } from "../../services/CommentService";
+
+const Comment = ({ comment }) => {
     const { userState } = useContext(UserContext);
     const { uiDispatch, uiState } = useContext(UIContext);
+    const { postState, postDispatch } = useContext(PostContext);
 
-    function handleLikeComment() {
+    const [error, setError] = useState("");
+    const [isOpen, setIsOpen] = useState(null);
+    const [isEdit, setIsEdit] = useState(false);
+    const [commentText, setCommentText] = useState(comment.body.text ? comment.body.text : "");
+
+    const handleLikeComment = () => {
         reactComment(comment.id).then((res) => {
             if (res.data) {
                 postDispatch({ type: "LIKE_UNLIKE_COMMENT", payload: res.data.comment });
@@ -36,16 +43,12 @@ function Comment({ comment }) {
                 });
             }
         });
-    }
+    };
 
-    function isLiked() {
+    const isLiked = () => {
         return comment.likes.includes(userState.currentUser.id);
-    }
+    };
 
-    const [isOpen, setIsOpen] = useState(null);
-    const [commentText, setCommentText] = useState(comment.body.text ? comment.body.text : "");
-    const [isEdit, setIsEdit] = useState(false);
-    const [error, setError] = useState("");
     const handleEditComment = (e) => {
         setError("");
         setCommentText(e.target.value);
@@ -203,6 +206,6 @@ function Comment({ comment }) {
             </List>
         </div>
     );
-}
+};
 
 export default Comment;

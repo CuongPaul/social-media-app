@@ -1,9 +1,10 @@
 import React, { Fragment, useContext } from "react";
 import { Avatar, Typography, Card, CardActionArea, CardContent } from "@material-ui/core";
-import { UIContext, UserContext } from "../../App";
-import AvartarText from "../UI/AvartarText";
 
-function Friend({ user, children }) {
+import AvartarText from "../UI/AvartarText";
+import { UIContext, UserContext } from "../../App";
+
+const Friend = ({ user, children }) => {
     const { userDispatch } = useContext(UserContext);
     const { uiState, uiDispatch } = useContext(UIContext);
 
@@ -61,11 +62,10 @@ function Friend({ user, children }) {
                         </div>
                     </CardContent>
                 </CardActionArea>
-
                 {children}
             </Card>
         </Fragment>
     );
-}
+};
 
 export default Friend;

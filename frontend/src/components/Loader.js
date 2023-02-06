@@ -1,14 +1,15 @@
 import React from "react";
 import { Paper, CircularProgress } from "@material-ui/core";
-function Loader() {
+
+const Loader = () => {
     return (
         <div
             style={{
-                minHeight: "100vh",
-                minWidth: "100vw",
                 display: "flex",
-                flexDirection: "column",
+                minWidth: "100vw",
+                minHeight: "100vh",
                 alignItems: "center",
+                flexDirection: "column",
                 justifyContent: "center",
             }}
         >
@@ -17,6 +18,6 @@ function Loader() {
             </Paper>
         </div>
     );
-}
+};
 
 export default Loader;

@@ -1,32 +1,33 @@
-import React, { useState } from "react";
 import {
+    List,
     Avatar,
     Button,
     Dialog,
-    DialogActions,
-    DialogContent,
-    IconButton,
-    List,
-    ListItemIcon,
-    ListItemText,
+    ListItem,
     TextField,
     Typography,
-    ListItem,
+    IconButton,
+    ListItemIcon,
+    ListItemText,
+    DialogActions,
+    DialogContent,
     CircularProgress,
 } from "@material-ui/core";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import useSearchFriends from "../../hooks/useSearchFriends";
 import { Search } from "@material-ui/icons";
-import AvartarText from "../UI/AvartarText";
 
-function SearchFriends() {
-    const [open, setOpen] = useState(true);
+import AvartarText from "../UI/AvartarText";
+import useSearchFriends from "../../hooks/useSearchFriends";
+
+const SearchFriends = () => {
     const [name, setName] = useState("");
-    const { searchFriends, friends, loading } = useSearchFriends();
+    const [open, setOpen] = useState(true);
 
     const handleSearch = () => {
         searchFriends(name);
     };
+
     const handleClose = () => {
         setOpen(false);
     };
@@ -34,6 +35,8 @@ function SearchFriends() {
     const handleOpen = () => {
         setOpen(true);
     };
+
+    const { searchFriends, friends, loading } = useSearchFriends();
 
     return (
         <div>
@@ -125,6 +128,6 @@ function SearchFriends() {
             </Dialog>
         </div>
     );
-}
+};
 
 export default SearchFriends;

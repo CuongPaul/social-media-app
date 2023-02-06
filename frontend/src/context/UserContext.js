@@ -2,7 +2,7 @@ import { filterArray } from "../utils/filter-array";
 
 const initialUserState = {
     users: [],
-    socketio: null,
+    socketIO: null,
     currentUser: null,
     isLoggedIn: false,
     recentAccounts: [],
@@ -84,6 +84,7 @@ const UserReducer = (state, action) => {
             return {
                 ...state,
                 users: [],
+                socketIO: null,
                 isLoggedIn: false,
                 currentUser: null,
                 sendedFriendRequests: [],
@@ -92,26 +93,26 @@ const UserReducer = (state, action) => {
             };
 
         case "FRIEND_OFFLINE":
-            const indexOfFriendOffline = state.currentUser.friends.findIndex(
-                (user) => user.id === action.payload
-            );
+            const friends_1 = [...state.currentUser.friends];
 
-            if (indexOfFriendOffline !== -1) {
-                state.currentUser.friends[indexOfFriendOffline].active = false;
+            const indexOfFriendOffline_1 = friends_1.indexOf(action.payload);
+
+            if (indexOfFriendOffline_1 !== -1) {
+                friends_1[indexOfFriendOffline_1].active = false;
             }
 
-            return { ...state };
+            return { ...state, currentUser: { ...state.currentUser, friends: [...friends_1] } };
 
         case "FRIEND_ONLINE":
-            const indexOfFriendOnline = state.currentUser.friends.findIndex(
-                (user) => user.id === action.payload
-            );
+            const friends_2 = [...state.currentUser.friends];
 
-            if (indexOfFriendOnline !== -1) {
-                state.currentUser.friends[indexOfFriendOnline].active = true;
+            const indexOfFriendOffline_2 = friends_2.indexOf(action.payload);
+
+            if (indexOfFriendOffline_2 !== -1) {
+                friends_2[indexOfFriendOffline_2].active = true;
             }
 
-            return { ...state };
+            return { ...state, currentUser: { ...state.currentUser, friends: [...friends_2] } };
 
         case "SET_FRIENDS_REQUEST_SENDED":
             return { ...state, sendedFriendRequests: action.payload };
@@ -176,7 +177,7 @@ const UserReducer = (state, action) => {
             return { ...state, selectedUserProfile: null };
 
         case "SET_SOCKETIO":
-            return { ...state, ocketio: action.payload };
+            return { ...state, socketIO: action.payload };
 
         default:
             throw new Error(`Action type ${action.type} is undefined`);

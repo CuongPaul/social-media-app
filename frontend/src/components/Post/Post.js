@@ -1,22 +1,23 @@
-import React, { useContext, useState } from "react";
 import moment from "moment";
 import {
-    Avatar,
     Card,
+    Menu,
+    Avatar,
+    MenuItem,
     CardHeader,
     IconButton,
     Typography,
-    Menu,
-    MenuItem,
 } from "@material-ui/core";
-import PostContent from "./PostContent";
-import PostFooter from "./PostFooter";
-import AvartarText from "../UI/AvartarText";
 import { MoreHoriz } from "@material-ui/icons";
+import React, { useContext, useState } from "react";
+
 import { UIContext } from "../../App";
+import PostFooter from "./PostFooter";
+import PostContent from "./PostContent";
+import AvartarText from "../UI/AvartarText";
 import { deletePost } from "../../services/PostServices";
 
-function Post({ post, handleDeletePost }) {
+const Post = ({ post, handleDeletePost }) => {
     const { uiState, uiDispatch } = useContext(UIContext);
     const [isOpen, setIsOpen] = useState(null);
 
@@ -95,6 +96,6 @@ function Post({ post, handleDeletePost }) {
             <PostFooter post={post} />
         </Card>
     );
-}
+};
 
 export default Post;

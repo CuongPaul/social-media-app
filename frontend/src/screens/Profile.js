@@ -1,12 +1,14 @@
-import React, { useContext, useEffect, useState } from "react";
-import { UserContext } from "../App";
 import { useParams } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+
+import { UserContext } from "../App";
 import { getUserById } from "../services/UserServices";
 import UserProfile from "../components/Profile/UserProfile";
 
-function Profile() {
-    const params = useParams();
+const Profile = () => {
     const { userState, userDispatch } = useContext(UserContext);
+
+    const params = useParams();
     const [user, setUser] = useState(null);
 
     useEffect(() => {
@@ -33,6 +35,6 @@ function Profile() {
     }, [params.userId, userState.currentUser, userDispatch, userState.users]);
 
     return <div>{user && <UserProfile user={user} />}</div>;
-}
+};
 
 export default Profile;

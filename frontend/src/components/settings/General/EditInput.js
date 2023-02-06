@@ -1,15 +1,16 @@
-import React, { useState } from "react";
 import {
     Button,
     Dialog,
+    TextField,
     DialogTitle,
     DialogContent,
-    TextField,
     DialogActions,
 } from "@material-ui/core";
+import React, { useState } from "react";
 
-function EditInput({ label, input, setInput, editAction, loading }) {
+const EditInput = ({ label, input, setInput, editAction, loading }) => {
     const [dialog, setDialog] = useState(false);
+
     const handleChange = (value) => {
         setInput(value);
     };
@@ -18,6 +19,7 @@ function EditInput({ label, input, setInput, editAction, loading }) {
         setDialog(false);
         editAction();
     };
+
     return (
         <div>
             <Button
@@ -46,6 +48,6 @@ function EditInput({ label, input, setInput, editAction, loading }) {
             </Dialog>
         </div>
     );
-}
+};
 
 export default EditInput;

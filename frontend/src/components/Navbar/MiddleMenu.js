@@ -1,12 +1,11 @@
 import React, { Fragment } from "react";
-import { NavLink, useLocation } from "react-router-dom";
 import { Button } from "@material-ui/core";
+import { NavLink, useLocation } from "react-router-dom";
+import { Home, HomeOutlined, Person, PersonOutlined } from "@material-ui/icons";
 
 import useStyles from "./styles";
 
-import { Home, HomeOutlined, Person, PersonOutlined } from "@material-ui/icons";
-
-function MiddleMenu() {
+const MiddleMenu = () => {
     const classes = useStyles();
     const location = useLocation();
 
@@ -43,6 +42,6 @@ function MiddleMenu() {
             </Button>
         </Fragment>
     );
-}
+};
 
 export default MiddleMenu;

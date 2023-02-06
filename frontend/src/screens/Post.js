@@ -1,35 +1,34 @@
 import {
-    Avatar,
     Card,
-    CardContent,
-    CardHeader,
-    CardMedia,
-    Container,
     Grid,
     Paper,
-    Typography,
-    useMediaQuery,
-    useTheme,
+    Avatar,
     Button,
+    useTheme,
+    CardMedia,
+    Container,
+    CardHeader,
+    Typography,
+    CardContent,
+    useMediaQuery,
 } from "@material-ui/core";
 import moment from "moment";
-import React, { useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import React, { useContext, useEffect } from "react";
+
 import { PostContext, UIContext } from "../App";
 import useFetchPost from "../hooks/useFetchPost";
 import Comment from "../components/Comment/Comment";
-
 import AvartarText from "../components/UI/AvartarText";
+import PostSubContent from "../components/Post/PostSubContent";
 import CommentTextArea from "../components/Comment/CommentTextArea";
 
-import PostSubContent from "../components/Post/PostSubContent";
-
-function Post() {
-    const { postState, postDispatch } = useContext(PostContext);
+const Post = () => {
     const { uiState } = useContext(UIContext);
-    const params = useParams();
+    const { postState, postDispatch } = useContext(PostContext);
 
     const theme = useTheme();
+    const params = useParams();
     const xsScreen = useMediaQuery(theme.breakpoints.only("xs"));
 
     const { fetchComments } = useFetchPost();
@@ -44,18 +43,19 @@ function Post() {
         };
     }, [fetchComments, params.postId, postDispatch, postState.posts]);
 
-    function isContent() {
+    const isContent = () => {
         return (
-            postState.post.body.feelings ||
-            postState.post.body.with.length ||
             postState.post.body.at ||
-            postState.post.body.date
+            postState.post.body.date ||
+            postState.post.body.feelings ||
+            postState.post.body.with.length
         );
-    }
+    };
 
     const handleFetchComments = () => {
         fetchComments(params.postId);
     };
+
     return (
         <div
             style={{
@@ -82,7 +82,10 @@ function Post() {
                                             <Avatar>
                                                 <img
                                                     src={postState.post.user.profile_pic}
-                                                    style={{ width: "100%", height: "100%" }}
+                                                    style={{
+                                                        width: "100%",
+                                                        height: "100%",
+                                                    }}
                                                     alt=""
                                                 />
                                             </Avatar>
@@ -154,7 +157,10 @@ function Post() {
                             Object.keys(postState.post.profilePostData).length ? (
                                 <>
                                     <CardMedia
-                                        style={{ width: "100%", height: "200px" }}
+                                        style={{
+                                            width: "100%",
+                                            height: "200px",
+                                        }}
                                         image={postState.post.profilePostData.coverImage}
                                         title={postState.post.user.name}
                                     />
@@ -188,7 +194,9 @@ function Post() {
                         md={5}
                         sm={12}
                         xs={12}
-                        style={{ marginBottom: !uiState.mdScreen ? "70px" : "0px" }}
+                        style={{
+                            marginBottom: !uiState.mdScreen ? "70px" : "0px",
+                        }}
                     >
                         <Paper
                             style={{
@@ -205,7 +213,12 @@ function Post() {
                                         <Comment comment={comment} />
                                     </div>
                                 ))}
-                                <div style={{ display: "flex", justifyContent: "center" }}>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "center",
+                                    }}
+                                >
                                     {postState.post.commentPagination.totalPage ===
                                     postState.post.commentPagination.currentPage ? (
                                         <Typography variant="h6" color="primary">
@@ -228,6 +241,6 @@ function Post() {
             </Container>
         </div>
     );
-}
+};
 
 export default Post;

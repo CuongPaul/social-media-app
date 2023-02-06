@@ -1,14 +1,14 @@
-import { useContext, useState } from "react";
-import axios from "axios";
-import { PostContext } from "../App";
+import { useState, useContext } from "react";
 
-const url = process.env.REACT_APP_BASE_API_URL;
+import { UIContext, PostContext } from "../App";
+import { getAllPosts } from "../services/PostServices";
+import { getCommentsByPost } from "../services/CommentService";
 
 const useFetchPost = () => {
-    const [loading, setLoading] = useState(false);
+    const { uiDispatch } = useContext(UIContext);
     const { postState, postDispatch } = useContext(PostContext);
 
-    let token = JSON.parse(localStorage.getItem("token"));
+    const [loading, setLoading] = useState(false);
 
     const fetchComments = async (post_id) => {
         if (
@@ -19,21 +19,15 @@ const useFetchPost = () => {
         }
         setLoading(true);
         try {
-            const res = await axios.get(
-                `${url}/api/post/${post_id}/comment/?page=${postState.post.commentPagination.currentPage}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            if (res.data) {
+            const { data } = await getCommentsByPost(post_id);
+
+            if (data) {
                 postDispatch({
                     type: "COMMENT_PAGINATION",
                     payload: {
-                        currentPage: res.data.pagination.currentPage + 1,
-                        totalPage: res.data.pagination.totalPage,
-                        comments: res.data.comments,
+                        currentPage: data.pagination.currentPage + 1,
+                        totalPage: data.pagination.totalPage,
+                        comments: data.comments,
                     },
                 });
             }
@@ -50,14 +44,10 @@ const useFetchPost = () => {
         } else {
             setLoading(true);
             try {
-                const { data } = await axios.get(
-                    `${url}/api/post/?page=${postState.postPagination.currentPage}`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
+                const { data } = await getAllPosts(postState.postPagination.currentPage);
+
+                setLoading(false);
+
                 if (data) {
                     postDispatch({
                         type: "POST_PAGINATION",
@@ -68,10 +58,17 @@ const useFetchPost = () => {
                         },
                     });
                 }
-                setLoading(false);
             } catch (err) {
                 setLoading(false);
-                console.log(err);
+
+                uiDispatch({
+                    type: "SET_MESSAGE",
+                    payload: {
+                        text: err.message,
+                        display: true,
+                        color: "error",
+                    },
+                });
             }
         }
     };

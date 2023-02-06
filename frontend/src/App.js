@@ -39,13 +39,13 @@ const Messenger = lazy(() => import("./screens/Messenger"));
 
 const App = () => {
     const token = localStorage.token && JSON.parse(localStorage.token);
+
     const [uiState, uiDispatch] = useReducer(UIReducer, initialUIState);
     const [userState, userDispatch] = useReducer(UserReducer, initialUserState);
     const [postState, postDispatch] = useReducer(PostReducer, initialPostState);
     const [chatState, chatDispatch] = useReducer(ChatReducer, initialChatState);
 
     const theme = useTheme();
-    const mdScreen = useMediaQuery(theme.breakpoints.up("md"));
     const Theme = useMemo(
         () =>
             createTheme({
@@ -58,44 +58,11 @@ const App = () => {
             }),
         [uiState.darkMode]
     );
+    const mdScreen = useMediaQuery(theme.breakpoints.up("md"));
 
     useEffect(() => {
         uiDispatch({ type: "SET_USER_SCREEN", payload: mdScreen });
     }, [mdScreen]);
-
-    useEffect(() => {
-        const loadCurrentUser = async () => {
-            if (token) {
-                const decodeToken = jwtDecode(token);
-
-                if (decodeToken.exp * 1000 > Date.now()) {
-                    userDispatch({ type: "LOGOUT_USER" });
-                } else {
-                    const { data } = await getCurrentUser();
-
-                    if (data) {
-                        userDispatch({
-                            payload: data,
-                            type: "SET_CURRENT_USER",
-                        });
-
-                        uiDispatch({
-                            payload: data,
-                            type: "SET_NOTIFICATIONS",
-                        });
-                    }
-                }
-            }
-        };
-
-        function loadRecentAccounts() {
-            const accounts = localStorage.accounts ? JSON.parse(localStorage.accounts) : [];
-            userDispatch({ type: "RECENT_ACCOUNTS", payload: accounts });
-        }
-
-        loadCurrentUser();
-        loadRecentAccounts();
-    }, [token]);
 
     useEffect(() => {
         if (userState.isLoggedIn) {
@@ -103,50 +70,30 @@ const App = () => {
 
             userDispatch({ type: "SET_SOCKETIO", payload: socketIO });
 
-            socketIO.on("connect", () => console.log("Ta Cuong"));
-
-            socketIO.on("user-offline", ({ user_id }) => {
+            socketIO.on("friend-offline", ({ user_id }) => {
                 userDispatch({ type: "FRIEND_OFFLINE", payload: user_id });
             });
 
-            socketIO.on("user-online", ({ user_id }) => {
+            socketIO.on("friend-online", ({ user_id }) => {
                 userDispatch({ type: "FRIEND_ONLINE", payload: user_id });
             });
 
             socketIO.on("friend-request-status", ({ sender }) => {
-                userDispatch({
-                    type: "ADD_FRIENDS_REQUEST_RECEIVED",
-                    payload: sender,
-                });
+                userDispatch({ type: "ADD_FRIENDS_REQUEST_RECEIVED", payload: sender });
             });
 
             socketIO.on("sended-friend-request-cancel", ({ requestId }) => {
-                userDispatch({
-                    type: "REMOVE_FRIENDS_REQUEST_RECEIVED",
-                    payload: requestId,
-                });
+                userDispatch({ type: "REMOVE_FRIENDS_REQUEST_RECEIVED", payload: requestId });
             });
 
             socketIO.on("friend-request-accept-status", ({ user, request_id }) => {
-                userDispatch({
-                    type: "ADD_FRIEND",
-                    payload: user,
-                });
-                userDispatch({
-                    type: "REMOVE_FRIENDS_REQUEST_RECEIVED",
-                    payload: request_id,
-                });
-                userDispatch({
-                    type: "REMOVE_FRIENDS_REQUEST_SENDED",
-                    payload: request_id,
-                });
+                userDispatch({ type: "ADD_FRIEND", payload: user });
+                userDispatch({ type: "REMOVE_FRIENDS_REQUEST_SENDED", payload: request_id });
+                userDispatch({ type: "REMOVE_FRIENDS_REQUEST_RECEIVED", payload: request_id });
             });
 
             socketIO.on("received-friend-request-decline", ({ requestId }) => {
-                userDispatch({
-                    type: "REMOVE_FRIENDS_REQUEST_SENDED",
-                    payload: requestId,
-                });
+                userDispatch({ type: "REMOVE_FRIENDS_REQUEST_SENDED", payload: requestId });
             });
 
             socketIO.on("new-post", ({ data }) => {
@@ -154,10 +101,7 @@ const App = () => {
             });
 
             socketIO.on("react-post", ({ data }) => {
-                postDispatch({
-                    type: "LIKE_UNLIKE_POST",
-                    payload: data,
-                });
+                postDispatch({ type: "LIKE_UNLIKE_POST", payload: data });
             });
 
             socketIO.on("post-comment", ({ data }) => {
@@ -165,10 +109,7 @@ const App = () => {
             });
 
             socketIO.on("react-comment", ({ data }) => {
-                postDispatch({
-                    type: "LIKE_UNLIKE_COMMENT",
-                    payload: data,
-                });
+                postDispatch({ type: "LIKE_UNLIKE_COMMENT", payload: data });
             });
 
             socketIO.on("new-message", ({ data }) => {
@@ -181,10 +122,47 @@ const App = () => {
 
             return () => {
                 socketIO.disconnect();
+
                 userDispatch({ type: "SET_SOCKETIO", payload: null });
             };
         }
     }, [userState.isLoggedIn]);
+
+    useEffect(() => {
+        const loadCurrentUser = async () => {
+            if (token) {
+                const decodeToken = jwtDecode(token);
+
+                if (decodeToken.exp * 1000 > Date.now()) {
+                    userDispatch({ type: "LOGOUT_USER" });
+                } else {
+                    try {
+                        const { data } = await getCurrentUser();
+
+                        if (data) {
+                            userDispatch({ type: "SET_CURRENT_USER", payload: data.user });
+
+                            uiDispatch({ type: "SET_NOTIFICATIONS", payload: data.notifications });
+                        }
+                    } catch (err) {
+                        uiDispatch({
+                            type: "SET_MESSAGE",
+                            payload: { text: err.message, display: true, color: "error" },
+                        });
+                    }
+                }
+            }
+        };
+
+        const loadRecentAccounts = () => {
+            const accounts = localStorage.accounts ? JSON.parse(localStorage.accounts) : [];
+
+            userDispatch({ type: "RECENT_ACCOUNTS", payload: accounts });
+        };
+
+        loadCurrentUser();
+        loadRecentAccounts();
+    }, [token]);
 
     return (
         <UIContext.Provider value={{ uiState, uiDispatch }}>
@@ -227,8 +205,8 @@ const App = () => {
                                                 />
                                                 <ProtectedRoute
                                                     exact
-                                                    path="/profile/:userId"
                                                     component={Profile}
+                                                    path="/profile/:userId"
                                                 />
                                                 <ProtectedRoute
                                                     exact
@@ -237,8 +215,8 @@ const App = () => {
                                                 />
                                                 <ProtectedRoute
                                                     exact
-                                                    path="/post/:postId"
                                                     component={Post}
+                                                    path="/post/:postId"
                                                 />
                                                 <ProtectedRoute
                                                     exact
@@ -261,8 +239,8 @@ const App = () => {
                                             <Alert
                                                 onClose={() =>
                                                     uiDispatch({
-                                                        type: "SET_MESSAGE",
                                                         payload: null,
+                                                        type: "SET_MESSAGE",
                                                     })
                                                 }
                                                 severity={uiState.message.color}

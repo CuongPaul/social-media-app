@@ -1,11 +1,7 @@
-import React from 'react'
+import React from "react";
 
-function TrigoInformation() {
-    return (
-        <div>
-            Trigo TrigoInformation
-        </div>
-    )
-}
+const TrigoInformation = () => {
+    return <div>Trigo TrigoInformation</div>;
+};
 
-export default TrigoInformation
+export default TrigoInformation;

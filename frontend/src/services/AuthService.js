@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseURL = process.env.REACT_APP_BASE_API_URL;
+const baseApiUrl = process.env.REACT_APP_BASE_API_URL;
 
 const signin = async (userInfo) => {
     try {
@@ -9,13 +9,16 @@ const signin = async (userInfo) => {
             url: "/signin",
             data: userInfo,
             timeout: 3 * 1000,
-            baseURL: `${baseURL}/api/auth`,
+            baseURL: `${baseApiUrl}/auth`,
         });
 
         return data;
     } catch (err) {
         if (err.response) {
-            return { status: err.response.status, error: err.response.data.error };
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
         } else {
             if (err.request) {
                 throw new Error("The connection has time out");
@@ -33,13 +36,16 @@ const signup = async (userInfo) => {
             url: "/signup",
             data: userInfo,
             timeout: 3 * 1000,
-            baseURL: `${baseURL}/api/auth`,
+            baseURL: `${baseApiUrl}/auth`,
         });
 
         return data;
     } catch (err) {
         if (err.response) {
-            return { status: err.response.status, error: err.response.data.error };
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
         } else {
             if (err.request) {
                 throw new Error("The connection has time out");
@@ -57,13 +63,25 @@ const signout = async () => {
         const { data } = await axios({
             method: "GET",
             url: "/signout",
-            baseURL: `${baseURL}/api/auth`,
+            timeout: 3 * 1000,
+            baseURL: `${baseApiUrl}//auth`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 

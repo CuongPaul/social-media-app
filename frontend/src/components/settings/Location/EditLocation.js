@@ -1,19 +1,21 @@
 import {
     Button,
     Dialog,
+    Typography,
     DialogTitle,
     DialogContent,
     DialogActions,
     CircularProgress,
-    Typography,
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import { LocationOn } from "@material-ui/icons";
 import React, { useState, useEffect } from "react";
+
 import useLocationService from "../../../hooks/useLocationService";
 
-function EditLocation({ location, setLocation, updateLocation, loading }) {
+const EditLocation = ({ location, setLocation, updateLocation }) => {
     const [dialog, setDialog] = useState(false);
+
     const { loading: locationLoading, error, data, setError, getLocation } = useLocationService();
 
     useEffect(() => {
@@ -66,6 +68,6 @@ function EditLocation({ location, setLocation, updateLocation, loading }) {
             </Dialog>
         </>
     );
-}
+};
 
 export default EditLocation;

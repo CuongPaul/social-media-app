@@ -5,8 +5,8 @@ import Messages from "../components/Chat/Messages";
 import DrawerBar from "../components/Navbar/DrawerBar";
 
 import Friends from "../components/Chat/Friends";
-import MessageTextArea from "../components/Chat/MessageTextArea";
-import FriendNotSelected from "../components/Chat/FriendNotSelected";
+import InputTextArea from "../components/Chat/InputTextArea";
+import EmptyMessageArea from "../components/Chat/EmptyMessageArea";
 import AvartarText from "../components/UI/AvartarText";
 
 function Messenger() {
@@ -142,11 +142,11 @@ function Messenger() {
                                         width: "100%",
                                     }}
                                 >
-                                    <MessageTextArea textValue={textValue} />
+                                    <InputTextArea textValue={textValue} />
                                 </div>
                             </Grid>
                         ) : (
-                            <FriendNotSelected />
+                            <EmptyMessageArea />
                         )}
                     </Grid>
                 </Paper>

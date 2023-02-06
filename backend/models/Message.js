@@ -2,41 +2,19 @@ import mongoose from "mongoose";
 
 const { model, Schema } = mongoose;
 
-const objectIdType = Schema.Types.ObjectId;
+const ObjectIdType = Schema.Types.ObjectId;
 
 const messageSchema = new Schema(
     {
-        react: {
-            ref: "React",
-            type: objectIdType,
-        },
-        room: {
-            required: true,
-            ref: "ChatRoom",
-            type: objectIdType,
-        },
-        sender: {
-            ref: "User",
-            required: true,
-            type: objectIdType,
-        },
-        content: {
-            required: true,
-            type: {
-                text: {
-                    trim: true,
-                    type: String,
-                },
-                image: {
-                    trim: true,
-                    type: String,
-                },
-            },
-        },
+        image: { trim: true, type: String },
+        react: { ref: "react", type: ObjectIdType },
+        text: { trim: true, type: String, required: true },
+        sender: { ref: "user", required: true, type: ObjectIdType },
+        chat_room: { required: true, ref: "chat-room", type: ObjectIdType },
     },
-    { timestamps: true }
+    { timestamps: true, versionKey: false }
 );
 
-const messageModel = model("Message", messageSchema);
+const Message = model("message", messageSchema);
 
-export default messageModel;
+export default Message;

@@ -4,6 +4,8 @@ import Server from "socket.io";
 import mongoose from "mongoose";
 import * as dotenv from "dotenv";
 import { createServer } from "http";
+import bodyParser from "body-parser";
+import { ValidationError } from "express-validation";
 
 import socketServer from "./socket";
 import AuthRoutes from "./routes/auth";
@@ -28,28 +30,30 @@ socketServer(io);
 
 app.use(cors());
 app.use(express.json());
-
+app.use(bodyParser.json());
 app.use((req, _res, next) => {
     io.req = req;
     req.io = io;
-
     next();
 });
 
-app.use("/api/auth", AuthRoutes);
-app.use("/api/post", PostRoutes);
-app.use("/api/user", UserRoutes);
-app.use("/api/comment", CommentRoutes);
-app.use("/api/message", MessageRoutes);
-app.use("/api/chat-room", ChatRoomRoutes);
-app.use("/api/notification", NotificationRoutes);
-app.use("/api/friend-request", FriendRequestRoutes);
+app.use("/auth", AuthRoutes);
+app.use("/post", PostRoutes);
+app.use("/user", UserRoutes);
+app.use("/comment", CommentRoutes);
+app.use("/message", MessageRoutes);
+app.use("/chat-room", ChatRoomRoutes);
+app.use("/notification", NotificationRoutes);
+app.use("/friend-request", FriendRequestRoutes);
+
+app.use((err, _req, res, _next) => {
+    if (err instanceof ValidationError) {
+        return res.status(err.statusCode).json(err);
+    }
+    return res.status(500).json(err);
+});
 
 mongoose
-    .connect(MONGODB_URI, {
-        useCreateIndex: true,
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
+    .connect(MONGODB_URI)
     .then(() => httpServer.listen(PORT, () => console.log(`Server is running on port ${PORT}`)))
     .catch((err) => console.log(err));

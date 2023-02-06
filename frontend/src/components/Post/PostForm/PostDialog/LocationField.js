@@ -1,22 +1,23 @@
+import {
+    Grid,
+    Button,
+    Dialog,
+    Tooltip,
+    TextField,
+    Container,
+    IconButton,
+    Typography,
+    CardHeader,
+    DialogContent,
+} from "@material-ui/core";
+import React, { useState } from "react";
+import { ArrowBack } from "@material-ui/icons";
 import { faMap } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-    Button,
-    CardHeader,
-    Container,
-    Dialog,
-    DialogContent,
-    Grid,
-    IconButton,
-    TextField,
-    Tooltip,
-    Typography,
-} from "@material-ui/core";
-import { ArrowBack } from "@material-ui/icons";
-import React, { useState } from "react";
 
-function LocationField({ body, setBody }) {
+const LocationField = ({ body, setBody }) => {
     const [open, setOpen] = useState(false);
+
     return (
         <>
             <Tooltip title="Add your location" arrow placement="bottom">
@@ -77,6 +78,6 @@ function LocationField({ body, setBody }) {
             </Dialog>
         </>
     );
-}
+};
 
 export default LocationField;

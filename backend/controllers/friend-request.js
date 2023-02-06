@@ -1,129 +1,155 @@
-import User from "../models/User";
-import FriendRequest from "../models/FriendRequest";
-import { sendNotification } from "../utils/send-notification";
-import { friendRequestDataFilter } from "../utils/filter-data";
+import { User, Notification, FriendRequest } from "../models";
 
-const sendFriendRequest = async (req, res) => {
-    const useId = req.user_id;
-    const receiverId = req.params.receiverId;
+const sendFriendRequestController = async (req, res) => {
+    const userId = req.user_id;
+    const { receiverId } = req.params;
 
     try {
-        const user = await User.findById(useId);
+        if (userId == receiverId) {
+            return res.status(400).json({ message: "Can't send friend request to yourself" });
+        }
+
         const receiver = await User.findById(receiverId);
-
         if (!receiver) {
-            return res.status(404).json({ message: "Friend doesn't exist" });
+            return res.status(400).json({ message: "User doesn't exist" });
+        }
+        if (receiver.block_users.includes(userId)) {
+            return res.status(400).json({ message: "Can't send friend request to this user" });
+        }
+        if (receiver.friends.includes(userId)) {
+            return res
+                .status(400)
+                .json({ message: `You and ${receiver.name} are already friends` });
         }
 
-        const newFriendRequest = new FriendRequest({
-            sender: useId,
-            receiver: receiverId,
-        });
-        await newFriendRequest.save();
-
-        res.status(201).json({ message: "Friend request sent successfully" });
-
-        await sendNotification({
-            req,
-            key: "send-friend-request",
-            content: `${user.name} has send you friend request`,
-        });
-    } catch (err) {
-        return res.status(500).json({ message: err.message });
-    }
-};
-
-const acceptFriendRequest = async (req, res) => {
-    try {
-        const friendRequest = await FriendRequest.findById(req.params.friendRequestId).populate(
-            "sender"
-        );
+        const friendRequest = await FriendRequest.findOne({ sender: userId, receiver: receiverId });
 
         if (!friendRequest) {
-            return res.status(404).json({ message: "Request is not sended yet" });
+            await new FriendRequest({ sender: userId, receiver: receiverId }).save();
+
+            const user = await User.findById(userId);
+
+            await new Notification({
+                user: receiverId,
+                type: "FRIEND_REQUEST",
+                content: `${user.name} has send you friend request`,
+            }).save();
         }
 
-        friendRequest.is_accepted = true;
-        await friendRequest.save();
-
-        res.status(200).json({
-            message: `You and ${friendRequest.sender.name} are already friends`,
-        });
+        return res.status(201).json({ message: "Friend request sent successfully" });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ error: err.message });
     }
 };
 
-const declineOrCancelRequest = async (req, res) => {
-    const friendRequestId = req.params.friendRequestId;
+const acceptFriendRequestController = async (req, res) => {
+    const userId = req.user_id;
+    const { friendRequestId } = req.params;
 
     try {
-        const friendRequest = await FriendRequest.findById(friendRequestId);
+        const friendRequest = await FriendRequest.findById(friendRequestId)
+            .populate("sender")
+            .populate("receiver");
+
+        const {
+            sender: { _id: senderId, name: senderName },
+            receiver: { _id: receiverId, name: receiverName },
+        } = friendRequest;
+
+        if (userId != receiverId) {
+            return res.status(400).json({ message: "Request hasn't been sent for you" });
+        }
+        if (!friendRequest) {
+            return res.status(400).json({ message: "Request hasn't been sent" });
+        }
+        if (!friendRequest.is_accepted) {
+            await friendRequest.update({ is_accepted: true });
+
+            await User.findByIdAndUpdate(senderId, { $push: { friends: receiverId } });
+            await User.findByIdAndUpdate(receiverId, { $push: { friends: senderId } });
+
+            await new Notification({
+                user: senderId,
+                type: "FRIEND_REQUEST",
+                content: `${receiverName} has accept friend request`,
+            }).save();
+        }
+
+        return res.status(200).json({ message: `You and ${senderName} are already friend` });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+};
+
+const declineOrCancelRequestController = async (req, res) => {
+    const userId = req.user_id;
+    const { friendRequestId } = req.params;
+
+    try {
+        const friendRequest = await FriendRequest.findOne({
+            is_accepted: false,
+            _id: friendRequestId,
+            $or: [{ sender: userId }, { receiver: userId }],
+        });
 
         if (!friendRequest) {
-            return res.status(404).json({ message: "Request is not sended yet" });
+            return res.status(400).json({ message: "Request hasn't been sent" });
         }
 
-        await FriendRequest.deleteOne({ id: friendRequest.id });
+        await friendRequest.remove();
 
-        res.status(200).json({ message: "Delete friend request successfully" });
+        return res.status(200).json({ message: "Friend request has been cancelled" });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ error: err.message });
     }
 };
 
-const getSendedFriendRequests = async (req, res) => {
+const getSendedFriendRequestsController = async (req, res) => {
+    const pageSize = 5;
+    const userId = req.user_id;
+    const page = parseInt(req.query.page);
+
     try {
-        const friendRequests = await FriendRequest.find({
-            is_accepted: false,
-            sender: req.user_id,
-        });
+        const query = { sender: userId, is_accepted: false };
 
-        if (!friendRequests.length) {
-            return res.status(404).json({ message: "You don't send any friend request" });
-        }
+        const friendRequests = await FriendRequest.find(query)
+            .limit(pageSize)
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * pageSize);
 
-        const friendRequestsData = friendRequests.map((friendRequest) =>
-            friendRequestDataFilter(friendRequest)
-        );
+        const count = await FriendRequest.countDocuments(query);
 
-        res.status(200).json({
-            message: "Successfully",
-            data: friendRequestsData,
-        });
+        return res.status(200).json({ message: "success", data: { count, rows: friendRequests } });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ error: err.message });
     }
 };
 
-const getReceivedFriendRequests = async (req, res) => {
+const getReceivedFriendRequestsController = async (req, res) => {
+    const pageSize = 5;
+    const userId = req.user_id;
+    const page = parseInt(req.query.page);
+
     try {
-        const friendRequests = await FriendRequest.find({
-            is_accepted: false,
-            receiver: req.user_id,
-        });
+        const query = { receiver: userId, is_accepted: false };
 
-        if (!friendRequests.length) {
-            return res.status(404).json({ message: "You don't have any friend requests" });
-        }
+        const friendRequests = await FriendRequest.find(query, { updatedAt: 0 })
+            .limit(pageSize)
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * pageSize);
 
-        const friendRequestsData = friendRequests.map((friendRequest) =>
-            friendRequestDataFilter(friendRequest)
-        );
+        const count = await FriendRequest.countDocuments(query);
 
-        res.status(200).json({
-            message: "Successfully",
-            data: friendRequestsData,
-        });
+        return res.status(200).json({ message: "success", data: { count, rows: friendRequests } });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ error: err.message });
     }
 };
 
 export {
-    sendFriendRequest,
-    acceptFriendRequest,
-    declineOrCancelRequest,
-    getSendedFriendRequests,
-    getReceivedFriendRequests,
+    sendFriendRequestController,
+    acceptFriendRequestController,
+    declineOrCancelRequestController,
+    getSendedFriendRequestsController,
+    getReceivedFriendRequestsController,
 };

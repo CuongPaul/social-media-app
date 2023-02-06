@@ -1,26 +1,33 @@
-import React, { Suspense, useContext, useEffect, useState } from "react";
-import { UIContext } from "../App";
 import {
-    Container,
-    Divider,
     Grid,
     List,
+    Paper,
+    Divider,
     ListItem,
+    Container,
+    Typography,
     ListItemIcon,
     ListItemText,
-    Paper,
-    Typography,
 } from "@material-ui/core";
+import React, { lazy, Suspense, useContext, useEffect, useState } from "react";
 import { SecurityOutlined, LocationCityOutlined, PersonOutline } from "@material-ui/icons";
+
+import { UIContext } from "../App";
 import DrawerBar from "../components/Navbar/DrawerBar";
-const General = React.lazy(() => import("../components/settings/General"));
-const SecurityAndLogin = React.lazy(() => import("../components/settings/SecurityAndLogin"));
 
-const Location = React.lazy(() => import("../components/settings/Location"));
+const General = lazy(() => import("../components/settings/General"));
+const Location = lazy(() => import("../components/settings/Location"));
+const SecurityAndLogin = lazy(() => import("../components/settings/SecurityAndLogin"));
 
-function Settings() {
+const Settings = () => {
     const { uiState, uiDispatch } = useContext(UIContext);
+
     const [tab, setTab] = useState("general");
+
+    const handleClickTab = (tab_data) => {
+        setTab(tab_data);
+        uiDispatch({ type: "SET_DRAWER", payload: false });
+    };
 
     useEffect(() => {
         uiDispatch({ type: "SET_NAV_MENU", payload: true });
@@ -31,16 +38,13 @@ function Settings() {
             uiDispatch({ type: "SET_DRAWER", payload: false });
         };
     }, [uiDispatch]);
-    const handleTabClick = (tab_data) => {
-        setTab(tab_data);
-        uiDispatch({ type: "SET_DRAWER", payload: false });
-    };
+
     const ListContents = (
         <>
             <List>
                 <ListItem
                     button
-                    onClick={() => handleTabClick("general")}
+                    onClick={() => handleClickTab("general")}
                     style={{
                         backgroundColor:
                             tab === "general"
@@ -57,7 +61,7 @@ function Settings() {
                 </ListItem>
                 <ListItem
                     button
-                    onClick={() => handleTabClick("security_and_login")}
+                    onClick={() => handleClickTab("security_and_login")}
                     style={{
                         backgroundColor:
                             tab === "security_and_login"
@@ -77,7 +81,7 @@ function Settings() {
             <List>
                 <ListItem
                     button
-                    onClick={() => handleTabClick("location")}
+                    onClick={() => handleClickTab("location")}
                     style={{
                         backgroundColor:
                             tab === "location"
@@ -95,6 +99,7 @@ function Settings() {
             </List>
         </>
     );
+
     return (
         <Container
             style={{
@@ -124,6 +129,6 @@ function Settings() {
             </Grid>
         </Container>
     );
-}
+};
 
 export default Settings;

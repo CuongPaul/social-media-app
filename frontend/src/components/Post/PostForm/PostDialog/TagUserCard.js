@@ -1,30 +1,32 @@
+import {
+    Grid,
+    List,
+    Dialog,
+    Button,
+    Tooltip,
+    Checkbox,
+    ListItem,
+    Container,
+    IconButton,
+    CardHeader,
+    Typography,
+    ListItemIcon,
+    ListItemText,
+    DialogContent,
+    ListItemSecondaryAction,
+} from "@material-ui/core";
+import { ArrowBack } from "@material-ui/icons";
+import React, { useContext, useState } from "react";
 import { faUserTag } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useContext, useState } from "react";
-import {
-    Button,
-    CardHeader,
-    Checkbox,
-    Container,
-    DialogContent,
-    Grid,
-    IconButton,
-    List,
-    ListItem,
-    ListItemIcon,
-    ListItemSecondaryAction,
-    ListItemText,
-    Tooltip,
-    Dialog,
-    Typography,
-} from "@material-ui/core";
-import { UserContext } from "../../../../App";
-import { ArrowBack } from "@material-ui/icons";
 
-function TagUserCard({ body, setBody }) {
-    const [open, setOpen] = useState(false);
+import { UserContext } from "../../../../App";
+
+const TagUserCard = ({ body, setBody }) => {
     const { userState } = useContext(UserContext);
-    const [checked, setChecked] = React.useState([]);
+
+    const [open, setOpen] = useState(false);
+    const [checked, setChecked] = useState([]);
 
     const handleToggle = (value) => () => {
         const currentIndex = checked.indexOf(value);
@@ -38,6 +40,7 @@ function TagUserCard({ body, setBody }) {
 
         setChecked(newChecked);
     };
+
     return (
         <>
             <Tooltip title="Tag User To Post" arrow placement="bottom">
@@ -131,6 +134,6 @@ function TagUserCard({ body, setBody }) {
             </Dialog>
         </>
     );
-}
+};
 
 export default TagUserCard;

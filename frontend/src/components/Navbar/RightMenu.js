@@ -1,27 +1,29 @@
-import React, { Fragment, useContext, useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import { UIContext, UserContext, ChatContext } from "../../App";
-
-import { Chip, Avatar, IconButton, Badge, useMediaQuery, useTheme } from "@material-ui/core";
-import useStyles from "./styles";
-
-import { faFacebookMessenger } from "@fortawesome/free-brands-svg-icons";
 import { faBell } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { Fragment, useContext, useState, useEffect } from "react";
+import { faFacebookMessenger } from "@fortawesome/free-brands-svg-icons";
+import { Chip, Avatar, IconButton, Badge, useMediaQuery, useTheme } from "@material-ui/core";
+
+import useStyles from "./styles";
 import ProfileMenu from "./ProfileMenu";
-import CreatePostMenu from "./CreatePostMenu";
 import AvartarText from "../UI/AvartarText";
+import CreatePostMenu from "./CreatePostMenu";
 import NotificationMenu from "../NotificationMenu";
-function RightMenu() {
-    const classes = useStyles();
+import { UIContext, UserContext, ChatContext } from "../../App";
+
+const RightMenu = () => {
     const { uiState } = useContext(UIContext);
-    const { userState } = useContext(UserContext);
-    const theme = useTheme();
-    const xsScreen = useMediaQuery(theme.breakpoints.only("xs"));
     const { chatState } = useContext(ChatContext);
+    const { userState } = useContext(UserContext);
+
+    const theme = useTheme();
+    const classes = useStyles();
+    const xsScreen = useMediaQuery(theme.breakpoints.only("xs"));
     const abc = new Set(chatState.messages.reduce((acc, cur) => [...acc, cur.sender.id], []));
     const abcLength = [...abc].length;
     const [amountMess, setUserMess] = useState(abcLength);
+
     const defaultPropsNotif = {
         color: "error",
         children: <FontAwesomeIcon icon={faBell} size={xsScreen ? "xs" : "sm"} />,
@@ -30,11 +32,12 @@ function RightMenu() {
         color: "error",
         children: <FontAwesomeIcon icon={faFacebookMessenger} size={xsScreen ? "xs" : "sm"} />,
     };
+
     useEffect(() => {
         if (userState.currentUser.id === chatState.messages[0]?.receiver?.id) {
             setUserMess(abcLength);
         }
-    }, [abcLength, chatState.messages, userState.currentUser.id]);
+    }, [abcLength, chatState.messages, userState?.currentUser?.id]);
 
     return (
         <Fragment>
@@ -78,6 +81,6 @@ function RightMenu() {
             <ProfileMenu />
         </Fragment>
     );
-}
+};
 
 export default RightMenu;

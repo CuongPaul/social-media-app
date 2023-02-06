@@ -1,13 +1,3 @@
-import React, { lazy, useContext, useRef, useState, useEffect } from "react";
-import EmojiPicker from "emoji-picker-react";
-import { UIContext, UserContext, PostContext } from "../../../../App";
-
-import FileField from "./FileField";
-// import CameraField from './CameraField'
-import TagUserCard from "./TagUserCard";
-import LocationField from "./LocationField";
-import FeelingsCard from "./FeelingsCard";
-import DialogLoading from "../../../UI/DialogLoading";
 import {
     Button,
     TextField,
@@ -23,39 +13,41 @@ import {
     IconButton,
     Avatar,
 } from "@material-ui/core";
-
-import DialogHeader from "./DialogHeader";
-import PreviewImage from "./PreviewImage";
-import useCreatePost from "../../hooks/useCreatePost";
 import { Alert } from "@material-ui/lab";
 import { Close } from "@material-ui/icons";
+import EmojiPicker from "emoji-picker-react";
+import React, { lazy, useContext, useRef, useState, useEffect } from "react";
+
+import FileField from "./FileField";
+import TagUserCard from "./TagUserCard";
+import DialogHeader from "./DialogHeader";
+import PreviewImage from "./PreviewImage";
+import FeelingsCard from "./FeelingsCard";
+import LocationField from "./LocationField";
+import DialogLoading from "../../../UI/DialogLoading";
+import useCreatePost from "../../../../hooks/useCreatePost";
 import { updatePost } from "../../../../services/PostServices";
+import { UIContext, UserContext, PostContext } from "../../../../App";
 
 const CameraField = lazy(() => import("./CameraField"));
-export default function PostFormDialog() {
-    const { uiState, uiDispatch } = useContext(UIContext);
+
+const PostFormDialog = () => {
     const { postDispatch } = useContext(PostContext);
+    const { uiState, uiDispatch } = useContext(UIContext);
+
     const [blob, setBlob] = useState(null);
     const [postImage, setPostImage] = useState(null);
+    const [showEmoji, setShowEmoji] = useState(false);
     const [previewImage, setPreviewImage] = useState("");
     const [isImageCaptured, setIsImageCaptured] = useState(false);
-
-    const [showEmoji, setShowEmoji] = useState(false);
-    const [body, setBody] = useState({
-        feelings: "",
-        with: [],
-        location: "",
-        date: "",
-    });
-
     const [postData, setPostData] = useState({ privacy: "public", content: "" });
 
-    useEffect(() => {
-        setPostData({
-            privacy: uiState.post ? uiState.post.privacy : "public",
-            content: uiState.post ? uiState.post.content : "",
-        });
-    }, [uiState.post]);
+    const [body, setBody] = useState({
+        with: [],
+        date: "",
+        feelings: "",
+        location: "",
+    });
 
     const { userState } = useContext(UserContext);
 
@@ -86,22 +78,22 @@ export default function PostFormDialog() {
         });
     };
 
-    function handleCloseDialog() {
+    const handleCloseDialog = () => {
         uiDispatch({ type: "EDIT_POST", payload: null });
         uiDispatch({ type: "SET_POST_MODEL", payload: false });
-    }
+    };
 
-    function removeFileImage() {
+    const removeFileImage = () => {
         setPreviewImage("");
         setPostImage(null);
-    }
+    };
 
-    function removeCameraImage() {
+    const removeCameraImage = () => {
         setBlob(null);
         setIsImageCaptured(false);
-    }
+    };
 
-    function showCapturedImage() {
+    const showCapturedImage = () => {
         if (blob) {
             let blobURL = URL.createObjectURL(blob);
 
@@ -130,14 +122,21 @@ export default function PostFormDialog() {
                 </>
             );
         }
-    }
+    };
+
+    useEffect(() => {
+        setPostData({
+            privacy: uiState.post ? uiState.post.privacy : "public",
+            content: uiState.post ? uiState.post.content : "",
+        });
+    }, [uiState.post]);
 
     const { handleSubmitPost, loading } = useCreatePost({
-        postData,
+        blob,
         body,
+        postData,
         postImage,
         isImageCaptured,
-        blob,
     });
 
     const handleUpdatePost = (postId) => {
@@ -311,4 +310,6 @@ export default function PostFormDialog() {
             )}
         </div>
     );
-}
+};
+
+export default PostFormDialog;

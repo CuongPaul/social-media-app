@@ -2,45 +2,26 @@ import mongoose from "mongoose";
 
 const { model, Schema } = mongoose;
 
-const objectIdType = Schema.Types.ObjectId;
-const userIdRefType = { ref: "User", required: true, type: objectIdType };
+const ObjectIdType = Schema.Types.ObjectId;
+const TrimStringType = { trim: true, type: String };
+const UserIdRefType = { ref: "user", required: true, type: ObjectIdType };
 
 const postSchema = new Schema(
     {
-        text: {
-            trim: true,
-            type: String,
-        },
-        images: [
-            {
-                trim: true,
-                type: String,
-            },
-        ],
-        user: userIdRefType,
-        react: {
-            ref: "React",
-            type: objectIdType,
-        },
+        user: UserIdRefType,
+        images: [TrimStringType],
         body: {
-            location: {
-                trim: true,
-                type: String,
-            },
-            feelings: {
-                trim: true,
-                type: String,
-            },
-            tag_friends: [userIdRefType],
+            location: TrimStringType,
+            feelings: TrimStringType,
+            tag_friends: [UserIdRefType],
         },
-        privacy: {
-            type: String,
-            enum: ["friend", "public", "only_me"],
-        },
+        react: { ref: "react", type: ObjectIdType },
+        text: { trim: true, type: String, required: true },
+        privacy: { type: String, enum: ["FRIEND", "PUBLIC", "ONLY_ME"] },
     },
-    { timestamps: true }
+    { timestamps: true, versionKey: false }
 );
 
-const postModel = model("Post", postSchema);
+const Post = model("post", postSchema);
 
-export default postModel;
+export default Post;

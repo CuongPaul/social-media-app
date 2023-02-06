@@ -1,29 +1,30 @@
 import {
-    Avatar,
     Badge,
     Button,
-    DialogActions,
-    DialogTitle,
-    IconButton,
     Dialog,
+    Avatar,
+    IconButton,
+    DialogTitle,
+    DialogActions,
     DialogContent,
 } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
-
-import React, { useContext, useRef, useState } from "react";
-import AvartarText from "../UI/AvartarText";
-import useUpdateProfilePic from "../../hooks/useUpdateProfilePic";
 import { CameraAlt as CameraIcon } from "@material-ui/icons";
-import DialogLoading from "../UI/DialogLoading";
+import React, { useContext, useRef, useState } from "react";
+
 import { UserContext } from "../../App";
-function UpdateProfileImage({ user }) {
+import AvartarText from "../UI/AvartarText";
+import DialogLoading from "../UI/DialogLoading";
+import useUpdateProfilePic from "../../hooks/useUpdateProfilePic";
+
+const UpdateProfileImage = ({ user }) => {
     const { userState } = useContext(UserContext);
+
     const history = useHistory();
+    const inputFileRef = useRef(null);
+    const [menu, setMenu] = useState(false);
     const [profilePic, setProfilePic] = useState(null);
     const [previewImage, setPreviewImage] = useState(null);
-    const [menu, setMenu] = useState(false);
-
-    const inputFileRef = useRef(null);
 
     const { updateProfilePic, loading } = useUpdateProfilePic({
         profile_pic: profilePic,
@@ -131,6 +132,6 @@ function UpdateProfileImage({ user }) {
             {loading && <DialogLoading loading={loading} text="Uploading Profile Pic..." />}
         </div>
     );
-}
+};
 
 export default UpdateProfileImage;

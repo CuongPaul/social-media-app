@@ -1,7 +1,7 @@
-import { Avatar, Grid, Typography } from "@material-ui/core";
 import React from "react";
+import { Avatar, Grid, Typography } from "@material-ui/core";
 
-function FriendNotSelected() {
+function EmptyMessageArea() {
     return (
         <Grid
             item
@@ -24,7 +24,6 @@ function FriendNotSelected() {
                     style={{ width: "100%", height: "100%" }}
                 />
             </Avatar>
-
             <Typography style={{ marginTop: "16px", fontWeight: "800" }}>
                 Select friends from friend lists to start chat
             </Typography>
@@ -32,4 +31,4 @@ function FriendNotSelected() {
     );
 }
 
-export default FriendNotSelected;
+export default EmptyMessageArea;

@@ -8,15 +8,27 @@ const reactComment = async ({ commentId, reactType }) => {
 
         const { data } = await axios({
             method: "GET",
+            timeout: 3 * 1000,
             params: { key: reactType },
-            baseURL: `${baseURL}/api/comment`,
+            baseURL: `${baseURL}//comment`,
             url: `/react-comment/${commentId}`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -28,13 +40,25 @@ const createComment = async ({ postId, commentInfo }) => {
             method: "POST",
             url: `/${postId}`,
             data: commentInfo,
-            baseURL: `${baseURL}/api/comment`,
+            timeout: 3 * 1000,
+            baseURL: `${baseURL}//comment`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -44,14 +68,26 @@ const deleteComment = async (commentId) => {
 
         const { data } = await axios({
             method: "DELETE",
+            timeout: 3 * 1000,
             url: `/${commentId}`,
-            baseURL: `${baseURL}/api/comment`,
+            baseURL: `${baseURL}//comment`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -61,14 +97,26 @@ const updateComment = async (commentId) => {
 
         const { data } = await axios({
             method: "PUT",
+            timeout: 3 * 1000,
             url: `/${commentId}`,
-            baseURL: `${baseURL}/api/comment`,
+            baseURL: `${baseURL}//comment`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -79,13 +127,25 @@ const getCommentsByPost = async (postId) => {
         const { data } = await axios({
             method: "GET",
             url: `/${postId}`,
-            baseURL: `${baseURL}/api/comment`,
+            timeout: 3 * 1000,
+            baseURL: `${baseURL}//comment`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 

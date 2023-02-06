@@ -1,19 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import Popover from "@material-ui/core/Popover";
 import { makeStyles } from "@material-ui/core/styles";
+
 import PopoverProfileCard from "./PopoverProfileCard";
+
 const useStyles = makeStyles((theme) => ({
-    popover: {
-        pointerEvents: "none",
-    },
-    paper: {
-        padding: theme.spacing(1),
-    },
+    popover: { pointerEvents: "none" },
+    paper: { padding: theme.spacing(1) },
 }));
 
-export default function MouseOverPopover({ children, user }) {
+const MouseOverPopover = ({ children, user }) => {
     const classes = useStyles();
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
 
     const handlePopoverOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -58,4 +56,6 @@ export default function MouseOverPopover({ children, user }) {
             </Popover>
         </div>
     );
-}
+};
+
+export default MouseOverPopover;

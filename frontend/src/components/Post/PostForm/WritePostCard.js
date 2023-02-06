@@ -1,14 +1,13 @@
 import React, { useContext } from "react";
-import { UIContext, UserContext } from "../../../App";
-
 import { Paper, Avatar } from "@material-ui/core";
 
-import PostFormCard from "./PostDialog/PostFormCard";
 import AvartarText from "../../UI/AvartarText";
+import PostFormCard from "./PostDialog/PostFormCard";
+import { UIContext, UserContext } from "../../../App";
 
-function PostCard({ user }) {
-    const { userState } = useContext(UserContext);
+const PostCard = () => {
     const { uiState } = useContext(UIContext);
+    const { userState } = useContext(UserContext);
 
     return (
         <div>
@@ -48,6 +47,6 @@ function PostCard({ user }) {
             </Paper>
         </div>
     );
-}
+};
 
 export default PostCard;

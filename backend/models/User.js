@@ -2,46 +2,28 @@ import mongoose from "mongoose";
 
 const { model, Schema } = mongoose;
 
-const objectIdType = Schema.Types.ObjectId;
-const userIdRefType = { ref: "User", type: objectIdType };
-const stringDefaultType = { trim: true, default: "", type: String };
+const UserIdRefType = { ref: "user", type: Schema.Types.ObjectId };
+const TrimStringType = { trim: true, type: String, required: true };
+const StringDefaultType = { trim: true, default: "", type: String };
 
 const userSchema = new Schema(
     {
-        is_active: {
-            default: true,
-            type: Boolean,
-            required: true,
-        },
-        name: {
-            trim: true,
-            type: String,
-            required: true,
-        },
-        password: {
-            trim: true,
-            type: String,
-            required: true,
-        },
-        email: {
-            trim: true,
-            type: String,
-            unique: true,
-            required: true,
-        },
-        friends: [userIdRefType],
-        hometown: stringDefaultType,
-        block_user: [userIdRefType],
-        education: stringDefaultType,
-        cover_image: stringDefaultType,
-        socket_id: [stringDefaultType],
-        avatar_image: stringDefaultType,
+        name: TrimStringType,
+        password: TrimStringType,
+        friends: [UserIdRefType],
+        gender: StringDefaultType,
+        hometown: StringDefaultType,
+        block_users: [UserIdRefType],
+        education: StringDefaultType,
+        cover_image: StringDefaultType,
+        socket_id: [StringDefaultType],
+        avatar_image: StringDefaultType,
+        is_active: { default: true, type: Boolean },
+        email: { trim: true, type: String, unique: true, required: true },
     },
-    { timestamps: true }
+    { timestamps: true, versionKey: false }
 );
 
-userSchema.index({ name: "text", email: "text" });
+const User = model("user", userSchema);
 
-const userModel = model("User", userSchema);
-
-export default userModel;
+export default User;

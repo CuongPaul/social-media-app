@@ -1,151 +1,151 @@
-import Post from "../models/Post";
-import React from "../models/React";
-import Comment from "../models/Comment";
-import { commentDataFilter } from "../utils/filter-data";
-import { sendNotification } from "../utils/send-notification";
+import { Post, React, Comment } from "../models";
 
-const reactComment = async (req, res) => {
-    try {
-        const comment = await Comment.findById(req.params.commentId)
-            .populate("react")
-            .populate("user");
-        if (!comment) {
-            return res.status(404).json({ message: "Comment doesn't exist" });
-        }
-
-        const post = await Post.findById(comment.post);
-        if (!post) {
-            return res.status(404).json({ message: "Post doesn't exist" });
-        }
-
-        const key = req.query.key;
-        const indexUserId = comment.react[key].indexOf(req.user_id);
-
-        indexUserId === -1
-            ? comment.react[key].push(req.user_id)
-            : comment.react[key].splice(indexUserId, 1);
-
-        await comment.save();
-
-        await sendNotification({
-            req,
-            key: "react-comment",
-            content: `${comment.user.name} ${key} your comment`,
-        });
-
-        res.status(200).json({ message: "Successfully" });
-    } catch (err) {
-        return res.status(500).json({ message: err.message });
-    }
-};
-
-const createComment = async (req, res) => {
-    const { text, image } = req.body;
-
-    if ((!text || !text.trim().length) && (!image || !image.trim().length)) {
-        return res.status(422).json({ message: "Post image or write something" });
-    }
-
-    try {
-        const post = await Post.findById(req.params.postId);
-
-        if (!post) {
-            return res.status(404).json({ message: "Post doesn't exist" });
-        }
-
-        const emptyReact = new React({ wow: [], sad: [], like: [], love: [], haha: [], angry: [] });
-        const saveEmptyReact = await emptyReact.save();
-
-        const newComment = new Comment({
-            post: post.id,
-            user: req.user_id,
-            content: { text, image },
-            react: saveEmptyReact.id,
-        });
-        const saveComment = await newComment.save();
-
-        const commentData = commentDataFilter(saveComment);
-
-        await sendNotification({ req, key: "comment-post", data: commentData });
-
-        res.status(201).json({ message: "Successfully" });
-    } catch (err) {
-        return res.status(500).json({ message: err.message });
-    }
-};
-
-const deleteComment = async (req, res) => {
-    const commentId = req.params.commentId;
+const reactCommentController = async (req, res) => {
+    const userId = req.user_id;
+    const { commentId } = req.params;
+    const { key: reactKey } = req.query;
 
     try {
         const comment = await Comment.findById(commentId);
-
-        const post = await Post.findById(comment.post);
-        if (!post) {
-            return res.status(404).json({ message: "Post doesn't exist" });
+        if (!comment) {
+            return res.status(400).json({ message: "Comment doesn't exist" });
         }
 
-        await Comment.deleteOne({ id: commentId });
+        const react = await React.findById(comment.react);
+        const indexUser = react[reactKey].indexOf(userId);
 
-        res.status(200).json({ message: "Delete comment successfully" });
+        if (indexUser === -1) {
+            react[reactKey].push(userId);
+        } else {
+            react[reactKey].splice(indexUser, 1);
+        }
+
+        await react.save();
+
+        return res.status(200).json({ message: "success" });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ error: err.message });
     }
 };
 
-const updateComment = async (req, res) => {
+const createCommentController = async (req, res) => {
+    const userId = req.user_id;
+    const { text, image, post_id } = req.body;
+
+    try {
+        const post = await Post.findById(post_id);
+        if (!post) {
+            return res.status(400).json({ message: "Post doesn't exist" });
+        }
+
+        const saveEmptyReact = await new React({
+            wow: [],
+            sad: [],
+            like: [],
+            love: [],
+            haha: [],
+            angry: [],
+        }).save();
+
+        await new Comment({
+            text,
+            image,
+            user: userId,
+            post: post.id,
+            react: saveEmptyReact.id,
+        }).save();
+
+        return res.status(201).json({ message: "success" });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+};
+
+const deleteCommentController = async (req, res) => {
+    const userId = req.user_id;
+    const commentId = req.params.commentId;
+
+    try {
+        const comment = await Comment.findOne({ user: userId, _id: commentId });
+
+        if (!comment) {
+            return res.status(400).json({ error: "You don't allow delete this comment" });
+        }
+
+        await comment.remove();
+
+        return res.status(200).json({ message: "Delete comment successfully" });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+};
+
+const updateCommentController = async (req, res) => {
+    const userId = req.user_id;
+    const { commentId } = req.params;
     const { text, image } = req.body;
 
-    if ((!text || !text.trim().length) && (!image || !image.trim().length)) {
-        return res.status(422).json({ message: "Post image or write something" });
-    }
-
     try {
-        const comment = await Comment.findById(req.params.commentId);
+        const comment = await Comment.findOne({ user: userId, _id: commentId });
+        if (!comment) {
+            return res.status(400).json({ error: "You don't allow edit this comment" });
+        }
 
         const post = await Post.findById(comment.post);
         if (!post) {
-            return res.status(404).json({ error: "Post doesn't exist" });
+            return res.status(400).json({ error: "This post is deleted" });
         }
 
-        comment.text = text;
-        comment.image = image;
-        await comment.save();
+        await comment.update({ text, image });
 
-        res.status(200).json({ message: "Update comment successfully" });
+        return res.status(200).json({ message: "Update comment successfully" });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ error: err.message });
     }
 };
 
-const getCommentsByPost = async (req, res) => {
-    const limit = 5;
-    const page = parseInt(req.query.page) || 0;
+const getCommentsByPostController = async (req, res) => {
+    const pageSize = 5;
+    const { post_id } = req.query;
+    const page = parseInt(req.query.page);
 
     try {
-        const comments = await Comment.find({ post: req.params.postId })
-            .sort()
-            .limit(limit)
-            .skip(page * limit)
-            .populate("user");
+        const query = { post: post_id };
 
-        const commentsData = comments.map((comment) => commentDataFilter(comment));
+        const comments = await Comment.find(query, { _id: 1, post: 1, text: 1, image: 1 })
+            .limit(pageSize)
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * pageSize)
+            .populate("user", { _id: 1, name: 1, avatar_image: 1 })
+            .populate({
+                path: "react",
+                select: "_id wow sad like love haha angry",
+                populate: [
+                    { path: "wow", select: "_id name avatar_image" },
+                    { path: "sad", select: "_id name avatar_image" },
+                    { path: "like", select: "_id name avatar_image" },
+                    { path: "love", select: "_id name avatar_image" },
+                    { path: "haha", select: "_id name avatar_image" },
+                    { path: "angry", select: "_id name avatar_image" },
+                ],
+            });
 
-        const numberOfCommentsPerPost = await Comment.countDocuments({ post: req.params.postId });
+        if (!comments.length) {
+            res.status(400).json({ message: "This post don't have any comment" });
+        }
 
-        const paginationData = {
-            currentPageNumber: page,
-            numberOfCommentsPerPost,
-            numberOfPage: Math.ceil(numberOfCommentsPerPost / limit),
-        };
+        const count = await Comment.countDocuments(query);
 
-        res.status(200).json({
-            message: "Successfully",
-            data: { comments: commentsData, pagination: paginationData },
-        });
+        res.status(200).json({ message: "success", data: { count, rows: comments } });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ error: err.message });
     }
 };
 
-export { reactComment, createComment, deleteComment, updateComment, getCommentsByPost };
+export {
+    reactCommentController,
+    createCommentController,
+    deleteCommentController,
+    updateCommentController,
+    getCommentsByPostController,
+};

@@ -1,7 +1,7 @@
-import { Dialog, LinearProgress, Paper, Typography } from "@material-ui/core";
 import React, { useState } from "react";
+import { Dialog, LinearProgress, Paper, Typography } from "@material-ui/core";
 
-function DialogLoading({ loading, text }) {
+const DialogLoading = ({ loading, text }) => {
     const [open, setOpen] = useState(loading);
     return (
         <Dialog
@@ -38,6 +38,6 @@ function DialogLoading({ loading, text }) {
             </Paper>
         </Dialog>
     );
-}
+};
 
 export default DialogLoading;

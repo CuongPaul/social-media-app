@@ -1,57 +1,53 @@
-import React from 'react'
-import { makeStyles, InputBase } from '@material-ui/core'
-import { Search as SearchIcon } from '@material-ui/icons'
+import React from "react";
+import { makeStyles, InputBase } from "@material-ui/core";
+
 const useStyles = makeStyles((theme) => ({
-  search: {
-    position: 'relative',
-    borderRadius: '50px 50px 50px 50px',
-    backgroundColor: '#F0F2F5',
-    width:'100%',
-    marginLeft:'8px'
-  },
+    search: {
+        width: "100%",
+        marginLeft: "8px",
+        position: "relative",
+        borderRadius: "50px 50px 50px 50px",
+        backgroundColor: "#F0F2F5",
+    },
+    searchIcon: {
+        right: 0,
+        height: "100%",
+        display: "flex",
+        color: "#606770;",
+        cursor: "pointer",
+        marginLeft: "16px",
+        position: "absolute",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: theme.spacing(0, 2),
+    },
+    inputRoot: {
+        width: "70%",
+        color: "black",
+    },
+    inputInput: {
+        flexGrow: 1,
+        width: "100%",
+        paddingLeft: "8px",
+    },
+}));
 
-  searchIcon: {
-    color: '#606770;',
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    right:0,
-    marginLeft:'16px',
-    cursor:"pointer"
-  },
-  inputRoot: {
-    color: 'black',
-    width:'70%',
-    
-  },
-  inputInput: {
-    flexGrow: 1,
-    paddingLeft: '8px',
-    width:'100%'
-    
+const Search = ({ placeholder, children }) => {
+    const classes = useStyles();
 
-  },
-}))
-function Search({ placeholder,children }) {
-  const classes = useStyles()
-  return (
-    <div className={classes.search}>
-      <div className={classes.searchIcon}>
-       {children}
-      </div>
-      <InputBase
-        placeholder={placeholder}
-        classes={{
-          root: classes.inputRoot,
-          input: classes.inputInput,
-        }}
-        inputProps={{ 'aria-label': 'search' }}
-      />
-    </div>
-  )
-}
+    return (
+        <div className={classes.search}>
+            <div className={classes.searchIcon}>{children}</div>
+            <InputBase
+                placeholder={placeholder}
+                classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput,
+                }}
+                inputProps={{ "aria-label": "search" }}
+            />
+        </div>
+    );
+};
 
-export default Search
+export default Search;

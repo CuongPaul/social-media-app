@@ -1,26 +1,26 @@
-import { faCamera } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-    Avatar,
-    CardHeader,
-    Dialog,
     Grid,
-    IconButton,
+    Avatar,
+    Dialog,
     Tooltip,
     Container,
-    DialogContent,
     Typography,
+    CardHeader,
+    IconButton,
+    DialogContent,
 } from "@material-ui/core";
-import { ArrowBack, Camera, Check, Close } from "@material-ui/icons";
 import React, { useRef, useState } from "react";
+import { faCamera } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ArrowBack, Camera, Check, Close } from "@material-ui/icons";
 
-function CameraField({
+const CameraField = ({
     setBlob,
+    setPostImage,
+    setPreviewImage,
     isImageCaptured,
     setIsImageCaptured,
-    setPreviewImage,
-    setPostImage,
-}) {
+}) => {
     const videoRef = useRef();
     const canvasRef = useRef();
     const [open, setOpen] = useState(false);
@@ -36,18 +36,18 @@ function CameraField({
             });
     };
 
-    function removeCameraImage() {
-        setIsImageCaptured(false);
+    const removeCameraImage = () => {
         initCamera();
-    }
+        setIsImageCaptured(false);
+    };
 
-    function disableCamera() {
+    const disableCamera = () => {
         if (videoRef.current.srcObject) {
             videoRef.current.srcObject.getVideoTracks().forEach((track) => {
                 track.stop();
             });
         }
-    }
+    };
 
     const handleOpenCameraDialog = () => {
         initCamera();
@@ -181,6 +181,6 @@ function CameraField({
             </Dialog>
         </>
     );
-}
+};
 
 export default CameraField;

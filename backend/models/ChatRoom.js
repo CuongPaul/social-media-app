@@ -2,38 +2,20 @@ import mongoose from "mongoose";
 
 const { model, Schema } = mongoose;
 
-const objectIdType = Schema.Types.ObjectId;
+const StringDefaultType = { trim: true, default: "", type: String };
+const UserIdType = { ref: "user", required: true, type: Schema.Types.ObjectId };
 
 const chatRoomSchema = new Schema(
     {
-        name: {
-            trim: true,
-            type: String,
-        },
-        avatar_image: {
-            trim: true,
-            default: "",
-            type: String,
-        },
-        is_public: {
-            default: true,
-            type: Boolean,
-        },
-        admin: {
-            ref: "User",
-            type: objectIdType,
-        },
-        members: [
-            {
-                ref: "User",
-                required: true,
-                type: objectIdType,
-            },
-        ],
+        members: [UserIdType],
+        name: StringDefaultType,
+        avatar_image: StringDefaultType,
+        is_public: { default: true, type: Boolean },
+        admin: { ref: "user", type: Schema.Types.ObjectId },
     },
-    { timestamps: true }
+    { timestamps: true, versionKey: false }
 );
 
-const chatRoomModel = model("ChatRoom", chatRoomSchema);
+const ChatRoom = model("chat-room", chatRoomSchema);
 
-export default chatRoomModel;
+export default ChatRoom;

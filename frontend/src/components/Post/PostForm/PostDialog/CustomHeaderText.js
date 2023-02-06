@@ -1,10 +1,11 @@
-import { Typography } from "@material-ui/core";
 import React from "react";
+import { Typography } from "@material-ui/core";
 
-function CustomHeaderText({ userState, body }) {
-    function filterUserById(user_id) {
+const CustomHeaderText = ({ userState, body }) => {
+    const filterUserById = (user_id) => {
         return userState.users.find((usr) => usr.id === user_id);
-    }
+    };
+
     return (
         <Typography>
             <b>{userState.currentUser.name}</b>
@@ -35,6 +36,6 @@ function CustomHeaderText({ userState, body }) {
             ) : null}
         </Typography>
     );
-}
+};
 
 export default CustomHeaderText;

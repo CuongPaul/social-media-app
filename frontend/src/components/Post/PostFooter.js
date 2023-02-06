@@ -1,13 +1,13 @@
-import React, { useContext, useMemo } from "react";
 import { Link } from "react-router-dom";
+import React, { useContext, useMemo } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button, Typography, Divider, Grid } from "@material-ui/core";
+import { faThumbsUp, faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 
 import LikePost from "./LikePost";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faThumbsUp, faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 import { UserContext } from "../../App";
 
-function PostFooter({ post }) {
+const PostFooter = ({ post }) => {
     const { userState } = useContext(UserContext);
 
     // const filterLike = () => {
@@ -95,6 +95,6 @@ function PostFooter({ post }) {
             </Grid>
         </div>
     );
-}
+};
 
 export default PostFooter;

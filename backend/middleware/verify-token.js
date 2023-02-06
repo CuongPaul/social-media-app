@@ -1,31 +1,20 @@
 import jwt from "jsonwebtoken";
 
 const verifyToken = (req, res, next) => {
-    const authorization = req.headers.authorization;
-    if (authorization) {
-        const token = authorization.split("Bearer ")[1];
+    try {
+        const decodedToken = jwt.decode(req.headers.authorization);
 
-        if (token) {
-            try {
-                const decodedToken = jwt.decode(token);
+        const userId = decodedToken.user_id;
 
-                const userId = decodedToken.user_id;
-
-                if (userId) {
-                    req.user_id = userId;
-
-                    next();
-                } else {
-                    return res.status(401).json({ error: "Not logged in" });
-                }
-            } catch (err) {
-                return res.status(401).json({ error: "Token is expired or invalid" });
-            }
-        } else {
+        if (!userId) {
             return res.status(401).json({ error: "Not logged in" });
         }
-    } else {
-        return res.status(401).json({ error: "Not logged in" });
+
+        req.user_id = userId;
+
+        next();
+    } catch (err) {
+        return res.status(401).json({ error: "Token is expired or invalid" });
     }
 };
 

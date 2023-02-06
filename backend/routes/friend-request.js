@@ -1,21 +1,53 @@
 import express from "express";
+import { validate } from "express-validation";
 
 import {
-    sendFriendRequest,
-    acceptFriendRequest,
-    declineOrCancelRequest,
-    getSendedFriendRequests,
-    getReceivedFriendRequests,
+    sendFriendRequestValidation,
+    acceptFriendRequestValidation,
+    declineOrCancelRequestValidation,
+    getSendedFriendRequestsValidation,
+    getReceivedFriendRequestsValidation,
+} from "../validator/friend-request";
+import {
+    sendFriendRequestController,
+    acceptFriendRequestController,
+    declineOrCancelRequestController,
+    getSendedFriendRequestsController,
+    getReceivedFriendRequestsController,
 } from "../controllers/friend-request";
 import verifyToken from "../middleware/verify-token";
 
 const router = express.Router();
 
-router.get("/sended", verifyToken, getSendedFriendRequests);
-router.get("/received", verifyToken, getReceivedFriendRequests);
-
-router.post("/:receiverId", verifyToken, sendFriendRequest);
-router.put("/:friendRequestId", verifyToken, acceptFriendRequest);
-router.delete("/:friendRequestId", verifyToken, declineOrCancelRequest);
+router.post(
+    "/:receiverId",
+    validate(sendFriendRequestValidation),
+    verifyToken,
+    sendFriendRequestController
+);
+router.put(
+    "/:friendRequestId",
+    validate(acceptFriendRequestValidation),
+    verifyToken,
+    acceptFriendRequestController
+);
+router.delete(
+    "/:friendRequestId",
+    validate(declineOrCancelRequestValidation),
+    verifyToken,
+    declineOrCancelRequestController
+);
+router.get(
+    "/sended",
+    validate(getSendedFriendRequestsValidation),
+    verifyToken,
+    getSendedFriendRequestsController
+);
+router.get(
+    "/received",
+    validate(getReceivedFriendRequestsValidation),
+    verifyToken,
+    getReceivedFriendRequestsController
+);
 
 export default router;

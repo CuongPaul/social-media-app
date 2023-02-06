@@ -1,30 +1,34 @@
 import React, { useContext } from "react";
 import { Paper, Typography, makeStyles, Grid } from "@material-ui/core";
+
+import { UserContext } from "../../App";
 import UpdateProfileImage from "./UpdateProfileImage";
 import UpdateCoverImage from "./UpdateCoverImage";
-import { UserContext } from "../../App";
-const useStyles = makeStyles((theme) => ({
+
+const useStyles = makeStyles(() => ({
     paper: {
         width: "100%",
         height: "40vh",
         marginTop: "60px",
         position: "relative",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center",
         backgroundSize: "100% 40vh",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
     },
-
     overlay: {
-        position: "absolute",
-        background: "rgba(0,0,0,0.5)",
+        top: 0,
         width: "100%",
         height: "40vh",
-        top: 0,
+        position: "absolute",
+        background: "rgba(0,0,0,0.5)",
     },
 }));
-function ProfileHeader({ user }) {
+
+const ProfileHeader = ({ user }) => {
     const { userState } = useContext(UserContext);
+
     const classes = useStyles();
+
     return (
         <div>
             <Grid container justify="center" alignItems="center">
@@ -69,6 +73,6 @@ function ProfileHeader({ user }) {
             </Grid>
         </div>
     );
-}
+};
 
 export default ProfileHeader;

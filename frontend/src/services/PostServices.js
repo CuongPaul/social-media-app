@@ -8,15 +8,27 @@ const reactPost = async ({ postId, reactType }) => {
 
         const { data } = await axios({
             method: "POST",
+            timeout: 3 * 1000,
             params: { key: reactType },
             url: `/react-post/${postId}`,
-            baseURL: `${baseURL}/api/post`,
+            baseURL: `${baseURL}//post`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -28,13 +40,25 @@ const createPost = async (postInfo) => {
             url: `/`,
             method: "POST",
             data: postInfo,
-            baseURL: `${baseURL}/api/post`,
+            timeout: 3 * 1000,
+            baseURL: `${baseURL}//post`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -43,15 +67,27 @@ const deletePost = async (postId) => {
         const token = localStorage.token && JSON.parse(localStorage.token);
 
         const { data } = await axios({
-            url: `/${postId}`,
             method: "DELETE",
-            baseURL: `${baseURL}/api/post`,
+            url: `/${postId}`,
+            timeout: 3 * 1000,
+            baseURL: `${baseURL}//post`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -62,30 +98,55 @@ const updatePost = async (postId) => {
         const { data } = await axios({
             method: "PUT",
             url: `/${postId}`,
-            baseURL: `${baseURL}/api/post`,
+            timeout: 3 * 1000,
+            baseURL: `${baseURL}//post`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
-const getAllPosts = async () => {
+const getAllPosts = async (page) => {
     try {
         const token = localStorage.token && JSON.parse(localStorage.token);
 
         const { data } = await axios({
             url: `/`,
             method: "GET",
-            baseURL: `${baseURL}/api/post`,
+            params: { page },
+            timeout: 3 * 1000,
+            baseURL: `${baseURL}//post`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -96,13 +157,25 @@ const getPostsByUser = async (userId) => {
         const { data } = await axios({
             method: "GET",
             url: `/${userId}`,
-            baseURL: `${baseURL}/api/post`,
+            timeout: 3 * 1000,
+            baseURL: `${baseURL}//post`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 

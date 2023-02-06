@@ -8,14 +8,26 @@ const joinChatRoom = async (chatRoomId) => {
 
         const { data } = await axios({
             method: "PUT",
+            timeout: 3 * 1000,
             url: `/join-chat/${chatRoomId}`,
-            baseURL: `${baseURL}/api/chat-room`,
+            baseURL: `${baseApiUrl}//chat-room`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -25,14 +37,26 @@ const leaveChatRoom = async (chatRoomId) => {
 
         const { data } = await axios({
             method: "PUT",
+            timeout: 3 * 1000,
             url: `/leave-chat/${chatRoomId}`,
-            baseURL: `${baseURL}/api/chat-room`,
+            baseURL: `${baseApiUrl}//chat-room`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -43,14 +67,26 @@ const createChatRoom = async (newChatRoomInfo) => {
         const { data } = await axios({
             url: `/`,
             method: "POST",
+            timeout: 3 * 1000,
             data: newChatRoomInfo,
-            baseURL: `${baseURL}/api/chat-room`,
+            baseURL: `${baseApiUrl}//chat-room`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -60,14 +96,26 @@ const deleteChatRoom = async (chatRoomId) => {
 
         const { data } = await axios({
             method: "DELETE",
+            timeout: 3 * 1000,
             url: `//${chatRoomId}`,
-            baseURL: `${baseURL}/api/chat-room`,
+            baseURL: `${baseApiUrl}//chat-room`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -77,15 +125,27 @@ const searchChatRooms = async (chatRoomName) => {
 
         const { data } = await axios({
             method: "GET",
+            timeout: 3 * 1000,
             url: "/chat-room/search",
             params: { name: chatRoomName },
-            baseURL: `${baseURL}/api/chat-room`,
+            baseURL: `${baseApiUrl}//chat-room`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -95,15 +155,27 @@ const updateNameChatRoom = async ({ chatRoomId, chatRoomName }) => {
 
         const { data } = await axios({
             method: "PUT",
+            timeout: 3 * 1000,
             data: { name: chatRoomName },
             url: `/update-name/${chatRoomId}`,
-            baseURL: `${baseURL}/api/chat-room`,
+            baseURL: `${baseApiUrl}//chat-room`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -113,7 +185,8 @@ const updateAvatarChatRoom = async ({ chatRoomId, chatRoomAvatar }) => {
 
         const { data } = await axios({
             method: "PUT",
-            baseURL: `${baseURL}/api/chat-room`,
+            timeout: 3 * 1000,
+            baseURL: `${baseApiUrl}//chat-room`,
             url: `/update-avatar/${chatRoomId}`,
             data: { avatar_image: chatRoomAvatar },
             headers: { Authorization: `Bearer ${token}` },
@@ -121,7 +194,18 @@ const updateAvatarChatRoom = async ({ chatRoomId, chatRoomAvatar }) => {
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -132,14 +216,26 @@ const addMembersToChatRoom = async ({ chatRoomId, members }) => {
         const { data } = await axios({
             method: "PUT",
             data: { members },
+            timeout: 3 * 1000,
             url: `/add-member/${chatRoomId}`,
-            baseURL: `${baseURL}/api/chat-room`,
+            baseURL: `${baseApiUrl}//chat-room`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -149,15 +245,27 @@ const removeMemberChatRoom = async ({ chatRoomId, memberId }) => {
 
         const { data } = await axios({
             method: "PUT",
+            timeout: 3 * 1000,
             params: { memberId },
-            baseURL: `${baseURL}/api/chat-room`,
+            baseURL: `${baseApiUrl}//chat-room`,
             url: `/remove-member/${chatRoomId}`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -167,14 +275,26 @@ const updatePrivacyChatRoom = async (chatRoomId) => {
 
         const { data } = await axios({
             method: "PUT",
-            baseURL: `${baseURL}/api/chat-room`,
+            timeout: 3 * 1000,
+            baseURL: `${baseApiUrl}//chat-room`,
             url: `/update-privacy/${chatRoomId}`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -185,13 +305,25 @@ const getChatRoomsByCurrentUser = async () => {
         const { data } = await axios({
             url: `/`,
             method: "GET",
-            baseURL: `${baseURL}/api/chat-room`,
+            timeout: 3 * 1000,
+            baseURL: `${baseApiUrl}//chat-room`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 

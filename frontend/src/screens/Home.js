@@ -1,52 +1,52 @@
-import React, { Fragment, useContext, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { PostContext, UIContext, UserContext } from "../App";
 import {
     List,
-    ListItemIcon,
     Avatar,
     ListItem,
-    ListItemText,
     useTheme,
+    ListItemText,
+    ListItemIcon,
     useMediaQuery,
 } from "@material-ui/core";
+import { Link } from "react-router-dom";
+import React, { Fragment, useEffect, useContext } from "react";
+
 import Sidebar from "../components/Sidebar";
-import WritePostCard from "../components/Post/PostForm/WritePostCard";
-
-import DrawerBar from "../components/Navbar/DrawerBar";
-
-import AvartarText from "../components/UI/AvartarText";
-
 import Posts from "../components/Post/Posts";
-import MyFriendLists from "../components/Friends/MyFriendLists";
 import useFetchPost from "../hooks/useFetchPost";
+import DrawerBar from "../components/Navbar/DrawerBar";
+import AvartarText from "../components/UI/AvartarText";
+import { UIContext, PostContext, UserContext } from "../App";
+import MyFriendLists from "../components/Friends/MyFriendLists";
+import WritePostCard from "../components/Post/PostForm/WritePostCard";
 
 const homeLeftItems = [
     { title: "Friends", img: "friends.png", to: "/friends" },
     { title: "Messenger", img: "messenger.png", to: "/messenger" },
 ];
 
-function Home() {
-    const { uiState, uiDispatch } = useContext(UIContext);
+const Home = () => {
     const { userState } = useContext(UserContext);
     const { postState } = useContext(PostContext);
+    const { uiState, uiDispatch } = useContext(UIContext);
+
     const theme = useTheme();
     const match = useMediaQuery(theme.breakpoints.between(960, 1400));
 
     const { fetchPosts } = useFetchPost();
-    useEffect(() => {
-        uiDispatch({ type: "SET_NAV_MENU", payload: true });
-        uiDispatch({ type: "SET_DRAWER", payload: false });
 
-        async function loadPosts() {
+    useEffect(() => {
+        uiDispatch({ type: "SET_DRAWER", payload: false });
+        uiDispatch({ type: "SET_NAV_MENU", payload: true });
+
+        const loadPosts = async () => {
             await fetchPosts();
-        }
+        };
 
         loadPosts();
 
         return () => {
-            uiDispatch({ type: "SET_NAV_MENU", payload: false });
             uiDispatch({ type: "SET_DRAWER", payload: false });
+            uiDispatch({ type: "SET_NAV_MENU", payload: false });
         };
     }, [fetchPosts, uiDispatch]);
 
@@ -56,8 +56,12 @@ function Home() {
                 <Fragment>
                     <Sidebar
                         anchor="left"
-                        background={!uiState.darkMode ? "rgb(240,242,245)" : "rgb(24,25,26)"}
                         boxShadow={false}
+                        background={
+                            uiState.darkMode
+                                ? "rgb(24,25,26)"
+                                : "rgb(240,242,245)"
+                        }
                     >
                         <List>
                             <ListItem
@@ -75,16 +79,21 @@ function Home() {
                                         >
                                             <img
                                                 alt="avatar"
-                                                src={userState.currentUser.profile_pic}
                                                 width="100%"
                                                 height="100%"
+                                                src={
+                                                    userState.currentUser
+                                                        .profile_pic
+                                                }
                                             />
                                         </Avatar>
                                     ) : (
                                         <AvartarText
                                             text={userState.currentUser.name}
                                             bg={
-                                                userState.currentUser.active ? "seagreen" : "tomato"
+                                                userState.currentUser.active
+                                                    ? "seagreen"
+                                                    : "tomato"
                                             }
                                         />
                                     )}
@@ -95,7 +104,12 @@ function Home() {
                                 />
                             </ListItem>
                             {homeLeftItems.map((list, index) => (
-                                <ListItem button key={index} component={Link} to={list.to}>
+                                <ListItem
+                                    button
+                                    key={index}
+                                    component={Link}
+                                    to={list.to}
+                                >
                                     <ListItemIcon>
                                         <Avatar
                                             alt={list.title}
@@ -109,7 +123,11 @@ function Home() {
                     </Sidebar>
                     <Sidebar
                         anchor="right"
-                        background={!uiState.darkMode ? "rgb(240,242,245)" : "rgb(24,25,26)"}
+                        background={
+                            !uiState.darkMode
+                                ? "rgb(240,242,245)"
+                                : "rgb(24,25,26)"
+                        }
                         boxShadow={false}
                         drawerWidth={380}
                     >
@@ -124,7 +142,11 @@ function Home() {
 
             <div
                 style={{
-                    maxWidth: uiState.mdScreen ? (match ? "45vw" : "38vw") : "100vw",
+                    maxWidth: uiState.mdScreen
+                        ? match
+                            ? "45vw"
+                            : "38vw"
+                        : "100vw",
                     margin: "auto",
                     paddingTop: "100px",
                     paddingBottom: "100px",
@@ -133,10 +155,14 @@ function Home() {
             >
                 <WritePostCard user={userState.currentUser} />
 
-                <Posts posts={postState.posts.filter((item) => item.privacy === "Public")} />
+                <Posts
+                    posts={postState.posts.filter(
+                        (item) => item.privacy === "Public"
+                    )}
+                />
             </div>
         </div>
     );
-}
+};
 
 export default Home;

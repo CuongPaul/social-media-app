@@ -1,78 +1,58 @@
 import Notification from "../models/Notification";
-import { notificationDataFilter } from "../utils/filter-data";
 
-const readNotification = async (req, res) => {
+const readNotificationController = async (req, res) => {
+    const userId = req.user_id;
+    const notificationId = req.params.notificationId;
+
     try {
-        const notification = await Notification.findById(req.params.notificationId);
+        const notification = await Notification.findOne({ user: userId, _id: notificationId });
 
         if (!notification) {
             res.status(200).json({ message: "Notification doesn't exist" });
         }
 
-        notification.is_read = true;
-        notification.save();
+        await notification.update({ is_read: true });
 
-        res.status(200).json({ message: "uccessfully" });
+        return res.status(200).json({ message: "success" });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ error: err.message });
     }
 };
 
-const readAllNotification = async (req, res) => {
+const getNotificationsController = async (req, res) => {
+    const pageSize = 5;
+    const userId = req.user_id;
+    const page = parseInt(req.query.page);
+
     try {
-        await Notification.updateMany({ user: req.user_id, is_read: false }, { is_read: true });
+        const query = { user: userId };
 
-        res.status(200).json({ message: "Successfully" });
-    } catch (err) {
-        return res.status(500).json({ message: err.message });
-    }
-};
+        const notifications = await Notification.find(query)
+            .limit(pageSize)
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * pageSize);
 
-const getNotificationsByKey = async (req, res) => {
-    try {
-        const notifications = await Notification.find({ key: req.params.key, user: req.user_id });
+        const count = await Notification.countDocuments(query);
 
-        if (!notifications.length) {
-            res.status(200).json({ message: "You don't have any notifications" });
-        }
-
-        const notificationsData = notifications.map((notification) =>
-            notificationDataFilter(notification)
-        );
-
-        res.status(200).json({
-            data: notificationsData,
-            message: "Successfully",
+        return res.status(200).json({
+            message: "success",
+            data: { count, rows: notifications },
         });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ error: err.message });
     }
 };
 
-const getNotificationsByCurrentUser = async (req, res) => {
+const readAllNotificationController = async (req, res) => {
+    const userId = req.user_id;
+
     try {
-        const notifications = await Notification.find({ user: req.user_id });
+        await Notification.updateMany({ user: userId, is_read: false }, { is_read: true });
 
-        if (!notifications.length) {
-            res.status(200).json({ message: "You don't have notification" });
-        }
-
-        const notificationsData = notifications.map((notification) =>
-            notificationDataFilter(notification)
-        );
-
-        res.status(200).json({
-            data: notificationsData,
-            message: "Successfully",
-        });
+        return res.status(200).json({ message: "success" });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ error: err.message });
     }
 };
 
-export {
-    readNotification,
-    readAllNotification,
-    getNotificationsByKey,
-    getNotificationsByCurrentUser,
-};
+export { readNotificationController, getNotificationsController, readAllNotificationController };

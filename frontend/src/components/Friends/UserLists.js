@@ -1,12 +1,12 @@
 import React, { useContext } from "react";
-import Friend from "./Friend";
 import { Button, CardActions, Typography } from "@material-ui/core";
+
+import Friend from "./Friend";
 import { UserContext } from "../../App";
 import useFriendActions from "../../hooks/useFriendActions";
-function UserLists({ users }) {
-    const { userState } = useContext(UserContext);
 
-    const { sendFriendRequest } = useFriendActions();
+const UserLists = ({ users }) => {
+    const { userState } = useContext(UserContext);
 
     const handleSendFriendRequest = (user_id) => {
         sendFriendRequest(user_id);
@@ -30,26 +30,28 @@ function UserLists({ users }) {
         return false;
     };
 
+    const { sendFriendRequest } = useFriendActions();
+
     return (
         <div
             style={{
                 display: "flex",
-                flexDirection: "column",
-                alignItems: "stretch",
-                justifyContent: "center",
                 marginLeft: "8px",
                 marginRight: "6px",
+                alignItems: "stretch",
+                flexDirection: "column",
+                justifyContent: "center",
             }}
         >
             <Typography
                 style={{
-                    fontWeight: "700",
                     fontSize: "16px",
                     marginTop: "8px",
+                    fontWeight: "700",
                     marginBottom: "8px",
                 }}
             >
-                People You May Know
+                People you may know
             </Typography>
             {users && users.length
                 ? users.map((user) => (
@@ -84,6 +86,6 @@ function UserLists({ users }) {
                 : null}
         </div>
     );
-}
+};
 
 export default UserLists;

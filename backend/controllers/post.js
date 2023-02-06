@@ -1,187 +1,252 @@
-import Post from "../models/Post";
-import React from "../models/React";
-import { postDataFilter } from "../utils/filter-data";
-import { sendNotification } from "../utils/send-notification";
+import { Post, User, React, Notification } from "../models";
 
-const reactPost = async (req, res) => {
+const reactPostController = async (req, res) => {
+    const userId = req.user_id;
+    const { postId } = req.params;
+    const { key: reactKey } = req.query;
+
     try {
-        const post = await Post.findById(req.params.postId).populate("react").populate("user");
-
+        const post = await Post.findById(postId).populate("user");
         if (!post) {
             return res.status(404).json({ message: "Post doesn't exist" });
         }
 
-        const key = req.query.key;
-        const indexUserId = post.react[key].indexOf(req.user_id);
+        if (post.user.block_users.includes(userId)) {
+            return res.status(400).json({ message: "Can't react this post" });
+        }
+        if (post.privacy == "ONLY_ME") {
+            return res.status(400).json({ message: "Can't react this post" });
+        }
+        if (post.privacy == "FRIEND" && !post.user.friends.includes(userId)) {
+            return res.status(400).json({ message: "Can't react this post" });
+        }
 
-        indexUserId === -1
-            ? post.react[key].push(req.user_id)
-            : post.react[key].splice(indexUserId, 1);
+        const react = await React.findById(post.react);
+        const indexUser = react[reactKey].indexOf(userId);
 
-        await post.save();
+        if (indexUser !== -1) {
+            react[reactKey].push(userId);
+        } else {
+            react[reactKey].splice(indexUser, 1);
+        }
 
-        await sendNotification({
-            req,
-            key: "react-post",
-            content: `${post.user.name} ${key} your post`,
-        });
+        await react.save();
 
-        res.status(200).json({ message: "Successfully" });
+        return res.status(200).json({ message: "success" });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ error: err.message });
     }
 };
 
-const createPost = async (req, res) => {
+const createPostController = async (req, res) => {
+    const userId = req.user_id;
     const { body, text, images, privacy } = req.body;
 
-    if ((!images || !images.length) && (!text || !text.trim().length)) {
-        return res.status(422).json({ message: "Post image or write something" });
-    }
-
     try {
-        const emptyReact = new React({
+        const emptyReact = await new React({
             wow: [],
             sad: [],
             like: [],
             love: [],
             haha: [],
             angry: [],
-        });
-        const saveEmptyReact = await emptyReact.save();
+        }).save();
 
-        const newPost = new Post({
+        if (body?.tag_friends.length) {
+            const users = await User.find({ _id: { $in: body.tag_friends } });
+
+            const newTagFriends = users.reduce((acc, cur) => {
+                if (!cur.block_users.includes(userId) && cur.friends.includes(userId)) {
+                    return acc.concat(cur._id);
+                } else {
+                    return acc;
+                }
+            }, []);
+
+            body.tag_friends = newTagFriends;
+        }
+
+        const post = await new Post({
             body,
             text,
             images,
             privacy,
-            user: req.user_id,
-            react: saveEmptyReact.id,
-        });
-        const savePost = await newPost.save();
+            user: userId,
+            react: emptyReact._id,
+        }).save();
 
-        await sendNotification({
-            req,
-            key: "new-post",
-            content: `${savePost.user.name} has created new post`,
-        });
+        const user = await User.findById(userId);
+        if (post && body?.tag_friends.length && privacy != "ONLY_ME") {
+            for (const friendId of body.tag_friends) {
+                const friend = await User.findById(friendId);
 
-        res.status(201).json({ message: "Successfully" });
-    } catch (err) {
-        return res.status(500).json({ message: err.message });
-    }
-};
-
-const deletePost = async (req, res) => {
-    try {
-        const post = await Post.findById(req.params.postId);
-
-        if (!post) {
-            return res.status(404).json({ message: "Post is not exists" });
+                if (!friend.block_users.includes(userId)) {
+                    await new Notification({
+                        user: friendId,
+                        type: "POST-TAG_FRIEND",
+                        content: `${user.name} has tag you in new post`,
+                    }).save();
+                }
+            }
         }
 
-        await Message.deleteOne({ id: post.id });
-
-        res.status(200).json({ message: "Successfully" });
+        return res.status(201).json({ message: "success" });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ error: err.message });
     }
 };
 
-const updatePost = async (req, res) => {
+const deletePostController = async (req, res) => {
+    const userId = req.user_id;
+    const { postId } = req.params;
+
+    try {
+        const post = await Post.findOne({ user: userId, _id: postId });
+
+        if (!post) {
+            return res.status(404).json({ message: "Post does not exist" });
+        }
+
+        await post.remove();
+
+        return res.status(200).json({ message: "success" });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+};
+
+const updatePostController = async (req, res) => {
+    const userId = req.user_id;
+    const { postId } = req.params;
     const { body, text, images, privacy } = req.body;
 
-    if ((!images || !images.length) && (!text || !text.trim().length)) {
-        return res.status(422).json({ message: "Post image or write something" });
-    }
-
     try {
-        const post = await Post.findById(req.params.postId);
+        const post = await Post.findOne({ user: userId, _id: postId }).populate("user");
 
         if (!post) {
-            return res.status(404).json({ message: "Post is not exists" });
+            return res.status(404).json({ message: "Post does not exist" });
         }
 
-        post.body = body;
-        post.content = text;
-        post.images = images;
-        post.privacy = privacy;
-        post.save();
+        if (body?.tag_friends.length) {
+            const users = await User.find({ _id: { $in: body.tag_friends } });
+            const newTagFriends = users.reduce((acc, cur) => {
+                if (!cur.block_users.includes(userId) && cur.friends.includes(userId)) {
+                    return acc.concat(cur._id);
+                } else {
+                    return acc;
+                }
+            }, []);
+            body.tag_friends = newTagFriends;
 
-        res.status(200).json({ message: "Successfully" });
+            const newFriendsTaged = newTagFriends.filter(
+                (item) => !post.body.tag_friends.includes(item)
+            );
+            if (newFriendsTaged.length && privacy != "ONLY_ME") {
+                for (const friendId of newFriendsTaged) {
+                    const friend = await User.findById(friendId);
+
+                    if (!friend.block_users.includes(userId)) {
+                        await new Notification({
+                            user: friendId,
+                            type: "POST-TAG_FRIEND",
+                            content: `${post.user.name} has tag you in new post`,
+                        }).save();
+                    }
+                }
+            }
+        }
+
+        await post.update({ body, text, images, privacy });
+
+        return res.status(200).json({ message: "success" });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ error: err.message });
     }
 };
 
-const getAllPosts = async (req, res) => {
-    const limit = 5;
-    const page = parseInt(req.query.page) || 0;
+const getAllPostsController = async (req, res) => {
+    const pageSize = 5;
+    const page = parseInt(req.query.page);
 
     try {
-        const posts = await Post.find()
+        const query = { privacy: "PUBLIC" };
+
+        const posts = await Post.find(query)
+            .limit(pageSize)
             .sort({ createdAt: -1 })
-            .limit(limit)
-            .skip(page * limit)
-            .populate("user")
-            .populate("react");
+            .skip((page - 1) * pageSize)
+            .populate("user", { _id: 1, name: 1, avatar_image: 1 })
+            .populate({
+                path: "react",
+                select: "_id wow sad like love haha angry",
+                populate: [
+                    { path: "wow", select: "_id name avatar_image" },
+                    { path: "sad", select: "_id name avatar_image" },
+                    { path: "like", select: "_id name avatar_image" },
+                    { path: "love", select: "_id name avatar_image" },
+                    { path: "haha", select: "_id name avatar_image" },
+                    { path: "angry", select: "_id name avatar_image" },
+                ],
+            })
+            .populate("body.tag_friends", { _id: 1, name: 1, avatar_image: 1 });
 
-        if (!posts.length) {
-            return res.status(404).json({ message: "You don't have any posts" });
-        }
+        const count = await Post.countDocuments(query);
 
-        const postsData = posts.map((post) => postDataFilter(post));
-
-        const numberOfPost = await Post.estimatedDocumentCount();
-
-        const paginationData = {
-            numberOfPost,
-            currentPageNumber: page,
-            pageAmount: Math.ceil(numberOfPost / limit),
-        };
-
-        res.status(200).json({
-            message: "Successfully",
-            data: { posts: postsData, pagination: paginationData },
-        });
+        return res.status(200).json({ message: "success", data: { count, rows: posts } });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ error: err.message });
     }
 };
 
-const getPostsByUser = async (req, res) => {
-    const limit = 5;
-    const page = parseInt(req.query.page) || 0;
+const getPostsByUserController = async (req, res) => {
+    const pageSize = 5;
+    const userId = req.user_id;
+    const ownerId = req.params.userId;
+    const page = parseInt(req.query.page);
 
     try {
-        const posts = await Post.find({ user: req.params.userId })
-            .sort({ createdAt: -1 })
-            .limit(limit)
-            .skip(page * limit)
-            .populate("user")
-            .populate("react");
+        const ownerPost = await User.findById(ownerId);
 
-        if (!posts.length) {
-            return res.status(404).json({ message: "You don't have any posts" });
+        const query = { user: ownerId, privacy: "PUBLIC" };
+        if (ownerPost.friends.includes(userId)) {
+            query.privacy = { $in: ["FRIEND", "PUBLIC"] };
+        }
+        if (ownerId == userId) {
+            query.privacy = { $in: ["FRIEND", "PUBLIC", "ONLY_ME"] };
         }
 
-        const postsData = posts.map((post) => postDataFilter(post));
+        const posts = await Post.find(query)
+            .limit(pageSize)
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * pageSize)
+            .populate("user", { _id: 1, name: 1, avatar_image: 1 })
+            .populate({
+                path: "react",
+                select: "_id wow sad like love haha angry",
+                populate: [
+                    { path: "wow", select: "_id name avatar_image" },
+                    { path: "sad", select: "_id name avatar_image" },
+                    { path: "like", select: "_id name avatar_image" },
+                    { path: "love", select: "_id name avatar_image" },
+                    { path: "haha", select: "_id name avatar_image" },
+                    { path: "angry", select: "_id name avatar_image" },
+                ],
+            })
+            .populate("body.tag_friends", { _id: 1, name: 1, avatar_image: 1 });
 
-        const numberOfPost = await Post.estimatedDocumentCount();
+        const count = await Post.countDocuments(query);
 
-        const paginationData = {
-            numberOfPost,
-            currentPageNumber: page,
-            pageAmount: Math.ceil(numberOfPost / limit),
-        };
-
-        res.status(200).json({
-            message: "Successfully",
-            data: { posts: postsData, pagination: paginationData },
-        });
+        return res.status(200).json({ message: "success", data: { count, rows: posts } });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ error: err.message });
     }
 };
 
-export { reactPost, createPost, deletePost, updatePost, getAllPosts, getPostsByUser };
+export {
+    reactPostController,
+    createPostController,
+    deletePostController,
+    updatePostController,
+    getAllPostsController,
+    getPostsByUserController,
+};

@@ -1,24 +1,25 @@
 import {
     Avatar,
-    Button,
-    DialogActions,
-    DialogTitle,
-    IconButton,
     Dialog,
+    Button,
+    IconButton,
+    DialogTitle,
+    DialogActions,
     DialogContent,
 } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
 import React, { useState, useRef } from "react";
 import { CameraAlt as CameraIcon } from "@material-ui/icons";
-import useUpdateProfilePic from "../../hooks/useUpdateProfilePic";
+
 import DialogLoading from "../UI/DialogLoading";
-import { useHistory } from "react-router-dom";
-function UpdateCoverImage() {
+import useUpdateProfilePic from "../../hooks/useUpdateProfilePic";
+
+const UpdateCoverImage = () => {
     const history = useHistory();
+    const inputFileRef = useRef(null);
+    const [menu, setMenu] = useState(false);
     const [coverPic, setCoverPic] = useState(null);
     const [previewImage, setPreviewImage] = useState(null);
-    const [menu, setMenu] = useState(false);
-
-    const inputFileRef = useRef(null);
 
     const { updateCoverPic, loading } = useUpdateProfilePic({
         cover_pic: coverPic,
@@ -101,6 +102,6 @@ function UpdateCoverImage() {
             </Dialog>
         </div>
     );
-}
+};
 
 export default UpdateCoverImage;

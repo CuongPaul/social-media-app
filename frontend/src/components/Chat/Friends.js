@@ -1,23 +1,24 @@
 import {
     List,
-    ListItem,
-    ListItemAvatar,
-    ListItemText,
     Avatar,
-    ListSubheader,
+    ListItem,
     Typography,
+    ListItemText,
+    ListSubheader,
+    ListItemAvatar,
 } from "@material-ui/core";
 import React, { useContext } from "react";
-import { UserContext, ChatContext, UIContext } from "../../App";
-import { getMessages } from "../../services/MessageService";
-import AvartarText from "../UI/AvartarText";
 
-function Friends() {
+import AvartarText from "../UI/AvartarText";
+import { getMessages } from "../../services/MessageService";
+import { UserContext, ChatContext, UIContext } from "../../App";
+
+const Friends = () => {
     const { userState } = useContext(UserContext);
     const { chatDispatch } = useContext(ChatContext);
     const { uiState, uiDispatch } = useContext(UIContext);
 
-    const handleFriendSelect = (friend) => {
+    const handleClickFriend = (friend) => {
         uiDispatch({ type: "SET_DRAWER", payload: false });
         chatDispatch({ type: "SET_SELECTED_FRIEND", payload: friend });
         getMessages(friend.id)
@@ -28,15 +29,16 @@ function Friends() {
             })
             .catch((err) => console.log(err));
     };
+
     return (
         <List
-            subheader={<ListSubheader component="div">Your Friends</ListSubheader>}
             style={{ backgroundColor: uiState.darkMode && "rgb(36,37,38)" }}
+            subheader={<ListSubheader component="div">Your Friends</ListSubheader>}
         >
             {userState.currentUser.friends && userState.currentUser.friends.length ? (
                 userState.currentUser.friends.map((friend) => {
                     return (
-                        <ListItem key={friend.id} button onClick={() => handleFriendSelect(friend)}>
+                        <ListItem key={friend.id} button onClick={() => handleClickFriend(friend)}>
                             <ListItemAvatar>
                                 {friend.profile_pic ? (
                                     <Avatar alt={friend.name} src={friend.profile_pic} />
@@ -52,10 +54,10 @@ function Friends() {
                     );
                 })
             ) : (
-                <Typography>No Friends</Typography>
+                <Typography>No friends</Typography>
             )}
         </List>
     );
-}
+};
 
 export default Friends;

@@ -8,14 +8,26 @@ const readNotification = async (notificationId) => {
 
         const { data } = await axios({
             method: "PUT",
+            timeout: 3 * 1000,
             url: `/${notificationId}`,
-            baseURL: `${baseURL}/api/notification`,
+            baseURL: `${baseApiUrl}//notification`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -26,13 +38,25 @@ const readAllNotification = async () => {
         const { data } = await axios({
             method: "PUT",
             url: `/read-all`,
-            baseURL: `${baseURL}/api/notification`,
+            timeout: 3 * 1000,
+            baseURL: `${baseApiUrl}//notification`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -42,14 +66,26 @@ const getNotificationsByKey = async (notificationKey) => {
 
         const { data } = await axios({
             method: "PUT",
+            timeout: 3 * 1000,
             url: `/get-by-key/${notificationKey}`,
-            baseURL: `${baseURL}/api/notification`,
+            baseURL: `${baseApiUrl}//notification`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -60,13 +96,25 @@ const getNotificationsByCurrentUser = async () => {
         const { data } = await axios({
             url: `/`,
             method: "GET",
-            baseURL: `${baseURL}/api/notification`,
+            timeout: 3 * 1000,
+            baseURL: `${baseApiUrl}//notification`,
             headers: { Authorization: `Bearer ${token}` },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 

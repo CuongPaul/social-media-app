@@ -1,20 +1,48 @@
 import express from "express";
+import { validate } from "express-validation";
 
 import {
-    sendMessage,
-    getMessages,
-    reactMessage,
-    deleteMessage,
-    updateMessages,
+    getMessagesValidatetion,
+    reactMessageValidatetion,
+    createMessageValidatetion,
+    deleteMessageValidatetion,
+    updateMessagesValidatetion,
+} from "../validator/message";
+import {
+    getMessagesController,
+    reactMessageController,
+    createMessageController,
+    deleteMessageController,
+    updateMessagesController,
 } from "../controllers/message";
 import verifyToken from "../middleware/verify-token";
 
 const router = express.Router();
 
-router.get("/:roomId", verifyToken, getMessages);
-router.post("/:roomId", verifyToken, sendMessage);
-router.put("/:meassageId", verifyToken, updateMessages);
-router.delete("/:meassageId", verifyToken, deleteMessage);
-router.post("/react-message/:messageId", verifyToken, reactMessage);
+router.post(
+    "/:chatRoomId",
+    validate(createMessageValidatetion),
+    verifyToken,
+    createMessageController
+);
+router.put(
+    "/:meassageId",
+    validate(updateMessagesValidatetion),
+    verifyToken,
+    updateMessagesController
+);
+router.delete(
+    "/:meassageId",
+    validate(deleteMessageValidatetion),
+    verifyToken,
+    deleteMessageController
+);
+router.put(
+    "/react-message/:messageId",
+    validate(reactMessageValidatetion),
+    verifyToken,
+    reactMessageController
+);
+router.get("/:chatRoomId", validate(getMessagesValidatetion), verifyToken, getMessagesController);
 
 export default router;

@@ -1,17 +1,20 @@
 import React, { Fragment, useContext } from "react";
-import { UIContext } from "../../App";
-import useStyles from "./styles";
-import MiddleMenu from "./MiddleMenu";
-import RightMenu from "./RightMenu";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFacebook } from "@fortawesome/free-brands-svg-icons";
-import { AppBar, Toolbar, IconButton, useMediaQuery, useTheme, Tooltip } from "@material-ui/core";
 import { Menu as MenuIcon } from "@material-ui/icons";
+import { faFacebook } from "@fortawesome/free-brands-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { AppBar, Toolbar, IconButton, useMediaQuery, useTheme, Tooltip } from "@material-ui/core";
+
+import useStyles from "./styles";
+import RightMenu from "./RightMenu";
+import { UIContext } from "../../App";
+import MiddleMenu from "./MiddleMenu";
 import SearchFriends from "../Friends/SearchFriends";
-function Navbar() {
+
+const Navbar = () => {
     const { uiState, uiDispatch } = useContext(UIContext);
-    const classes = useStyles();
+
     const theme = useTheme();
+    const classes = useStyles();
     const xsScreen = useMediaQuery(theme.breakpoints.only("xs"));
 
     return (
@@ -73,6 +76,6 @@ function Navbar() {
             </AppBar>
         </Fragment>
     );
-}
+};
 
 export default Navbar;

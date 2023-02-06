@@ -1,137 +1,168 @@
 import React from "../models/React";
 import Message from "../models/Message";
 import ChatRoom from "../models/ChatRoom";
-import { messageDataFilter } from "../utils/filter-data";
 
-const sendMessage = async (req, res) => {
-    const roomId = req.params.roomId;
-    const { text, image } = req.body;
-
-    if ((!text || !text.trim().length) && (!image || !image.trim().length)) {
-        return res.status(422).json({ error: "Don`t send empty message" });
-    }
+const getMessagesController = async (req, res) => {
+    const limit = 5;
+    const userId = req.user_id;
+    const page = parseInt(req.query.page);
+    const chatRoomId = req.params.chatRoomId;
 
     try {
-        const chatRoom = await ChatRoom.findById(roomId);
-
+        const chatRoom = await ChatRoom.findOne({ members: userId, _id: chatRoomId });
         if (!chatRoom) {
-            return res.status(404).json({ error: "Group doesn't exist" });
+            throw new Error("You aren't in this group");
         }
 
-        const emptyReact = new React({ wow: [], sad: [], like: [], love: [], haha: [], angry: [] });
-        const saveEmptyReact = await emptyReact.save();
+        const query = { chat_room: chatRoomId };
 
-        const newMessage = new Message({
-            room: roomId,
-            sender: req.user_id,
-            content: { text, image },
-            react: saveEmptyReact.id,
-        });
-        const saveMessage = await newMessage.save();
-
-        const messageData = messageDataFilter(saveMessage);
-
-        req.io.to(roomId).emit("new-message", { data: messageData });
-
-        res.status(201).json({ message: "Successfully" });
-    } catch (err) {
-        return res.status(500).json({ message: err.message });
-    }
-};
-
-const getMessages = async (req, res) => {
-    const limit = 25;
-    const page = parseInt(req.query.page) || 0;
-
-    try {
-        const messages = await Message.find({ room: req.params.roomId })
+        const messages = await Message.find(query, { chat_room: 0, updatedAt: 0 })
             .sort()
             .limit(limit)
             .skip(page * limit)
-            .populate("sender");
+            .populate("sender", { _id: 1, name: 1, avatar_image: 1 })
+            .populate({
+                path: "react",
+                select: "_id wow sad like love haha angry",
+                populate: [
+                    { path: "wow", select: "_id name avatar_image" },
+                    { path: "sad", select: "_id name avatar_image" },
+                    { path: "like", select: "_id name avatar_image" },
+                    { path: "love", select: "_id name avatar_image" },
+                    { path: "haha", select: "_id name avatar_image" },
+                    { path: "angry", select: "_id name avatar_image" },
+                ],
+            });
 
-        const messageData = messages.map((message) => messageDataFilter(message));
+        const count = await Message.countDocuments(query);
 
-        const numberOfMessagePerRoom = await Message.countDocuments({ room: req.params.roomId });
-
-        const paginationData = {
-            numberOfMessagePerRoom,
-            currentPageNumber: page,
-            numberOfPage: Math.ceil(numberOfMessagePerRoom / limit),
-        };
-
-        res.status(200).json({
-            message: "Successfully",
-            data: { message: messageData, pagination: paginationData },
-        });
+        res.status(200).json({ message: "success", data: { count, rows: messages } });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ error: err.message });
     }
 };
 
-const reactMessage = async (req, res) => {
-    try {
-        const message = await Message.findById(req.params.messageId)
-            .populate("react")
-            .populate("user");
+const reactMessageController = async (req, res) => {
+    const userId = req.user_id;
+    const messageId = req.params.messageId;
+    const { chat_room_id, key: reactKey } = req.query;
 
-        if (!message) {
-            return res.status(404).json({ message: "Message doesn't exist" });
+    try {
+        const chatRoom = await ChatRoom.findOne({ members: userId, _id: chat_room_id });
+        if (!chatRoom) {
+            throw new Error("You aren't in this group");
         }
 
-        const key = req.query.key;
-        const indexUserId = message.react[key].indexOf(req.user_id);
-
-        indexUserId === -1
-            ? message.react[key].push(req.user_id)
-            : message.react[key].splice(indexUserId, 1);
-
-        await message.save();
-
-        res.status(200).json({ message: "Successfully" });
-    } catch (err) {
-        return res.status(500).json({ message: err.message });
-    }
-};
-
-const deleteMessage = async (req, res) => {
-    try {
-        const message = await Message.findById(req.params.meassageId);
-
+        const message = await Message.findById(messageId);
         if (!message) {
-            return res.status(400).json({ message: "Message is not exists" });
+            return res.status(400).json({ message: "Message doesn't exist" });
         }
 
-        await Message.deleteOne({ id: message.id });
+        const react = await React.findById(message.react);
+        const indexUser = react[reactKey].indexOf(userId);
 
-        res.status(200).json({ message: "Successfully" });
+        if (indexUser === -1) {
+            react[reactKey].push(userId);
+        } else {
+            react[reactKey].splice(indexUser, 1);
+        }
+
+        await react.save();
+
+        res.status(200).json({ message: "success" });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ error: err.message });
     }
 };
 
-const updateMessages = async (req, res) => {
+const createMessageController = async (req, res) => {
+    const userId = req.user_id;
     const { text, image } = req.body;
-
-    if ((!text || !text.trim().length) && (!image || !image.trim().length)) {
-        return res.status(422).json({ error: "Don`t send empty message" });
-    }
+    const chatRoomId = req.params.chatRoomId;
 
     try {
-        const message = await Message.findById(req.params.meassageId);
+        const chatRoom = await ChatRoom.findById(chatRoomId);
+        if (!chatRoom) {
+            return res.status(400).json({ error: "Group doesn't exist" });
+        }
+
+        const emptyReact = await new React({
+            wow: [],
+            sad: [],
+            like: [],
+            love: [],
+            haha: [],
+            angry: [],
+        }).save();
+
+        const newMessage = new Message({
+            text,
+            image,
+            sender: userId,
+            react: emptyReact.id,
+            chat_room: chatRoomId,
+        }).save();
+
+        req.io.to(chatRoomId).emit("new-message", { data: newMessage });
+
+        res.status(201).json({ message: "success" });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+};
+
+const deleteMessageController = async (req, res) => {
+    const userId = req.user_id;
+    const meassageId = req.params.meassageId;
+    const chat_room_id = req.query.chat_room_id;
+
+    try {
+        const message = await Message.findOne({
+            sender: userId,
+            _id: meassageId,
+            chat_room: chat_room_id,
+        });
 
         if (!message) {
             return res.status(400).json({ message: "Message is not exists" });
         }
 
-        message.text = text;
-        message.image = image;
-        await message.save();
+        await message.remove();
 
-        res.status(200).json({ message: "Successfully" });
+        res.status(200).json({ message: "success" });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ error: err.message });
     }
 };
 
-export { sendMessage, getMessages, reactMessage, deleteMessage, updateMessages };
+const updateMessagesController = async (req, res) => {
+    const userId = req.user_id;
+    const meassageId = req.params.meassageId;
+    const { text, image, chat_room_id } = req.body;
+
+    try {
+        const message = await Message.findOne({
+            sender: userId,
+            _id: meassageId,
+            chat_room: chat_room_id,
+        });
+
+        if (!message) {
+            return res.status(400).json({ message: "You don't allow edit this message" });
+        }
+
+        await message.update({ text, image });
+
+        res.status(200).json({ message: "success" });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+};
+
+export {
+    createMessageController,
+    getMessagesController,
+    reactMessageController,
+    deleteMessageController,
+    updateMessagesController,
+};

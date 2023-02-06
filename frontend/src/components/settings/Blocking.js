@@ -1,11 +1,7 @@
-import React from 'react'
+import React from "react";
 
 function Blocking() {
-    return (
-        <div>
-            Blockings
-        </div>
-    )
+    return <div>Blockings</div>;
 }
 
-export default Blocking
+export default Blocking;

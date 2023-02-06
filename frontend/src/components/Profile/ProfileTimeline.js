@@ -1,10 +1,11 @@
 import { Grid } from "@material-ui/core";
 import React, { useContext } from "react";
-import WritePostCard from "../Post/PostForm/WritePostCard";
-import { UserContext, PostContext } from "../../App";
-import Posts from "../Post/Posts";
 
-function ProfileTimeline({ user }) {
+import Posts from "../Post/Posts";
+import { UserContext, PostContext } from "../../App";
+import WritePostCard from "../Post/PostForm/WritePostCard";
+
+const ProfileTimeline = ({ user }) => {
     const { userState } = useContext(UserContext);
     const { postState } = useContext(PostContext);
 
@@ -19,6 +20,6 @@ function ProfileTimeline({ user }) {
             </Grid>
         </Grid>
     );
-}
+};
 
 export default ProfileTimeline;

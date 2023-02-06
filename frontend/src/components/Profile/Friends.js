@@ -1,10 +1,11 @@
 import React, { useContext } from "react";
 import { Paper, Grid, Typography, Button, Avatar } from "@material-ui/core";
+
+import { UserContext } from "../../App";
 import AvartarText from "../UI/AvartarText";
 import { unfriend } from "../../services/UserServices";
-import { UserContext } from "../../App";
 
-function Friends({ user }) {
+const Friends = ({ user }) => {
     const { userDispatch } = useContext(UserContext);
 
     return (
@@ -79,6 +80,6 @@ function Friends({ user }) {
                 ))}
         </Grid>
     );
-}
+};
 
 export default Friends;

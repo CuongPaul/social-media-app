@@ -8,14 +8,26 @@ const unfriend = async (friendId) => {
 
         const { data } = await axios({
             method: "PUT",
+            timeout: 3 * 1000,
             url: `/unfriend/${friendId}`,
-            baseURL: `${baseURL}/api/friend-request`,
-            headers: { Authorization: `Bearer ${token}` },
+            baseURL: `${baseURL}/friend-request`,
+            headers: { Authorization: token },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -26,13 +38,25 @@ const getUserById = async (userId) => {
         const { data } = await axios({
             method: "GET",
             url: `/${userId}`,
-            baseURL: `${baseURL}/api/user`,
-            headers: { Authorization: `Bearer ${token}` },
+            timeout: 3 * 1000,
+            baseURL: `${baseURL}/user`,
+            headers: { Authorization: token },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -41,13 +65,25 @@ const searchUsers = async (userName) => {
         const { data } = await axios({
             method: "GET",
             url: `/search`,
+            timeout: 3 * 1000,
             params: { name: userName },
-            baseURL: `${baseURL}/api/user`,
+            baseURL: `${baseURL}/user`,
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -58,14 +94,26 @@ const updateProfile = async (userInfo) => {
         const { data } = await axios({
             method: "PUT",
             data: userInfo,
+            timeout: 3 * 1000,
             url: `/update-profile`,
-            baseURL: `${baseURL}/api/user`,
-            headers: { Authorization: `Bearer ${token}` },
+            baseURL: `${baseURL}/user`,
+            headers: { Authorization: token },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -75,14 +123,26 @@ const updatePassword = async () => {
 
         const { data } = await axios({
             method: "GET",
+            timeout: 3 * 1000,
             url: "/update-password",
-            baseURL: `${baseURL}/api/auth`,
-            headers: { Authorization: `Bearer ${token}` },
+            baseURL: `${baseURL}/auth`,
+            headers: { Authorization: token },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -91,17 +151,20 @@ const getCurrentUser = async () => {
         const token = localStorage.token && JSON.parse(localStorage.token);
 
         const { data } = await axios({
-            url: `/`,
+            url: ``,
             method: "GET",
             timeout: 3 * 1000,
-            baseURL: `${baseURL}/api/user`,
-            headers: { Authorization: `Bearer ${token}` },
+            baseURL: `${baseURL}/user`,
+            headers: { Authorization: token },
         });
 
         return data;
     } catch (err) {
         if (err.response) {
-            return { status: err.response.status, error: err.response.data.error };
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
         } else {
             if (err.request) {
                 throw new Error("The connection has time out");
@@ -118,15 +181,27 @@ const updateCoverImage = async (imageURL) => {
 
         const { data } = await axios({
             method: "PUT",
+            timeout: 3 * 1000,
             url: `/cover-image`,
-            baseURL: `${baseURL}/api/user`,
+            baseURL: `${baseURL}/user`,
             data: { cover_image: imageURL },
-            headers: { Authorization: `Bearer ${token}` },
+            headers: { Authorization: token },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -136,14 +211,26 @@ const getRecommendUsers = async () => {
 
         const { data } = await axios({
             method: "GET",
+            timeout: 3 * 1000,
             url: `/recommend-users`,
-            baseURL: `${baseURL}/api/user`,
-            headers: { Authorization: `Bearer ${token}` },
+            baseURL: `${baseURL}/user`,
+            headers: { Authorization: token },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 
@@ -153,15 +240,27 @@ const updateAvatarImage = async (imageURL) => {
 
         const { data } = await axios({
             method: "PUT",
+            timeout: 3 * 1000,
             url: `/avatar-image`,
-            baseURL: `${baseURL}/api/user`,
+            baseURL: `${baseURL}/user`,
             data: { avatar_image: imageURL },
-            headers: { Authorization: `Bearer ${token}` },
+            headers: { Authorization: token },
         });
 
         return data;
     } catch (err) {
-        throw new Error(err.response.data.message);
+        if (err.response) {
+            return {
+                status: err.response.status,
+                error: err.response.data.error,
+            };
+        } else {
+            if (err.request) {
+                throw new Error("The connection has time out");
+            } else {
+                throw new Error(err.message);
+            }
+        }
     }
 };
 

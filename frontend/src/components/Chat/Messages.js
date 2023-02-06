@@ -1,18 +1,20 @@
 import {
+    Menu,
     Grid,
-    makeStyles,
     Paper,
-    Typography,
+    MenuItem,
     CardMedia,
     IconButton,
-    Menu,
-    MenuItem,
+    makeStyles,
+    Typography,
 } from "@material-ui/core";
-import React, { Fragment, useContext, useEffect, useRef, useState } from "react";
-import { ChatContext, UIContext, UserContext } from "../../App";
 import moment from "moment";
 import { MoreHoriz } from "@material-ui/icons";
-const useStyles = makeStyles((theme) => ({
+import React, { Fragment, useContext, useEffect, useRef, useState } from "react";
+
+import { ChatContext, UIContext, UserContext } from "../../App";
+
+const useStyles = makeStyles(() => ({
     me: {
         padding: "8px",
         maxWidth: "60%",
@@ -37,23 +39,24 @@ const useStyles = makeStyles((theme) => ({
         margin: "auto",
     },
 }));
-function Messages({ setTextValue }) {
-    const classes = useStyles();
 
+const Messages = ({ setTextValue }) => {
+    const { uiState } = useContext(UIContext);
+    const { chatState } = useContext(ChatContext);
+    const { userState } = useContext(UserContext);
+
+    const classes = useStyles();
     const scrollDiv = useRef(null);
     const [isOpen, setIsOpen] = useState(null);
 
-    const { chatState } = useContext(ChatContext);
-    const { userState } = useContext(UserContext);
-    const { uiState } = useContext(UIContext);
+    const scrollToBottom = () => {
+        scrollDiv.current.scrollIntoView({ behavior: "smooth" });
+    };
 
     useEffect(() => {
         scrollToBottom();
     }, [chatState.messages.length]);
 
-    function scrollToBottom() {
-        scrollDiv.current.scrollIntoView({ behavior: "smooth" });
-    }
     return (
         <Grid container>
             {chatState.messages.length
@@ -194,6 +197,6 @@ function Messages({ setTextValue }) {
             <div ref={scrollDiv} />
         </Grid>
     );
-}
+};
 
 export default Messages;
