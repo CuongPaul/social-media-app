@@ -1,64 +1,66 @@
-const { Schema, model } = require('mongoose')
+import mongoose from "mongoose";
+
+const { model, Schema } = mongoose;
 
 const postSchema = new Schema(
-  {
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-    },
-    content: {
-      type: String,
-      trim: true,
-    },
-    body: {
-      feelings: {
-        type: String,
-        trim: true,
-      },
-      with: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: 'User',
+    {
+        user: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
         },
-      ],
-      at: {
-        type: String,
-        trim: true,
-      },
-      date: String,
+        content: {
+            type: String,
+            trim: true,
+        },
+        body: {
+            feelings: {
+                type: String,
+                trim: true,
+            },
+            with: [
+                {
+                    type: Schema.Types.ObjectId,
+                    ref: "User",
+                },
+            ],
+            at: {
+                type: String,
+                trim: true,
+            },
+            date: String,
+        },
+        image: String,
+        isProfilePost: {
+            type: Boolean,
+            default: false,
+        },
+
+        profilePostData: {
+            coverImage: String,
+            profileImage: String,
+        },
+
+        privacy: {
+            type: String,
+            enum: ["Only me", "Public"],
+            default: "Public",
+        },
+
+        likes: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
+
+        hearts: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
     },
-    image: String,
-    isProfilePost: {
-      type: Boolean,
-      default: false,
-    },
+    { timestamps: true }
+);
 
-    profilePostData: {
-      coverImage: String,
-      profileImage: String,
-    },
-
-    privacy: {
-      type: String,
-      enum: ['Only me', 'Public'],
-      default: 'Public',
-    },
-
-    likes: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-      },
-    ],
-
-    hearts: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-      },
-    ],
-  },
-  { timestamps: true },
-)
-
-module.exports = model('Post', postSchema)
+export default model("Post", postSchema);

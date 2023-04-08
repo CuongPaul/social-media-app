@@ -1,35 +1,30 @@
-const router = require('express').Router()
-const {
-  createComment,
-  fetchComments,
-  likeDislikeComment,
-  editComment, 
-  deleteComment, 
-} = require('../controllers/Post/Comment')
-const {
-  fetchAllPosts,
-  fetchPostById,
-  deletePost,
-  editPost,
-} = require('../controllers/Post/FetchPost')
-const {
-  createPost,
-  likeDislikePost,
-} = require('../controllers/Post/postAction')
-const authRequired = require('../middleware/AuthRequired')
+import express from "express";
 
-router.post('/', authRequired, createPost)
-router.get('/', authRequired, fetchAllPosts)
-router.get('/:postId', authRequired, fetchPostById)
-router.delete('/:postId', authRequired, deletePost)
-router.patch('/:postId', authRequired, editPost)
+import {
+    createComment,
+    fetchComments,
+    likeDislikeComment,
+    editComment,
+    deleteComment,
+} from "../controllers/Post/Comment";
+import { fetchAllPosts, fetchPostById, deletePost, editPost } from "../controllers/Post/FetchPost";
+import { createPost, likeDislikePost } from "../controllers/Post/postAction";
+import authRequired from "../middleware/AuthRequired";
 
-router.delete('/comment/:commentId', authRequired, deleteComment)
-router.patch('/comment/:commentId', authRequired, editComment)
-router.get('/comment/:commentId/like_dislike', authRequired, likeDislikeComment)
+const router = express.Router();
 
-router.get('/:postId/like_dislike', authRequired, likeDislikePost)
-router.get('/:postId/comment', authRequired, fetchComments)
-router.post('/:postId/comment', authRequired, createComment)
+router.post("/", authRequired, createPost);
+router.get("/", authRequired, fetchAllPosts);
+router.get("/:postId", authRequired, fetchPostById);
+router.delete("/:postId", authRequired, deletePost);
+router.patch("/:postId", authRequired, editPost);
 
-module.exports = router
+router.delete("/comment/:commentId", authRequired, deleteComment);
+router.patch("/comment/:commentId", authRequired, editComment);
+router.get("/comment/:commentId/like_dislike", authRequired, likeDislikeComment);
+
+router.get("/:postId/like_dislike", authRequired, likeDislikePost);
+router.get("/:postId/comment", authRequired, fetchComments);
+router.post("/:postId/comment", authRequired, createComment);
+
+export default router;

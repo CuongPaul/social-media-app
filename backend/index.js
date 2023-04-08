@@ -1,42 +1,47 @@
-const express = require('express')
-const cors = require('cors')
-const mongoose = require('mongoose')
-require("dotenv").config()
-const app = express()
-const http = require('http')
-const server = http.createServer(app)
-const io = require('socket.io')(server)
+import cors from "cors";
+import express from "express";
+import Server from "socket.io";
+import mongoose from "mongoose";
+import * as dotenv from "dotenv";
+import { createServer } from "http";
 
-const UserRoutes = require('./routes/User')
-const AuthRoutes = require('./routes/Auth')
-const PostRoutes = require('./routes/Post')
+import socketServer from "./socket";
+import UserRoutes from "./routes/User";
+import AuthRoutes from "./routes/Auth";
+import PostRoutes from "./routes/Post";
 
-const PORT = process.env.PORT || 5000
-const {MONGODB_URI} = require("./config")
+dotenv.config();
 
-app.use(cors())
-app.use(express.json())
+const PORT = process.env.PORT || 4000;
+const MONGODB_URI = process.env.MONGODB_URI;
 
-app.use((req, res, next) => {
-  io.req = req
-  req.io = io
-  next()
-})
+const app = express();
+const httpServer = createServer(app);
 
-app.use('/api/auth', AuthRoutes)
-app.use('/api/user', UserRoutes)
-app.use('/api/post', PostRoutes)
+const io = new Server(httpServer);
+socketServer(io);
 
-require('./socket')(io)
+app.use(cors());
+app.use(express.json());
+
+app.use((req, _res, next) => {
+    io.req = req;
+    req.io = io;
+    next();
+});
+
+app.use("/api/auth", AuthRoutes);
+app.use("/api/user", UserRoutes);
+app.use("/api/post", PostRoutes);
 
 mongoose
-  .connect(MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-  })
-  .then(() => {
-    console.log('database connected')
-    server.listen(PORT, () => console.log(`server started on port ${PORT}`))
-  })
-  .catch((err) => console.log(err))
+    .connect(MONGODB_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true,
+    })
+    .then(() => {
+        console.log("database connected");
+        httpServer.listen(PORT, () => console.log(`server started on port ${PORT}`));
+    })
+    .catch((err) => console.log(err));

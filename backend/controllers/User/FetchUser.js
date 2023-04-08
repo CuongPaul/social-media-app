@@ -1,120 +1,117 @@
-const User = require('../../models/User')
-const Notification = require('../../models/Notification')
-const FriendRequest = require('../../models/FriendRequest')
-const FilterUserData = require('../../utils/FilterUserData')
+import User from "../../models/User";
+import Notification from "../../models/Notification";
+import FriendRequest from "../../models/FriendRequest";
+import FilterUserData from "../../utils/FilterUserData";
 
-exports.fetchUserById = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.user_id).populate('friends')
-    const userData = FilterUserData(user)
+export const fetchUserById = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.user_id).populate("friends");
+        const userData = FilterUserData(user);
 
-    res.status(200).json({ user: userData })
-  } catch (err) {
-    console.log(err)
-    return res.status(500).json({error:"Something went wrong"})
-  }
-}
-
-exports.fetchRecommandedUsers = async (req, res) => {
-  try {
-    const users = await User.find()
-      .where('_id')
-      .ne(req.userId)
-      .populate('friends')
-
-    const usersData = users.map((user) => {
-      return FilterUserData(user)
-    })
-    res.status(200).json({ users: usersData })
-  } catch (err) {
-    console.log(err)
-    return res.status(500).json({error:"Something went wrong"})
-  }
-}
-exports.me = async (req, res) => {
-  try {
-    const user = await User.findById(req.userId).populate('friends')
-    if (!user) {
-      return res.status(404).json({ error: 'user not found' })
+        res.status(200).json({ user: userData });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: "Something went wrong" });
     }
+};
 
-    const userData = FilterUserData(user)
+export const fetchRecommandedUsers = async (req, res) => {
+    try {
+        const users = await User.find().where("_id").ne(req.userId).populate("friends");
 
-    const friends = user.friends.map((friend) => {
-      return {
-        ...FilterUserData(friend),
-      }
-    })
+        const usersData = users.map((user) => {
+            return FilterUserData(user);
+        });
+        res.status(200).json({ users: usersData });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: "Something went wrong" });
+    }
+};
+export const me = async (req, res) => {
+    try {
+        const user = await User.findById(req.userId).populate("friends");
+        if (!user) {
+            return res.status(404).json({ error: "user not found" });
+        }
 
-    userData.friends = friends
-    const notifications = await Notification.find({ user: req.userId }).sort({
-      createdAt: -1,
-    })
-    let notifData = notifications.map((notif) => {
-      return {
-        id: notif.id,
-        body: notif.body,
-        createdAt: notif.createdAt,
-      }
-    })
+        const userData = FilterUserData(user);
 
-    res.status(200).json({ user: userData, notifications: notifData })
-  } catch (err) {
-    console.log(err)
-    return res.status(500).json({error:"Something went wrong"})
-  }
-}
+        const friends = user.friends.map((friend) => {
+            return {
+                ...FilterUserData(friend),
+            };
+        });
 
-exports.fetchIncommingFriendRequest = async (req, res) => {
-  try {
-    const friends = await FriendRequest.find({
-      $and: [{ isAccepted: false }, { receiver: req.userId }],
-    }).populate('sender', '_id name profile_pic active')
+        userData.friends = friends;
+        const notifications = await Notification.find({ user: req.userId }).sort({
+            createdAt: -1,
+        });
+        let notifData = notifications.map((notif) => {
+            return {
+                id: notif.id,
+                body: notif.body,
+                createdAt: notif.createdAt,
+            };
+        });
 
-    const friendsData = friends.map((friend) => {
-      return {
-        id: friend.id,
-        user: FilterUserData(friend.sender),
-      }
-    })
+        res.status(200).json({ user: userData, notifications: notifData });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: "Something went wrong" });
+    }
+};
 
-    res.status(200).json({ friends: friendsData })
-  } catch (err) {
-    console.log(err)
-    return res.status(500).json({error:"Something went wrong"})
-  }
-}
+export const fetchIncommingFriendRequest = async (req, res) => {
+    try {
+        const friends = await FriendRequest.find({
+            $and: [{ isAccepted: false }, { receiver: req.userId }],
+        }).populate("sender", "_id name profile_pic active");
 
-exports.fetchSendedFriendRequest = async (req, res) => {
-  try {
-    const friends = await FriendRequest.find({
-      $and: [{ isAccepted: false }, { sender: req.userId }],
-    }).populate('receiver')
-    const friendsData = friends.map((friend) => {
-      return {
-        id: friend.id,
-        user: FilterUserData(friend.receiver),
-      }
-    })
+        const friendsData = friends.map((friend) => {
+            return {
+                id: friend.id,
+                user: FilterUserData(friend.sender),
+            };
+        });
 
-    res.status(200).json({ friends: friendsData })
-  } catch (err) {
-    console.log(err)
-    return res.status(500).json({error:"Something went wrong"})
-  }
-}
+        res.status(200).json({ friends: friendsData });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: "Something went wrong" });
+    }
+};
 
-exports.searchUsers = async (req, res) => {
-  try {
-    const users = await User.find({
-      name: { $regex: req.query.name, $options: 'i' },
-    }).populate("friends")
+export const fetchSendedFriendRequest = async (req, res) => {
+    try {
+        const friends = await FriendRequest.find({
+            $and: [{ isAccepted: false }, { sender: req.userId }],
+        }).populate("receiver");
+        const friendsData = friends.map((friend) => {
+            return {
+                id: friend.id,
+                user: FilterUserData(friend.receiver),
+            };
+        });
 
-    const usersData = users.map((user) => FilterUserData(user))
+        res.status(200).json({ friends: friendsData });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: "Something went wrong" });
+    }
+};
 
-    res.status(200).json({ users: usersData })
-  } catch (err) {
-    console.log(err)
-    return res.status(500).json({error:"Something went wrong"})
-  }
-}
+export const searchUsers = async (req, res) => {
+    try {
+        const users = await User.find({
+            name: { $regex: req.query.name, $options: "i" },
+        }).populate("friends");
+
+        const usersData = users.map((user) => FilterUserData(user));
+
+        res.status(200).json({ users: usersData });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: "Something went wrong" });
+    }
+};
