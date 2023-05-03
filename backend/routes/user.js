@@ -3,6 +3,7 @@ import { validate } from "express-validation";
 
 import {
     unfriendValidation,
+    blockUserValidation,
     getUserByIdValidation,
     searchUsersValidation,
     updateProfileValidation,
@@ -13,9 +14,11 @@ import {
 } from "../validator/user";
 import {
     unfriendController,
+    blockUserController,
     getUserByIdController,
     searchUsersController,
     updateProfileController,
+    getCurrentUserController,
     updatePasswordController,
     updateCoverImageController,
     getRecommendUsersController,
@@ -58,6 +61,7 @@ router.put(
 router.get("/", verifyToken, getCurrentUserController);
 router.get("/search", validate(searchUsersValidation), searchUsersController);
 router.get("/:userId", validate(getUserByIdValidation), getUserByIdController);
+router.put("/block/:userId", validate(blockUserValidation), verifyToken, blockUserController);
 router.put("/unfriend/:friendId", validate(unfriendValidation), verifyToken, unfriendController);
 
 export default router;

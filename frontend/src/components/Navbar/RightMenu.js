@@ -37,7 +37,7 @@ const RightMenu = () => {
         if (userState.currentUser.id === chatState.messages[0]?.receiver?.id) {
             setUserMess(abcLength);
         }
-    }, [abcLength, chatState.messages, userState?.currentUser?.id]);
+    }, [abcLength, chatState.messages, userState.currentUser.id]);
 
     return (
         <Fragment>

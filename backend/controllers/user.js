@@ -30,6 +30,26 @@ const unfriendController = async (req, res) => {
     }
 };
 
+const blockUserController = async (req, res) => {
+    const userId = req.user_id;
+    const userIdBlocked = req.params.userId;
+
+    try {
+        const user = await User.findById(userId);
+
+        const userBlocked = await User.findById(userIdBlocked);
+        if (!userBlocked) {
+            return res.status(400).json({ message: "User doesn't exist" });
+        }
+
+        await user.update({ $push: { block_users: userIdBlocked } });
+
+        return res.status(201).json({ message: `You blocked user ${userBlocked.name}` });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+};
+
 const getUserByIdController = async (req, res) => {
     const { userId } = req.params;
 
@@ -216,6 +236,7 @@ const updateAvatarImageController = async (req, res) => {
 
 export {
     unfriendController,
+    blockUserController,
     getUserByIdController,
     searchUsersController,
     deleteAccountController,
