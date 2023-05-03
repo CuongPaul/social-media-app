@@ -13,7 +13,7 @@ const createCommentValidation = {
     body: Joi.object({
         text: Joi.string().trim().required(),
         image: Joi.string().allow(null).trim(),
-        postId: Joi.string().trim().required(),
+        post_id: Joi.string().trim().required(),
     }),
 };
 
@@ -36,7 +36,7 @@ const updateCommentValidation = {
 const getCommentsByPostValidation = {
     query: Joi.object({
         post_id: Joi.string().trim().required(),
-        page: Joi.number().integer().default(1).allow(null),
+        page: Joi.number().integer().allow(null),
     }),
 };
 

@@ -1,8 +1,8 @@
 import { Joi } from "express-validation";
 
 const sendFriendRequestValidation = {
-    params: Joi.object({
-        receiverId: Joi.string().trim().required(),
+    body: Joi.object({
+        receiver_id: Joi.string().trim().required(),
     }),
 };
 
@@ -20,13 +20,13 @@ const declineOrCancelRequestValidation = {
 
 const getSendedFriendRequestsValidation = {
     query: Joi.object({
-        page: Joi.number().integer().default(1).allow(null),
+        page: Joi.number().integer().allow(null),
     }),
 };
 
 const getReceivedFriendRequestsValidation = {
     query: Joi.object({
-        page: Joi.number().integer().default(1).allow(null),
+        page: Joi.number().integer().allow(null),
     }),
 };
 

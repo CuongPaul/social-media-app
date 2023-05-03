@@ -6,8 +6,8 @@ const UserIdRefType = { ref: "user", type: Schema.Types.ObjectId };
 
 const reactSchema = new Schema(
     {
-        wow: [UserIdRefType],
         sad: [UserIdRefType],
+        wow: [UserIdRefType],
         like: [UserIdRefType],
         love: [UserIdRefType],
         haha: [UserIdRefType],

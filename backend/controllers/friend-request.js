@@ -2,14 +2,14 @@ import { User, Notification, FriendRequest } from "../models";
 
 const sendFriendRequestController = async (req, res) => {
     const userId = req.user_id;
-    const { receiverId } = req.params;
+    const { receiver_id } = req.body;
 
     try {
-        if (userId == receiverId) {
+        if (userId == receiver_id) {
             return res.status(400).json({ message: "Can't send friend request to yourself" });
         }
 
-        const receiver = await User.findById(receiverId);
+        const receiver = await User.findById(receiver_id);
         if (!receiver) {
             return res.status(400).json({ message: "User doesn't exist" });
         }
@@ -22,16 +22,17 @@ const sendFriendRequestController = async (req, res) => {
                 .json({ message: `You and ${receiver.name} are already friends` });
         }
 
-        const friendRequest = await FriendRequest.findOne({ sender: userId, receiver: receiverId });
+        const friendRequest = await FriendRequest.findOne({ sender: userId, receiver: receiver_id });
 
         if (!friendRequest) {
-            await new FriendRequest({ sender: userId, receiver: receiverId }).save();
+            await new FriendRequest({ sender: userId, receiver: receiver_id }).save();
 
             const user = await User.findById(userId);
 
             await new Notification({
-                user: receiverId,
-                type: "FRIEND_REQUEST",
+                user: receiver_id,
+                type: "FRIEND_REQUEST-SEND",
+                friend_request: friendRequest._id,
                 content: `${user.name} has send you friend request`,
             }).save();
         }
@@ -70,7 +71,7 @@ const acceptFriendRequestController = async (req, res) => {
 
             await new Notification({
                 user: senderId,
-                type: "FRIEND_REQUEST",
+                type: "FRIEND_REQUEST-ACCEPT",
                 content: `${receiverName} has accept friend request`,
             }).save();
         }
@@ -97,6 +98,8 @@ const declineOrCancelRequestController = async (req, res) => {
         }
 
         await friendRequest.remove();
+        
+        await Notification.findOneAndDelete({ friend_request: friendRequestId });
 
         return res.status(200).json({ message: "Friend request has been cancelled" });
     } catch (err) {
@@ -107,7 +110,7 @@ const declineOrCancelRequestController = async (req, res) => {
 const getSendedFriendRequestsController = async (req, res) => {
     const pageSize = 5;
     const userId = req.user_id;
-    const page = parseInt(req.query.page);
+    const page = parseInt(req.query.page) || 1;
 
     try {
         const query = { sender: userId, is_accepted: false };
@@ -128,7 +131,7 @@ const getSendedFriendRequestsController = async (req, res) => {
 const getReceivedFriendRequestsController = async (req, res) => {
     const pageSize = 5;
     const userId = req.user_id;
-    const page = parseInt(req.query.page);
+    const page = parseInt(req.query.page) || 1;
 
     try {
         const query = { receiver: userId, is_accepted: false };

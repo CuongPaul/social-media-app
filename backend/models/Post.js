@@ -4,20 +4,20 @@ const { model, Schema } = mongoose;
 
 const ObjectIdType = Schema.Types.ObjectId;
 const TrimStringType = { trim: true, type: String };
-const UserIdRefType = { ref: "user", required: true, type: ObjectIdType };
+const UserIdType = { ref: "user", type: ObjectIdType };
 
 const postSchema = new Schema(
     {
-        user: UserIdRefType,
         images: [TrimStringType],
         body: {
             location: TrimStringType,
             feelings: TrimStringType,
-            tag_friends: [UserIdRefType],
+            tag_friends: [UserIdType],
         },
-        react: { ref: "react", type: ObjectIdType },
+        user: { ...UserIdType, required: true },
         text: { trim: true, type: String, required: true },
-        privacy: { type: String, enum: ["FRIEND", "PUBLIC", "ONLY_ME"] },
+        react: { ref: "react", required: true, type: ObjectIdType },
+        privacy: { type: String, default: "PUBLIC", enum: ["FRIEND", "PUBLIC", "ONLY_ME"] },
     },
     { timestamps: true, versionKey: false }
 );

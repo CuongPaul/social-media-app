@@ -11,7 +11,7 @@ const signupValidation = {
     body: Joi.object({
         name: Joi.string().trim().required(),
         email: Joi.string().email().trim().required(),
-        password: Joi.string().min(4).trim().required(),
+        password: Joi.string().min(4).max(16).trim().required(),
     }),
 };
 

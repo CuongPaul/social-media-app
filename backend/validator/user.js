@@ -15,7 +15,7 @@ const getUserByIdValidation = {
 const searchUsersValidation = {
     query: Joi.object({
         name: Joi.string().required().trim(),
-        page: Joi.number().integer().default(1).allow(null),
+        page: Joi.number().integer().allow(null),
     }),
 };
 
@@ -27,7 +27,8 @@ const deleteAccountValidation = {
 
 const updateProfileValidation = {
     body: Joi.object({
-        name: Joi.string().allow(null).trim(),
+        name: Joi.string().trim(),
+        gender: Joi.string().allow(null).trim(),
         hometown: Joi.string().allow(null).trim(),
         education: Joi.string().allow(null).trim(),
     }),
@@ -48,7 +49,7 @@ const updateCoverImageValidation = {
 
 const getRecommendUsersValidation = {
     query: Joi.object({
-        page: Joi.number().integer().default(1).allow(null),
+        page: Joi.number().integer().allow(null),
     }),
 };
 

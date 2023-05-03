@@ -2,7 +2,7 @@ import Notification from "../models/Notification";
 
 const readNotificationController = async (req, res) => {
     const userId = req.user_id;
-    const notificationId = req.params.notificationId;
+    const { notificationId } = req.params;
 
     try {
         const notification = await Notification.findOne({ user: userId, _id: notificationId });
@@ -22,7 +22,7 @@ const readNotificationController = async (req, res) => {
 const getNotificationsController = async (req, res) => {
     const pageSize = 5;
     const userId = req.user_id;
-    const page = parseInt(req.query.page);
+    const page = parseInt(req.query.page) || 1;
 
     try {
         const query = { user: userId };

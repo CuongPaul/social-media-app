@@ -2,16 +2,16 @@ import mongoose from "mongoose";
 
 const { model, Schema } = mongoose;
 
-const StringDefaultType = { trim: true, default: "", type: String };
-const UserIdType = { ref: "user", required: true, type: Schema.Types.ObjectId };
+const UserIdType = { ref: "user", type: Schema.Types.ObjectId };
+const DefaultStringType = { trim: true, default: "", type: String };
 
 const chatRoomSchema = new Schema(
     {
+        admin: UserIdType,
         members: [UserIdType],
-        name: StringDefaultType,
-        avatar_image: StringDefaultType,
+        name: DefaultStringType,
+        avatar_image: DefaultStringType,
         is_public: { default: true, type: Boolean },
-        admin: { ref: "user", type: Schema.Types.ObjectId },
     },
     { timestamps: true, versionKey: false }
 );

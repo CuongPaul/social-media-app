@@ -8,7 +8,7 @@ const readNotificationValidation = {
 
 const getNotificationsValidation = {
     query: Joi.object({
-        page: Joi.number().integer().default(1).allow(null),
+        page: Joi.number().integer().allow(null),
     }),
 };
 

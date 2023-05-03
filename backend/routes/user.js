@@ -17,7 +17,6 @@ import {
     searchUsersController,
     updateProfileController,
     updatePasswordController,
-    getCurrentUserController,
     updateCoverImageController,
     getRecommendUsersController,
     updateAvatarImageController,
@@ -58,7 +57,7 @@ router.put(
 );
 router.get("/", verifyToken, getCurrentUserController);
 router.get("/search", validate(searchUsersValidation), searchUsersController);
-router.get("/:userId", validate(getUserByIdValidation), verifyToken, getUserByIdController);
+router.get("/:userId", validate(getUserByIdValidation), getUserByIdController);
 router.put("/unfriend/:friendId", validate(unfriendValidation), verifyToken, unfriendController);
 
 export default router;

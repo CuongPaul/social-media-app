@@ -6,16 +6,9 @@ const socketServer = (io) => {
             const userId = io.req.user_id;
 
             socket.broadcast.emit("friend-online", { user_id: userId });
-            await User.findByIdAndUpdate(userId, { $push: { socket_id: socket.id } });
 
             socket.on("disconnect", async () => {
-                const user = await User.findByIdAndUpdate(userId, {
-                    $pull: { socket_id: socket.id },
-                });
-
-                if (!user.socket_id.length) {
-                    socket.broadcast.emit("friend-offline", { user_id: userId });
-                }
+                socket.broadcast.emit("friend-offline", { user_id: userId });
             });
         }
     });

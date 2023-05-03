@@ -14,7 +14,7 @@ const signinController = async (req, res) => {
 
         const isMatchPassword = await bcrypt.compare(password, user.password);
         if (!isMatchPassword) {
-            return res.status(400).json({ message: "Password is incorrect" });
+            return res.status(400).json({ message: "Incorrect password" });
         }
 
         const token = jwt.sign({ user_id: user._id }, process.env.JWT_SECRET, {
@@ -40,7 +40,7 @@ const signupController = async (req, res) => {
 
         await new User({ name, email, password: hashPassword }).save();
 
-        return res.status(201).json({ message: "Account successfully created" });
+        return res.status(200).json({ message: "Account successfully created" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }

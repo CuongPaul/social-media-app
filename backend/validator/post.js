@@ -12,8 +12,8 @@ const reactPostValidation = {
 const createPostValidation = {
     body: Joi.object({
         text: Joi.string().trim().required(),
+        privacy: Joi.string().valid("FRIEND", "PUBLIC", "ONLY_ME"),
         images: Joi.array().items(Joi.string().trim().required()).allow(null),
-        privacy: Joi.string().valid("FRIEND", "PUBLIC", "ONLY_ME").required(),
         body: Joi.object({
             location: Joi.string().allow(null).trim(),
             feelings: Joi.string().allow(null).trim(),
@@ -31,8 +31,8 @@ const deletePostValidation = {
 const updatePostValidation = {
     body: Joi.object({
         text: Joi.string().trim().required(),
+        privacy: Joi.string().valid("FRIEND", "PUBLIC", "ONLY_ME"),
         images: Joi.array().items(Joi.string().trim().required()).allow(null),
-        privacy: Joi.string().required().valid("FRIEND", "PUBLIC", "ONLY_ME"),
         body: Joi.object({
             location: Joi.string().allow(null).trim(),
             feelings: Joi.string().allow(null).trim(),
@@ -46,13 +46,13 @@ const updatePostValidation = {
 
 const getAllPostsValidation = {
     query: Joi.object({
-        page: Joi.number().integer().default(1).allow(null),
+        page: Joi.number().integer().allow(null),
     }),
 };
 
 const getPostsByUserValidation = {
     query: Joi.object({
-        page: Joi.number().integer().default(1).allow(null),
+        page: Joi.number().integer().allow(null),
     }),
     params: Joi.object({
         userId: Joi.string().trim().required(),

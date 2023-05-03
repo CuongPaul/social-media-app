@@ -2,8 +2,8 @@ import { Post, React, Comment } from "../models";
 
 const reactCommentController = async (req, res) => {
     const userId = req.user_id;
+    const reactKey = req.query.key;
     const { commentId } = req.params;
-    const { key: reactKey } = req.query;
 
     try {
         const comment = await Comment.findById(commentId);
@@ -38,21 +38,14 @@ const createCommentController = async (req, res) => {
             return res.status(400).json({ message: "Post doesn't exist" });
         }
 
-        const saveEmptyReact = await new React({
-            wow: [],
-            sad: [],
-            like: [],
-            love: [],
-            haha: [],
-            angry: [],
-        }).save();
+        const saveEmptyReact = await new React().save();
 
         await new Comment({
             text,
             image,
             user: userId,
-            post: post.id,
-            react: saveEmptyReact.id,
+            post: post_id,
+            react: saveEmptyReact._id,
         }).save();
 
         return res.status(201).json({ message: "success" });
@@ -107,12 +100,12 @@ const updateCommentController = async (req, res) => {
 const getCommentsByPostController = async (req, res) => {
     const pageSize = 5;
     const { post_id } = req.query;
-    const page = parseInt(req.query.page);
+    const page = parseInt(req.query.page) || 1;
 
     try {
         const query = { post: post_id };
 
-        const comments = await Comment.find(query, { _id: 1, post: 1, text: 1, image: 1 })
+        const comments = await Comment.find(query)
             .limit(pageSize)
             .sort({ createdAt: -1 })
             .skip((page - 1) * pageSize)
@@ -129,10 +122,6 @@ const getCommentsByPostController = async (req, res) => {
                     { path: "angry", select: "_id name avatar_image" },
                 ],
             });
-
-        if (!comments.length) {
-            res.status(400).json({ message: "This post don't have any comment" });
-        }
 
         const count = await Comment.countDocuments(query);
 

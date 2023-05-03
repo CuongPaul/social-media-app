@@ -39,7 +39,7 @@ const deleteChatRoomValidation = {
 const searchChatRoomsValidation = {
     query: Joi.object({
         name: Joi.string().trim().required(),
-        page: Joi.number().integer().default(1).allow(null),
+        page: Joi.number().integer().allow(null),
     }),
 };
 
@@ -71,7 +71,7 @@ const updateMemberChatRoomValidation = {
 };
 
 const updatePrivacyChatRoomValidation = {
-    query: Joi.object({
+    body: Joi.object({
         is_public: Joi.string().trim().required(),
     }),
     params: Joi.object({

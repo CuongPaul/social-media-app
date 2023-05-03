@@ -7,8 +7,8 @@ const ObjectIdType = Schema.Types.ObjectId;
 const messageSchema = new Schema(
     {
         image: { trim: true, type: String },
-        react: { ref: "react", type: ObjectIdType },
         text: { trim: true, type: String, required: true },
+        react: { ref: "react", required: true, type: ObjectIdType },
         sender: { ref: "user", required: true, type: ObjectIdType },
         chat_room: { required: true, ref: "chat-room", type: ObjectIdType },
     },

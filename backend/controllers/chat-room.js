@@ -32,6 +32,7 @@ const changeAdminController = async (req, res) => {
                 await new Notification({
                     content,
                     user: memberId,
+                    chat_room: chatRoomId,
                     type: "CHATROOM-CHANGE_ADMIN",
                 }).save();
             }
@@ -95,7 +96,7 @@ const createChatRoomController = async (req, res) => {
         const users = await User.find({ _id: { $in: members } });
 
         const membersValid = users.reduce((acc, cur) => {
-            if (!cur.block_users.includes(userId)) {
+            if (!cur.block_users.includes(userId) && cur.friends.includes(userId)) {
                 return acc.concat(cur._id);
             } else {
                 return acc;
@@ -107,7 +108,7 @@ const createChatRoomController = async (req, res) => {
             is_public,
             avatar_image,
             admin: userId,
-            members: [...membersValid, userId],
+            members: [...new Set(membersValid.concat(userId))],
         }).save();
 
         res.status(201).json({ message: "Group created successfully" });
@@ -134,6 +135,8 @@ const deleteChatRoomController = async (req, res) => {
 
         await chatRoom.remove();
 
+        await Notification.deleteMany({ chat_room: chatRoomId });
+
         for (const memberId of members) {
             if (memberId != userId) {
                 await new Notification({
@@ -153,7 +156,7 @@ const deleteChatRoomController = async (req, res) => {
 const searchChatRoomsController = async (req, res) => {
     const pageSize = 5;
     const { name } = req.query;
-    const page = parseInt(req.query.page);
+    const page = parseInt(req.query.page) || 1;
 
     try {
         const query = { is_public: true, name: { $regex: name, $options: "i" } };
@@ -162,10 +165,6 @@ const searchChatRoomsController = async (req, res) => {
             .limit(pageSize)
             .sort({ createdAt: -1 })
             .skip((page - 1) * pageSize);
-
-        if (!chatRooms.length) {
-            return res.status(400).json({ message: "Groups not found" });
-        }
 
         const count = await ChatRoom.countDocuments(query);
 
@@ -178,7 +177,7 @@ const searchChatRoomsController = async (req, res) => {
 const getChatRoomsByUserController = async (req, res) => {
     const pageSize = 5;
     const userId = req.user_id;
-    const page = parseInt(req.query.page);
+    const page = parseInt(req.query.page) || 1;
 
     try {
         const query = { members: userId };
@@ -187,10 +186,6 @@ const getChatRoomsByUserController = async (req, res) => {
             .limit(pageSize)
             .sort({ createdAt: -1 })
             .skip((page - 1) * pageSize);
-
-        if (!chatRooms.length) {
-            return res.status(400).json({ message: "You're not in any chats" });
-        }
 
         const count = await ChatRoom.countDocuments(query);
 
@@ -223,8 +218,8 @@ const updateNameChatRoomController = async (req, res) => {
             if (memberId != userId) {
                 await new Notification({
                     user: memberId,
-                    type: "CHATROOM-CHANGE_ADMIN",
-                    content: `The name of ${name} group has been updated`,
+                    type: "CHATROOM-UPDATE_NAME",
+                    content: `The name of ${chatRoomName} group has been changed to ${name}`,
                 }).save();
             }
         }
@@ -294,7 +289,7 @@ const updateMemberChatRoomController = async (req, res) => {
 
 const updatePrivacyChatRoomController = async (req, res) => {
     const userId = req.user_id;
-    const { is_public } = req.query;
+    const { is_public } = req.body;
     const { chatRoomId } = req.params;
 
     try {

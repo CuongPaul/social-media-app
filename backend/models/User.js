@@ -2,24 +2,23 @@ import mongoose from "mongoose";
 
 const { model, Schema } = mongoose;
 
-const UserIdRefType = { ref: "user", type: Schema.Types.ObjectId };
-const TrimStringType = { trim: true, type: String, required: true };
-const StringDefaultType = { trim: true, default: "", type: String };
+const UserIdType = { ref: "user", type: Schema.Types.ObjectId };
+const DefaultStringType = { trim: true, default: "", type: String };
+const RequiredStringType = { trim: true, type: String, required: true };
 
 const userSchema = new Schema(
     {
-        name: TrimStringType,
-        password: TrimStringType,
-        friends: [UserIdRefType],
-        gender: StringDefaultType,
-        hometown: StringDefaultType,
-        block_users: [UserIdRefType],
-        education: StringDefaultType,
-        cover_image: StringDefaultType,
-        socket_id: [StringDefaultType],
-        avatar_image: StringDefaultType,
+        friends: [UserIdType],
+        name: RequiredStringType,
+        block_users: [UserIdType],
+        gender: DefaultStringType,
+        hometown: DefaultStringType,
+        education: DefaultStringType,
+        password: RequiredStringType,
+        cover_image: DefaultStringType,
+        avatar_image: DefaultStringType,
         is_active: { default: true, type: Boolean },
-        email: { trim: true, type: String, unique: true, required: true },
+        email: { unique: true, ...RequiredStringType },
     },
     { timestamps: true, versionKey: false }
 );

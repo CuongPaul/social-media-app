@@ -2,7 +2,7 @@ import { Joi } from "express-validation";
 
 const getMessagesValidatetion = {
     query: Joi.object({
-        page: Joi.number().integer().default(1).allow(null),
+        page: Joi.number().integer().allow(null),
     }),
     params: Joi.object({
         chatRoomId: Joi.string().required().trim(),

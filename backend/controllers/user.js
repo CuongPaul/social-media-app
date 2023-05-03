@@ -1,18 +1,18 @@
 import { User } from "../models";
 
 const unfriendController = async (req, res) => {
-    const useId = req.user_id;
+    const userId = req.user_id;
     const friendId = req.params.friendId;
 
     try {
-        const user = await User.findById(useId);
+        const user = await User.findById(userId);
         const friend = await User.findById(friendId);
 
         if (!friend) {
             return res.status(400).json({ message: "Friend doesn't exist" });
         }
 
-        const indexUserId = friend.friends.indexOf(useId);
+        const indexUserId = friend.friends.indexOf(userId);
         const indexFriendId = user.friends.indexOf(friendId);
 
         if (indexUserId !== -1) {
@@ -49,7 +49,7 @@ const getUserByIdController = async (req, res) => {
 const searchUsersController = async (req, res) => {
     const pageSize = 5;
     const { name } = req.query;
-    const page = parseInt(req.query.page);
+    const page = parseInt(req.query.page) || 1;
 
     try {
         const query = { is_active: true, name: { $regex: name, $options: "i" } };
@@ -62,10 +62,6 @@ const searchUsersController = async (req, res) => {
             .limit(pageSize)
             .skip((page - 1) * pageSize);
 
-        if (!users.length) {
-            return res.status(400).json({ message: "Users not found" });
-        }
-
         const count = await User.countDocuments(query);
 
         return res.status(200).json({ message: "success", data: { count, rows: users } });
@@ -75,10 +71,10 @@ const searchUsersController = async (req, res) => {
 };
 
 const deleteAccountController = async (req, res) => {
-    const useId = req.user_id;
+    const userId = req.user_id;
 
     try {
-        const user = await User.findById(useId);
+        const user = await User.findById(userId);
 
         if (!user) {
             return res.status(400).json({ message: "User doesn't exist" });
@@ -93,16 +89,16 @@ const deleteAccountController = async (req, res) => {
 };
 
 const updateProfileController = async (req, res) => {
-    const useId = req.user_id;
-    const { name, hometown, education } = req.body;
+    const userId = req.user_id;
+    const { name, gender, hometown, education } = req.body;
 
     try {
-        const user = await User.findById(useId);
+        const user = await User.findById(userId);
         if (!user) {
             return res.status(400).json({ message: "User doesn't exist" });
         }
 
-        await user.update({ name, hometown, education });
+        await user.update({ name, gender, hometown, education });
 
         return res.status(200).json({ message: "Update profile successfully" });
     } catch (err) {
@@ -111,11 +107,11 @@ const updateProfileController = async (req, res) => {
 };
 
 const updatePasswordController = async (req, res) => {
-    const useId = req.user_id;
+    const userId = req.user_id;
     const { new_password, current_password } = req.body;
 
     try {
-        const user = await User.findById(useId);
+        const user = await User.findById(userId);
         if (!user) {
             return res.status(400).json({ message: "User doesn't exist" });
         }
@@ -136,10 +132,10 @@ const updatePasswordController = async (req, res) => {
 };
 
 const getCurrentUserController = async (req, res) => {
-    const useId = req.user_id;
+    const userId = req.user_id;
 
     try {
-        const user = await User.findById(useId, { password: 0 });
+        const user = await User.findById(userId, { password: 0 });
 
         if (!user) {
             return res.status(400).json({ message: "User doesn't exist" });
@@ -152,11 +148,11 @@ const getCurrentUserController = async (req, res) => {
 };
 
 const updateCoverImageController = async (req, res) => {
-    const useId = req.user_id;
+    const userId = req.user_id;
     const { cover_image } = req.body;
 
     try {
-        const user = await User.findById(useId);
+        const user = await User.findById(userId);
 
         if (!user) {
             return res.status(400).json({ message: "User doesn't exist" });
@@ -173,7 +169,7 @@ const updateCoverImageController = async (req, res) => {
 const getRecommendUsersController = async (req, res) => {
     const pageSize = 5;
     const userId = req.user_id;
-    const page = parseInt(req.query.page);
+    const page = parseInt(req.query.page) || 1;
 
     try {
         const user = await User.findOne({ _id: userId, is_active: true }).populate("friends");
@@ -200,11 +196,11 @@ const getRecommendUsersController = async (req, res) => {
 };
 
 const updateAvatarImageController = async (req, res) => {
-    const useId = req.user_id;
+    const userId = req.user_id;
     const { avatar_image } = req.body;
 
     try {
-        const user = await User.findById(useId);
+        const user = await User.findById(userId);
 
         if (!user) {
             return res.status(400).json({ message: "User doesn't exist" });

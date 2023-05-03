@@ -3,7 +3,7 @@ import { Post, User, React, Notification } from "../models";
 const reactPostController = async (req, res) => {
     const userId = req.user_id;
     const { postId } = req.params;
-    const { key: reactKey } = req.query;
+    const reactKey = req.query.key;
 
     try {
         const post = await Post.findById(postId).populate("user");
@@ -43,14 +43,7 @@ const createPostController = async (req, res) => {
     const { body, text, images, privacy } = req.body;
 
     try {
-        const emptyReact = await new React({
-            wow: [],
-            sad: [],
-            like: [],
-            love: [],
-            haha: [],
-            angry: [],
-        }).save();
+        const emptyReact = await new React().save();
 
         if (body?.tag_friends.length) {
             const users = await User.find({ _id: { $in: body.tag_friends } });
@@ -83,6 +76,7 @@ const createPostController = async (req, res) => {
                 if (!friend.block_users.includes(userId)) {
                     await new Notification({
                         user: friendId,
+                        post: post._id,
                         type: "POST-TAG_FRIEND",
                         content: `${user.name} has tag you in new post`,
                     }).save();
@@ -108,6 +102,8 @@ const deletePostController = async (req, res) => {
         }
 
         await post.remove();
+
+        await Notification.deleteMany({ post: postId });
 
         return res.status(200).json({ message: "success" });
     } catch (err) {
@@ -148,6 +144,7 @@ const updatePostController = async (req, res) => {
                     if (!friend.block_users.includes(userId)) {
                         await new Notification({
                             user: friendId,
+                            post: post._id,
                             type: "POST-TAG_FRIEND",
                             content: `${post.user.name} has tag you in new post`,
                         }).save();
@@ -166,7 +163,7 @@ const updatePostController = async (req, res) => {
 
 const getAllPostsController = async (req, res) => {
     const pageSize = 5;
-    const page = parseInt(req.query.page);
+    const page = parseInt(req.query.page) || 1;
 
     try {
         const query = { privacy: "PUBLIC" };
@@ -202,7 +199,7 @@ const getPostsByUserController = async (req, res) => {
     const pageSize = 5;
     const userId = req.user_id;
     const ownerId = req.params.userId;
-    const page = parseInt(req.query.page);
+    const page = parseInt(req.query.page) || 1;
 
     try {
         const ownerPost = await User.findById(ownerId);

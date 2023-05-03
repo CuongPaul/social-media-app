@@ -2,12 +2,12 @@ import mongoose from "mongoose";
 
 const { model, Schema } = mongoose;
 
-const UserIdRefType = { ref: "user", required: true, type: Schema.Types.ObjectId };
+const UserIdType = { ref: "user", type: Schema.Types.ObjectId };
 
 const friendRequestSchema = new Schema(
     {
-        sender: UserIdRefType,
-        receiver: UserIdRefType,
+        sender: UserIdType,
+        receiver: UserIdType,
         is_accepted: { type: Boolean, default: false },
     },
     { timestamps: true, versionKey: false }

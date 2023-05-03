@@ -5,7 +5,7 @@ import ChatRoom from "../models/ChatRoom";
 const getMessagesController = async (req, res) => {
     const limit = 5;
     const userId = req.user_id;
-    const page = parseInt(req.query.page);
+    const page = parseInt(req.query.page) || 1;
     const chatRoomId = req.params.chatRoomId;
 
     try {
@@ -77,33 +77,25 @@ const reactMessageController = async (req, res) => {
 
 const createMessageController = async (req, res) => {
     const userId = req.user_id;
-    const { text, image } = req.body;
-    const chatRoomId = req.params.chatRoomId;
+    const { text, image, chat_room_id } = req.body;
 
     try {
-        const chatRoom = await ChatRoom.findById(chatRoomId);
+        const chatRoom = await ChatRoom.findOne({ _id: chat_room_id, members: userId });
         if (!chatRoom) {
             return res.status(400).json({ error: "Group doesn't exist" });
         }
 
-        const emptyReact = await new React({
-            wow: [],
-            sad: [],
-            like: [],
-            love: [],
-            haha: [],
-            angry: [],
-        }).save();
+        const emptyReact = await new React().save();
 
         const newMessage = new Message({
             text,
             image,
             sender: userId,
             react: emptyReact.id,
-            chat_room: chatRoomId,
+            chat_room: chat_room_id,
         }).save();
 
-        req.io.to(chatRoomId).emit("new-message", { data: newMessage });
+        req.io.to(chat_room_id).emit("new-message", { data: newMessage });
 
         res.status(201).json({ message: "success" });
     } catch (err) {
@@ -137,7 +129,7 @@ const deleteMessageController = async (req, res) => {
 
 const updateMessagesController = async (req, res) => {
     const userId = req.user_id;
-    const meassageId = req.params.meassageId;
+    const { meassageId } = req.params;
     const { text, image, chat_room_id } = req.body;
 
     try {
