@@ -22,22 +22,28 @@ const sendFriendRequestController = async (req, res) => {
                 .json({ message: `You and ${receiver.name} are already friends` });
         }
 
-        const friendRequest = await FriendRequest.findOne({ sender: userId, receiver: receiver_id });
+        const friendRequest = await FriendRequest.findOne({
+            sender: userId,
+            receiver: receiver_id,
+        });
 
         if (!friendRequest) {
-            await new FriendRequest({ sender: userId, receiver: receiver_id }).save();
+            const newFriendRequest = await new FriendRequest({
+                sender: userId,
+                receiver: receiver_id,
+            }).save();
 
             const user = await User.findById(userId);
 
             await new Notification({
                 user: receiver_id,
                 type: "FRIEND_REQUEST-SEND",
-                friend_request: friendRequest._id,
+                friend_request: newFriendRequest._id,
                 content: `${user.name} has send you friend request`,
             }).save();
         }
 
-        return res.status(201).json({ message: "Friend request sent successfully" });
+        return res.status(200).json({ message: "Friend request sent successfully" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -98,10 +104,9 @@ const declineOrCancelRequestController = async (req, res) => {
         }
 
         await friendRequest.remove();
-        
         await Notification.findOneAndDelete({ friend_request: friendRequestId });
 
-        return res.status(200).json({ message: "Friend request has been cancelled" });
+        return res.status(200).json({ message: `Friend request has been ${friendRequest.sender == userId ? "cancelled" : "declined"}` });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }

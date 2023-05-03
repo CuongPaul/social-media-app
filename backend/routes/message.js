@@ -20,7 +20,7 @@ import verifyToken from "../middleware/verify-token";
 const router = express.Router();
 
 router.post(
-    "/:chatRoomId",
+    "",
     validate(createMessageValidatetion),
     verifyToken,
     createMessageController
@@ -43,6 +43,6 @@ router.put(
     verifyToken,
     reactMessageController
 );
-router.get("/:chatRoomId", validate(getMessagesValidatetion), verifyToken, getMessagesController);
+router.get("/chat-room/:chatRoomId", validate(getMessagesValidatetion), verifyToken, getMessagesController);
 
 export default router;

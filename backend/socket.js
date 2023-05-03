@@ -1,5 +1,3 @@
-import { User } from "./models";
-
 const socketServer = (io) => {
     io.on("connection", async (socket) => {
         if (io.req) {

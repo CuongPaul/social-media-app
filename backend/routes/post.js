@@ -25,7 +25,7 @@ router.get("/", validate(getAllPostsValidation), getAllPostsController);
 router.post("/", validate(createPostValidation), verifyToken, createPostController);
 router.put("/:postId", validate(updatePostValidation), verifyToken, updatePostController);
 router.delete("/:postId", validate(deletePostValidation), verifyToken, deletePostController);
-router.get("/:userId", validate(getPostsByUserValidation), verifyToken, getPostsByUserController);
 router.put("/react-post/:postId", validate(reactPostValidation), verifyToken, reactPostController);
+router.get("/user/:userId", validate(getPostsByUserValidation), verifyToken, getPostsByUserController);
 
 export default router;

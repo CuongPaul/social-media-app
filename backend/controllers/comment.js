@@ -14,7 +14,7 @@ const reactCommentController = async (req, res) => {
         const react = await React.findById(comment.react);
         const indexUser = react[reactKey].indexOf(userId);
 
-        if (indexUser === -1) {
+        if (indexUser == -1) {
             react[reactKey].push(userId);
         } else {
             react[reactKey].splice(indexUser, 1);
@@ -48,7 +48,7 @@ const createCommentController = async (req, res) => {
             react: saveEmptyReact._id,
         }).save();
 
-        return res.status(201).json({ message: "success" });
+        return res.status(200).json({ message: "success" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -56,7 +56,7 @@ const createCommentController = async (req, res) => {
 
 const deleteCommentController = async (req, res) => {
     const userId = req.user_id;
-    const commentId = req.params.commentId;
+    const { commentId } = req.params;
 
     try {
         const comment = await Comment.findOne({ user: userId, _id: commentId });
@@ -66,6 +66,7 @@ const deleteCommentController = async (req, res) => {
         }
 
         await comment.remove();
+        await React.findByIdAndDelete(comment.react);
 
         return res.status(200).json({ message: "Delete comment successfully" });
     } catch (err) {

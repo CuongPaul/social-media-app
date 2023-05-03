@@ -4,6 +4,7 @@ import { validate } from "express-validation";
 import {
     unfriendValidation,
     blockUserValidation,
+    friendListValidation,
     getUserByIdValidation,
     searchUsersValidation,
     updateProfileValidation,
@@ -15,6 +16,7 @@ import {
 import {
     unfriendController,
     blockUserController,
+    friendListController,
     getUserByIdController,
     searchUsersController,
     updateProfileController,
@@ -28,6 +30,11 @@ import verifyToken from "../middleware/verify-token";
 
 const router = express.Router();
 
+router.get(
+    "/friends",
+    validate(friendListValidation),
+    verifyToken,
+    friendListController);
 router.put(
     "/update-profile",
     validate(updateProfileValidation),
