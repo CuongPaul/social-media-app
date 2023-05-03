@@ -16,6 +16,7 @@ import {
     getUserByIdController,
     searchUsersController,
     updateProfileController,
+    getCurrentUserController,
     updatePasswordController,
     updateCoverImageController,
     getRecommendUsersController,
