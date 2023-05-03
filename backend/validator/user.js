@@ -12,6 +12,12 @@ const blockUserValidation = {
     }),
 };
 
+const friendListValidation = {
+    query: Joi.object({
+        page: Joi.number().integer().allow(null),
+    }),
+};
+
 const getUserByIdValidation = {
     params: Joi.object({
         userId: Joi.string().required().trim(),
@@ -68,6 +74,7 @@ const updateAvatarImageValidation = {
 export {
     unfriendValidation,
     blockUserValidation,
+    friendListValidation,
     getUserByIdValidation,
     searchUsersValidation,
     deleteAccountValidation,

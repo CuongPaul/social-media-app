@@ -24,7 +24,7 @@ const unfriendController = async (req, res) => {
             await user.save();
         }
 
-        return res.status(201).json({ message: "Unfriended successfully" });
+        return res.status(200).json({ message: "Unfriended successfully" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -44,7 +44,30 @@ const blockUserController = async (req, res) => {
 
         await user.update({ $push: { block_users: userIdBlocked } });
 
-        return res.status(201).json({ message: `You blocked user ${userBlocked.name}` });
+        return res.status(200).json({ message: `You blocked user ${userBlocked.name}` });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+};
+
+const friendListController = async (req, res) => {
+    const pageSize = 5;
+    const userId = req.user_id;
+    const page = parseInt(req.query.page) || 1;
+
+    try {
+        const user = await User.findById(userId).populate("friends", {
+            _id: 1,
+            name: 1,
+            avatar_image: 1,
+        });
+
+        const count = user.friends.length;
+        const start = (page - 1) * pageSize;
+        const end = (page - 1) * pageSize + pageSize;
+        const friends = user.friends.slice(start, end);
+
+        return res.status(200).json({ message: "success", data: { count, rows: friends } });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -237,6 +260,7 @@ const updateAvatarImageController = async (req, res) => {
 export {
     unfriendController,
     blockUserController,
+    friendListController,
     getUserByIdController,
     searchUsersController,
     deleteAccountController,

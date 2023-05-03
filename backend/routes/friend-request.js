@@ -20,7 +20,7 @@ import verifyToken from "../middleware/verify-token";
 const router = express.Router();
 
 router.post(
-    "/:receiverId",
+    "",
     validate(sendFriendRequestValidation),
     verifyToken,
     sendFriendRequestController

@@ -61,7 +61,7 @@ const reactMessageController = async (req, res) => {
         const react = await React.findById(message.react);
         const indexUser = react[reactKey].indexOf(userId);
 
-        if (indexUser === -1) {
+        if (indexUser == -1) {
             react[reactKey].push(userId);
         } else {
             react[reactKey].splice(indexUser, 1);
@@ -97,7 +97,7 @@ const createMessageController = async (req, res) => {
 
         req.io.to(chat_room_id).emit("new-message", { data: newMessage });
 
-        res.status(201).json({ message: "success" });
+        res.status(200).json({ message: "success" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }

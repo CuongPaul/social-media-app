@@ -1,4 +1,4 @@
-import { Post, User, React, Notification } from "../models";
+import { Post, User, React, Comment, Notification } from "../models";
 
 const reactPostController = async (req, res) => {
     const userId = req.user_id;
@@ -24,7 +24,7 @@ const reactPostController = async (req, res) => {
         const react = await React.findById(post.react);
         const indexUser = react[reactKey].indexOf(userId);
 
-        if (indexUser !== -1) {
+        if (indexUser == -1) {
             react[reactKey].push(userId);
         } else {
             react[reactKey].splice(indexUser, 1);
@@ -84,7 +84,7 @@ const createPostController = async (req, res) => {
             }
         }
 
-        return res.status(201).json({ message: "success" });
+        return res.status(200).json({ message: "success" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -103,6 +103,8 @@ const deletePostController = async (req, res) => {
 
         await post.remove();
 
+        await React.findByIdAndDelete(post.react);
+        await Comment.deleteMany({ post: postId });
         await Notification.deleteMany({ post: postId });
 
         return res.status(200).json({ message: "success" });

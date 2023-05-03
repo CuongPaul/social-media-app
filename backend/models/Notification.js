@@ -10,8 +10,9 @@ const notificationSchema = new Schema(
             type: String,
             required: true,
             enum: [
-                "POST-TAG_FRIEND",
+                "CHATROOM-CREATE",
                 "CHATROOM-DELETE",
+                "POST-TAG_FRIEND",
                 "FRIEND_REQUEST-SEND",
                 "CHATROOM-UPDATE_NAME",
                 "CHATROOM-CHANGE_ADMIN",

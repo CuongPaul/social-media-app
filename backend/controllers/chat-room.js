@@ -95,7 +95,7 @@ const createChatRoomController = async (req, res) => {
     try {
         const users = await User.find({ _id: { $in: members } });
 
-        const membersValid = users.reduce((acc, cur) => {
+        const membersId = users.reduce((acc, cur) => {
             if (!cur.block_users.includes(userId) && cur.friends.includes(userId)) {
                 return acc.concat(cur._id);
             } else {
@@ -103,15 +103,28 @@ const createChatRoomController = async (req, res) => {
             }
         }, []);
 
-        await new ChatRoom({
+        const membersValid = [...new Set(membersId.concat(userId))];
+
+        const chatRoom = await new ChatRoom({
             name,
             is_public,
             avatar_image,
             admin: userId,
-            members: [...new Set(membersValid.concat(userId))],
+            members: membersValid,
         }).save();
 
-        res.status(201).json({ message: "Group created successfully" });
+        for (const memberId of membersValid) {
+            if (memberId != userId) {
+                await new Notification({
+                    user: memberId,
+                    chat_room: chatRoom._id,
+                    type: "CHATROOM-CREATE",
+                    content: `You have been added to the group ${name}`,
+                }).save();
+            }
+        }
+
+        res.status(200).json({ message: "Group created successfully" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -279,7 +292,7 @@ const updateMemberChatRoomController = async (req, res) => {
             }
         }, []);
 
-        await chatRoom.update({ $push: { members: newMembers } });
+        await chatRoom.update({ $push: { members: [...new Set(newMembers)] } });
 
         return res.status(200).json({ message: `Update members successfully` });
     } catch (err) {
@@ -332,7 +345,7 @@ const createChatRoomForTwoPeopleController = async (req, res) => {
             members: [reciver, userId],
         }).save();
 
-        res.status(201).json({ message: "success" });
+        res.status(200).json({ message: "success" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
