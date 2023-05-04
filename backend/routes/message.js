@@ -19,17 +19,17 @@ import verifyToken from "../middleware/verify-token";
 
 const router = express.Router();
 
-router.post(
-    "/:chatRoomId",
-    validate(createMessageValidatetion),
+router.get(
+    "/chat-room/:chatRoomId",
+    validate(getMessagesValidatetion),
     verifyToken,
-    createMessageController
+    getMessagesController
 );
 router.put(
-    "/:meassageId",
-    validate(updateMessagesValidatetion),
+    "/react-message/:messageId",
+    validate(reactMessageValidatetion),
     verifyToken,
-    updateMessagesController
+    reactMessageController
 );
 router.delete(
     "/:meassageId",
@@ -38,11 +38,11 @@ router.delete(
     deleteMessageController
 );
 router.put(
-    "/react-message/:messageId",
-    validate(reactMessageValidatetion),
+    "/:meassageId",
+    validate(updateMessagesValidatetion),
     verifyToken,
-    reactMessageController
+    updateMessagesController
 );
-router.get("/:chatRoomId", validate(getMessagesValidatetion), verifyToken, getMessagesController);
+router.post("", validate(createMessageValidatetion), verifyToken, createMessageController);
 
 export default router;

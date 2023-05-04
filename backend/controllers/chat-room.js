@@ -293,9 +293,7 @@ const updateMemberChatRoomController = async (req, res) => {
             }
         }, []);
 
-        const membersValid = [...new Set(newMembers)];
-
-        await chatRoom.update({ $push: { members: membersValid } });
+        await chatRoom.update({ $push: { members: [...new Set(newMembers)] } });
 
         return res
             .status(200)

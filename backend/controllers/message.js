@@ -85,7 +85,7 @@ const createMessageController = async (req, res) => {
 
         const emptyReact = await new React().save();
 
-        const newMessage = new Message({
+        const newMessage = await new Message({
             text,
             image,
             sender: userId,

@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 import { User } from "../models";
+import redisClient from "../redis";
 
 const signinController = async (req, res) => {
     const { email, password } = req.body;
@@ -21,7 +22,7 @@ const signinController = async (req, res) => {
             expiresIn: process.env.JWT_EXPIRE,
         });
 
-        return res.status(200).json({ data: { token }, message: "Logged in successfully" });
+        return res.status(200).json({ data: { token }, message: "Signin successfully" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -46,4 +47,19 @@ const signupController = async (req, res) => {
     }
 };
 
-export { signinController, signupController };
+const signoutController = async (req, res) => {
+    const userId = req.user_id;
+    const expireTime = req.exp_token;
+    const token = req.headers.authorization;
+
+    try {
+        const ttl = expireTime - (Date.now() / 1000).toFixed();
+        await redisClient.SETEX(`black-list-token:${userId}`, ttl, token);
+
+        return res.status(200).json({ message: "Signout successfully" });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+};
+
+export { signinController, signupController, signoutController };
