@@ -44,7 +44,7 @@ const blockUserController = async (req, res) => {
 
         await user.update({ $push: { block_users: userIdBlocked } });
 
-        return res.status(200).json({ message: `You blocked user ${userBlocked.name}` });
+        return res.status(200).json({ message: `You blocked ${userBlocked.name}` });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -80,7 +80,7 @@ const getUserByIdController = async (req, res) => {
         const user = await User.findOne({ is_active: true, _id: userId }, { password: 0 });
 
         if (!user) {
-            return res.status(400).json({ error: "User doesn't exist" });
+            return res.status(400).json({ message: "User doesn't exist" });
         }
 
         return res.status(200).json({ data: user, message: "success" });
@@ -161,7 +161,7 @@ const updatePasswordController = async (req, res) => {
 
         const isMatchPassword = await bcrypt.compare(current_password, user.password);
         if (!isMatchPassword) {
-            return res.status(400).json({ error: "Incorrect current password" });
+            return res.status(400).json({ message: "Incorrect current password" });
         }
 
         const hashPassword = await bcrypt.hash(new_password, 8);

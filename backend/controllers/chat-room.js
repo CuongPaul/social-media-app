@@ -25,6 +25,7 @@ const changeAdminController = async (req, res) => {
         for (const memberId of members) {
             if (memberId != userId) {
                 let content = `The admin of ${name} group has been updated`;
+
                 if (memberId == member) {
                     content = `You are admin of ${name} group now`;
                 }
@@ -124,7 +125,7 @@ const createChatRoomController = async (req, res) => {
             }
         }
 
-        res.status(200).json({ message: "Group created successfully" });
+        res.status(200).json({ message: "success" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -160,7 +161,7 @@ const deleteChatRoomController = async (req, res) => {
             }
         }
 
-        return res.status(200).json({ message: "Delete group successfully" });
+        return res.status(200).json({ message: "success" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -237,7 +238,7 @@ const updateNameChatRoomController = async (req, res) => {
             }
         }
 
-        return res.status(200).json({ message: "Update group name successfully" });
+        return res.status(200).json({ message: "success" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -292,9 +293,13 @@ const updateMemberChatRoomController = async (req, res) => {
             }
         }, []);
 
-        await chatRoom.update({ $push: { members: [...new Set(newMembers)] } });
+        const membersValid = [...new Set(newMembers)];
 
-        return res.status(200).json({ message: `Update members successfully` });
+        await chatRoom.update({ $push: { members: membersValid } });
+
+        return res
+            .status(200)
+            .json({ message: `${membersValid.length} members have been added to the group` });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }

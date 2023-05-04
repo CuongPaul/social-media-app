@@ -1,6 +1,4 @@
-import React from "../models/React";
-import Message from "../models/Message";
-import ChatRoom from "../models/ChatRoom";
+import { React, Message, ChatRoom } from "../models";
 
 const getMessagesController = async (req, res) => {
     const limit = 5;
@@ -82,7 +80,7 @@ const createMessageController = async (req, res) => {
     try {
         const chatRoom = await ChatRoom.findOne({ _id: chat_room_id, members: userId });
         if (!chatRoom) {
-            return res.status(400).json({ error: "Group doesn't exist" });
+            return res.status(400).json({ message: "Group doesn't exist" });
         }
 
         const emptyReact = await new React().save();

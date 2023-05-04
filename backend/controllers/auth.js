@@ -33,7 +33,7 @@ const signupController = async (req, res) => {
     try {
         const user = await User.findOne({ email });
         if (user) {
-            return res.status(400).json({ error: "Email already exists" });
+            return res.status(400).json({ message: "Email already exists" });
         }
 
         const hashPassword = await bcrypt.hash(password, 8);

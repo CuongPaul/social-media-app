@@ -62,13 +62,13 @@ const deleteCommentController = async (req, res) => {
         const comment = await Comment.findOne({ user: userId, _id: commentId });
 
         if (!comment) {
-            return res.status(400).json({ error: "You don't allow delete this comment" });
+            return res.status(400).json({ message: "You don't allow delete this comment" });
         }
 
         await comment.remove();
         await React.findByIdAndDelete(comment.react);
 
-        return res.status(200).json({ message: "Delete comment successfully" });
+        return res.status(200).json({ message: "success" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -82,17 +82,17 @@ const updateCommentController = async (req, res) => {
     try {
         const comment = await Comment.findOne({ user: userId, _id: commentId });
         if (!comment) {
-            return res.status(400).json({ error: "You don't allow edit this comment" });
+            return res.status(400).json({ message: "You don't allow edit this comment" });
         }
 
         const post = await Post.findById(comment.post);
         if (!post) {
-            return res.status(400).json({ error: "This post is deleted" });
+            return res.status(400).json({ message: "This post is deleted" });
         }
 
         await comment.update({ text, image });
 
-        return res.status(200).json({ message: "Update comment successfully" });
+        return res.status(200).json({ message: "success" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }

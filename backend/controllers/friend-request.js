@@ -106,7 +106,7 @@ const declineOrCancelRequestController = async (req, res) => {
         await friendRequest.remove();
         await Notification.findOneAndDelete({ friend_request: friendRequestId });
 
-        return res.status(200).json({ message: "Friend request has been cancelled" });
+        return res.status(200).json({ message: "success" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }

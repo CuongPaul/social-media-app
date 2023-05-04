@@ -1,4 +1,4 @@
-import Notification from "../models/Notification";
+import { Notification } from "../models";
 
 const readNotificationController = async (req, res) => {
     const userId = req.user_id;
