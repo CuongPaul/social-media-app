@@ -7,10 +7,10 @@ import { createServer } from "http";
 import bodyParser from "body-parser";
 import { ValidationError } from "express-validation";
 
-import socketServer from "./socket";
 import AuthRoutes from "./routes/auth";
 import PostRoutes from "./routes/post";
 import UserRoutes from "./routes/user";
+import socketServer from "./helper/socket";
 import CommentRoutes from "./routes/comment";
 import MessageRoutes from "./routes/message";
 import ChatRoomRoutes from "./routes/chat-room";

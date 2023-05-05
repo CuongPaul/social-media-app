@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-import redisClient from "../redis";
+import redisClient from "../config/redis";
 
 const verifyToken = async (req, res, next) => {
     try {

@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 import { User } from "../models";
-import redisClient from "../redis";
+import redisClient from "../config/redis";
 
 const signinController = async (req, res) => {
     const { email, password } = req.body;
