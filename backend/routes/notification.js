@@ -1,13 +1,13 @@
 import express from "express";
 import { validate } from "express-validation";
 
-import { readNotificationValidation, getNotificationsValidation } from "../validator/notification";
 import {
     readNotificationController,
     getNotificationsController,
     readAllNotificationController,
 } from "../controllers/notification";
 import verifyToken from "../middleware/verify-token";
+import { readNotificationValidation, getNotificationsValidation } from "../validator/notification";
 
 const router = express.Router();
 

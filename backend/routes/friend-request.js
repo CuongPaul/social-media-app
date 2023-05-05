@@ -19,12 +19,6 @@ import verifyToken from "../middleware/verify-token";
 
 const router = express.Router();
 
-router.post(
-    "",
-    validate(sendFriendRequestValidation),
-    verifyToken,
-    sendFriendRequestController
-);
 router.put(
     "/:friendRequestId",
     validate(acceptFriendRequestValidation),
@@ -49,5 +43,6 @@ router.get(
     verifyToken,
     getReceivedFriendRequestsController
 );
+router.post("", validate(sendFriendRequestValidation), verifyToken, sendFriendRequestController);
 
 export default router;

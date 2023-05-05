@@ -30,11 +30,6 @@ import verifyToken from "../middleware/verify-token";
 
 const router = express.Router();
 
-router.get(
-    "/friends",
-    validate(friendListValidation),
-    verifyToken,
-    friendListController);
 router.put(
     "/update-profile",
     validate(updateProfileValidation),
@@ -68,6 +63,7 @@ router.put(
 router.get("/", verifyToken, getCurrentUserController);
 router.get("/search", validate(searchUsersValidation), searchUsersController);
 router.get("/:userId", validate(getUserByIdValidation), getUserByIdController);
+router.get("/friends", validate(friendListValidation), verifyToken, friendListController);
 router.put("/block/:userId", validate(blockUserValidation), verifyToken, blockUserController);
 router.put("/unfriend/:friendId", validate(unfriendValidation), verifyToken, unfriendController);
 

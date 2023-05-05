@@ -52,9 +52,9 @@ services:
             - /app/node_modules
         depends_on:
             - backend
-        stdin_open: true
         environment:
-            CHOKIDAR_USEPOLLING: "true"
+            CHOKIDAR_USEPOLLING: true
+        stdin_open: true
 
 networks:
     goals-net:
