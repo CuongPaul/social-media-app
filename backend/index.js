@@ -7,10 +7,11 @@ import { createServer } from "http";
 import bodyParser from "body-parser";
 import { ValidationError } from "express-validation";
 
+import socketServer from "./socket";
 import AuthRoutes from "./routes/auth";
 import PostRoutes from "./routes/post";
 import UserRoutes from "./routes/user";
-import socketServer from "./helper/socket";
+import UploadRoutes from "./routes/upload";
 import CommentRoutes from "./routes/comment";
 import MessageRoutes from "./routes/message";
 import ChatRoomRoutes from "./routes/chat-room";
@@ -40,6 +41,7 @@ app.use((req, _res, next) => {
 app.use("/auth", AuthRoutes);
 app.use("/post", PostRoutes);
 app.use("/user", UserRoutes);
+app.use("/upload", UploadRoutes);
 app.use("/comment", CommentRoutes);
 app.use("/message", MessageRoutes);
 app.use("/chat-room", ChatRoomRoutes);
