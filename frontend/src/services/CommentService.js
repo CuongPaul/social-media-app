@@ -4,7 +4,7 @@ const baseURL = process.env.REACT_APP_BASE_API_URL;
 
 const reactComment = async ({ commentId, reactType }) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "GET",
@@ -34,7 +34,7 @@ const reactComment = async ({ commentId, reactType }) => {
 
 const createComment = async ({ postId, commentInfo }) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "POST",
@@ -64,7 +64,7 @@ const createComment = async ({ postId, commentInfo }) => {
 
 const deleteComment = async (commentId) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "DELETE",
@@ -93,7 +93,7 @@ const deleteComment = async (commentId) => {
 
 const updateComment = async (commentId) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "PUT",
@@ -122,7 +122,7 @@ const updateComment = async (commentId) => {
 
 const getCommentsByPost = async (postId) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "GET",

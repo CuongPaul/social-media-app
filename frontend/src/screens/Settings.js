@@ -13,7 +13,6 @@ import React, { lazy, Suspense, useContext, useEffect, useState } from "react";
 import { SecurityOutlined, LocationCityOutlined, PersonOutline } from "@material-ui/icons";
 
 import { UIContext } from "../App";
-import DrawerBar from "../components/Navbar/DrawerBar";
 
 const General = lazy(() => import("../components/settings/General"));
 const Location = lazy(() => import("../components/settings/Location"));
@@ -108,13 +107,10 @@ const Settings = () => {
                 minHeight: "100vh",
             }}
         >
-            {!uiState.mdScreen && <DrawerBar>{ListContents}</DrawerBar>}
             <Grid container spacing={1} style={{ minHeight: "70vh" }}>
-                {uiState.mdScreen && (
-                    <Grid item md={4}>
-                        <Paper style={{ padding: "8px", height: "100%" }}>{ListContents}</Paper>
-                    </Grid>
-                )}
+                <Grid item md={4}>
+                    <Paper style={{ padding: "8px", height: "100%" }}>{ListContents}</Paper>
+                </Grid>
                 <Grid item md={8} xs={12} sm={12}>
                     <Paper style={{ padding: "16px", width: "100%", height: "100%" }}>
                         <Suspense fallback={<Typography>Loading</Typography>}>

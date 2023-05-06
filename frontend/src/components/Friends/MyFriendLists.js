@@ -13,11 +13,10 @@ import React, { useContext } from "react";
 
 import AvartarText from "../UI/AvartarText";
 import StyledBadge from "../UI/StyledBadge";
-import { UIContext, UserContext } from "../../App";
+import { UserContext } from "../../App";
 import PopoverProfile from "../Profile/PopoverProfile";
 
 const MyFriendLists = () => {
-    const { uiState } = useContext(UIContext);
     const { userState } = useContext(UserContext);
 
     const friendsItem = (user) => (
@@ -57,11 +56,7 @@ const MyFriendLists = () => {
                 >
                     {userState.currentUser.friends.map((user) => (
                         <div key={user.id}>
-                            {uiState.mdScreen ? (
-                                <PopoverProfile user={user}>{friendsItem(user)}</PopoverProfile>
-                            ) : (
-                                friendsItem(user)
-                            )}
+                            <PopoverProfile user={user}>{friendsItem(user)}</PopoverProfile>
                         </div>
                     ))}
                 </List>

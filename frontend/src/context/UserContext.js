@@ -2,9 +2,7 @@ import { filterArray } from "../utils/filter-array";
 
 const initialUserState = {
     users: [],
-    socketIO: null,
     currentUser: null,
-    isLoggedIn: false,
     recentAccounts: [],
     sendedFriendRequests: [],
     selectedUserProfile: null,
@@ -50,7 +48,7 @@ const UserReducer = (state, action) => {
             };
 
         case "SET_CURRENT_USER":
-            return { ...state, isLoggedIn: true, currentUser: action.payload };
+            return { ...state, currentUser: action.payload };
 
         case "SET_USERS":
             return { ...state, users: action.payload };
@@ -79,13 +77,11 @@ const UserReducer = (state, action) => {
             return { ...state, users: newUsers };
 
         case "LOGOUT_USER":
-            localStorage.token && localStorage.removeItem("token");
+            localStorage.getItem("token") && localStorage.removeItem("token");
 
             return {
                 ...state,
                 users: [],
-                socketIO: null,
-                isLoggedIn: false,
                 currentUser: null,
                 sendedFriendRequests: [],
                 selectedUserProfile: null,
@@ -175,9 +171,6 @@ const UserReducer = (state, action) => {
 
         case "REMOVE_SELECTED_USER_PROFILE":
             return { ...state, selectedUserProfile: null };
-
-        case "SET_SOCKETIO":
-            return { ...state, socketIO: action.payload };
 
         default:
             throw new Error(`Action type ${action.type} is undefined`);

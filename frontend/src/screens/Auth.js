@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Grid, Paper, Button, Divider, Container, Typography } from "@material-ui/core";
 
 import { UIContext, UserContext } from "../App";
@@ -9,9 +9,13 @@ import RecentAccountCard from "../components/Auth/RecentAccountCard";
 
 const Auth = () => {
     const { uiState } = useContext(UIContext);
-    const { userState } = useContext(UserContext);
+    const { userState, userDispatch } = useContext(UserContext);
 
     const [isShowSigninForm, setIsShowSigninForm] = useState(true);
+
+    useEffect(() => {
+        userDispatch({ type: "RECENT_ACCOUNTS", payload: localStorage.getItem("accounts") });
+    }, [userDispatch]);
 
     return (
         <div style={{ minHeight: "100vh", paddingBottom: "100px" }}>

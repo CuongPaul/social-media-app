@@ -13,7 +13,6 @@ import React, { Fragment, useEffect, useContext } from "react";
 import Sidebar from "../components/Sidebar";
 import Posts from "../components/Post/Posts";
 import useFetchPost from "../hooks/useFetchPost";
-import DrawerBar from "../components/Navbar/DrawerBar";
 import AvartarText from "../components/UI/AvartarText";
 import { UIContext, PostContext, UserContext } from "../App";
 import MyFriendLists from "../components/Friends/MyFriendLists";
@@ -52,79 +51,71 @@ const Home = () => {
 
     return (
         <div>
-            {uiState.mdScreen ? (
-                <Fragment>
-                    <Sidebar
-                        anchor="left"
-                        boxShadow={false}
-                        background={uiState.darkMode ? "rgb(24,25,26)" : "rgb(240,242,245)"}
-                    >
-                        <List>
-                            <ListItem
-                                button
-                                component={Link}
-                                to={`/profile/${userState.currentUser.id}`}
-                            >
+            <Fragment>
+                <Sidebar
+                    anchor="left"
+                    boxShadow={false}
+                    background={uiState.darkMode ? "rgb(24,25,26)" : "rgb(240,242,245)"}
+                >
+                    <List>
+                        <ListItem
+                            button
+                            component={Link}
+                            to={`/profile/${userState.currentUser.id}`}
+                        >
+                            <ListItemIcon>
+                                {userState.currentUser.profile_pic ? (
+                                    <Avatar
+                                        style={{
+                                            width: "50px",
+                                            height: "50px",
+                                        }}
+                                    >
+                                        <img
+                                            alt="avatar"
+                                            width="100%"
+                                            height="100%"
+                                            src={userState.currentUser.profile_pic}
+                                        />
+                                    </Avatar>
+                                ) : (
+                                    <AvartarText
+                                        text={userState.currentUser.name}
+                                        bg={userState.currentUser.active ? "seagreen" : "tomato"}
+                                    />
+                                )}
+                            </ListItemIcon>
+                            <ListItemText
+                                style={{ marginLeft: "6px" }}
+                                primary={userState.currentUser.name}
+                            />
+                        </ListItem>
+                        {homeLeftItems.map((list, index) => (
+                            <ListItem button key={index} component={Link} to={list.to}>
                                 <ListItemIcon>
-                                    {userState.currentUser.profile_pic ? (
-                                        <Avatar
-                                            style={{
-                                                width: "50px",
-                                                height: "50px",
-                                            }}
-                                        >
-                                            <img
-                                                alt="avatar"
-                                                width="100%"
-                                                height="100%"
-                                                src={userState.currentUser.profile_pic}
-                                            />
-                                        </Avatar>
-                                    ) : (
-                                        <AvartarText
-                                            text={userState.currentUser.name}
-                                            bg={
-                                                userState.currentUser.active ? "seagreen" : "tomato"
-                                            }
-                                        />
-                                    )}
+                                    <Avatar
+                                        alt={list.title}
+                                        src={require(`../assets/${list.img}`)}
+                                    />
                                 </ListItemIcon>
-                                <ListItemText
-                                    style={{ marginLeft: "6px" }}
-                                    primary={userState.currentUser.name}
-                                />
+                                <ListItemText primary={list.title} />
                             </ListItem>
-                            {homeLeftItems.map((list, index) => (
-                                <ListItem button key={index} component={Link} to={list.to}>
-                                    <ListItemIcon>
-                                        <Avatar
-                                            alt={list.title}
-                                            src={require(`../assets/${list.img}`)}
-                                        />
-                                    </ListItemIcon>
-                                    <ListItemText primary={list.title} />
-                                </ListItem>
-                            ))}
-                        </List>
-                    </Sidebar>
-                    <Sidebar
-                        anchor="right"
-                        background={!uiState.darkMode ? "rgb(240,242,245)" : "rgb(24,25,26)"}
-                        boxShadow={false}
-                        drawerWidth={380}
-                    >
-                        <MyFriendLists />
-                    </Sidebar>
-                </Fragment>
-            ) : (
-                <DrawerBar>
+                        ))}
+                    </List>
+                </Sidebar>
+                <Sidebar
+                    anchor="right"
+                    background={!uiState.darkMode ? "rgb(240,242,245)" : "rgb(24,25,26)"}
+                    boxShadow={false}
+                    drawerWidth={380}
+                >
                     <MyFriendLists />
-                </DrawerBar>
-            )}
+                </Sidebar>
+            </Fragment>
 
             <div
                 style={{
-                    maxWidth: uiState.mdScreen ? (match ? "45vw" : "38vw") : "100vw",
+                    maxWidth: match ? "45vw" : "38vw",
                     margin: "auto",
                     paddingTop: "100px",
                     paddingBottom: "100px",

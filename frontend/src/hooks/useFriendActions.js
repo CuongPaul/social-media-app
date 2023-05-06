@@ -135,7 +135,7 @@ const useFriendAction = () => {
     };
 
     const cancelFriendRequest = async (request_id) => {
-        let token = JSON.parse(localStorage.token);
+        let token = localStorage.getItem("token");
         try {
             const { data } = await axios.get(
                 `${url}/api/user/friend_request/${request_id}/cancel`,

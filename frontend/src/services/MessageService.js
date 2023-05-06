@@ -4,7 +4,7 @@ const baseURL = process.env.REACT_APP_BASE_API_URL;
 
 const sendMessage = async (roomId) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "POST",
@@ -33,7 +33,7 @@ const sendMessage = async (roomId) => {
 
 const getMessages = async ({ roomId, page }) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "GET",
@@ -63,7 +63,7 @@ const getMessages = async ({ roomId, page }) => {
 
 const reactMessage = async ({ messageId, reactType }) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "POST",
@@ -93,7 +93,7 @@ const reactMessage = async ({ messageId, reactType }) => {
 
 const deleteMessage = async (meassageId) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "DELETE",
@@ -122,7 +122,7 @@ const deleteMessage = async (meassageId) => {
 
 const updateMessages = async (meassageId) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "PUT",

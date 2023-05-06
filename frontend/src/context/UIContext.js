@@ -4,7 +4,6 @@ const initialUIState = {
     message: null,
     loading: false,
     darkMode: false,
-    mdScreen: false,
     postModel: false,
     notifications: [],
     navDrawerMenu: false,
@@ -12,9 +11,6 @@ const initialUIState = {
 
 const UIReducer = (state, action) => {
     switch (action.type) {
-        case "SET_USER_SCREEN":
-            return { ...state, mdScreen: action.payload };
-
         case "EDIT_POST":
             return { ...state, post: action.payload };
 

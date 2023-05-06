@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { Avatar, Container, Grid, Paper, Typography } from "@material-ui/core";
 import { ChatContext, UIContext } from "../App";
 import Messages from "../components/Chat/Messages";
-import DrawerBar from "../components/Navbar/DrawerBar";
 
 import Friends from "../components/Chat/Friends";
 import InputTextArea from "../components/Chat/InputTextArea";
@@ -32,11 +31,6 @@ function Messenger() {
                 minHeight: "100vh",
             }}
         >
-            {!uiState.mdScreen && (
-                <DrawerBar>
-                    <Friends />
-                </DrawerBar>
-            )}
             <Container>
                 <Paper style={{ backgroundColor: uiState.darkMode && "rgb(36,37,38)" }}>
                     <Grid
@@ -46,26 +40,24 @@ function Messenger() {
                         spacing={2}
                         style={{ padding: "16px" }}
                     >
-                        {uiState.mdScreen && (
-                            <Grid
-                                item
-                                md={4}
-                                xs={12}
-                                sm={12}
-                                style={{
-                                    height: "80vh",
-                                    overflowY: "scroll",
-                                    overflowX: "hidden",
-                                    scrollbarColor: !uiState.darkMode
-                                        ? "#fff rgb(240,242,245)"
-                                        : " rgb(36,37,38) rgb(24,25,26)",
-                                }}
-                            >
-                                <Paper elevation={0}>
-                                    <Friends />
-                                </Paper>
-                            </Grid>
-                        )}
+                        <Grid
+                            item
+                            md={4}
+                            xs={12}
+                            sm={12}
+                            style={{
+                                height: "80vh",
+                                overflowY: "scroll",
+                                overflowX: "hidden",
+                                scrollbarColor: !uiState.darkMode
+                                    ? "#fff rgb(240,242,245)"
+                                    : " rgb(36,37,38) rgb(24,25,26)",
+                            }}
+                        >
+                            <Paper elevation={0}>
+                                <Friends />
+                            </Paper>
+                        </Grid>
                         {chatState.selectedFriend ? (
                             <Grid
                                 item

@@ -189,15 +189,7 @@ const Post = () => {
                         </Card>
                     </Grid>
 
-                    <Grid
-                        item
-                        md={5}
-                        sm={12}
-                        xs={12}
-                        style={{
-                            marginBottom: !uiState.mdScreen ? "70px" : "0px",
-                        }}
-                    >
+                    <Grid item md={5} sm={12} xs={12} style={{ marginBottom: "0px" }}>
                         <Paper
                             style={{
                                 padding: "16px",

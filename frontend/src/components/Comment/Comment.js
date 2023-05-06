@@ -176,7 +176,7 @@ const Comment = ({ comment }) => {
         </ListItem>
     );
     return (
-        <div style={{ marginTop: "16px", marginBottom: !uiState.mdScreen && "50px" }}>
+        <div style={{ marginTop: "16px" }}>
             <List>
                 {listItems}
 

@@ -58,7 +58,7 @@ const signup = async (userInfo) => {
 
 const signout = async () => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "GET",

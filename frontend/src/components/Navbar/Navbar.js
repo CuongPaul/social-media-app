@@ -1,8 +1,7 @@
 import React, { useContext } from "react";
-import { Menu as MenuIcon } from "@material-ui/icons";
 import { faFacebook } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { AppBar, Toolbar, IconButton, useMediaQuery, useTheme, Tooltip } from "@material-ui/core";
+import { AppBar, Toolbar, useMediaQuery, useTheme } from "@material-ui/core";
 
 import useStyles from "./styles";
 import RightMenu from "./RightMenu";
@@ -11,7 +10,7 @@ import MiddleMenu from "./MiddleMenu";
 import SearchFriends from "../Friends/SearchFriends";
 
 const Navbar = () => {
-    const { uiState, uiDispatch } = useContext(UIContext);
+    const { uiState } = useContext(UIContext);
 
     const classes = useStyles();
     const { breakpoints } = useTheme();
@@ -41,28 +40,10 @@ const Navbar = () => {
                         }}
                     />
                     <SearchFriends />
-                    {!uiState.mdScreen && uiState.navDrawerMenu && (
-                        <Tooltip
-                            arrow
-                            title={
-                                uiState.drawer ? "Click to close drawer " : " Click to open drawer"
-                            }
-                        >
-                            <IconButton
-                                onClick={() => {
-                                    uiDispatch({ type: "SET_DRAWER", payload: !uiState.drawer });
-                                }}
-                            >
-                                <MenuIcon />
-                            </IconButton>
-                        </Tooltip>
-                    )}
                 </div>
-                {uiState.mdScreen && (
-                    <div className={classes.middleMenu}>
-                        <MiddleMenu />
-                    </div>
-                )}
+                <div className={classes.middleMenu}>
+                    <MiddleMenu />
+                </div>
                 <div className={classes.rightMenu}>
                     <RightMenu />
                 </div>

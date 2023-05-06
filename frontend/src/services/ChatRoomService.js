@@ -4,7 +4,7 @@ const baseURL = process.env.REACT_APP_BASE_API_URL;
 
 const joinChatRoom = async (chatRoomId) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "PUT",
@@ -33,7 +33,7 @@ const joinChatRoom = async (chatRoomId) => {
 
 const leaveChatRoom = async (chatRoomId) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "PUT",
@@ -62,7 +62,7 @@ const leaveChatRoom = async (chatRoomId) => {
 
 const createChatRoom = async (newChatRoomInfo) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             url: `/`,
@@ -92,7 +92,7 @@ const createChatRoom = async (newChatRoomInfo) => {
 
 const deleteChatRoom = async (chatRoomId) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "DELETE",
@@ -121,7 +121,7 @@ const deleteChatRoom = async (chatRoomId) => {
 
 const searchChatRooms = async (chatRoomName) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "GET",
@@ -151,7 +151,7 @@ const searchChatRooms = async (chatRoomName) => {
 
 const updateNameChatRoom = async ({ chatRoomId, chatRoomName }) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "PUT",
@@ -181,7 +181,7 @@ const updateNameChatRoom = async ({ chatRoomId, chatRoomName }) => {
 
 const updateAvatarChatRoom = async ({ chatRoomId, chatRoomAvatar }) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "PUT",
@@ -211,7 +211,7 @@ const updateAvatarChatRoom = async ({ chatRoomId, chatRoomAvatar }) => {
 
 const addMembersToChatRoom = async ({ chatRoomId, members }) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "PUT",
@@ -241,7 +241,7 @@ const addMembersToChatRoom = async ({ chatRoomId, members }) => {
 
 const removeMemberChatRoom = async ({ chatRoomId, memberId }) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "PUT",
@@ -271,7 +271,7 @@ const removeMemberChatRoom = async ({ chatRoomId, memberId }) => {
 
 const updatePrivacyChatRoom = async (chatRoomId) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "PUT",
@@ -300,7 +300,7 @@ const updatePrivacyChatRoom = async (chatRoomId) => {
 
 const getChatRoomsByCurrentUser = async () => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             url: `/`,

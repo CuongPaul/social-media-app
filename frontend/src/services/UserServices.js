@@ -4,7 +4,7 @@ const baseURL = process.env.REACT_APP_BASE_API_URL;
 
 const unfriend = async (friendId) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "PUT",
@@ -33,7 +33,7 @@ const unfriend = async (friendId) => {
 
 const getUserById = async (userId) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "GET",
@@ -89,7 +89,7 @@ const searchUsers = async (userName) => {
 
 const updateProfile = async (userInfo) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "PUT",
@@ -119,7 +119,7 @@ const updateProfile = async (userInfo) => {
 
 const updatePassword = async () => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "GET",
@@ -148,7 +148,7 @@ const updatePassword = async () => {
 
 const getCurrentUser = async () => {
     try {
-        const token = localStorage.token;
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             url: ``,
@@ -177,7 +177,7 @@ const getCurrentUser = async () => {
 
 const updateCoverImage = async (imageURL) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "PUT",
@@ -207,7 +207,7 @@ const updateCoverImage = async (imageURL) => {
 
 const getRecommendUsers = async () => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "GET",
@@ -236,7 +236,7 @@ const getRecommendUsers = async () => {
 
 const updateAvatarImage = async (imageURL) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "PUT",

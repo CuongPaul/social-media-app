@@ -3,7 +3,6 @@ import { Typography, makeStyles, Avatar, Grid, CardActions, Button } from "@mate
 import Sidebar from "../components/Sidebar";
 import UserLists from "../components/Friends/UserLists";
 import { UIContext, UserContext } from "../App";
-import DrawerBar from "../components/Navbar/DrawerBar";
 import UserProfile from "../components/Profile/UserProfile";
 import Friend from "../components/Friends/Friend";
 import useFriendAction from "../hooks/useFriendActions";
@@ -174,33 +173,20 @@ function Friends() {
     );
     return (
         <div>
-            {uiState.mdScreen ? (
-                <Grid container spacing={0}>
-                    <Grid item md={3}>
-                        <Sidebar background={uiState.darkMode && "rgb(36,37,38)"}>
-                            {metaData}
-
-                            <UserLists users={userState.users} />
-                        </Sidebar>
-                    </Grid>
-                    <Grid item md={8} style={{ margin: "auto" }}>
-                        {userState.selectedUserProfile && (
-                            <UserProfile user={userState.selectedUserProfile} conScreen={true} />
-                        )}
-                    </Grid>
-                </Grid>
-            ) : (
-                <>
-                    <DrawerBar>
+            <Grid container spacing={0}>
+                <Grid item md={3}>
+                    <Sidebar background={uiState.darkMode && "rgb(36,37,38)"}>
                         {metaData}
 
                         <UserLists users={userState.users} />
-                    </DrawerBar>
+                    </Sidebar>
+                </Grid>
+                <Grid item md={8} style={{ margin: "auto" }}>
                     {userState.selectedUserProfile && (
-                        <UserProfile user={userState.selectedUserProfile} />
+                        <UserProfile user={userState.selectedUserProfile} conScreen={true} />
                     )}
-                </>
-            )}
+                </Grid>
+            </Grid>
 
             {!userState.selectedUserProfile && (
                 <div

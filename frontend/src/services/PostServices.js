@@ -4,7 +4,7 @@ const baseURL = process.env.REACT_APP_BASE_API_URL;
 
 const reactPost = async ({ postId, reactType }) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "POST",
@@ -34,7 +34,7 @@ const reactPost = async ({ postId, reactType }) => {
 
 const createPost = async (postInfo) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             url: `/`,
@@ -64,7 +64,7 @@ const createPost = async (postInfo) => {
 
 const deletePost = async (postId) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "DELETE",
@@ -93,7 +93,7 @@ const deletePost = async (postId) => {
 
 const updatePost = async (postId) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "PUT",
@@ -122,7 +122,7 @@ const updatePost = async (postId) => {
 
 const getAllPosts = async (page) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             url: `/`,
@@ -152,7 +152,7 @@ const getAllPosts = async (page) => {
 
 const getPostsByUser = async (userId) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "GET",

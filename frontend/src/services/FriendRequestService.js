@@ -4,7 +4,7 @@ const baseURL = process.env.REACT_APP_BASE_API_URL;
 
 const sendFriendRequest = async (receiverId) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "POST",
@@ -33,7 +33,7 @@ const sendFriendRequest = async (receiverId) => {
 
 const acceptFriendRequest = async (friendRequestId) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "PUT",
@@ -62,7 +62,7 @@ const acceptFriendRequest = async (friendRequestId) => {
 
 const declineOrCancelRequest = async (friendRequestId) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "DELETE",
@@ -91,7 +91,7 @@ const declineOrCancelRequest = async (friendRequestId) => {
 
 const getSendedFriendRequests = async () => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "GET",
@@ -120,7 +120,7 @@ const getSendedFriendRequests = async () => {
 
 const getReceivedFriendRequests = async () => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "GET",

@@ -4,7 +4,7 @@ const baseURL = process.env.REACT_APP_BASE_API_URL;
 
 const readNotification = async (notificationId) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "PUT",
@@ -33,7 +33,7 @@ const readNotification = async (notificationId) => {
 
 const readAllNotification = async () => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "PUT",
@@ -62,7 +62,7 @@ const readAllNotification = async () => {
 
 const getNotificationsByKey = async (notificationKey) => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             method: "PUT",
@@ -91,7 +91,7 @@ const getNotificationsByKey = async (notificationKey) => {
 
 const getNotificationsByCurrentUser = async () => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.getItem("token");
 
         const { data } = await axios({
             url: `/`,

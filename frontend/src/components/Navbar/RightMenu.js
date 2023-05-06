@@ -26,10 +26,12 @@ const RightMenu = () => {
 
     const defaultPropsNotif = {
         color: "error",
+        overlap: "rectangular",
         children: <FontAwesomeIcon icon={faBell} size={xsScreen ? "xs" : "sm"} />,
     };
     const defaultPropsMess = {
         color: "error",
+        overlap: "rectangular",
         children: <FontAwesomeIcon icon={faFacebookMessenger} size={xsScreen ? "xs" : "sm"} />,
     };
 
@@ -38,28 +40,26 @@ const RightMenu = () => {
             setUserMess(abcLength);
         }
     }, [abcLength, chatState.messages, userState.currentUser._id]);
-
+    console.log("uiState: ", uiState);
     return (
         <Fragment>
-            {uiState.mdScreen && (
-                <Chip
-                    component={NavLink}
-                    activeStyle={{ backgroundColor: "teal", color: "#fff" }}
-                    to={`/profile/${userState.currentUser._id}`}
-                    label={<h3>{userState.currentUser.name.split(" ")[0].slice(0, 5) + ".."}</h3>}
-                    className={classes.profile_chip}
-                    avatar={
-                        userState.currentUser.profile_pic ? (
-                            <Avatar alt="Natacha" src={userState.currentUser.profile_pic} />
-                        ) : (
-                            <AvartarText
-                                text={userState.currentUser.name}
-                                bg={userState.currentUser.active ? "seagreen" : "tomato"}
-                            />
-                        )
-                    }
-                />
-            )}
+            <Chip
+                component={NavLink}
+                activeStyle={{ backgroundColor: "teal", color: "#fff" }}
+                to={`/profile/${userState.currentUser._id}`}
+                label={<h3>{userState.currentUser.name.split(" ")[0].slice(0, 5) + ".."}</h3>}
+                className={classes.profile_chip}
+                avatar={
+                    userState.currentUser.profile_pic ? (
+                        <Avatar alt="Natacha" src={userState.currentUser.profile_pic} />
+                    ) : (
+                        <AvartarText
+                            text={userState.currentUser.name}
+                            bg={userState.currentUser.active ? "seagreen" : "tomato"}
+                        />
+                    )
+                }
+            />
 
             <CreatePostMenu />
             <IconButton

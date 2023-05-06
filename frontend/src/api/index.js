@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const CallAPI = async ({ url, data, query, method }) => {
-    const token = localStorage.token;
+    const token = localStorage.getItem("token");
     const baseURL = process.env.REACT_APP_BASE_API_URL;
     const options = { url, method, baseURL, timeout: 3 * 1000 };
 
