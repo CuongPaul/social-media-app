@@ -148,7 +148,7 @@ const updatePassword = async () => {
 
 const getCurrentUser = async () => {
     try {
-        const token = localStorage.token && JSON.parse(localStorage.token);
+        const token = localStorage.token;
 
         const { data } = await axios({
             url: ``,

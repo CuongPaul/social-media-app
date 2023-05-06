@@ -1,67 +1,54 @@
 import { useState, useContext } from "react";
 
+import CallAPI from "../api";
 import { UIContext } from "../App";
-import { signup } from "../services/AuthService";
 
 const useSignup = () => {
     const { uiDispatch } = useContext(UIContext);
 
-    const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [initialValue, setInitialValue] = useState({ name: "", email: "", password: "" });
+    const [formValue, setFormValue] = useState({ name: "", email: "", password: "" });
 
     const handleChangeName = (name) => {
-        setError({ ...error, name: "" });
-        setInitialValue({ ...initialValue, name });
+        setFormValue({ ...formValue, name });
     };
 
     const handleChangeEmail = (email) => {
-        setError({ ...error, email: "" });
-        setInitialValue({ ...initialValue, email });
+        setFormValue({ ...formValue, email });
     };
 
     const handleChangePassword = (password) => {
-        setError({ ...error, password: "" });
-        setInitialValue({ ...initialValue, password });
+        setFormValue({ ...formValue, password });
     };
 
     const handleSignup = async (e) => {
         e.preventDefault();
-
         setLoading(true);
 
         try {
-            const { error, status, message } = await signup(initialValue);
-
+            const { data, message } = await CallAPI({
+                method: "POST",
+                data: formValue,
+                url: "/auth/signup",
+            });
             setLoading(false);
 
-            if (message) {
-                uiDispatch({
-                    type: "SET_MESSAGE",
-                    payload: { display: true, text: message, color: "success" },
-                });
-            } else {
-                if (status === 422) {
-                    setError({ ...error });
-                } else {
-                    uiDispatch({
-                        type: "SET_MESSAGE",
-                        payload: { text: error, display: true, color: "error" },
-                    });
-                }
-            }
-        } catch (err) {
-            setLoading(false);
+            localStorage.setItem("token", data.token);
 
             uiDispatch({
                 type: "SET_MESSAGE",
-                payload: { text: err.message, display: true, color: "error" },
+                payload: { display: true, text: message, color: "success" },
+            });
+        } catch (err) {
+            setLoading(false);
+            uiDispatch({
+                type: "SET_MESSAGE",
+                payload: { display: true, color: "error", text: err.message },
             });
         }
     };
 
     return {
-        error,
         loading,
         handleSignup,
         handleChangeName,

@@ -8,7 +8,7 @@ const useUpdateProfile = () => {
     const { userDispatch } = useContext(UserContext);
     const { uiDispatch } = useContext(UIContext);
 
-    let token = JSON.parse(localStorage.getItem("token"));
+    let token = localStorage.getItem("token");
 
     const editName = async (name) => {
         setLoading(true);

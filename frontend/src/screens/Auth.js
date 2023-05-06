@@ -5,16 +5,16 @@ import { UIContext, UserContext } from "../App";
 import SigninForm from "../components/Auth/SigninForm";
 import SignupForm from "../components/Auth/SignupForm";
 import AddAccountCard from "../components/Auth/AddAccountCard";
-import RecentAccountCards from "../components/Auth/RecentAccountCards";
+import RecentAccountCard from "../components/Auth/RecentAccountCard";
 
 const Auth = () => {
     const { uiState } = useContext(UIContext);
     const { userState } = useContext(UserContext);
 
-    const [toggleLoginForm, setToggleLoginForm] = useState(true);
+    const [isShowSigninForm, setIsShowSigninForm] = useState(true);
 
     return (
-        <div style={{ paddingBottom: "100px", minHeight: "100vh" }}>
+        <div style={{ minHeight: "100vh", paddingBottom: "100px" }}>
             <Container>
                 <Grid
                     container
@@ -25,19 +25,13 @@ const Auth = () => {
                 >
                     <Typography
                         variant="h4"
-                        style={{
-                            fontWeight: 800,
-                            color: uiState.darkMode ? "white" : "black",
-                        }}
+                        style={{ fontWeight: 800, color: uiState.darkMode ? "white" : "black" }}
                     >
                         Facebook
                     </Typography>
                     <Typography
                         variant="h6"
-                        style={{
-                            fontWeight: 800,
-                            color: uiState.darkMode ? "white" : "black",
-                        }}
+                        style={{ fontWeight: 800, color: uiState.darkMode ? "white" : "black" }}
                     >
                         Sign in recent
                     </Typography>
@@ -58,7 +52,7 @@ const Auth = () => {
                             <Grid container spacing={2}>
                                 {userState.recentAccounts.map((account) => (
                                     <Grid item xs={6} sm={6} md={3} key={account.id}>
-                                        <RecentAccountCards account={account} />
+                                        <RecentAccountCard account={account} />
                                     </Grid>
                                 ))}
                             </Grid>
@@ -76,7 +70,7 @@ const Auth = () => {
                                 flexDirection: "column",
                             }}
                         >
-                            {toggleLoginForm ? <SigninForm /> : <SignupForm />}
+                            {isShowSigninForm ? <SigninForm /> : <SignupForm />}
                             <Divider />
                             <Button
                                 style={{
@@ -84,9 +78,9 @@ const Auth = () => {
                                     marginTop: "32px",
                                     background: "rgb(74,183,43)",
                                 }}
-                                onClick={() => setToggleLoginForm(!toggleLoginForm)}
+                                onClick={() => setIsShowSigninForm(!isShowSigninForm)}
                             >
-                                {toggleLoginForm
+                                {isShowSigninForm
                                     ? "Create new account"
                                     : " Already have an account"}
                             </Button>

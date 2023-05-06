@@ -39,9 +39,13 @@ const signupController = async (req, res) => {
 
         const hashPassword = await bcrypt.hash(password, 8);
 
-        await new User({ name, email, password: hashPassword }).save();
+        const newUser = await new User({ name, email, password: hashPassword }).save();
 
-        return res.status(200).json({ message: "Account successfully created" });
+        const token = jwt.sign({ user_id: newUser._id }, process.env.JWT_SECRET, {
+            expiresIn: process.env.JWT_EXPIRE,
+        });
+
+        return res.status(200).json({ data: { token }, message: "Account successfully created" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }

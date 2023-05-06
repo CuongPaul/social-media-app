@@ -13,7 +13,7 @@ const Loader = () => {
                 justifyContent: "center",
             }}
         >
-            <Paper style={{ padding: "16px" }} elevation={14}>
+            <Paper elevation={14} style={{ padding: "16px" }}>
                 <CircularProgress />
             </Paper>
         </div>

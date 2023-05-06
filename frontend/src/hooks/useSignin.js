@@ -1,75 +1,56 @@
-import { useHistory } from "react-router-dom";
 import { useState, useEffect, useContext } from "react";
 
+import CallAPI from "../api";
 import { UIContext } from "../App";
-import { signin } from "../services/AuthService";
 
-const useSignin = (userData = null) => {
+const useSignin = (formData = null) => {
     const { uiDispatch } = useContext(UIContext);
 
-    const history = useHistory();
-    const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [initialValue, setInitialValue] = useState({ email: "", password: "" });
+    const [formValue, setFormValue] = useState({ email: "", password: "" });
 
     const handleChangeEmail = (email) => {
-        setError({ ...error, email: "" });
-        setInitialValue({ ...initialValue, email });
+        setFormValue({ ...formValue, email });
     };
 
     const handleChangePassword = (password) => {
-        setError({ ...error, password: "" });
-        setInitialValue({ ...initialValue, password });
+        setFormValue({ ...formValue, password });
     };
 
     const handleSignin = async (e) => {
         e.preventDefault();
-
         setLoading(true);
 
         try {
-            const { data, error, status, message } = await signin(initialValue);
-
+            const { data, message } = await CallAPI({
+                method: "POST",
+                data: formValue,
+                url: "/auth/signin",
+            });
             setLoading(false);
 
-            if (message) {
-                localStorage.setItem("token", JSON.stringify(data.token));
-
-                uiDispatch({
-                    type: "SET_MESSAGE",
-                    payload: { display: true, text: message, color: "success" },
-                });
-
-                history.push("/home");
-            } else {
-                if (status === 422) {
-                    setError({ ...error });
-                } else {
-                    uiDispatch({
-                        type: "SET_MESSAGE",
-                        payload: { text: error, display: true, color: "error" },
-                    });
-                }
-            }
-        } catch (err) {
-            setLoading(false);
+            localStorage.setItem("token", data.token);
 
             uiDispatch({
                 type: "SET_MESSAGE",
-                payload: { text: err.message, display: true, color: "error" },
+                payload: { display: true, text: message, color: "success" },
+            });
+        } catch (err) {
+            setLoading(false);
+            uiDispatch({
+                type: "SET_MESSAGE",
+                payload: { display: true, color: "error", text: err.message },
             });
         }
     };
 
     useEffect(() => {
-        setInitialValue((initialValue) => ({
-            ...initialValue,
-            email: userData ? userData.email : "",
-        }));
-    }, [userData]);
+        if (formData?.email) {
+            setFormValue((formValue) => ({ ...formValue, email: formData.email }));
+        }
+    }, [formData]);
 
     return {
-        error,
         loading,
         handleSignin,
         handleChangeEmail,

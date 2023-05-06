@@ -34,10 +34,10 @@ const RightMenu = () => {
     };
 
     useEffect(() => {
-        if (userState.currentUser.id === chatState.messages[0]?.receiver?.id) {
+        if (userState.currentUser._id === chatState.messages[0]?.receiver?.id) {
             setUserMess(abcLength);
         }
-    }, [abcLength, chatState.messages, userState.currentUser.id]);
+    }, [abcLength, chatState.messages, userState.currentUser._id]);
 
     return (
         <Fragment>
@@ -45,7 +45,7 @@ const RightMenu = () => {
                 <Chip
                     component={NavLink}
                     activeStyle={{ backgroundColor: "teal", color: "#fff" }}
-                    to={`/profile/${userState.currentUser.id}`}
+                    to={`/profile/${userState.currentUser._id}`}
                     label={<h3>{userState.currentUser.name.split(" ")[0].slice(0, 5) + ".."}</h3>}
                     className={classes.profile_chip}
                     avatar={

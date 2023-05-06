@@ -23,6 +23,7 @@ const UIReducer = (state, action) => {
 
         case "SET_MESSAGE":
             return { ...state, message: action.payload };
+
         case "SET_NAV_MENU":
             return { ...state, navDrawerMenu: action.payload };
 
@@ -46,4 +47,4 @@ const UIReducer = (state, action) => {
     }
 };
 
-export { initialUIState, UIReducer };
+export { UIReducer, initialUIState };

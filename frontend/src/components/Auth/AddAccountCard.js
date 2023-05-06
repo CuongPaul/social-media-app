@@ -17,23 +17,20 @@ import { UIContext } from "../../App";
 
 const AddAccountCard = () => {
     const { uiState } = useContext(UIContext);
-    const [isOpenAddForm, setIsOpenAddForm] = useState(false);
 
-    const handleAddAccount = () => {
-        setIsOpenAddForm(!isOpenAddForm);
-    };
+    const [isShowAddAccountForm, setIsShowAddAccountForm] = useState(false);
 
     return (
         <Fragment>
             <Card>
-                <CardActionArea onClick={handleAddAccount}>
+                <CardActionArea onClick={() => setIsShowAddAccountForm(true)}>
                     <CardMedia
                         style={{
                             display: "flex",
                             height: "150px",
                             alignItems: "center",
                             justifyContent: "center",
-                            background: !uiState.darkMode ? "rgb(245,246,247)" : null,
+                            background: uiState.darkMode ? null : "rgb(245,246,247)",
                         }}
                     >
                         <Avatar
@@ -48,31 +45,36 @@ const AddAccountCard = () => {
                         </Avatar>
                     </CardMedia>
                     <CardContent>
-                        <Typography style={{ fontWeight: "600" }}>Add account</Typography>
+                        <Typography style={{ fontWeight: "600", textAlign: "center" }}>
+                            Add account
+                        </Typography>
                     </CardContent>
                 </CardActionArea>
             </Card>
-            {isOpenAddForm && (
+            {isShowAddAccountForm && (
                 <Dialog
                     fullWidth
                     scroll="body"
                     maxWidth="sm"
-                    open={isOpenAddForm}
                     disableEscapeKeyDown
                     style={{ width: "100%" }}
-                    onClose={handleAddAccount}
+                    open={isShowAddAccountForm}
+                    onClose={() => setIsShowAddAccountForm(false)}
                 >
                     <Card style={{ width: "100%" }}>
                         <CardHeader
+                            action={
+                                <IconButton
+                                    color="primary"
+                                    onClick={() => setIsShowAddAccountForm(false)}
+                                >
+                                    <Close />
+                                </IconButton>
+                            }
                             subheader={
                                 <Typography style={{ fontWeight: "700", fontSize: "20px" }}>
                                     Add account
                                 </Typography>
-                            }
-                            action={
-                                <IconButton color="primary" onClick={handleAddAccount}>
-                                    <Close />
-                                </IconButton>
                             }
                         />
                         <CardContent>

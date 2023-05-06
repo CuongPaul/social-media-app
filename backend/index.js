@@ -50,6 +50,12 @@ app.use("/friend-request", FriendRequestRoutes);
 
 app.use((err, _req, res, _next) => {
     if (err instanceof ValidationError) {
+        const { params, query, body } = err.details;
+        if (params || query || body) {
+            return res.status(err.statusCode).json({
+                message: params ? params[0].message : query ? query[0].message : body[0].message,
+            });
+        }
         return res.status(err.statusCode).json(err);
     }
     return res.status(500).json(err);

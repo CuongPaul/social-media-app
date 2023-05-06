@@ -1,24 +1,16 @@
-import React, {
-    lazy,
-    useMemo,
-    Fragment,
-    Suspense,
-    useEffect,
-    useReducer,
-    createContext,
-} from "react";
 import io from "socket.io-client";
 import jwtDecode from "jwt-decode";
-import { Alert } from "@material-ui/lab";
+import { useTheme, useMediaQuery } from "@material-ui/core";
 import { createTheme, ThemeProvider } from "@material-ui/core/styles";
-import { Snackbar, useTheme, useMediaQuery } from "@material-ui/core";
 import { Route, Switch, Redirect, BrowserRouter as Router } from "react-router-dom";
+import React, { lazy, useMemo, Suspense, useEffect, useReducer, createContext } from "react";
 
+import CallAPI from "./api";
 import Loader from "./components/Loader";
 import Navbar from "./components/Navbar/Navbar";
 import ProtectedRoute from "./utils/protected-route";
 import BottomNav from "./components/Navbar/BottomNav";
-import { getCurrentUser } from "./services/UserServices";
+import Notification from "./components/UI/Notification";
 import { initialUIState, UIReducer } from "./context/UIContext";
 import { UserReducer, initialUserState } from "./context/UserContext";
 import { PostReducer, initialPostState } from "./context/PostContext";
@@ -38,15 +30,15 @@ const Settings = lazy(() => import("./screens/Settings"));
 const Messenger = lazy(() => import("./screens/Messenger"));
 
 const App = () => {
-    const token = localStorage.token && JSON.parse(localStorage.token);
+    const token = localStorage.getItem("token");
 
     const [uiState, uiDispatch] = useReducer(UIReducer, initialUIState);
     const [userState, userDispatch] = useReducer(UserReducer, initialUserState);
     const [postState, postDispatch] = useReducer(PostReducer, initialPostState);
     const [chatState, chatDispatch] = useReducer(ChatReducer, initialChatState);
 
-    const theme = useTheme();
-    const Theme = useMemo(
+    const { breakpoints } = useTheme();
+    const theme = useMemo(
         () =>
             createTheme({
                 active: { success: "rgb(63,162,76)" },
@@ -58,7 +50,7 @@ const App = () => {
             }),
         [uiState.darkMode]
     );
-    const mdScreen = useMediaQuery(theme.breakpoints.up("md"));
+    const mdScreen = useMediaQuery(breakpoints.up("md"));
 
     useEffect(() => {
         uiDispatch({ type: "SET_USER_SCREEN", payload: mdScreen });
@@ -133,14 +125,14 @@ const App = () => {
             if (token) {
                 const decodeToken = jwtDecode(token);
 
-                if (decodeToken.exp * 1000 > Date.now()) {
+                if (decodeToken.exp * 1000 < Date.now()) {
                     userDispatch({ type: "LOGOUT_USER" });
                 } else {
                     try {
-                        const { data } = await getCurrentUser();
+                        const { data } = await CallAPI({ url: "/user", method: "GET" });
 
                         if (data) {
-                            userDispatch({ type: "SET_CURRENT_USER", payload: data.user });
+                            userDispatch({ type: "SET_CURRENT_USER", payload: data });
 
                             uiDispatch({ type: "SET_NOTIFICATIONS", payload: data.notifications });
                         }
@@ -169,91 +161,61 @@ const App = () => {
             <UserContext.Provider value={{ userState, userDispatch }}>
                 <PostContext.Provider value={{ postState, postDispatch }}>
                     <ChatContext.Provider value={{ chatState, chatDispatch }}>
-                        <ThemeProvider theme={Theme}>
-                            <Fragment>
-                                <Router>
-                                    {userState.isLoggedIn && <Navbar />}
-                                    <div
-                                        style={{
-                                            backgroundColor: uiState.darkMode
-                                                ? "rgb(24,25,26)"
-                                                : "rgb(240,242,245)",
-                                        }}
-                                    >
-                                        <Suspense fallback={<Loader />}>
-                                            <Switch>
-                                                <Route
-                                                    exact
-                                                    path="/"
-                                                    render={(props) =>
-                                                        userState.isLoggedIn ? (
-                                                            <Redirect to="/home" />
-                                                        ) : (
-                                                            <Auth />
-                                                        )
-                                                    }
-                                                />
-                                                <ProtectedRoute
-                                                    exact
-                                                    path="/friends"
-                                                    component={Friends}
-                                                />
-                                                <ProtectedRoute
-                                                    exact
-                                                    path="/messenger"
-                                                    component={Messenger}
-                                                />
-                                                <ProtectedRoute
-                                                    exact
-                                                    component={Profile}
-                                                    path="/profile/:userId"
-                                                />
-                                                <ProtectedRoute
-                                                    exact
-                                                    path="/home"
-                                                    component={Home}
-                                                />
-                                                <ProtectedRoute
-                                                    exact
-                                                    component={Post}
-                                                    path="/post/:postId"
-                                                />
-                                                <ProtectedRoute
-                                                    exact
-                                                    path="/settings"
-                                                    component={Settings}
-                                                />
-                                            </Switch>
-                                        </Suspense>
-                                    </div>
-                                    {uiState.message && (
-                                        <Snackbar
-                                            autoHideDuration={6000}
-                                            open={uiState.message.display}
-                                            style={{ color: "#fff", marginTop: 60 }}
-                                            onClose={() =>
-                                                uiDispatch({ type: "SET_MESSAGE", payload: null })
-                                            }
-                                            anchorOrigin={{ vertical: "top", horizontal: "center" }}
-                                        >
-                                            <Alert
-                                                onClose={() =>
-                                                    uiDispatch({
-                                                        payload: null,
-                                                        type: "SET_MESSAGE",
-                                                    })
+                        <ThemeProvider theme={theme}>
+                            <Router>
+                                {userState.isLoggedIn && <Navbar />}
+                                <div
+                                    style={{
+                                        backgroundColor: uiState.darkMode
+                                            ? "rgb(24,25,26)"
+                                            : "rgb(240,242,245)",
+                                    }}
+                                >
+                                    <Suspense fallback={<Loader />}>
+                                        <Switch>
+                                            <Route
+                                                exact
+                                                path="/"
+                                                render={(props) =>
+                                                    userState.isLoggedIn ? (
+                                                        <Redirect to="/home" />
+                                                    ) : (
+                                                        <Auth />
+                                                    )
                                                 }
-                                                severity={uiState.message.color}
-                                            >
-                                                {uiState.message.text}
-                                            </Alert>
-                                        </Snackbar>
-                                    )}
-                                    {!uiState.mdScreen && userState.isLoggedIn ? (
-                                        <BottomNav />
-                                    ) : null}
-                                </Router>
-                            </Fragment>
+                                            />
+                                            <ProtectedRoute
+                                                exact
+                                                path="/friends"
+                                                component={Friends}
+                                            />
+                                            <ProtectedRoute
+                                                exact
+                                                path="/messenger"
+                                                component={Messenger}
+                                            />
+                                            <ProtectedRoute
+                                                exact
+                                                component={Profile}
+                                                path="/profile/:userId"
+                                            />
+                                            <ProtectedRoute exact path="/home" component={Home} />
+                                            <ProtectedRoute
+                                                exact
+                                                component={Post}
+                                                path="/post/:postId"
+                                            />
+                                            <ProtectedRoute
+                                                exact
+                                                path="/settings"
+                                                component={Settings}
+                                            />
+                                        </Switch>
+                                    </Suspense>
+                                </div>
+                                {uiState.message && <Notification />}
+                                {!uiState.mdScreen && userState.isLoggedIn ? <BottomNav /> : null}
+                            </Router>
                         </ThemeProvider>
                     </ChatContext.Provider>
                 </PostContext.Provider>

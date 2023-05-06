@@ -57,11 +57,7 @@ const Home = () => {
                     <Sidebar
                         anchor="left"
                         boxShadow={false}
-                        background={
-                            uiState.darkMode
-                                ? "rgb(24,25,26)"
-                                : "rgb(240,242,245)"
-                        }
+                        background={uiState.darkMode ? "rgb(24,25,26)" : "rgb(240,242,245)"}
                     >
                         <List>
                             <ListItem
@@ -81,19 +77,14 @@ const Home = () => {
                                                 alt="avatar"
                                                 width="100%"
                                                 height="100%"
-                                                src={
-                                                    userState.currentUser
-                                                        .profile_pic
-                                                }
+                                                src={userState.currentUser.profile_pic}
                                             />
                                         </Avatar>
                                     ) : (
                                         <AvartarText
                                             text={userState.currentUser.name}
                                             bg={
-                                                userState.currentUser.active
-                                                    ? "seagreen"
-                                                    : "tomato"
+                                                userState.currentUser.active ? "seagreen" : "tomato"
                                             }
                                         />
                                     )}
@@ -104,12 +95,7 @@ const Home = () => {
                                 />
                             </ListItem>
                             {homeLeftItems.map((list, index) => (
-                                <ListItem
-                                    button
-                                    key={index}
-                                    component={Link}
-                                    to={list.to}
-                                >
+                                <ListItem button key={index} component={Link} to={list.to}>
                                     <ListItemIcon>
                                         <Avatar
                                             alt={list.title}
@@ -123,11 +109,7 @@ const Home = () => {
                     </Sidebar>
                     <Sidebar
                         anchor="right"
-                        background={
-                            !uiState.darkMode
-                                ? "rgb(240,242,245)"
-                                : "rgb(24,25,26)"
-                        }
+                        background={!uiState.darkMode ? "rgb(240,242,245)" : "rgb(24,25,26)"}
                         boxShadow={false}
                         drawerWidth={380}
                     >
@@ -142,11 +124,7 @@ const Home = () => {
 
             <div
                 style={{
-                    maxWidth: uiState.mdScreen
-                        ? match
-                            ? "45vw"
-                            : "38vw"
-                        : "100vw",
+                    maxWidth: uiState.mdScreen ? (match ? "45vw" : "38vw") : "100vw",
                     margin: "auto",
                     paddingTop: "100px",
                     paddingBottom: "100px",
@@ -155,11 +133,7 @@ const Home = () => {
             >
                 <WritePostCard user={userState.currentUser} />
 
-                <Posts
-                    posts={postState.posts.filter(
-                        (item) => item.privacy === "Public"
-                    )}
-                />
+                <Posts posts={postState.posts.filter((item) => item.privacy === "Public")} />
             </div>
         </div>
     );
