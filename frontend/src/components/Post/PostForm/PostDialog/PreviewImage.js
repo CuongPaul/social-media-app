@@ -1,19 +1,18 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { Close } from "@material-ui/icons";
 import { Avatar, CardMedia, IconButton } from "@material-ui/core";
 
 const PreviewImage = ({ previewImage, removeFileImage }) => {
+    const typeFile =
+        previewImage.substring(0, previewImage.indexOf("/")) === "data:image" ? "img" : "video";
+
     return (
-        <>
+        <Fragment>
             <CardMedia
+                controls
+                component={typeFile}
                 image={previewImage}
                 style={{ width: "100", height: "240px" }}
-                component={
-                    previewImage.substring(0, previewImage.indexOf("/")) === "data:image"
-                        ? "img"
-                        : "video"
-                }
-                controls
             />
             <div
                 style={{
@@ -31,7 +30,7 @@ const PreviewImage = ({ previewImage, removeFileImage }) => {
                     </Avatar>
                 </IconButton>
             </div>
-        </>
+        </Fragment>
     );
 };
 

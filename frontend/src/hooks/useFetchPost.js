@@ -62,7 +62,7 @@ const useFetchPost = () => {
                 setLoading(false);
 
                 uiDispatch({
-                    type: "SET_MESSAGE",
+                    type: "SET_NOTIFICATION",
                     payload: {
                         text: err.message,
                         display: true,

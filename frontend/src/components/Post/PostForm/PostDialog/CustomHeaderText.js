@@ -1,25 +1,25 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Typography } from "@material-ui/core";
 
-const CustomHeaderText = ({ userState, body }) => {
-    const filterUserById = (user_id) => {
-        return userState.users.find((usr) => usr.id === user_id);
-    };
+import { UserContext } from "../../../../App";
+
+const CustomHeaderText = ({ body }) => {
+    const { userState } = useContext(UserContext);
 
     return (
         <Typography>
-            <b>{userState.currentUser.name}</b>
+            <b>{userState?.currentUser?.name}</b>
             {body.feelings ? (
                 <>
                     &nbsp; is feeling <b>{body.feelings}</b>
                 </>
             ) : null}
-            {body.with.length ? (
+            {body.tag_friends.length ? (
                 <>
                     {` with `}
                     <b>
-                        {body.with.map((u) => (
-                            <> &nbsp;{filterUserById(u).name},</>
+                        {body.tag_friends.map((u) => (
+                            <> &nbsp;{u.name},</>
                         ))}
                     </b>
                 </>
@@ -27,11 +27,6 @@ const CustomHeaderText = ({ userState, body }) => {
             {body.location ? (
                 <>
                     {` at `} <b>{body.location} </b>
-                </>
-            ) : null}
-            {body.date ? (
-                <>
-                    <b>{new Date(body.date).toLocaleDateString()}</b>
                 </>
             ) : null}
         </Typography>

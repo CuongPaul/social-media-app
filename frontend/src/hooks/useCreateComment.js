@@ -36,7 +36,7 @@ const useCreateComment = ({
                 setCommentText("");
                 postDispatch({ type: "ADD_POST_COMMENT", payload: response.data.comment });
                 uiDispatch({
-                    type: "SET_MESSAGE",
+                    type: "SET_NOTIFICATION",
                     payload: {
                         color: "success",
                         display: true,
@@ -53,7 +53,7 @@ const useCreateComment = ({
                     setError(err.response.data.error);
                 }
 
-                uiDispatch({ type: "SET_MESSAGE", payload: err.response.data.error });
+                uiDispatch({ type: "SET_NOTIFICATION", payload: err.response.data.error });
             }
         }
     };

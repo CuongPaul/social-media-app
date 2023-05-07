@@ -1,7 +1,6 @@
 import { NavLink } from "react-router-dom";
-import { faBell } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { Fragment, useContext, useState, useEffect } from "react";
+import React, { Fragment, useContext } from "react";
 import { faFacebookMessenger } from "@fortawesome/free-brands-svg-icons";
 import { Chip, Avatar, IconButton, Badge, useMediaQuery, useTheme } from "@material-ui/core";
 
@@ -10,74 +9,65 @@ import ProfileMenu from "./ProfileMenu";
 import AvartarText from "../UI/AvartarText";
 import CreatePostMenu from "./CreatePostMenu";
 import NotificationMenu from "../NotificationMenu";
-import { UIContext, UserContext, ChatContext } from "../../App";
+import { UIContext, UserContext } from "../../App";
 
-const RightMenu = () => {
+const MessengerMenu = () => {
     const { uiState } = useContext(UIContext);
-    const { chatState } = useContext(ChatContext);
+
+    const { breakpoints } = useTheme();
+    const xsScreen = useMediaQuery(breakpoints.only("xs"));
+
+    return (
+        <IconButton
+            to="/messenger"
+            component={NavLink}
+            activeStyle={{ color: "rgb(1,133,243)" }}
+            style={{
+                marginLeft: xsScreen ? "4px" : "8px",
+                color: uiState.darkMode ? null : "black",
+                backgroundColor: uiState.darkMode ? null : "#F0F2F5",
+            }}
+        >
+            <Badge max={9} color="error" badgeContent={8} overlap="rectangular">
+                <FontAwesomeIcon size={xsScreen ? "xs" : "sm"} icon={faFacebookMessenger} />
+            </Badge>
+        </IconButton>
+    );
+};
+
+const AccountMenu = () => {
     const { userState } = useContext(UserContext);
 
-    const theme = useTheme();
     const classes = useStyles();
-    const xsScreen = useMediaQuery(theme.breakpoints.only("xs"));
-    const abc = new Set(chatState.messages.reduce((acc, cur) => [...acc, cur.sender.id], []));
-    const abcLength = [...abc].length;
-    const [amountMess, setUserMess] = useState(abcLength);
 
-    const defaultPropsNotif = {
-        color: "error",
-        overlap: "rectangular",
-        children: <FontAwesomeIcon icon={faBell} size={xsScreen ? "xs" : "sm"} />,
-    };
-    const defaultPropsMess = {
-        color: "error",
-        overlap: "rectangular",
-        children: <FontAwesomeIcon icon={faFacebookMessenger} size={xsScreen ? "xs" : "sm"} />,
-    };
+    return userState.currentUser ? (
+        <Chip
+            component={NavLink}
+            to={`/profile/${userState.currentUser._id}`}
+            activeStyle={{ backgroundColor: "teal", color: "#fff" }}
+            label={<h3>{userState.currentUser.name.split(" ")[0].slice(0, 5) + ".."}</h3>}
+            className={classes.profile_chip}
+            avatar={
+                userState.currentUser.profile_pic ? (
+                    <Avatar alt="Natacha" src={userState.currentUser.profile_pic} />
+                ) : (
+                    <AvartarText
+                        text={userState.currentUser.name}
+                        background={userState.currentUser.active ? "seagreen" : "tomato"}
+                    />
+                )
+            }
+        />
+    ) : null;
+};
 
-    useEffect(() => {
-        if (userState.currentUser._id === chatState.messages[0]?.receiver?.id) {
-            setUserMess(abcLength);
-        }
-    }, [abcLength, chatState.messages, userState.currentUser._id]);
-    console.log("uiState: ", uiState);
+const RightMenu = () => {
     return (
         <Fragment>
-            <Chip
-                component={NavLink}
-                activeStyle={{ backgroundColor: "teal", color: "#fff" }}
-                to={`/profile/${userState.currentUser._id}`}
-                label={<h3>{userState.currentUser.name.split(" ")[0].slice(0, 5) + ".."}</h3>}
-                className={classes.profile_chip}
-                avatar={
-                    userState.currentUser.profile_pic ? (
-                        <Avatar alt="Natacha" src={userState.currentUser.profile_pic} />
-                    ) : (
-                        <AvartarText
-                            text={userState.currentUser.name}
-                            bg={userState.currentUser.active ? "seagreen" : "tomato"}
-                        />
-                    )
-                }
-            />
-
+            <AccountMenu />
             <CreatePostMenu />
-            <IconButton
-                component={NavLink}
-                activeStyle={{ color: "rgb(1,133,243)" }}
-                to="/messenger"
-                style={{
-                    marginLeft: xsScreen ? "4px" : "8px",
-                    color: !uiState.darkMode ? "black" : null,
-                    backgroundColor: !uiState.darkMode ? "#F0F2F5" : null,
-                }}
-            >
-                <Badge max={9} badgeContent={amountMess} {...defaultPropsMess} />
-            </IconButton>
-            <NotificationMenu>
-                <Badge max={5} badgeContent={uiState.notifications.length} {...defaultPropsNotif} />
-            </NotificationMenu>
-
+            <MessengerMenu />
+            <NotificationMenu />
             <ProfileMenu />
         </Fragment>
     );

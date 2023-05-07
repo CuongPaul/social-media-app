@@ -23,7 +23,7 @@ const UserProfile = ({ user, conScreen }) => {
                 }}
             >
                 <ProfileHeader user={user} />
-                <Grid container justify="center" alignItems="center">
+                <Grid container justifyContent="center" alignItems="center">
                     <Grid item xs={12} sm={12} md={6}>
                         <Divider />
                         <AppBar
@@ -50,7 +50,7 @@ const UserProfile = ({ user, conScreen }) => {
                     </Grid>
                 </Grid>
             </Paper>
-            <Grid container justify="center">
+            <Grid container justifyContent="center">
                 <Grid item xs={12} sm={12} md={conScreen ? 12 : 6}>
                     <TabPanel value={value} index={0}>
                         <ProfileTimeline user={user} />

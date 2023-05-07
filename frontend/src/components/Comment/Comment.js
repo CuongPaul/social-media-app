@@ -38,7 +38,7 @@ const Comment = ({ comment }) => {
             if (res.data) {
                 postDispatch({ type: "LIKE_UNLIKE_COMMENT", payload: res.data.comment });
                 uiDispatch({
-                    type: "SET_MESSAGE",
+                    type: "SET_NOTIFICATION",
                     payload: { color: "success", text: res.data.message, display: true },
                 });
             }
@@ -68,7 +68,7 @@ const Comment = ({ comment }) => {
                 ) : (
                     <AvartarText
                         text={comment.user.name}
-                        bg={comment.user.active ? "seagreen" : "tomato"}
+                        background={comment.user.active ? "seagreen" : "tomato"}
                     />
                 )}
             </ListItemAvatar>

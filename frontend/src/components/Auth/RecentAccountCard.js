@@ -27,8 +27,8 @@ const RecentAccountCard = ({ account }) => {
         <Fragment>
             <Card style={{ position: "relative" }}>
                 <CardActionArea onClick={() => setIsShowSigninForm(true)}>
-                    {account.avatar_image ? (
-                        <CardMedia style={{ height: "150px" }} image={account.avatar_image} />
+                    {account?.avatar_image ? (
+                        <CardMedia style={{ height: "150px" }} image={account?.avatar_image} />
                     ) : (
                         <CardMedia
                             style={{
@@ -40,10 +40,10 @@ const RecentAccountCard = ({ account }) => {
                             }}
                         >
                             <AvartarText
-                                bg="teal"
+                                background="teal"
                                 size="60px"
                                 fontSize="25px"
-                                text={account.name}
+                                text={account?.name}
                             />
                         </CardMedia>
                     )}
@@ -54,7 +54,7 @@ const RecentAccountCard = ({ account }) => {
                             </Badge>
                         }
                         subheader={
-                            <Typography style={{ fontWeight: "800" }}>{account.name}</Typography>
+                            <Typography style={{ fontWeight: "800" }}>{account?.name}</Typography>
                         }
                     />
                 </CardActionArea>
@@ -67,7 +67,7 @@ const RecentAccountCard = ({ account }) => {
                         background: "tomato",
                         position: "absolute",
                     }}
-                    onClick={() => handleRemoveAccount(account.id)}
+                    onClick={() => handleRemoveAccount(account?._id)}
                 >
                     <Close />
                 </IconButton>

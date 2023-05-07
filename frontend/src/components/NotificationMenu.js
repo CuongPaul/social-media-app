@@ -1,115 +1,173 @@
 import {
     Menu,
     List,
+    Badge,
     Avatar,
     useTheme,
     ListItem,
-    Typography,
     IconButton,
+    Typography,
     ListItemIcon,
     ListItemText,
     ListSubheader,
     useMediaQuery,
 } from "@material-ui/core";
 import moment from "moment";
-import React, { useContext, useState } from "react";
-import { DeleteOutlined, Notifications as NotificationIcon } from "@material-ui/icons";
+import { faBell } from "@fortawesome/free-regular-svg-icons";
+import React, { Fragment, useState, useContext } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Label, Forum, PersonAdd, PlaylistAddCheck } from "@material-ui/icons";
 
+import callApi from "../api";
 import { UIContext } from "../App";
-import useUpdateProfile from "../hooks/useUpdateProfile";
 
-const NotificationMenu = ({ children }) => {
-    const { uiState } = useContext(UIContext);
+const Subheader = () => {
+    const { uiState, uiDispatch } = useContext(UIContext);
 
-    const theme = useTheme();
-    const [menu, setMenu] = useState(null);
-    const xsScreen = useMediaQuery(theme.breakpoints.only("xs"));
+    const notificationsRead = uiState?.notifications?.filter((item) => item.is_read);
 
-    const { clearNotification } = useUpdateProfile();
+    const handleReadAllNotifications = async () => {
+        try {
+            await callApi({
+                method: "PUT",
+                url: "/notification/read-all",
+            });
+
+            uiDispatch({
+                type: "READ_ALL_NOTIFICATIONS",
+            });
+        } catch (err) {
+            uiDispatch({
+                type: "SET_NOTIFICATION",
+                payload: { display: true, color: "error", text: err.message },
+            });
+        }
+    };
 
     return (
-        <div>
-            <IconButton
-                style={{
-                    marginLeft: xsScreen ? "4px" : "8px",
-                    color: !uiState.darkMode ? "black" : null,
-                    backgroundColor: !uiState.darkMode ? "#F0F2F5" : null,
-                }}
-                onClick={(e) => setMenu(e.currentTarget)}
-            >
-                {children}
-            </IconButton>
+        <ListSubheader
+            style={{
+                display: "flex",
+                minHeight: "48px",
+                alignItems: "center",
+                backgroundColor: "#ffffff",
+                justifyContent: "space-between",
+            }}
+        >
+            <Typography style={{ fontSize: "20px", fontWeight: "800" }}>Notifications</Typography>
+            {notificationsRead.length === uiState.notifications.length ? null : (
+                <IconButton onClick={handleReadAllNotifications}>
+                    <PlaylistAddCheck />
+                </IconButton>
+            )}
+        </ListSubheader>
+    );
+};
 
-            <Menu
-                keepMounted
-                elevation={7}
-                id="post-menu"
-                anchorEl={menu}
-                open={Boolean(menu)}
-                onClose={() => setMenu(null)}
-                style={{ marginTop: "50px" }}
-            >
-                <List
-                    subheader={
-                        <ListSubheader
+const ListNotification = () => {
+    const { uiState, uiDispatch } = useContext(UIContext);
+
+    const handleReadNotifications = async (notification_id) => {
+        try {
+            await callApi({
+                method: "PUT",
+                url: `/notification/read/${notification_id}`,
+            });
+
+            uiDispatch({
+                type: "READ_NOTIFICATIONS",
+                payload: notification_id,
+            });
+        } catch (err) {
+            uiDispatch({
+                type: "SET_NOTIFICATION",
+                payload: { display: true, color: "error", text: err.message },
+            });
+        }
+    };
+
+    return (
+        <List subheader={<Subheader />}>
+            {uiState.notifications.map((notification) => (
+                <ListItem
+                    button
+                    key={notification._id}
+                    onClick={() => handleReadNotifications(notification._id)}
+                    style={{ backgroundColor: notification.is_read && "rgba(0,0,0,0.08)" }}
+                >
+                    <ListItemIcon>
+                        <Avatar style={{ color: "#fff", background: "seagreen" }}>
+                            {notification.type.includes("CHATROOM") ? (
+                                <Forum />
+                            ) : notification.type.includes("POST") ? (
+                                <Label />
+                            ) : (
+                                <PersonAdd />
+                            )}
+                        </Avatar>
+                    </ListItemIcon>
+                    <ListItemText>
+                        <Typography variant="body1" style={{ fontSize: "15px" }}>
+                            {notification.content}
+                        </Typography>
+                        <Typography
+                            variant="body1"
                             style={{
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "space-between",
+                                fontSize: "13px",
+                                color: uiState.darkMode ? null : "#65676B",
                             }}
                         >
-                            <Typography style={{ fontSize: "22px", fontWeight: "800" }}>
-                                Notifications
-                            </Typography>
-                            {uiState.notifications.length ? (
-                                <IconButton onClick={() => clearNotification()}>
-                                    <DeleteOutlined />
-                                </IconButton>
-                            ) : null}
-                        </ListSubheader>
-                    }
+                            {moment(notification.createdAt).fromNow()}
+                        </Typography>
+                    </ListItemText>
+                </ListItem>
+            ))}
+        </List>
+    );
+};
+
+const NotificationMenu = () => {
+    const { uiState } = useContext(UIContext);
+
+    const [isOpenMenu, setIsOpenMenu] = useState(false);
+    const [notificationMenu, setNotificationMenu] = useState(null);
+
+    const { breakpoints } = useTheme();
+    const xsScreen = useMediaQuery(breakpoints.only("xs"));
+
+    const handleOpenMenu = (e) => {
+        setIsOpenMenu(!isOpenMenu);
+        setNotificationMenu(e.currentTarget);
+    };
+
+    return (
+        <Fragment>
+            <IconButton
+                onClick={handleOpenMenu}
+                style={{
+                    marginLeft: xsScreen ? "4px" : "8px",
+                    color: uiState.darkMode ? null : "black",
+                    backgroundColor: uiState.darkMode ? null : "#F0F2F5",
+                }}
+            >
+                <Badge
+                    max={9}
+                    color="error"
+                    overlap="rectangular"
+                    badgeContent={uiState.notifications.filter((item) => !item.is_read).length}
                 >
-                    {uiState.notifications ? (
-                        uiState.notifications.map((notification) => (
-                            <ListItem button key={notification.id}>
-                                <ListItemIcon>
-                                    <Avatar
-                                        style={{
-                                            background: "seagreen",
-                                            color: "#fff",
-                                        }}
-                                    >
-                                        <NotificationIcon />
-                                    </Avatar>
-                                </ListItemIcon>
-                                <ListItemText>
-                                    <Typography variant="body1" style={{ fontSize: "15px" }}>
-                                        {notification.body}
-                                    </Typography>
-                                    <Typography
-                                        variant="body1"
-                                        style={{
-                                            fontSize: "13px",
-                                            color: !uiState.darkMode ? "#65676B" : null,
-                                        }}
-                                    >
-                                        {moment(notification.createdAt).fromNow()}
-                                    </Typography>
-                                </ListItemText>
-                            </ListItem>
-                        ))
-                    ) : (
-                        <ListItem>
-                            <ListItemText>
-                                <Typography style={{ fontSize: "16px" }}>
-                                    No Notifications
-                                </Typography>
-                            </ListItemText>
-                        </ListItem>
-                    )}
-                </List>
+                    <FontAwesomeIcon icon={faBell} size={xsScreen ? "xs" : "sm"} />
+                </Badge>
+            </IconButton>
+            <Menu
+                open={isOpenMenu}
+                anchorEl={notificationMenu}
+                style={{ marginTop: "50px" }}
+                onClose={() => setIsOpenMenu(false)}
+            >
+                <ListNotification />
             </Menu>
-        </div>
+        </Fragment>
     );
 };
 

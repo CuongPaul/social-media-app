@@ -1,22 +1,22 @@
 import {
+    Grid,
     Button,
+    Dialog,
+    Avatar,
+    Select,
     TextField,
+    IconButton,
+    InputLabel,
     Typography,
     FormControl,
-    InputLabel,
-    Select,
-    CircularProgress,
     DialogActions,
-    Grid,
     DialogContent,
-    Dialog,
-    IconButton,
-    Avatar,
+    CircularProgress,
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import { Close } from "@material-ui/icons";
 import EmojiPicker from "emoji-picker-react";
-import React, { lazy, useContext, useRef, useState, useEffect } from "react";
+import React, { lazy, Fragment, useState, useEffect, useContext } from "react";
 
 import FileField from "./FileField";
 import TagUserCard from "./TagUserCard";
@@ -38,20 +38,17 @@ const PostFormDialog = () => {
     const [blob, setBlob] = useState(null);
     const [postImage, setPostImage] = useState(null);
     const [showEmoji, setShowEmoji] = useState(false);
-    const [previewImage, setPreviewImage] = useState("");
+    const [previewImage, setPreviewImage] = useState([]);
     const [isImageCaptured, setIsImageCaptured] = useState(false);
     const [postData, setPostData] = useState({ privacy: "public", content: "" });
 
     const [body, setBody] = useState({
-        with: [],
-        date: "",
+        tag_friends: [],
         feelings: "",
         location: "",
     });
 
     const { userState } = useContext(UserContext);
-
-    const fileRef = useRef();
 
     const handleContentChange = (e) => {
         setPostData({
@@ -60,15 +57,19 @@ const PostFormDialog = () => {
         });
     };
     const handleImageChange = (e) => {
-        setPostImage(e.target.files[0]);
+        const { files } = e.target;
 
-        const reader = new FileReader();
-        reader.readAsDataURL(e.target.files[0]);
-        reader.onload = () => {
-            setBlob(null);
-            setIsImageCaptured(false);
-            setPreviewImage(reader.result);
-        };
+        setPostImage(files);
+
+        for (const file of files) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                setBlob(null);
+                setIsImageCaptured(false);
+                setPreviewImage((pre) => [...pre, reader.result]);
+            };
+        }
     };
 
     const onEmojiClick = (e, emojiObject) => {
@@ -95,14 +96,16 @@ const PostFormDialog = () => {
 
     const showCapturedImage = () => {
         if (blob) {
-            let blobURL = URL.createObjectURL(blob);
-
             return (
-                <>
+                <div>
                     <Alert>
                         <b>Image Size ({Math.round(blob.size / 1024)} Kb)</b>
                     </Alert>
-                    <img src={blobURL} style={{ width: "100%", height: "100%" }} alt="" />
+                    <img
+                        src={URL.createObjectURL(blob)}
+                        style={{ width: "100%", height: "100%" }}
+                        alt=""
+                    />
                     <div
                         style={{
                             display: "flex",
@@ -119,7 +122,7 @@ const PostFormDialog = () => {
                             </Avatar>
                         </IconButton>
                     </div>
-                </>
+                </div>
             );
         }
     };
@@ -149,7 +152,7 @@ const PostFormDialog = () => {
     };
 
     return (
-        <div>
+        <Fragment>
             <Typography
                 style={{
                     color: !uiState.darkMode ? "grey" : null,
@@ -163,24 +166,19 @@ const PostFormDialog = () => {
             >
                 What`s in your mind, {userState.currentUser.name} ?
             </Typography>
-
             {loading ? (
                 <DialogLoading loading={loading} text="Uploading Post..." />
             ) : (
                 <Dialog
-                    disableEscapeKeyDown
                     fullWidth
                     scroll="body"
                     maxWidth="sm"
+                    disableEscapeKeyDown
                     open={uiState.postModel}
-                    onClose={() => uiDispatch({ type: "SET_POST_MODEL", payload: false })}
                     style={{ width: "100%" }}
+                    onClose={() => uiDispatch({ type: "SET_POST_MODEL", payload: false })}
                 >
-                    <DialogHeader
-                        userState={userState}
-                        handleCloseDialog={handleCloseDialog}
-                        body={body}
-                    />
+                    <DialogHeader body={body} handleCloseDialog={handleCloseDialog} />
                     <DialogContent>
                         <FormControl style={{ marginBottom: "16px" }}>
                             <InputLabel>Privacy</InputLabel>
@@ -199,7 +197,7 @@ const PostFormDialog = () => {
                         <TextField
                             placeholder={`Whats in your mind ${userState.currentUser.name}`}
                             multiline
-                            rows={8}
+                            minRows={8}
                             value={postData.content}
                             onChange={handleContentChange}
                             style={{
@@ -211,7 +209,7 @@ const PostFormDialog = () => {
 
                         <Grid
                             container
-                            justify="center"
+                            justifyContent="center"
                             style={{ marginTop: "16px", marginBottom: "16px" }}
                         >
                             <Button
@@ -226,7 +224,7 @@ const PostFormDialog = () => {
                         <Grid
                             container
                             alignItems="center"
-                            justify="center"
+                            justifyContent="center"
                             style={{ marginTop: "16px", marginBottom: "16px" }}
                         >
                             <Grid item xs={12} sm={6} md={6}>
@@ -239,10 +237,9 @@ const PostFormDialog = () => {
                             </Grid>
                         </Grid>
 
-                        <Grid container alignItems="center" justify="center">
+                        <Grid container alignItems="center" justifyContent="center">
                             <Grid item xs={12} sm={6} md={6}>
-                                <FileField fileRef={fileRef} />
-
+                                <FileField handleImageChange={handleImageChange} />
                                 <CameraField
                                     setBlob={setBlob}
                                     isImageCaptured={isImageCaptured}
@@ -250,24 +247,25 @@ const PostFormDialog = () => {
                                     setPreviewImage={setPreviewImage}
                                     setPostImage={setPostImage}
                                 />
-
                                 <LocationField body={body} setBody={setBody} />
                                 <FeelingsCard body={body} setBody={setBody} />
                                 <TagUserCard body={body} setBody={setBody} />
                             </Grid>
                         </Grid>
 
-                        {previewImage && (
-                            <>
-                                <Alert>
-                                    <b>Image Size ({Math.round(postImage.size / 1024)} Kb)</b>
-                                </Alert>
-                                <PreviewImage
-                                    previewImage={previewImage}
-                                    removeFileImage={removeFileImage}
-                                />
-                            </>
-                        )}
+                        {previewImage.length
+                            ? previewImage.map((item) => (
+                                  // <div>
+                                  // <Alert>
+                                  //     <b>Image Size ({Math.round(postImage.size / 1024)} Kb)</b>
+                                  // </Alert>
+                                  <PreviewImage
+                                      previewImage={item}
+                                      removeFileImage={removeFileImage}
+                                  />
+                                  // </div>
+                              ))
+                            : null}
 
                         {showCapturedImage()}
                     </DialogContent>
@@ -297,18 +295,10 @@ const PostFormDialog = () => {
                                 "Create Post"
                             )}
                         </Button>
-                        <input
-                            type="file"
-                            style={{ display: "none" }}
-                            ref={fileRef}
-                            onChange={handleImageChange}
-                            accept="image/*,video/*"
-                            capture="user"
-                        />
                     </DialogActions>
                 </Dialog>
             )}
-        </div>
+        </Fragment>
     );
 };
 

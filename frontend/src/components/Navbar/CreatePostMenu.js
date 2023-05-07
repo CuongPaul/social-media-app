@@ -1,93 +1,33 @@
-import {
-    Menu,
-    List,
-    Avatar,
-    ListItem,
-    useTheme,
-    IconButton,
-    Typography,
-    ListItemIcon,
-    ListItemText,
-    ListSubheader,
-    useMediaQuery,
-} from "@material-ui/core";
 import { useHistory } from "react-router-dom";
-import React, { useContext, useState } from "react";
+import { IconButton } from "@material-ui/core";
+import React, { Fragment, useContext } from "react";
 
 import { UIContext } from "../../App";
-import { Add as AddIcon, PostAdd as PostIcon } from "@material-ui/icons";
+import { PostAdd } from "@material-ui/icons";
 
 const CreatePostMenu = () => {
     const { uiState, uiDispatch } = useContext(UIContext);
 
-    const theme = useTheme();
     const history = useHistory();
-    const [postMenu, setPostMenu] = useState(null);
-    const xsScreen = useMediaQuery(theme.breakpoints.only("xs"));
 
     const handlePostOpen = () => {
-        history.push("/");
+        history.push("/home");
         uiDispatch({ type: "SET_POST_MODEL", payload: true });
-        setPostMenu(null);
     };
 
     return (
-        <div>
+        <Fragment>
             <IconButton
                 style={{
                     marginLeft: "8px",
-                    color: !uiState.darkMode ? "black" : null,
-                    backgroundColor: !uiState.darkMode ? "#F0F2F5" : null,
+                    color: uiState.darkMode ? null : "black",
+                    backgroundColor: uiState.darkMode ? null : "#F0F2F5",
                 }}
-                onClick={(e) => setPostMenu(e.currentTarget)}
+                onClick={handlePostOpen}
             >
-                <AddIcon style={{ width: xsScreen && "20px", height: xsScreen && "20px" }} />
+                <PostAdd />
             </IconButton>
-
-            <Menu
-                id="post-menu"
-                anchorEl={postMenu}
-                keepMounted
-                open={Boolean(postMenu)}
-                onClose={() => setPostMenu(null)}
-                style={{ marginTop: "50px" }}
-                elevation={7}
-            >
-                <List
-                    subheader={
-                        <ListSubheader>
-                            <Typography style={{ fontSize: "22px", fontWeight: "800" }}>
-                                Create
-                            </Typography>
-                        </ListSubheader>
-                    }
-                >
-                    <ListItem button onClick={handlePostOpen}>
-                        <ListItemIcon>
-                            <Avatar
-                                style={{
-                                    background: "teal",
-                                    color: "#fff",
-                                }}
-                            >
-                                <PostIcon />
-                            </Avatar>
-                        </ListItemIcon>
-                        <ListItemText>
-                            <Typography style={{ fontSize: "15px" }}> Post</Typography>
-                            <Typography
-                                style={{
-                                    fontSize: "13px",
-                                    color: !uiState.darkMode ? "#65676B" : null,
-                                }}
-                            >
-                                Share a Post on News Feed
-                            </Typography>
-                        </ListItemText>
-                    </ListItem>
-                </List>
-            </Menu>
-        </div>
+        </Fragment>
     );
 };
 

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
 import Popover from "@material-ui/core/Popover";
+import React, { Fragment, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 import PopoverProfileCard from "./PopoverProfileCard";
@@ -9,52 +9,38 @@ const useStyles = makeStyles((theme) => ({
     paper: { padding: theme.spacing(1) },
 }));
 
-const MouseOverPopover = ({ children, user }) => {
+const MouseOverPopover = ({ user, children }) => {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
-
-    const handlePopoverOpen = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
 
     const handlePopoverClose = () => {
         setAnchorEl(null);
     };
 
-    const open = Boolean(anchorEl);
-
     return (
-        <div>
+        <Fragment>
             <div
-                aria-owns={open ? "mouse-over-popover" : undefined}
                 aria-haspopup="true"
-                onMouseEnter={handlePopoverOpen}
                 onMouseLeave={handlePopoverClose}
+                onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
+                aria-owns={Boolean(anchorEl) ? "mouse-over-popover" : undefined}
             >
                 {children}
             </div>
             <Popover
-                id="mouse-over-popover"
-                className={classes.popover}
-                classes={{
-                    paper: classes.paper,
-                }}
-                open={open}
                 anchorEl={anchorEl}
-                anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "left",
-                }}
-                transformOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right",
-                }}
-                onClose={handlePopoverClose}
                 disableRestoreFocus
+                id="mouse-over-popover"
+                open={Boolean(anchorEl)}
+                className={classes.popover}
+                onClose={handlePopoverClose}
+                classes={{ paper: classes.paper }}
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                transformOrigin={{ vertical: "bottom", horizontal: "right" }}
             >
                 <PopoverProfileCard user={user} />
             </Popover>
-        </div>
+        </Fragment>
     );
 };
 

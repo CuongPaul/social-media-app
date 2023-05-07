@@ -17,7 +17,7 @@ const UIReducer = (state, action) => {
         case "SET_DRAWER":
             return { ...state, drawer: action.payload };
 
-        case "SET_MESSAGE":
+        case "SET_NOTIFICATION":
             return { ...state, message: action.payload };
 
         case "SET_NAV_MENU":
@@ -37,6 +37,20 @@ const UIReducer = (state, action) => {
 
         case "SET_DARK_MODE":
             return { ...state, darkMode: action.payload };
+
+        case "READ_ALL_NOTIFICATIONS":
+            const newNotifications = [...state.notifications];
+            newNotifications.forEach((item) => (item.is_read = true));
+            return { ...state, notifications: newNotifications };
+
+        case "READ_NOTIFICATIONS":
+            const notifications = [...state.notifications];
+            notifications.forEach((item) => {
+                if (item._id === action.payload) {
+                    item.is_read = true;
+                }
+            });
+            return { ...state, notifications };
 
         default:
             throw new Error(`Action type ${action.type} is undefined`);

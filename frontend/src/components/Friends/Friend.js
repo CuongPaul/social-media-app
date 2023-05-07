@@ -41,7 +41,7 @@ const Friend = ({ user, children }) => {
                         ) : (
                             <AvartarText
                                 text={user.name}
-                                bg={user.active ? "seagreen" : " tomato"}
+                                background={user.active ? "seagreen" : " tomato"}
                             />
                         )}
 

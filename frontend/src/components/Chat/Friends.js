@@ -45,7 +45,7 @@ const Friends = () => {
                                 ) : (
                                     <AvartarText
                                         text={friend.name}
-                                        bg={friend.active ? "seagreen" : "tomato"}
+                                        background={friend.active ? "seagreen" : "tomato"}
                                     />
                                 )}
                             </ListItemAvatar>

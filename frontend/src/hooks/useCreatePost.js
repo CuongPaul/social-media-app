@@ -1,9 +1,9 @@
-import { useContext, useState } from "react";
+import { useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
 
+import callApi from "../api";
 import { storage } from "../firebase/firebase";
 import { UIContext, PostContext } from "../App";
-import { createPost as createPostApi } from "../services/PostServices";
 
 const useCreatePost = ({ postData, body, isImageCaptured, postImage, blob }) => {
     const { uiDispatch } = useContext(UIContext);
@@ -13,18 +13,23 @@ const useCreatePost = ({ postData, body, isImageCaptured, postImage, blob }) => 
     const [error, setError] = useState();
     const [loading, setLoading] = useState(false);
 
-    const createPost = async (data) => {
+    const createPost = async (formValue) => {
         setLoading(true);
 
         try {
-            const { status, message } = await createPostApi(data);
-
+            console.log(formValue);
+            const { message } = await callApi({
+                url: "/post",
+                method: "POST",
+                data: formValue,
+            });
+            console.log(message);
             setLoading(false);
 
             if (message) {
-                postDispatch({ type: "ADD_POST", payload: data });
+                postDispatch({ type: "ADD_POST", payload: formValue });
                 uiDispatch({
-                    type: "SET_MESSAGE",
+                    type: "SET_NOTIFICATION",
                     payload: {
                         display: true,
                         text: message,
@@ -33,21 +38,12 @@ const useCreatePost = ({ postData, body, isImageCaptured, postImage, blob }) => 
                 });
                 uiDispatch({ type: "SET_POST_MODEL", payload: false });
                 history.push("/");
-            } else {
-                if (status === 422) {
-                    setError({ ...error });
-                } else {
-                    uiDispatch({
-                        type: "SET_MESSAGE",
-                        payload: { text: error, display: true, color: "error" },
-                    });
-                }
             }
         } catch (err) {
             setLoading(false);
 
             uiDispatch({
-                type: "SET_MESSAGE",
+                type: "SET_NOTIFICATION",
                 payload: { text: err.message, display: true, color: "error" },
             });
         }

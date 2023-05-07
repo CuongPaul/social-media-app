@@ -13,7 +13,7 @@ const ProfileTimeline = ({ user }) => {
         return postState.posts.filter((post) => post.user.id === user.id);
     };
     return (
-        <Grid container justify="center" style={{ marginTop: "25px" }} spacing={2}>
+        <Grid container justifyContent="center" style={{ marginTop: "25px" }} spacing={2}>
             <Grid item xs={12} sm={12} md={8}>
                 {userState.currentUser.id === user.id && <WritePostCard />}
                 <Posts posts={getUserPost()} />

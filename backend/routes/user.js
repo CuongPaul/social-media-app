@@ -61,9 +61,9 @@ router.put(
     updatePasswordController
 );
 router.get("/", verifyToken, getCurrentUserController);
-router.get("/search", validate(searchUsersValidation), searchUsersController);
-router.get("/:userId", validate(getUserByIdValidation), getUserByIdController);
 router.get("/friends", validate(friendListValidation), verifyToken, friendListController);
+router.get("/search", validate(searchUsersValidation), verifyToken, searchUsersController);
+router.get("/:userId", validate(getUserByIdValidation), verifyToken, getUserByIdController);
 router.put("/block/:userId", validate(blockUserValidation), verifyToken, blockUserController);
 router.put("/unfriend/:friendId", validate(unfriendValidation), verifyToken, unfriendController);
 

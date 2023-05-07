@@ -1,26 +1,27 @@
 import React from "react";
-import Badge from "@material-ui/core/Badge";
+import { Badge } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 
-const UIBadge = withStyles((theme) => ({
+const BadgeWithStyles = withStyles((theme) => ({
     badge: {
-        right: 8,
-        top: 32,
+        top: "32px",
+        right: "8px",
         padding: "5px 5px",
         borderRadius: "100%",
         border: `2px solid ${theme.palette.background.paper}`,
     },
 }))(Badge);
 
-const StyledBadge = ({ isActive, children, border }) => {
+const StyledBadge = ({ border, children, isActive }) => {
     return (
-        <UIBadge
+        <BadgeWithStyles
             variant="dot"
+            overlap="rectangular"
             color={isActive ? "secondary" : "error"}
-            style={{ border: border, borderRadius: "100%", padding: "4px" }}
+            style={{ border, padding: "4px", borderRadius: "100%" }}
         >
             {children}
-        </UIBadge>
+        </BadgeWithStyles>
     );
 };
 

@@ -1,105 +1,107 @@
-import React from "react";
-import { Card, Chip, Grid, Avatar, CardHeader, Typography, CardActions } from "@material-ui/core";
-import { faUsers, faMapMarkerAlt, faUserGraduate } from "@fortawesome/free-solid-svg-icons";
+import React, { Fragment } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUsers, faMapMarkerAlt, faUserGraduate } from "@fortawesome/free-solid-svg-icons";
+import { Card, Chip, Grid, Avatar, CardHeader, Typography, CardActions } from "@material-ui/core";
 
 import StyledBadge from "../UI/StyledBadge";
 import AvartarText from "../UI/AvartarText";
+
+const Subheader = ({ user }) => {
+    return (
+        <Fragment>
+            {user.hometown && (
+                <Grid container alignItems="center" justifyContent="space-between">
+                    <Grid item md={4}>
+                        <Avatar
+                            style={{
+                                color: "black",
+                                fontWeight: "800",
+                                background: "rgb(240,242,245)",
+                            }}
+                        >
+                            <FontAwesomeIcon icon={faMapMarkerAlt} />
+                        </Avatar>
+                    </Grid>
+                    <Grid item md={8}>
+                        <Typography>{user.hometown}</Typography>
+                    </Grid>
+                </Grid>
+            )}
+            {user.education && (
+                <Grid
+                    container
+                    alignItems="center"
+                    justifyContent="space-between"
+                    style={{ marginTop: "4px" }}
+                >
+                    <Grid item md={4}>
+                        <Avatar
+                            style={{
+                                color: "black",
+                                fontWeight: "800",
+                                background: "rgb(240,242,245)",
+                            }}
+                        >
+                            <FontAwesomeIcon icon={faUserGraduate} />
+                        </Avatar>
+                    </Grid>
+                    <Grid item md={8}>
+                        <Typography style={{ fontSize: "14px" }} variant="body2">
+                            {user.education}
+                        </Typography>
+                    </Grid>
+                </Grid>
+            )}
+        </Fragment>
+    );
+};
+const AvartarCardHeader = ({ user }) => {
+    return user.avatar_image ? (
+        <StyledBadge
+            isActive={user.is_active}
+            border={`3px solid ${user.is_active ? "green" : "red"}`}
+        >
+            <Avatar
+                alt={user.name}
+                src={user.avatar_image}
+                style={{ width: "70px", height: "70px" }}
+            />
+        </StyledBadge>
+    ) : (
+        <StyledBadge
+            isActive={user.is_active}
+            border={`3px solid ${user.is_active ? "green" : "red"}`}
+        >
+            <AvartarText
+                size="70px"
+                text={user.name}
+                background={user.is_active ? "seagreen" : "tomato"}
+            />
+        </StyledBadge>
+    );
+};
 
 const PopoverProfileCard = ({ user }) => {
     return (
         <Card elevation={0} style={{ maxWidth: "400px" }}>
             <CardHeader
-                avatar={
-                    user.profile_pic ? (
-                        <StyledBadge
-                            isActive={user.active}
-                            border={`3px solid ${user.active ? "green" : "red"}`}
-                        >
-                            <Avatar
-                                alt={user.name}
-                                src={user.profile_pic}
-                                style={{ width: "70px", height: "70px" }}
-                            />
-                        </StyledBadge>
-                    ) : (
-                        <StyledBadge
-                            isActive={user.active}
-                            border={`3px solid ${user.active ? "green" : "red"}`}
-                        >
-                            <AvartarText
-                                size="70px"
-                                text={user.name}
-                                bg={user.active ? "seagreen" : "tomato"}
-                            />
-                        </StyledBadge>
-                    )
-                }
+                subheader={<Subheader user={user} />}
+                avatar={<AvartarCardHeader user={user} />}
                 title={
                     <Typography
-                        style={{ fontWeight: "800", fontSize: "16px", marginBottom: "8px" }}
+                        style={{ fontSize: "16px", fontWeight: "800", marginBottom: "8px" }}
                     >
                         {user.name}
                     </Typography>
                 }
-                subheader={
-                    <>
-                        {user.location && (
-                            <Grid container alignItems="center" justify="space-between">
-                                <Grid item md={4}>
-                                    <Avatar
-                                        style={{
-                                            background: "rgb(240,242,245)",
-                                            color: "black",
-                                            fontWeight: "800",
-                                        }}
-                                    >
-                                        <FontAwesomeIcon icon={faMapMarkerAlt} />
-                                    </Avatar>
-                                </Grid>
-                                <Grid item md={8}>
-                                    <Typography>
-                                        {user.location.city || user.location.region}
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-                        )}
-                        {user.education && (
-                            <Grid
-                                container
-                                alignItems="center"
-                                justify="space-between"
-                                style={{ marginTop: "4px" }}
-                            >
-                                <Grid item md={4}>
-                                    <Avatar
-                                        style={{
-                                            background: "rgb(240,242,245)",
-                                            color: "black",
-                                            fontWeight: "800",
-                                        }}
-                                    >
-                                        <FontAwesomeIcon icon={faUserGraduate} />
-                                    </Avatar>
-                                </Grid>
-                                <Grid item md={8}>
-                                    <Typography style={{ fontSize: "14px" }} variant="body2">
-                                        {user.education}
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-                        )}
-                    </>
-                }
             />
-
             <CardActions>
-                <Grid container alignItems="center" justify="space-evenly">
+                <Grid container alignItems="center" justifyContent="space-evenly">
                     <Chip
-                        icon={<FontAwesomeIcon icon={faUsers} />}
                         size="medium"
                         color="primary"
-                        label={`Friends ${user.friends.length}`}
+                        label={`Friends ${user?.friends?.length}`}
+                        icon={<FontAwesomeIcon icon={faUsers} />}
                     />
                 </Grid>
             </CardActions>

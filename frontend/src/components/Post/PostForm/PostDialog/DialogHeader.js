@@ -1,4 +1,3 @@
-import React from "react";
 import {
     Paper,
     Avatar,
@@ -7,26 +6,29 @@ import {
     CardHeader,
     DialogContent,
 } from "@material-ui/core";
+import React, { useContext } from "react";
 import { Close } from "@material-ui/icons";
 
+import { UserContext } from "../../../../App";
 import AvartarText from "../../../UI/AvartarText";
 import CustomHeaderText from "./CustomHeaderText";
 
-const DialogHeader = ({ userState, handleCloseDialog, body }) => {
+const DialogHeader = ({ handleCloseDialog, body }) => {
+    const { userState } = useContext(UserContext);
     return (
         <div>
             <CardHeader
                 avatar={
-                    userState.currentUser.profile_pic ? (
+                    userState.currentUser.avatar_image ? (
                         <Avatar>
                             <img
                                 alt="avatar"
                                 style={{ width: "100%", height: "100%" }}
-                                src={userState.currentUser.profile_pic}
+                                src={userState.currentUser.avatar_image}
                             />
                         </Avatar>
                     ) : (
-                        <AvartarText text={userState.currentUser.name} bg="teal" />
+                        <AvartarText background="teal" text={userState.currentUser.name} />
                     )
                 }
                 title={
@@ -43,13 +45,8 @@ const DialogHeader = ({ userState, handleCloseDialog, body }) => {
                 }
             />
             <DialogContent>
-                <Paper
-                    style={{
-                        marginTop: "4px",
-                    }}
-                    elevation={0}
-                >
-                    <CustomHeaderText userState={userState} body={body} />
+                <Paper style={{ marginTop: "4px" }} elevation={0}>
+                    <CustomHeaderText body={body} />
                 </Paper>
             </DialogContent>
         </div>

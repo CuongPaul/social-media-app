@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 
-import CallAPI from "../api";
+import callApi from "../api";
 import { UIContext } from "../App";
 
 const useSignup = () => {
@@ -26,7 +26,7 @@ const useSignup = () => {
         setLoading(true);
 
         try {
-            const { data, message } = await CallAPI({
+            const { data, message } = await callApi({
                 method: "POST",
                 data: formValue,
                 url: "/auth/signup",
@@ -36,13 +36,13 @@ const useSignup = () => {
             localStorage.setItem("token", data.token);
 
             uiDispatch({
-                type: "SET_MESSAGE",
+                type: "SET_NOTIFICATION",
                 payload: { display: true, text: message, color: "success" },
             });
         } catch (err) {
             setLoading(false);
             uiDispatch({
-                type: "SET_MESSAGE",
+                type: "SET_NOTIFICATION",
                 payload: { display: true, color: "error", text: err.message },
             });
         }

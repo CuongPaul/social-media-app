@@ -12,9 +12,9 @@ const MiddleMenu = () => {
     return (
         <Fragment>
             <Button
+                to="/home"
                 component={NavLink}
                 activeClassName={classes.activeBtn}
-                to="/home"
                 className={classes.buttonItemMiddle}
             >
                 {location.pathname === "/home" ? (
@@ -29,9 +29,9 @@ const MiddleMenu = () => {
                 )}
             </Button>
             <Button
+                to="/friends"
                 component={NavLink}
                 activeClassName={classes.activeBtn}
-                to="/friends"
                 className={classes.buttonItemMiddle}
             >
                 {location.pathname === "/friends" ? (

@@ -4,7 +4,7 @@ import { Paper, Grid, Avatar, Typography, Button } from "@material-ui/core";
 const Photos = () => {
     return (
         <Paper style={{ padding: "8px" }}>
-            <Grid container alignItems="center" justify="space-between">
+            <Grid container alignItems="center" justifyContent="space-between">
                 <Grid item>
                     <Typography>Photos</Typography>
                 </Grid>
@@ -18,7 +18,7 @@ const Photos = () => {
                 container
                 spacing={1}
                 alignItems="center"
-                justify="flex-start"
+                justifyContent="flex-start"
                 style={{ marginTop: "16px" }}
             >
                 {[...new Array(6)].map((photo) => (

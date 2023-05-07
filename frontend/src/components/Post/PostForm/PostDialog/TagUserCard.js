@@ -76,7 +76,7 @@ const TagUserCard = ({ body, setBody }) => {
                 />
                 <DialogContent>
                     <Container>
-                        <Grid container alignItems="center" justify="center">
+                        <Grid container alignItems="center" justifyContent="center">
                             <Grid item xs={12} sm={10} md={8}>
                                 <List>
                                     {userState.users.length

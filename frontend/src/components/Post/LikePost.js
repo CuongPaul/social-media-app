@@ -24,7 +24,7 @@ const LikePost = ({ post }) => {
                         payload: res.data.post,
                     });
                     uiDispatch({
-                        type: "SET_MESSAGE",
+                        type: "SET_NOTIFICATION",
                         payload: {
                             color: "success",
                             text: res.data.message,
@@ -34,7 +34,7 @@ const LikePost = ({ post }) => {
                 }
                 if (res.error) {
                     uiDispatch({
-                        type: "SET_MESSAGE",
+                        type: "SET_NOTIFICATION",
                         payload: {
                             color: "error",
                             text: res.data.error,

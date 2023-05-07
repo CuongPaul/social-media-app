@@ -91,11 +91,12 @@ const getUserByIdController = async (req, res) => {
 
 const searchUsersController = async (req, res) => {
     const pageSize = 5;
+    const userId = req.user_id;
     const { name } = req.query;
     const page = parseInt(req.query.page) || 1;
 
     try {
-        const query = { is_active: true, name: { $regex: name, $options: "i" } };
+        const query = { _id: { $ne: userId }, name: { $regex: name, $options: "i" } };
 
         const users = await User.find(query, {
             _id: 1,

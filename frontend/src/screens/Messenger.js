@@ -35,7 +35,7 @@ function Messenger() {
                 <Paper style={{ backgroundColor: uiState.darkMode && "rgb(36,37,38)" }}>
                     <Grid
                         container
-                        justify="center"
+                        justifyContent="center"
                         alignItems="flex-start"
                         spacing={2}
                         style={{ padding: "16px" }}
@@ -96,7 +96,7 @@ function Messenger() {
                                     ) : (
                                         <AvartarText
                                             text={chatState.selectedFriend.name}
-                                            bg={
+                                            background={
                                                 chatState.selectedFriend.active
                                                     ? "seagreen"
                                                     : "tomato"

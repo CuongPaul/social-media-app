@@ -14,7 +14,10 @@ const Auth = () => {
     const [isShowSigninForm, setIsShowSigninForm] = useState(true);
 
     useEffect(() => {
-        userDispatch({ type: "RECENT_ACCOUNTS", payload: localStorage.getItem("accounts") });
+        userDispatch({
+            type: "RECENT_ACCOUNTS",
+            payload: JSON.parse(localStorage.getItem("accounts")) || [],
+        });
     }, [userDispatch]);
 
     return (
@@ -55,7 +58,7 @@ const Auth = () => {
                         <Grid container spacing={2}>
                             <Grid container spacing={2}>
                                 {userState.recentAccounts.map((account) => (
-                                    <Grid item xs={6} sm={6} md={3} key={account.id}>
+                                    <Grid item xs={6} sm={6} md={3} key={account?._id}>
                                         <RecentAccountCard account={account} />
                                     </Grid>
                                 ))}

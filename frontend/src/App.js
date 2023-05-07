@@ -4,9 +4,10 @@ import { createTheme, ThemeProvider } from "@material-ui/core/styles";
 import { Route, Switch, Redirect, BrowserRouter as Router } from "react-router-dom";
 import React, { lazy, useMemo, Suspense, useEffect, useReducer, createContext } from "react";
 
-import CallAPI from "./api";
+import callApi from "./api";
 import Loader from "./components/Loader";
 import Navbar from "./components/Navbar/Navbar";
+import ProtectedRoute from "./utils/protected-route";
 import Notification from "./components/UI/Notification";
 import { UIReducer, initialUIState } from "./context/UIContext";
 import { UserReducer, initialUserState } from "./context/UserContext";
@@ -108,44 +109,46 @@ const App = () => {
     }, [token]);
 
     useEffect(() => {
-        const loadCurrentUser = async () => {
-            if (token) {
-                const decodeToken = jwtDecode(token);
+        const getInfoCurrentUser = async () => {
+            const { data } = await callApi({ url: "/user", method: "GET" });
 
-                if (decodeToken.exp * 1000 < Date.now()) {
-                    userDispatch({ type: "LOGOUT_USER" });
-                } else {
-                    try {
-                        const { data: dataUser } = await CallAPI({ url: "/user", method: "GET" });
-                        const { data: dataNotifi } = await CallAPI({
-                            url: "/notification",
-                            method: "GET",
-                        });
+            if (data) {
+                userDispatch({ type: "SET_CURRENT_USER", payload: data });
+            }
+        };
+        const getNotifications = async () => {
+            try {
+                const { data } = await callApi({ method: "GET", url: "/notification" });
 
-                        if (dataUser) {
-                            userDispatch({ type: "SET_CURRENT_USER", payload: dataUser });
-                        }
-                        if (dataUser) {
-                            uiDispatch({ type: "SET_NOTIFICATIONS", payload: dataNotifi.rows });
-                        }
-                    } catch (err) {
-                        uiDispatch({
-                            type: "SET_MESSAGE",
-                            payload: { text: err.message, display: true, color: "error" },
-                        });
-                    }
+                if (data) {
+                    uiDispatch({ type: "SET_NOTIFICATIONS", payload: data.rows });
                 }
+            } catch (err) {
+                uiDispatch({
+                    type: "SET_NOTIFICATION",
+                    payload: { text: err.message, display: true, color: "error" },
+                });
             }
         };
 
-        loadCurrentUser();
+        if (token) {
+            const decodeToken = jwtDecode(token);
+
+            if (decodeToken.exp * 1000 < Date.now()) {
+                userDispatch({ type: "USER_SIGNOUT" });
+            } else {
+                try {
+                    getNotifications();
+                    getInfoCurrentUser();
+                } catch (err) {
+                    uiDispatch({
+                        type: "SET_NOTIFICATION",
+                        payload: { text: err.message, display: true, color: "error" },
+                    });
+                }
+            }
+        }
     }, [token]);
-
-    const ProtectedRoute = ({ component: Component, ...rest }) => {
-        const renderComponent = () => (token ? <Component /> : <Redirect to="/auth" />);
-
-        return <Route {...rest} render={renderComponent} />;
-    };
 
     return (
         <UIContext.Provider value={{ uiState, uiDispatch }}>
@@ -167,36 +170,37 @@ const App = () => {
                                             <ProtectedRoute
                                                 exact
                                                 path="/friends"
-                                                component={Friends}
+                                                component={() => <div>Friends</div>}
                                             />
                                             <ProtectedRoute
                                                 exact
                                                 path="/settings"
-                                                component={Settings}
+                                                component={() => <div>Settings</div>}
                                             />
                                             <ProtectedRoute
                                                 exact
-                                                component={Post}
+                                                component={() => <div>Post</div>}
                                                 path="/post/:postId"
                                             />
                                             <ProtectedRoute
                                                 exact
                                                 path="/messenger"
-                                                component={Messenger}
+                                                component={() => <div>Messenger</div>}
                                             />
                                             <ProtectedRoute
                                                 exact
-                                                component={Profile}
+                                                component={() => <div>Profile</div>}
                                                 path="/profile/:userId"
                                             />
                                             <Route
                                                 exact
-                                                path="/auth"
+                                                path="/"
                                                 render={() =>
-                                                    token ? <Redirect to="/" /> : <Auth />
+                                                    token ? <Redirect to="/home" /> : <Auth />
                                                 }
                                             />
-                                            <ProtectedRoute exact path="/" component={Home} />
+                                            <Route exact path="/home" render={() => <Home />} />
+                                            {/* <ProtectedRoute exact path="/home" component={Home} /> */}
                                         </Switch>
                                     </Suspense>
                                 </div>

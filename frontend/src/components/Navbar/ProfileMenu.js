@@ -3,178 +3,176 @@ import {
     List,
     Avatar,
     Switch,
-    ListItem,
     useTheme,
-    Typography,
+    ListItem,
     IconButton,
+    Typography,
     ListItemIcon,
     ListItemText,
     useMediaQuery,
 } from "@material-ui/core";
-import React, { useContext, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
+import { Settings, ExitToApp } from "@material-ui/icons";
+import { faMoon } from "@fortawesome/free-regular-svg-icons";
+import React, { Fragment, useState, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
-import { faMoon, faSun } from "@fortawesome/free-regular-svg-icons";
-import { Settings as SettingsIcon, ExitToApp as LogoutIcon } from "@material-ui/icons";
 
+import callApi from "../../api";
 import AvartarText from "../UI/AvartarText";
-import { UserContext, UIContext } from "../../App";
-import { signout } from "../../services/AuthService";
+import { UIContext, UserContext } from "../../App";
 
-const ProfileMenu = () => {
+const ProfileItem = () => {
+    const { userState } = useContext(UserContext);
+
+    const { currentUser } = userState;
+
+    return currentUser ? (
+        <ListItem button component={Link} to={`/profile/${currentUser._id}`}>
+            <ListItemIcon>
+                {currentUser.avatar_image ? (
+                    <Avatar style={{ width: "60px", height: "60px" }}>
+                        <img
+                            width="100%"
+                            height="100%"
+                            alt={currentUser.name}
+                            src={currentUser.avatar_image}
+                        />
+                    </Avatar>
+                ) : (
+                    <AvartarText
+                        text={currentUser.name}
+                        background={currentUser.active ? "seagreen" : "tomato"}
+                    />
+                )}
+            </ListItemIcon>
+            <ListItemText>
+                <Typography style={{ fontSize: "17px", fontWeight: "700" }}>
+                    {currentUser.name}
+                </Typography>
+            </ListItemText>
+        </ListItem>
+    ) : null;
+};
+
+const SettingsItem = () => {
+    return (
+        <ListItem button component={Link} to={`/settings`}>
+            <ListItemIcon>
+                <Avatar style={{ color: "#fff", background: "teal" }}>
+                    <Settings />
+                </Avatar>
+            </ListItemIcon>
+            <ListItemText>
+                <Typography style={{ fontSize: "15px" }}>Settings</Typography>
+            </ListItemText>
+        </ListItem>
+    );
+};
+
+const DarkModeItem = () => {
     const { uiState, uiDispatch } = useContext(UIContext);
-    const { userState, userDispatch } = useContext(UserContext);
 
-    const theme = useTheme();
-    const history = useHistory();
-    const [profileMenu, setProfileMenu] = useState(null);
-    const xsScreen = useMediaQuery(theme.breakpoints.only("xs"));
-
-    const handleUserLogout = () => {
-        signout()
-            .then((res) => {
-                if (res.data) {
-                    userDispatch({
-                        type: "ADD_RECENT_ACCOUNT",
-                        payload: res.data.account,
-                    });
-                    userDispatch({ type: "LOGOUT_USER" });
-                    history.push("/");
-                }
-                if (res.error) {
-                    uiDispatch({
-                        type: "SET_MESSAGE",
-                        payload: {
-                            color: "error",
-                            display: true,
-                            text: res.data.error,
-                        },
-                    });
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+    const handleChangDarkMode = (is_dark_mode) => {
+        uiDispatch({
+            type: "SET_DARK_MODE",
+            payload: is_dark_mode,
+        });
     };
 
     return (
-        <div>
+        <ListItem>
+            <ListItemIcon>
+                <Avatar style={{ color: "#fff", background: "teal" }}>
+                    <FontAwesomeIcon icon={faMoon} />
+                </Avatar>
+            </ListItemIcon>
+            <ListItemText>
+                <Switch
+                    color="primary"
+                    checked={uiState.darkMode}
+                    onChange={(e) => handleChangDarkMode(e.target.checked)}
+                />
+            </ListItemText>
+        </ListItem>
+    );
+};
+
+const SignoutItem = () => {
+    const { uiDispatch } = useContext(UIContext);
+    const { userDispatch } = useContext(UserContext);
+
+    const history = useHistory();
+
+    const handleSignout = async () => {
+        try {
+            await callApi({ method: "POST", url: "/auth/signout" });
+
+            userDispatch({ type: "USER_SIGNOUT" });
+
+            history.push("/");
+        } catch (err) {
+            uiDispatch({
+                type: "SET_NOTIFICATION",
+                payload: { display: true, color: "error", text: err.message },
+            });
+        }
+    };
+
+    return (
+        <ListItem button onClick={handleSignout}>
+            <ListItemIcon>
+                <Avatar style={{ color: "#fff", background: "teal" }}>
+                    <ExitToApp />
+                </Avatar>
+            </ListItemIcon>
+            <ListItemText>
+                <Typography style={{ fontSize: "15px" }}>Signout</Typography>
+            </ListItemText>
+        </ListItem>
+    );
+};
+
+const ProfileMenu = () => {
+    const { uiState } = useContext(UIContext);
+
+    const [isOpenMenu, setIsOpenMenu] = useState(false);
+    const [profileMenu, setProfileMenu] = useState(null);
+
+    const { breakpoints } = useTheme();
+    const xsScreen = useMediaQuery(breakpoints.only("xs"));
+
+    const handleOpenMenu = (e) => {
+        setIsOpenMenu(!isOpenMenu);
+        setProfileMenu(e.currentTarget);
+    };
+
+    return (
+        <Fragment>
             <IconButton
+                onClick={handleOpenMenu}
                 style={{
                     marginLeft: xsScreen ? "4px" : "8px",
-                    color: !uiState.darkMode ? "dark" : null,
-                    backgroundColor: !uiState.darkMode ? "#F0F2F5" : null,
+                    color: uiState.darkMode ? null : "dark",
+                    backgroundColor: uiState.darkMode ? null : "#F0F2F5",
                 }}
-                onClick={(e) => setProfileMenu(e.currentTarget)}
             >
                 <FontAwesomeIcon icon={faChevronDown} size={xsScreen ? "xs" : "sm"} />
             </IconButton>
-
             <Menu
-                id="profile-menu"
+                open={isOpenMenu}
                 anchorEl={profileMenu}
-                open={Boolean(profileMenu)}
-                onClose={() => setProfileMenu(null)}
                 style={{ marginTop: "50px" }}
-                elevation={7}
+                onClose={() => setIsOpenMenu(false)}
             >
                 <List>
-                    <ListItem button component={Link} to={`/profile/${userState?.currentUser.id}`}>
-                        <ListItemIcon>
-                            {userState.currentUser.profile_pic ? (
-                                <Avatar
-                                    style={{
-                                        width: "60px",
-                                        height: "60px",
-                                    }}
-                                >
-                                    <img
-                                        src={userState.currentUser.profile_pic}
-                                        width="100%"
-                                        alt={userState.currentUser.name}
-                                        height="100%"
-                                    />
-                                </Avatar>
-                            ) : (
-                                <AvartarText
-                                    text={userState.currentUser.name}
-                                    bg={userState.currentUser.active ? "seagreen" : "tomato"}
-                                />
-                            )}
-                        </ListItemIcon>
-                        <ListItemText style={{ marginLeft: "8px" }}>
-                            <Typography style={{ fontSize: "17px", fontWeight: "700" }}>
-                                {userState.currentUser.name}
-                            </Typography>
-                            <Typography>See Your Profile</Typography>
-                        </ListItemText>
-                    </ListItem>
-
-                    <ListItem button component={Link} to={`/settings`}>
-                        <ListItemIcon>
-                            <Avatar
-                                style={{
-                                    background: "teal",
-                                    color: "#fff",
-                                }}
-                            >
-                                <SettingsIcon />
-                            </Avatar>
-                        </ListItemIcon>
-                        <ListItemText>
-                            <Typography style={{ fontSize: "15px" }}> Settings</Typography>
-                        </ListItemText>
-                    </ListItem>
-
-                    <ListItem>
-                        <ListItemIcon>
-                            <Avatar
-                                style={{
-                                    background: "teal",
-                                    color: "#fff",
-                                }}
-                            >
-                                {uiState.darkMode ? (
-                                    <FontAwesomeIcon icon={faSun} />
-                                ) : (
-                                    <FontAwesomeIcon icon={faMoon} />
-                                )}
-                            </Avatar>
-                        </ListItemIcon>
-                        <ListItemText>
-                            <Switch
-                                checked={uiState.darkMode}
-                                onChange={(e) =>
-                                    uiDispatch({
-                                        type: "SET_DARK_MODE",
-                                        payload: e.target.checked,
-                                    })
-                                }
-                                name="checkedB"
-                                color="primary"
-                            />
-                        </ListItemText>
-                    </ListItem>
-
-                    <ListItem button onClick={handleUserLogout}>
-                        <ListItemIcon>
-                            <Avatar
-                                style={{
-                                    background: "teal",
-                                    color: "#fff",
-                                }}
-                            >
-                                <LogoutIcon />
-                            </Avatar>
-                        </ListItemIcon>
-                        <ListItemText>
-                            <Typography style={{ fontSize: "15px" }}> Logout</Typography>
-                        </ListItemText>
-                    </ListItem>
+                    <ProfileItem />
+                    <SettingsItem />
+                    <DarkModeItem />
+                    <SignoutItem />
                 </List>
             </Menu>
-        </div>
+        </Fragment>
     );
 };
 

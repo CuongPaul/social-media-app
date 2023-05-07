@@ -7,7 +7,7 @@ import useStyles from "./styles";
 import RightMenu from "./RightMenu";
 import { UIContext } from "../../App";
 import MiddleMenu from "./MiddleMenu";
-import SearchFriends from "../Friends/SearchFriends";
+import SearchUsers from "../Friends/SearchUsers";
 
 const Navbar = () => {
     const { uiState } = useContext(UIContext);
@@ -23,8 +23,8 @@ const Navbar = () => {
             className={classes.root}
             style={{
                 zIndex: "10000",
-                color: !uiState.darkMode ? "blue" : null,
-                backgroundColor: !uiState.darkMode ? "white" : "rgb(36,37,38)",
+                color: uiState.darkMode ? null : "blue",
+                backgroundColor: uiState.darkMode ? "rgb(36,37,38)" : "white",
             }}
         >
             <Toolbar>
@@ -39,7 +39,7 @@ const Navbar = () => {
                             color: uiState.darkMode ? null : "rgb(0,133,243)",
                         }}
                     />
-                    <SearchFriends />
+                    <SearchUsers />
                 </div>
                 <div className={classes.middleMenu}>
                     <MiddleMenu />

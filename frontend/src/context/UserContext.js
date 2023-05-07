@@ -1,7 +1,6 @@
-import { filterArray } from "../utils/filter-array";
-
 const initialUserState = {
     users: [],
+    isLoggedIn: false,
     currentUser: null,
     recentAccounts: [],
     sendedFriendRequests: [],
@@ -12,25 +11,7 @@ const initialUserState = {
 const UserReducer = (state, action) => {
     switch (action.type) {
         case "RECENT_ACCOUNTS":
-            const recentAccounts = filterArray(action.payload);
-
-            return { ...state, recentAccounts: recentAccounts };
-
-        case "ADD_RECENT_ACCOUNT":
-            const account = state.recentAccounts.find(
-                (account) => account.id === action.payload.id
-            );
-
-            if (!account) {
-                const accounts = localStorage.accounts ? JSON.parse(localStorage.accounts) : [];
-
-                accounts.push(action.payload);
-                localStorage.setItem("accounts", JSON.stringify(accounts));
-
-                return { ...state, recentAccounts: [action.payload, ...state.recentAccounts] };
-            } else {
-                return { ...state };
-            }
+            return { ...state, recentAccounts: action.payload };
 
         case "REMOVE_RECENT_ACCOUNT":
             const accountArray = state.recentAccounts.filter(
@@ -48,7 +29,7 @@ const UserReducer = (state, action) => {
             };
 
         case "SET_CURRENT_USER":
-            return { ...state, currentUser: action.payload };
+            return { ...state, isLoggedIn: true, currentUser: action.payload };
 
         case "SET_USERS":
             return { ...state, users: action.payload };
@@ -76,8 +57,11 @@ const UserReducer = (state, action) => {
 
             return { ...state, users: newUsers };
 
-        case "LOGOUT_USER":
-            localStorage.getItem("token") && localStorage.removeItem("token");
+        case "USER_SIGNOUT":
+            const newRecentAccounts = [...new Set([...state.recentAccounts, state.currentUser])];
+            console.log("newRecentAccounts: ", newRecentAccounts);
+            localStorage.setItem("accounts", JSON.stringify(newRecentAccounts));
+            localStorage.removeItem("token");
 
             return {
                 ...state,
@@ -86,6 +70,7 @@ const UserReducer = (state, action) => {
                 sendedFriendRequests: [],
                 selectedUserProfile: null,
                 receivedFriendRequests: [],
+                recentAccounts: newRecentAccounts,
             };
 
         case "FRIEND_OFFLINE":

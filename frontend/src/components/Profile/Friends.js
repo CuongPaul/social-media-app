@@ -25,7 +25,7 @@ const Friends = ({ user }) => {
                                 <Avatar src={friend.profile_pic} variant="square" />
                             ) : (
                                 <AvartarText
-                                    bg={friend.active ? "seagreen" : "tomato"}
+                                    background={friend.active ? "seagreen" : "tomato"}
                                     text={friend.name}
                                     size={70}
                                 />

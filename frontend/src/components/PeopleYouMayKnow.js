@@ -16,7 +16,7 @@ import { MoreHoriz as MoreHorizIcon } from "@material-ui/icons";
 const PeopleYouMayKnow = ({ users }) => {
     return (
         <Paper style={{ marginTop: "20px", padding: "8px" }}>
-            <Grid container justify="space-between" alignItems="center">
+            <Grid container justifyContent="space-between" alignItems="center">
                 <Grid item>
                     <Typography
                         variant="h6"
@@ -36,7 +36,7 @@ const PeopleYouMayKnow = ({ users }) => {
             </Grid>
             <Grid
                 container
-                justify="flex-start"
+                justifyContent="flex-start"
                 alignItems="center"
                 spacing={1}
                 style={{ marginTop: "16px" }}
@@ -64,7 +64,9 @@ const PeopleYouMayKnow = ({ users }) => {
                                                   />
                                               ) : (
                                                   <AvartarText
-                                                      bg={user.active ? "seagreen" : "tomato"}
+                                                      background={
+                                                          user.active ? "seagreen" : "tomato"
+                                                      }
                                                       text={friend.name}
                                                       size="20px"
                                                   />

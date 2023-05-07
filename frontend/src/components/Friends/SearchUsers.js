@@ -9,103 +9,93 @@ import {
     IconButton,
     ListItemIcon,
     ListItemText,
-    DialogActions,
     DialogContent,
     CircularProgress,
 } from "@material-ui/core";
-import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Search } from "@material-ui/icons";
+import React, { useState, Fragment } from "react";
 
 import AvartarText from "../UI/AvartarText";
-import useSearchFriends from "../../hooks/useSearchFriends";
+import { useSearchUsers } from "../../hooks";
 
-const SearchFriends = () => {
-    const [name, setName] = useState("");
-    const [open, setOpen] = useState(true);
+const SearchUsers = () => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [searchValue, setSearchValue] = useState("");
 
-    const handleSearch = () => {
-        searchFriends(name);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    const handleOpen = () => {
-        setOpen(true);
-    };
-
-    const { searchFriends, friends, loading } = useSearchFriends();
+    const { users, isLoading, handleSearchUsers } = useSearchUsers();
 
     return (
-        <div>
-            <IconButton onClick={handleOpen}>
+        <Fragment>
+            <IconButton onClick={() => setIsOpen(true)}>
                 <Search />
             </IconButton>
-            <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
+            <Dialog
+                fullWidth
+                maxWidth="sm"
+                open={isOpen}
+                style={{ marginTop: "50px" }}
+                onClose={() => setIsOpen(false)}
+            >
                 <DialogContent>
                     <TextField
-                        style={{ width: "100%" }}
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
                         variant="outlined"
-                        placeholder="Enter Friends Name"
+                        value={searchValue}
+                        placeholder="Enter name"
+                        style={{ width: "100%" }}
+                        onChange={(e) => setSearchValue(e.target.value)}
+                        onKeyPress={(e) => e.key === "Enter" && handleSearchUsers(searchValue)}
                     />
                     <Button
-                        style={{ width: "100%", marginTop: "16px" }}
-                        variant="contained"
                         color="primary"
-                        onClick={handleSearch}
+                        disabled={isLoading}
+                        variant="contained"
+                        onClick={() => handleSearchUsers(searchValue)}
+                        style={{ width: "100%", marginTop: "16px" }}
                     >
                         Search
                     </Button>
-                    {friends.length ? (
-                        <Typography variant="h4" style={{ marginTop: "20px" }}>
-                            Search Friends ({friends.length})
+                    {users.length ? (
+                        <Typography variant="h6" style={{ marginTop: "20px" }}>
+                            Search Results ({users.length})
                         </Typography>
                     ) : null}
-                    {loading ? (
+                    {isLoading ? (
                         <div
                             style={{
                                 display: "flex",
+                                marginTop: "20px",
                                 alignItems: "center",
                                 justifyContent: "center",
-                                marginTop: "20px",
                             }}
                         >
                             <CircularProgress />
                         </div>
                     ) : (
                         <List>
-                            {friends &&
-                                friends.map((user) => (
+                            {users &&
+                                users.map((user) => (
                                     <ListItem
                                         button
-                                        onClick={handleClose}
+                                        key={user.id}
                                         component={Link}
                                         to={`/profile/${user.id}`}
-                                        key={user.id}
+                                        onClick={() => setIsOpen(false)}
                                     >
                                         <ListItemIcon>
-                                            {user.profile_pic ? (
-                                                <Avatar
-                                                    style={{
-                                                        width: "60px",
-                                                        height: "60px",
-                                                    }}
-                                                >
+                                            {user.avatar_image ? (
+                                                <Avatar style={{ width: "60px", height: "60px" }}>
                                                     <img
-                                                        src={user.profile_pic}
                                                         width="100%"
                                                         height="100%"
                                                         alt={user.name}
+                                                        src={user.avatar_image}
                                                     />
                                                 </Avatar>
                                             ) : (
                                                 <AvartarText
                                                     text={user.name}
-                                                    bg={user.active ? "seagreen" : "tomato"}
+                                                    background={user.active ? "seagreen" : "tomato"}
                                                 />
                                             )}
                                         </ListItemIcon>
@@ -122,12 +112,9 @@ const SearchFriends = () => {
                         </List>
                     )}
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>Cancle</Button>
-                </DialogActions>
             </Dialog>
-        </div>
+        </Fragment>
     );
 };
 
-export default SearchFriends;
+export default SearchUsers;

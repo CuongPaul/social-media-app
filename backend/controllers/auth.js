@@ -58,7 +58,7 @@ const signoutController = async (req, res) => {
 
     try {
         const ttl = expireTime - (Date.now() / 1000).toFixed();
-        await redisClient.SETEX(`black-list-token:${userId}`, ttl, token);
+        await redisClient.SETEX(`black-list-token:${token}`, ttl, userId);
 
         return res.status(200).json({ message: "Signout successfully" });
     } catch (err) {

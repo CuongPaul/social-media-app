@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const CallAPI = async ({ url, data, query, method }) => {
+const callApi = async ({ url, data, query, method }) => {
     const token = localStorage.getItem("token");
     const baseURL = process.env.REACT_APP_BASE_API_URL;
     const options = { url, method, baseURL, timeout: 3 * 1000 };
@@ -30,4 +30,4 @@ const CallAPI = async ({ url, data, query, method }) => {
     return res.data;
 };
 
-export default CallAPI;
+export default callApi;

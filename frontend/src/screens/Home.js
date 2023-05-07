@@ -10,17 +10,17 @@ import {
 import { Link } from "react-router-dom";
 import React, { Fragment, useEffect, useContext } from "react";
 
+import callApi from "../api";
 import Sidebar from "../components/Sidebar";
 import Posts from "../components/Post/Posts";
-import useFetchPost from "../hooks/useFetchPost";
 import AvartarText from "../components/UI/AvartarText";
 import { UIContext, PostContext, UserContext } from "../App";
-import MyFriendLists from "../components/Friends/MyFriendLists";
+import FriendList from "../components/Friends/FriendList";
 import WritePostCard from "../components/Post/PostForm/WritePostCard";
 
 const homeLeftItems = [
-    { title: "Friends", img: "friends.png", to: "/friends" },
-    { title: "Messenger", img: "messenger.png", to: "/messenger" },
+    { id: "friends-item", title: "Friends", img: "friends.png", to: "/friends" },
+    { id: "messenger-item", ttitle: "Messenger", img: "messenger.png", to: "/messenger" },
 ];
 
 const Home = () => {
@@ -31,14 +31,20 @@ const Home = () => {
     const theme = useTheme();
     const match = useMediaQuery(theme.breakpoints.between(960, 1400));
 
-    const { fetchPosts } = useFetchPost();
-
     useEffect(() => {
         uiDispatch({ type: "SET_DRAWER", payload: false });
         uiDispatch({ type: "SET_NAV_MENU", payload: true });
 
         const loadPosts = async () => {
-            await fetchPosts();
+            try {
+                const { data, message } = await callApi({ method: "GET", url: "/post" });
+                console.log(data);
+            } catch (err) {
+                uiDispatch({
+                    type: "SET_NOTIFICATION",
+                    payload: { display: true, color: "error", text: err.message },
+                });
+            }
         };
 
         loadPosts();
@@ -47,11 +53,11 @@ const Home = () => {
             uiDispatch({ type: "SET_DRAWER", payload: false });
             uiDispatch({ type: "SET_NAV_MENU", payload: false });
         };
-    }, [fetchPosts, uiDispatch]);
+    }, []);
 
-    return (
-        <div>
-            <Fragment>
+    return userState.currentUser ? (
+        <Fragment>
+            <div>
                 <Sidebar
                     anchor="left"
                     boxShadow={false}
@@ -61,27 +67,24 @@ const Home = () => {
                         <ListItem
                             button
                             component={Link}
-                            to={`/profile/${userState.currentUser.id}`}
+                            to={`/profile/${userState.currentUser._id}`}
                         >
                             <ListItemIcon>
-                                {userState.currentUser.profile_pic ? (
-                                    <Avatar
-                                        style={{
-                                            width: "50px",
-                                            height: "50px",
-                                        }}
-                                    >
+                                {userState.currentUser.avatar_image ? (
+                                    <Avatar style={{ width: "50px", height: "50px" }}>
                                         <img
                                             alt="avatar"
                                             width="100%"
                                             height="100%"
-                                            src={userState.currentUser.profile_pic}
+                                            src={userState.currentUser.avatar_image}
                                         />
                                     </Avatar>
                                 ) : (
                                     <AvartarText
                                         text={userState.currentUser.name}
-                                        bg={userState.currentUser.active ? "seagreen" : "tomato"}
+                                        background={
+                                            userState.currentUser.is_active ? "seagreen" : "tomato"
+                                        }
                                     />
                                 )}
                             </ListItemIcon>
@@ -90,29 +93,28 @@ const Home = () => {
                                 primary={userState.currentUser.name}
                             />
                         </ListItem>
-                        {homeLeftItems.map((list, index) => (
-                            <ListItem button key={index} component={Link} to={list.to}>
+                        {homeLeftItems.map((item) => (
+                            <ListItem button key={item.id} component={Link} to={item.to}>
                                 <ListItemIcon>
                                     <Avatar
-                                        alt={list.title}
-                                        src={require(`../assets/${list.img}`)}
+                                        alt={item.title}
+                                        src={require(`../assets/${item.img}`)}
                                     />
                                 </ListItemIcon>
-                                <ListItemText primary={list.title} />
+                                <ListItemText primary={item.title} />
                             </ListItem>
                         ))}
                     </List>
                 </Sidebar>
                 <Sidebar
                     anchor="right"
-                    background={!uiState.darkMode ? "rgb(240,242,245)" : "rgb(24,25,26)"}
                     boxShadow={false}
                     drawerWidth={380}
+                    background={uiState.darkMode ? "rgb(24,25,26)" : "rgb(240,242,245)"}
                 >
-                    <MyFriendLists />
+                    <FriendList key="friend-list" />
                 </Sidebar>
-            </Fragment>
-
+            </div>
             <div
                 style={{
                     maxWidth: match ? "45vw" : "38vw",
@@ -126,8 +128,8 @@ const Home = () => {
 
                 <Posts posts={postState.posts.filter((item) => item.privacy === "Public")} />
             </div>
-        </div>
-    );
+        </Fragment>
+    ) : null;
 };
 
 export default Home;

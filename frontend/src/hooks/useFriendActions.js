@@ -35,7 +35,7 @@ const useFriendAction = () => {
                 });
 
                 uiDispatch({
-                    type: "SET_MESSAGE",
+                    type: "SET_NOTIFICATION",
                     payload: { color: "success", display: true, text: data.message },
                 });
             }
@@ -44,7 +44,7 @@ const useFriendAction = () => {
 
             if (err && err.response) {
                 uiDispatch({
-                    type: "SET_MESSAGE",
+                    type: "SET_NOTIFICATION",
                     payload: {
                         color: "error",
                         display: true,
@@ -76,7 +76,7 @@ const useFriendAction = () => {
                     payload: request_id,
                 });
                 uiDispatch({
-                    type: "SET_MESSAGE",
+                    type: "SET_NOTIFICATION",
                     payload: { color: "success", display: true, text: data.message },
                 });
             }
@@ -85,7 +85,7 @@ const useFriendAction = () => {
 
             if (err && err.response) {
                 uiDispatch({
-                    type: "SET_MESSAGE",
+                    type: "SET_NOTIFICATION",
                     payload: {
                         color: "error",
                         display: true,
@@ -114,7 +114,7 @@ const useFriendAction = () => {
                     payload: data.friend,
                 });
                 uiDispatch({
-                    type: "SET_MESSAGE",
+                    type: "SET_NOTIFICATION",
                     payload: { color: "success", display: true, text: data.message },
                 });
             }
@@ -123,7 +123,7 @@ const useFriendAction = () => {
 
             if (err && err.response) {
                 uiDispatch({
-                    type: "SET_MESSAGE",
+                    type: "SET_NOTIFICATION",
                     payload: {
                         color: "error",
                         display: true,
@@ -151,14 +151,14 @@ const useFriendAction = () => {
                     payload: request_id,
                 });
                 uiDispatch({
-                    type: "SET_MESSAGE",
+                    type: "SET_NOTIFICATION",
                     payload: { color: "success", display: true, text: data.message },
                 });
             }
         } catch (err) {
             if (err && err.response) {
                 uiDispatch({
-                    type: "SET_MESSAGE",
+                    type: "SET_NOTIFICATION",
                     payload: {
                         color: "error",
                         display: true,

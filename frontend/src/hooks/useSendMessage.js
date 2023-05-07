@@ -42,7 +42,7 @@ const useSendMessage = ({
             if (err && err.response) {
                 if (err.response.status === 422) {
                     uiDispatch({
-                        type: "SET_MESSAGE",
+                        type: "SET_NOTIFICATION",
                         payload: {
                             display: true,
                             text: err.response.data.error,

@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Drawer, Toolbar, useMediaQuery, useTheme } from "@material-ui/core";
+import { Drawer, Toolbar, useTheme, useMediaQuery } from "@material-ui/core";
 
 import { UIContext } from "../App";
 

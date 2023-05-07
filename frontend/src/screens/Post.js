@@ -92,7 +92,7 @@ const Post = () => {
                                         ) : (
                                             <AvartarText
                                                 text={postState.post.user.name}
-                                                bg={
+                                                background={
                                                     postState.post.user.active
                                                         ? "seagreen"
                                                         : "tomato"

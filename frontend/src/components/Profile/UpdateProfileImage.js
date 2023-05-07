@@ -89,7 +89,7 @@ const UpdateProfileImage = ({ user }) => {
                 ) : (
                     <AvartarText
                         text={user.name}
-                        bg={user.active ? "seagreen" : "tomato"}
+                        background={user.active ? "seagreen" : "tomato"}
                         fontSize="40px"
                         size="170px"
                     />

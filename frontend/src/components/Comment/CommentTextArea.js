@@ -64,7 +64,7 @@ const CommentTextArea = ({ post }) => {
             <Grid
                 container
                 spacing={1}
-                justify="flex-start"
+                justifyContent="flex-start"
                 style={{
                     marginTop: "8px",
                     marginBottom: "8px",
@@ -81,7 +81,7 @@ const CommentTextArea = ({ post }) => {
                                 />
                             </Avatar>
                         ) : (
-                            <AvartarText text={userState.currentUser.name} bg="tomato" />
+                            <AvartarText text={userState.currentUser.name} background="tomato" />
                         )}
                     </StyledBadge>
                 </Grid>

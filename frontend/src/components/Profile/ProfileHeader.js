@@ -31,7 +31,7 @@ const ProfileHeader = ({ user }) => {
 
     return (
         <div>
-            <Grid container justify="center" alignItems="center">
+            <Grid container justifyContent="center" alignItems="center">
                 <Grid item xs={12} sm={12} md={6}>
                     <Paper
                         elevation={10}
@@ -52,7 +52,12 @@ const ProfileHeader = ({ user }) => {
                     </Paper>
                 </Grid>
             </Grid>
-            <Grid container justify="center" alignItems="center" style={{ marginTop: "30px" }}>
+            <Grid
+                container
+                justifyContent="center"
+                alignItems="center"
+                style={{ marginTop: "30px" }}
+            >
                 <Grid
                     item
                     xs={12}

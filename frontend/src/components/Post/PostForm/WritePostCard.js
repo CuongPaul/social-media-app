@@ -37,7 +37,7 @@ const PostCard = () => {
                     ) : (
                         <AvartarText
                             text={userState.currentUser.name}
-                            bg={userState.currentUser.active ? "seagreen" : "tomato"}
+                            background={userState.currentUser.active ? "seagreen" : "tomato"}
                         />
                     )}
                     <div style={{ width: "100%", marginLeft: "16px", marginRight: "16px" }}>

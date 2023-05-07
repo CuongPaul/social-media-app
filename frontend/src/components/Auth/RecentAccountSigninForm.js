@@ -39,7 +39,7 @@ const RecentAccountSigninForm = ({ account, isShowSigninForm, setIsShowSigninFor
                         </IconButton>
                     }
                 />
-                {account.avatar_image ? (
+                {account?.avatar_image ? (
                     <CardMedia
                         style={{
                             width: "100%",
@@ -50,7 +50,7 @@ const RecentAccountSigninForm = ({ account, isShowSigninForm, setIsShowSigninFor
                         }}
                     >
                         <Avatar
-                            src={account.avatar_image}
+                            src={account?.avatar_image}
                             style={{ height: "200px", width: "200px" }}
                         />
                     </CardMedia>
@@ -63,7 +63,12 @@ const RecentAccountSigninForm = ({ account, isShowSigninForm, setIsShowSigninFor
                             justifyContent: "center",
                         }}
                     >
-                        <AvartarText bg="teal" size="100px" fontSize="35px" text={account.name} />
+                        <AvartarText
+                            background="teal"
+                            size="100px"
+                            fontSize="35px"
+                            text={account?.name}
+                        />
                     </CardMedia>
                 )}
                 <CardContent>
@@ -83,7 +88,7 @@ const RecentAccountSigninForm = ({ account, isShowSigninForm, setIsShowSigninFor
                                 fontWeight: "800",
                             }}
                         >
-                            {account.name}
+                            {account?.name}
                         </Typography>
                     </div>
                     <form onSubmit={handleSignin}>
