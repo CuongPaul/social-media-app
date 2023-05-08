@@ -3,7 +3,7 @@ import axios from "axios";
 const callApi = async ({ url, data, query, method }) => {
     const token = localStorage.getItem("token");
     const baseURL = process.env.REACT_APP_BASE_API_URL;
-    const options = { url, method, baseURL, timeout: 3 * 1000 };
+    const options = { url, method, baseURL, timeout: 30 * 1000 };
 
     if (data) {
         options.data = data;

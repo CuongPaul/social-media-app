@@ -56,7 +56,7 @@ const useFriendAction = () => {
     };
 
     const declineFriendRequest = async (request_id) => {
-        let token = JSON.parse(localStorage.getItem("token"));
+        let token = localStorage.getItem("token");
 
         try {
             setLoading(true);

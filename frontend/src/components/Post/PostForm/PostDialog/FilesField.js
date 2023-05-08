@@ -3,28 +3,27 @@ import { Tooltip, IconButton } from "@material-ui/core";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const FileField = ({ handleImageChange }) => {
+const FilesField = ({ multipleUpload, setFilesUpload, setFilesPreview }) => {
     const fileRef = useRef();
-
-    // const handleImageChange = (e) => {
-    //     const { files } = e.target;
-
-    //     setPostImage(files);
-
-    //     for (const file of files) {
-    //         const reader = new FileReader();
-    //         reader.readAsDataURL(file);
-    //         reader.onload = () => {
-    //             setBlob(null);
-    //             setIsImageCaptured(false);
-    //             setPreviewImage((pre) => [...pre, reader.result]);
-    //         };
-    //     }
-    // };
 
     const handleClickUpload = (e) => {
         e.preventDefault();
         fileRef.current.click();
+    };
+
+    const handleChangeFile = (e) => {
+        const { files } = e.target;
+
+        setFilesUpload((preValue) => [...preValue, ...files]);
+
+        for (const file of files) {
+            const reader = new FileReader();
+
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                setFilesPreview((preValue) => [...preValue, reader.result]);
+            };
+        }
     };
 
     return (
@@ -35,16 +34,15 @@ const FileField = ({ handleImageChange }) => {
                 </IconButton>
             </Tooltip>
             <input
-                multiple
                 type="file"
                 ref={fileRef}
-                capture="user"
                 accept="image/*,video/*"
+                multiple={multipleUpload}
+                onChange={handleChangeFile}
                 style={{ display: "none" }}
-                onChange={handleImageChange}
             />
         </Fragment>
     );
 };
 
-export default FileField;
+export default FilesField;

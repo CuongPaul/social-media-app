@@ -14,7 +14,7 @@ import {
 import { Link, useHistory } from "react-router-dom";
 import { Settings, ExitToApp } from "@material-ui/icons";
 import { faMoon } from "@fortawesome/free-regular-svg-icons";
-import React, { Fragment, useState, useContext } from "react";
+import React, { useState, Fragment, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 

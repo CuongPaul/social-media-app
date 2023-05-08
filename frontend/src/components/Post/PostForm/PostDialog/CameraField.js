@@ -9,23 +9,18 @@ import {
     Typography,
     DialogContent,
 } from "@material-ui/core";
-import React, { useRef, Fragment, useState } from "react";
+import React, { useRef, useState, Fragment } from "react";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Check, Close, Camera, ArrowBack } from "@material-ui/icons";
 
-const CameraField = ({
-    setBlob,
-    setPostImage,
-    setPreviewImage,
-    isImageCaptured,
-    setIsImageCaptured,
-}) => {
+const CameraField = ({ setFilesUpload, setFilesPreview }) => {
     const videoRef = useRef();
     const canvasRef = useRef();
     const [isOpen, setIsOpen] = useState(false);
+    const [isCaptured, setIsCaptured] = useState(false);
 
-    const cameraInitialization = async () => {
+    const startCamera = async () => {
         try {
             const constraints = { video: true };
 
@@ -37,7 +32,7 @@ const CameraField = ({
         }
     };
 
-    const cameraShutdown = () => {
+    const stopCamera = () => {
         if (videoRef.current.srcObject) {
             const tracks = videoRef.current.srcObject.getVideoTracks();
 
@@ -48,32 +43,16 @@ const CameraField = ({
     };
 
     const handleOpenCamera = () => {
-        cameraInitialization();
+        startCamera();
         setIsOpen(true);
     };
 
     const handleCloseCamera = () => {
-        cameraShutdown();
+        stopCamera();
         setIsOpen(false);
     };
 
-    const handleRemoveImage = () => {
-        cameraInitialization();
-        setIsImageCaptured(false);
-    };
-
-    const handleAddImage = () => {
-        canvasRef.current.toBlob((blob) => {
-            setBlob(blob);
-            setPostImage(null);
-            setPreviewImage("");
-        });
-
-        cameraShutdown();
-        setIsOpen(false);
-    };
-
-    const handleCapture = () => {
+    const handleClickCapture = () => {
         const video = videoRef.current;
         const canvas = canvasRef.current;
 
@@ -82,8 +61,24 @@ const CameraField = ({
 
         canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        setIsImageCaptured(true);
-        cameraShutdown();
+        setIsCaptured(true);
+        stopCamera();
+    };
+
+    const handleAddCaptureImage = () => {
+        canvasRef.current.toBlob((blob) => {
+            setFilesUpload((preValue) => [...preValue, blob]);
+            setFilesPreview((preValue) => [...preValue, URL.createObjectURL(blob)]);
+        });
+
+        stopCamera();
+        setIsOpen(false);
+        setIsCaptured(false);
+    };
+
+    const handleRemoveCaptureImage = () => {
+        setIsCaptured(false);
+        startCamera();
     };
 
     return (
@@ -93,14 +88,7 @@ const CameraField = ({
                     <FontAwesomeIcon icon={faCamera} color="rgb(24,119,242)" />
                 </IconButton>
             </Tooltip>
-            <Dialog
-                fullWidth
-                scroll="body"
-                maxWidth="sm"
-                open={isOpen}
-                style={{ width: "100%" }}
-                onClose={handleCloseCamera}
-            >
+            <Dialog fullWidth open={isOpen} style={{ width: "100%" }} onClose={handleCloseCamera}>
                 <CardHeader
                     avatar={
                         <IconButton onClick={handleCloseCamera}>
@@ -123,13 +111,13 @@ const CameraField = ({
                                     ref={videoRef}
                                     style={{
                                         width: "100%",
-                                        display: isImageCaptured ? "none" : "block",
+                                        display: isCaptured ? "none" : "block",
                                     }}
                                 />
                                 <canvas
                                     height="240"
                                     ref={canvasRef}
-                                    style={{ display: isImageCaptured ? "block" : "none" }}
+                                    style={{ display: isCaptured ? "block" : "none" }}
                                 />
                                 <div
                                     style={{
@@ -141,16 +129,22 @@ const CameraField = ({
                                         justifyContent: "center",
                                     }}
                                 >
-                                    {isImageCaptured ? (
+                                    {isCaptured ? (
                                         <div>
-                                            <IconButton onClick={handleRemoveImage} size="medium">
+                                            <IconButton
+                                                size="medium"
+                                                onClick={handleRemoveCaptureImage}
+                                            >
                                                 <Avatar
-                                                    style={{ background: "tomato", color: "white" }}
+                                                    style={{ color: "white", background: "tomato" }}
                                                 >
                                                     <Close />
                                                 </Avatar>
                                             </IconButton>
-                                            <IconButton size="medium" onClick={handleAddImage}>
+                                            <IconButton
+                                                size="medium"
+                                                onClick={handleAddCaptureImage}
+                                            >
                                                 <Avatar
                                                     style={{
                                                         color: "white",
@@ -165,7 +159,7 @@ const CameraField = ({
                                         <IconButton
                                             size="medium"
                                             color="primary"
-                                            onClick={handleCapture}
+                                            onClick={handleClickCapture}
                                         >
                                             <Avatar style={{ color: "white", background: "teal" }}>
                                                 <Camera />

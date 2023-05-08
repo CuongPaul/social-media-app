@@ -21,7 +21,7 @@ const useSendMessage = ({
         setLoading(true);
         let friendId = chatState.selectedFriend.id;
         try {
-            let token = JSON.parse(localStorage.getItem("token"));
+            let token = localStorage.getItem("token");
             const response = await axios.post(
                 `${url}/api/user/chat/${friendId}/send`,
                 { text: textMessage, image: uri ? uri : "" },

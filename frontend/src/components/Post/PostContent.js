@@ -1,25 +1,20 @@
-import {
-    Avatar,
-    Divider,
-    useTheme,
-    CardMedia,
-    Typography,
-    CardContent,
-    useMediaQuery,
-} from "@material-ui/core";
 import React, { Fragment, useContext } from "react";
+import { Divider, Typography, CardContent } from "@material-ui/core";
 
 import { UIContext } from "../../App";
+import SlideImage from "./SlideImage";
 import PostSubContent from "./PostSubContent";
 
 const PostContent = ({ post }) => {
     const { uiState } = useContext(UIContext);
 
     const isContent = () => {
-        return post.body.feelings || post.body.with.length || post.body.at || post.body.date;
+        const bodyPost = post.body;
+
+        return bodyPost?.feelings || bodyPost?.tag_friends?.length || bodyPost?.location;
     };
-    const theme = useTheme();
-    const xsScreen = useMediaQuery(theme.breakpoints.only("xs"));
+
+    console.log("post: ", post);
 
     return (
         <Fragment>
@@ -36,49 +31,10 @@ const PostContent = ({ post }) => {
             )}
             <CardContent>
                 <Typography style={{ fontWeight: "400", fontSize: "16px", fontFamily: "fantasy" }}>
-                    {post.content && post.content}
+                    {post?.text}
                 </Typography>
             </CardContent>
-            {post.image && (
-                <CardMedia
-                    component={
-                        post.image.split(".").pop().substring(0, 3) === "mp4" ? "video" : "img"
-                    }
-                    style={{ width: "100%", maxHeight: "500px", objectFit: "fill" }}
-                    image={post.image}
-                    title="Paella dish"
-                    controls
-                />
-            )}
-            {Object.keys(post.profilePostData).length ? (
-                <>
-                    <CardMedia
-                        style={{ width: "100%", height: "200px" }}
-                        image={post.profilePostData.coverImage}
-                        title={post.user.name}
-                    />
-
-                    <Avatar
-                        style={{
-                            border: "6px solid tomato",
-                            width: xsScreen ? "300px" : "400px",
-                            height: xsScreen ? "300px" : "400px",
-                            display: "flex",
-                            flexDirection: "row",
-                            margin: "auto",
-                            borderRadius: "100%",
-                            bottom: 130,
-                        }}
-                    >
-                        <img
-                            src={post.profilePostData.profileImage}
-                            width="100%"
-                            height="100%"
-                            alt={post.profilePostData.profileImage}
-                        />
-                    </Avatar>
-                </>
-            ) : null}
+            {post?.images && <SlideImage images={post.images} />}
             <Divider />
         </Fragment>
     );

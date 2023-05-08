@@ -1,16 +1,16 @@
-import React, { useContext } from "react";
+import React, { Fragment, useContext } from "react";
 import { Button, Typography } from "@material-ui/core";
 
 import Post from "./Post";
 import { PostContext } from "../../App";
 import useFetchPost from "../../hooks/useFetchPost";
 
-const Posts = ({ posts }) => {
+const Posts = () => {
     const { postState } = useContext(PostContext);
     const { postDispatch } = useContext(PostContext);
-
+    const posts = postState.posts;
     const { fetchPosts } = useFetchPost();
-
+console.log("posts:" , posts);
     const handleFetchPosts = () => {
         fetchPosts();
     };
@@ -21,19 +21,16 @@ const Posts = ({ posts }) => {
     };
 
     return (
-        <div>
-            {posts.length
-                ? posts.map((post) => (
-                      <div key={post.id}>
-                          <Post post={post} handleDeletePost={handleDeletePost} />
-                      </div>
-                  ))
-                : null}
-
+        <Fragment>
+            {posts.map((post) => (
+                <div key={post._id}>
+                    <Post post={post} handleDeletePost={handleDeletePost} />
+                </div>
+            ))}
             <div
                 style={{
-                    marginTop: "20px",
                     display: "flex",
+                    marginTop: "20px",
                     justifyContent: "center",
                 }}
             >
@@ -47,7 +44,7 @@ const Posts = ({ posts }) => {
                     </Button>
                 )}
             </div>
-        </div>
+        </Fragment>
     );
 };
 

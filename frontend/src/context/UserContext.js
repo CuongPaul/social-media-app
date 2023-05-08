@@ -59,9 +59,9 @@ const UserReducer = (state, action) => {
 
         case "USER_SIGNOUT":
             const newRecentAccounts = [...new Set([...state.recentAccounts, state.currentUser])];
-            console.log("newRecentAccounts: ", newRecentAccounts);
-            localStorage.setItem("accounts", JSON.stringify(newRecentAccounts));
+
             localStorage.removeItem("token");
+            localStorage.setItem("accounts", JSON.stringify(newRecentAccounts));
 
             return {
                 ...state,

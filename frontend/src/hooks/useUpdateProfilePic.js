@@ -95,7 +95,7 @@ const useUpdateProfilePic = ({ profile_pic, cover_pic, history }) => {
     const saveCoverImage = async (cover_url) => {
         setLoading(true);
         try {
-            let token = JSON.parse(localStorage.getItem("token"));
+            let token = localStorage.getItem("token");
             const response = await axios.put(
                 `${url}/api/user/cover_pic/update`,
                 { cover_url },

@@ -9,24 +9,24 @@ const CustomHeaderText = ({ body }) => {
     return (
         <Typography>
             <b>{userState?.currentUser?.name}</b>
-            {body.feelings ? (
+            {body?.feelings ? (
                 <>
-                    &nbsp; is feeling <b>{body.feelings}</b>
+                    &nbsp; is feeling <b>{body?.feelings}</b>
                 </>
             ) : null}
-            {body.tag_friends.length ? (
+            {body?.tag_friends.length ? (
                 <>
                     {` with `}
                     <b>
-                        {body.tag_friends.map((u) => (
+                        {body?.tag_friends.map((u) => (
                             <> &nbsp;{u.name},</>
                         ))}
                     </b>
                 </>
             ) : null}
-            {body.location ? (
+            {body?.location ? (
                 <>
-                    {` at `} <b>{body.location} </b>
+                    {` at `} <b>{body?.location} </b>
                 </>
             ) : null}
         </Typography>

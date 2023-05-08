@@ -5,12 +5,11 @@ import callApi from "../api";
 import { storage } from "../firebase/firebase";
 import { UIContext, PostContext } from "../App";
 
-const useCreatePost = ({ postData, body, isImageCaptured, postImage, blob }) => {
+const useCreatePost = ({ postData, body, isCameraImage, filesUpload }) => {
     const { uiDispatch } = useContext(UIContext);
     const { postDispatch } = useContext(PostContext);
 
     const history = useHistory();
-    const [error, setError] = useState();
     const [loading, setLoading] = useState(false);
 
     const createPost = async (formValue) => {
@@ -52,65 +51,30 @@ const useCreatePost = ({ postData, body, isImageCaptured, postImage, blob }) => 
     const createUserPost = async (uri = "") => {
         await createPost({
             ...postData,
-            images: [uri ? uri : ""],
+            images: uri ? [...uri] : null,
             body: {
                 ...body,
             },
         });
     };
 
-    const handleSubmitPost = (e) => {
+    const handleSubmitPost = async (e) => {
         e.preventDefault();
 
-        if (isImageCaptured) {
-            let filename = `post/post-${Date.now()}.png`;
-            const task = storage.ref(`images/${filename}`).put(blob);
+        if (filesUpload.length) {
+            const formData = new FormData();
+            for (let i = 0; i < filesUpload.length; i++) {
+                formData.append("files", filesUpload[i]);
+            }
+            formData.append("folder", "post");
 
-            task.on(
-                "state_changed",
+            const { data } = await callApi({
+                url: "/upload/files",
+                method: "POST",
+                data: formData,
+            });
 
-                function () {
-                    setLoading(true);
-                },
-                function (error) {
-                    console.log("error from firebase");
-                    setLoading(false);
-                    uiDispatch({ type: "SET_POST_MODEL", payload: false });
-                },
-                function () {
-                    storage
-                        .ref("images")
-                        .child(filename)
-                        .getDownloadURL()
-                        .then((uri) => {
-                            createUserPost(uri);
-                            setLoading(false);
-                        });
-                }
-            );
-        } else if (postImage) {
-            let filename = `post/post-${Date.now()}-${postImage.name}`;
-            const uploadTask = storage.ref(`images/${filename}`).put(postImage);
-            uploadTask.on(
-                "state_changed",
-                () => {
-                    setLoading(true);
-                },
-                (err) => {
-                    console.log("error from firebase");
-                    setLoading(false);
-                    uiDispatch({ type: "SET_POST_MODEL", payload: false });
-                },
-                () => {
-                    storage
-                        .ref("images")
-                        .child(filename)
-                        .getDownloadURL()
-                        .then((uri) => {
-                            createUserPost(uri);
-                        });
-                }
-            );
+            createUserPost(data.images);
         } else {
             createUserPost();
         }

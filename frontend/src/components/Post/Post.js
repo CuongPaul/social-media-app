@@ -1,4 +1,3 @@
-import moment from "moment";
 import {
     Card,
     Menu,
@@ -7,9 +6,11 @@ import {
     CardHeader,
     IconButton,
     Typography,
+    Divider,
 } from "@material-ui/core";
+import moment from "moment";
 import { MoreHoriz } from "@material-ui/icons";
-import React, { useContext, useState } from "react";
+import React, { useState, useContext } from "react";
 
 import { UIContext } from "../../App";
 import PostFooter from "./PostFooter";
@@ -19,7 +20,8 @@ import { deletePost } from "../../services/PostServices";
 
 const Post = ({ post, handleDeletePost }) => {
     const { uiState, uiDispatch } = useContext(UIContext);
-    const [isOpen, setIsOpen] = useState(null);
+
+    const [isOpen, setIsOpen] = useState(false);
 
     return (
         <Card
@@ -93,6 +95,7 @@ const Post = ({ post, handleDeletePost }) => {
                 subheader={post && moment(post.createdAt).fromNow()}
             />
             <PostContent post={post} />
+            <Divider />
             <PostFooter post={post} />
         </Card>
     );

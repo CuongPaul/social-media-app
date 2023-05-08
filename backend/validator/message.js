@@ -15,7 +15,7 @@ const reactMessageValidatetion = {
     }),
     query: Joi.object({
         chat_room_id: Joi.string().required().trim(),
-        key: Joi.string().required().valid("wow", "sad", "like", "love", "haha", "angry"),
+        key: Joi.string().required().valid("sad", "wow", "like", "love", "haha", "angry"),
     }),
 };
 

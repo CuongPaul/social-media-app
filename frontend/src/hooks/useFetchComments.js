@@ -11,7 +11,7 @@ const useFetchComments = (post_id) => {
     const fetchComments = async () => {
         setLoading(true);
         try {
-            let token = JSON.parse(localStorage.getItem("token"));
+            let token = localStorage.getItem("token");
             const response = await axios.get(`${url}/api/post/${post_id}/comment`, {
                 headers: {
                     Authorization: `Bearer ${token}`,

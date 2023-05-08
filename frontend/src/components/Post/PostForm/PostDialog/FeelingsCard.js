@@ -15,7 +15,7 @@ import { ArrowBack } from "@material-ui/icons";
 import { faSmile } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const FeelingsCard = ({ body, setBody }) => {
+const FeelingsCard = ({ body, setPostData }) => {
     const [open, setOpen] = useState(false);
     return (
         <>
@@ -53,8 +53,13 @@ const FeelingsCard = ({ body, setBody }) => {
                                 <TextField
                                     label="Add Feelings"
                                     variant="outlined"
-                                    value={body.feelings}
-                                    onChange={(e) => setBody({ ...body, feelings: e.target.value })}
+                                    value={body?.feelings}
+                                    onChange={(e) =>
+                                        setPostData((pre) => ({
+                                            ...pre,
+                                            body: { ...body, feelings: e.target.value },
+                                        }))
+                                    }
                                     style={{ width: "100%" }}
                                 />
                                 <Button

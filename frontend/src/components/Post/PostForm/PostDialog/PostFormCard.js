@@ -2,10 +2,8 @@ import {
     Grid,
     Button,
     Dialog,
-    Avatar,
     Select,
     TextField,
-    IconButton,
     InputLabel,
     Typography,
     FormControl,
@@ -13,15 +11,13 @@ import {
     DialogContent,
     CircularProgress,
 } from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
-import { Close } from "@material-ui/icons";
 import EmojiPicker from "emoji-picker-react";
-import React, { lazy, Fragment, useState, useEffect, useContext } from "react";
+import React, { lazy, useState, Fragment, useEffect, useContext } from "react";
 
-import FileField from "./FileField";
+import FilesField from "./FilesField";
 import TagUserCard from "./TagUserCard";
 import DialogHeader from "./DialogHeader";
-import PreviewImage from "./PreviewImage";
+import PreviewFile from "./PreviewFile";
 import FeelingsCard from "./FeelingsCard";
 import LocationField from "./LocationField";
 import DialogLoading from "../../../UI/DialogLoading";
@@ -32,50 +28,30 @@ import { UIContext, UserContext, PostContext } from "../../../../App";
 const CameraField = lazy(() => import("./CameraField"));
 
 const PostFormDialog = () => {
+    const { userState } = useContext(UserContext);
     const { postDispatch } = useContext(PostContext);
     const { uiState, uiDispatch } = useContext(UIContext);
 
-    const [blob, setBlob] = useState(null);
-    const [postImage, setPostImage] = useState(null);
-    const [showEmoji, setShowEmoji] = useState(false);
-    const [previewImage, setPreviewImage] = useState([]);
-    const [isImageCaptured, setIsImageCaptured] = useState(false);
-    const [postData, setPostData] = useState({ privacy: "public", content: "" });
-
-    const [body, setBody] = useState({
-        tag_friends: [],
-        feelings: "",
-        location: "",
+    const [filesUpload, setFilesUpload] = useState([]);
+    const [filesPreview, setFilesPreview] = useState([]);
+    const [isShowEmoji, setIsShowEmoji] = useState(false);
+    const [postData, setPostData] = useState({
+        text: "",
+        privacy: "public",
+        body: { feelings: "", location: "", tag_friends: [] },
     });
 
-    const { userState } = useContext(UserContext);
-
-    const handleContentChange = (e) => {
+    const handleClickEmoji = (e, emojiObject) => {
         setPostData({
             ...postData,
-            content: e.target.value,
+            text: postData.text + emojiObject.emoji,
         });
     };
-    const handleImageChange = (e) => {
-        const { files } = e.target;
 
-        setPostImage(files);
-
-        for (const file of files) {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => {
-                setBlob(null);
-                setIsImageCaptured(false);
-                setPreviewImage((pre) => [...pre, reader.result]);
-            };
-        }
-    };
-
-    const onEmojiClick = (e, emojiObject) => {
+    const handleChangeContent = (e) => {
         setPostData({
             ...postData,
-            content: postData.content + emojiObject.emoji,
+            text: e.target.value,
         });
     };
 
@@ -84,64 +60,23 @@ const PostFormDialog = () => {
         uiDispatch({ type: "SET_POST_MODEL", payload: false });
     };
 
-    const removeFileImage = () => {
-        setPreviewImage("");
-        setPostImage(null);
-    };
-
-    const removeCameraImage = () => {
-        setBlob(null);
-        setIsImageCaptured(false);
-    };
-
-    const showCapturedImage = () => {
-        if (blob) {
-            return (
-                <div>
-                    <Alert>
-                        <b>Image Size ({Math.round(blob.size / 1024)} Kb)</b>
-                    </Alert>
-                    <img
-                        src={URL.createObjectURL(blob)}
-                        style={{ width: "100%", height: "100%" }}
-                        alt=""
-                    />
-                    <div
-                        style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            marginTop: "16px",
-                            marginBottom: "16px",
-                        }}
-                    >
-                        <IconButton onClick={removeCameraImage} size="medium">
-                            <Avatar style={{ background: "tomato", color: "white" }}>
-                                <Close />
-                            </Avatar>
-                        </IconButton>
-                    </div>
-                </div>
-            );
-        }
+    const handleRemoveFile = () => {
+        setFilesPreview("");
+        setFilesUpload(null);
     };
 
     useEffect(() => {
         setPostData({
-            privacy: uiState.post ? uiState.post.privacy : "public",
-            content: uiState.post ? uiState.post.content : "",
+            privacy: uiState.post ? uiState.post.privacy : "PUBLIC",
+            text: uiState.post ? uiState.post.text : "",
         });
     }, [uiState.post]);
 
     const { handleSubmitPost, loading } = useCreatePost({
-        blob,
-        body,
         postData,
-        postImage,
-        isImageCaptured,
+        filesUpload,
     });
-
+    console.log("ABC: ", filesUpload);
     const handleUpdatePost = (postId) => {
         updatePost({ ...postData, id: postId }).then((res) => {
             if (res.data.message === "success") {
@@ -155,56 +90,52 @@ const PostFormDialog = () => {
         <Fragment>
             <Typography
                 style={{
-                    color: !uiState.darkMode ? "grey" : null,
                     padding: "8px",
-                    background: !uiState.darkMode ? "rgb(240,242,245)" : null,
-                    borderRadius: "20px",
-
                     cursor: "pointer",
+                    borderRadius: "20px",
+                    color: uiState.darkMode ? null : "grey",
+                    background: uiState.darkMode ? null : "rgb(240,242,245)",
                 }}
                 onClick={() => uiDispatch({ type: "SET_POST_MODEL", payload: true })}
             >
-                What`s in your mind, {userState.currentUser.name} ?
+                What's in your mind, {userState.currentUser.name}?
             </Typography>
             {loading ? (
-                <DialogLoading loading={loading} text="Uploading Post..." />
+                <DialogLoading loading={loading} text="Uploading post..." />
             ) : (
                 <Dialog
                     fullWidth
-                    scroll="body"
-                    maxWidth="sm"
-                    disableEscapeKeyDown
                     open={uiState.postModel}
                     style={{ width: "100%" }}
                     onClose={() => uiDispatch({ type: "SET_POST_MODEL", payload: false })}
                 >
-                    <DialogHeader body={body} handleCloseDialog={handleCloseDialog} />
+                    <DialogHeader body={postData.body} handleCloseDialog={handleCloseDialog} />
                     <DialogContent>
                         <FormControl style={{ marginBottom: "16px" }}>
                             <InputLabel>Privacy</InputLabel>
                             <Select
-                                native
                                 value={postData.privacy}
-                                onChange={(e) =>
-                                    setPostData({ ...postData, privacy: e.target.value })
-                                }
+                                onChange={(e) => {
+                                    console.log(e.target.value);
+                                    setPostData({ ...postData, privacy: e.target.value });
+                                }}
                             >
-                                <option value={"only_me"}>Only me</option>
-                                <option value={"public"}>Public</option>
+                                <option value={"PUBLIC"}>Public</option>
+                                <option value={"FRIEND"}>Friend</option>
+                                <option value={"ONLY_ME"}>Only me</option>
                             </Select>
                         </FormControl>
-
                         <TextField
-                            placeholder={`Whats in your mind ${userState.currentUser.name}`}
                             multiline
                             minRows={8}
-                            value={postData.content}
-                            onChange={handleContentChange}
+                            value={postData.text}
+                            onChange={handleChangeContent}
                             style={{
-                                background: !uiState.darkMode ? "#fff" : null,
-                                border: "none",
                                 width: "100%",
+                                border: "none",
+                                background: uiState.darkMode ? null : "#fff",
                             }}
+                            placeholder={`What's in your mind, ${userState.currentUser.name}?`}
                         />
 
                         <Grid
@@ -213,12 +144,12 @@ const PostFormDialog = () => {
                             style={{ marginTop: "16px", marginBottom: "16px" }}
                         >
                             <Button
-                                onClick={() => setShowEmoji(!showEmoji)}
-                                variant="contained"
-                                color="secondary"
                                 size="small"
+                                color="secondary"
+                                variant="contained"
+                                onClick={() => setIsShowEmoji(!isShowEmoji)}
                             >
-                                {showEmoji ? "Hide Emoji Panel" : "Show Emoji Panel"}
+                                {isShowEmoji ? "Hide" : "Show"} emoji panel
                             </Button>
                         </Grid>
                         <Grid
@@ -227,47 +158,40 @@ const PostFormDialog = () => {
                             justifyContent="center"
                             style={{ marginTop: "16px", marginBottom: "16px" }}
                         >
-                            <Grid item xs={12} sm={6} md={6}>
-                                {showEmoji && (
+                            <Grid item md={6} sm={6} xs={12}>
+                                {isShowEmoji && (
                                     <EmojiPicker
-                                        onEmojiClick={onEmojiClick}
                                         className="emoji-container"
+                                        onEmojiClick={handleClickEmoji}
                                     />
                                 )}
                             </Grid>
                         </Grid>
-
                         <Grid container alignItems="center" justifyContent="center">
-                            <Grid item xs={12} sm={6} md={6}>
-                                <FileField handleImageChange={handleImageChange} />
-                                <CameraField
-                                    setBlob={setBlob}
-                                    isImageCaptured={isImageCaptured}
-                                    setIsImageCaptured={setIsImageCaptured}
-                                    setPreviewImage={setPreviewImage}
-                                    setPostImage={setPostImage}
+                            <Grid item md={6} sm={6} xs={12}>
+                                <FilesField
+                                    multipleUpload={true}
+                                    setFilesUpload={setFilesUpload}
+                                    setFilesPreview={setFilesPreview}
                                 />
-                                <LocationField body={body} setBody={setBody} />
-                                <FeelingsCard body={body} setBody={setBody} />
-                                <TagUserCard body={body} setBody={setBody} />
+                                <CameraField
+                                    setFilesUpload={setFilesUpload}
+                                    setFilesPreview={setFilesPreview}
+                                />
+                                <LocationField body={postData.body} setPostData={setPostData} />
+                                <FeelingsCard body={postData.body} setPostData={setPostData} />
+                                <TagUserCard body={postData.body} setPostData={setPostData} />
                             </Grid>
                         </Grid>
 
-                        {previewImage.length
-                            ? previewImage.map((item) => (
-                                  // <div>
-                                  // <Alert>
-                                  //     <b>Image Size ({Math.round(postImage.size / 1024)} Kb)</b>
-                                  // </Alert>
-                                  <PreviewImage
-                                      previewImage={item}
-                                      removeFileImage={removeFileImage}
+                        {filesPreview.length
+                            ? filesPreview.map((item) => (
+                                  <PreviewFile
+                                      filePreview={item}
+                                      handleRemoveFile={handleRemoveFile}
                                   />
-                                  // </div>
                               ))
                             : null}
-
-                        {showCapturedImage()}
                     </DialogContent>
                     <DialogActions>
                         <Button

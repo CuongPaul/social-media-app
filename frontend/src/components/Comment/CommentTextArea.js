@@ -9,8 +9,8 @@ import AvartarText from "../UI/AvartarText";
 import StyledBadge from "../UI/StyledBadge";
 import { UIContext, UserContext } from "../../App";
 import useCreateComment from "../../hooks/useCreateComment";
-import PreviewImage from "../Post/PostForm/PostDialog/PreviewImage";
-import FileField from "../Post/PostForm/PostDialog/FileField";
+import PreviewFile from "../Post/PostForm/PostDialog/PreviewFile";
+import FilesField from "../Post/PostForm/PostDialog/FilesField";
 
 const CommentTextArea = ({ post }) => {
     const { uiState } = useContext(UIContext);
@@ -102,7 +102,7 @@ const CommentTextArea = ({ post }) => {
                             background: uiState.darkMode ? "rgb(24,25,26)" : "rgb(240,242,245)",
                         }}
                     />
-                    <FileField fileRef={fileRef} />
+                    <FilesField fileRef={fileRef} />
                     <input
                         type="file"
                         ref={fileRef}
@@ -142,7 +142,7 @@ const CommentTextArea = ({ post }) => {
 
             {previewImage && (
                 <>
-                    <PreviewImage previewImage={previewImage} removeFileImage={removeFileImage} />
+                    <PreviewFile filePreview={previewImage} handleRemoveFile={removeFileImage} />
                 </>
             )}
         </>

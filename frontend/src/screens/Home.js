@@ -25,8 +25,8 @@ const homeLeftItems = [
 
 const Home = () => {
     const { userState } = useContext(UserContext);
-    const { postState } = useContext(PostContext);
     const { uiState, uiDispatch } = useContext(UIContext);
+    const { postState, postDispatch } = useContext(PostContext);
 
     const theme = useTheme();
     const match = useMediaQuery(theme.breakpoints.between(960, 1400));
@@ -38,7 +38,10 @@ const Home = () => {
         const loadPosts = async () => {
             try {
                 const { data, message } = await callApi({ method: "GET", url: "/post" });
-                console.log(data);
+                postDispatch({
+                    type: "SET_POSTS",
+                    payload: data.rows,
+                });
             } catch (err) {
                 uiDispatch({
                     type: "SET_NOTIFICATION",
@@ -126,7 +129,7 @@ const Home = () => {
             >
                 <WritePostCard user={userState.currentUser} />
 
-                <Posts posts={postState.posts.filter((item) => item.privacy === "Public")} />
+                <Posts />
             </div>
         </Fragment>
     ) : null;

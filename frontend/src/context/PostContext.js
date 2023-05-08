@@ -85,24 +85,22 @@ export const PostReducer = (state, action) => {
                     },
                     comments:
                         state.post.comments && state.post.comments.length
-                            ? [
-                                  ...state.post.comments,
-                                  ...action.payload.comments,
-                              ]
+                            ? [...state.post.comments, ...action.payload.comments]
                             : [...action.payload.comments],
                 },
             };
 
         case "LIKE_UNLIKE_POST":
-            let l_postIndex = state.posts.findIndex(
-                (post) => post.id === action.payload.id
-            );
+            let l_postIndex = state.posts.findIndex((post) => post.id === action.payload.id);
             state.posts[l_postIndex] = action.payload;
             if (state.post.id === action.payload.id) {
                 state.post = action.payload;
             }
 
             return { ...state };
+
+        case "REACT_POST":
+            return { ...state, posts: action.payload };
 
         case "SET_POST_COMMENTS":
             return {

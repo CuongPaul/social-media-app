@@ -1,7 +1,7 @@
 import io from "socket.io-client";
 import jwtDecode from "jwt-decode";
 import { createTheme, ThemeProvider } from "@material-ui/core/styles";
-import { Route, Switch, Redirect, BrowserRouter as Router } from "react-router-dom";
+import { Route, Switch, Redirect, BrowserRouter } from "react-router-dom";
 import React, { lazy, useMemo, Suspense, useEffect, useReducer, createContext } from "react";
 
 import callApi from "./api";
@@ -156,8 +156,9 @@ const App = () => {
                 <PostContext.Provider value={{ postState, postDispatch }}>
                     <ChatContext.Provider value={{ chatState, chatDispatch }}>
                         <ThemeProvider theme={theme}>
-                            <Router>
+                            <BrowserRouter>
                                 {token && <Navbar />}
+                                {uiState.message && <Notification />}
                                 <div
                                     style={{
                                         backgroundColor: uiState.darkMode
@@ -169,28 +170,28 @@ const App = () => {
                                         <Switch>
                                             <ProtectedRoute
                                                 exact
+                                                path="/post/:postId"
+                                                component={<Post />}
+                                            />
+                                            <ProtectedRoute
+                                                exact
                                                 path="/friends"
-                                                component={() => <div>Friends</div>}
+                                                component={<Friends />}
+                                            />
+                                            <ProtectedRoute
+                                                exact
+                                                path="/profile/:userId"
+                                                component={<Profile />}
                                             />
                                             <ProtectedRoute
                                                 exact
                                                 path="/settings"
-                                                component={() => <div>Settings</div>}
-                                            />
-                                            <ProtectedRoute
-                                                exact
-                                                component={() => <div>Post</div>}
-                                                path="/post/:postId"
+                                                component={<Settings />}
                                             />
                                             <ProtectedRoute
                                                 exact
                                                 path="/messenger"
-                                                component={() => <div>Messenger</div>}
-                                            />
-                                            <ProtectedRoute
-                                                exact
-                                                component={() => <div>Profile</div>}
-                                                path="/profile/:userId"
+                                                component={<Messenger />}
                                             />
                                             <Route
                                                 exact
@@ -199,13 +200,11 @@ const App = () => {
                                                     token ? <Redirect to="/home" /> : <Auth />
                                                 }
                                             />
-                                            <Route exact path="/home" render={() => <Home />} />
-                                            {/* <ProtectedRoute exact path="/home" component={Home} /> */}
+                                            <ProtectedRoute exact path="/home" component={Home} />
                                         </Switch>
                                     </Suspense>
                                 </div>
-                                {uiState.message && <Notification />}
-                            </Router>
+                            </BrowserRouter>
                         </ThemeProvider>
                     </ChatContext.Provider>
                 </PostContext.Provider>

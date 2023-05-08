@@ -22,7 +22,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { UserContext } from "../../../../App";
 
-const TagUserCard = ({ body, setBody }) => {
+const TagUserCard = ({ body, setPostData }) => {
     const { userState } = useContext(UserContext);
 
     const [open, setOpen] = useState(false);
@@ -114,7 +114,10 @@ const TagUserCard = ({ body, setBody }) => {
                                 </List>
                                 <Button
                                     onClick={() => {
-                                        setBody({ ...body, with: checked });
+                                        setPostData((pre) => ({
+                                            ...pre,
+                                            body: { ...body, tag_friends: checked },
+                                        }));
                                         setOpen(false);
                                     }}
                                     variant="contained"

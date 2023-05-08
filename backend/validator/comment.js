@@ -5,7 +5,7 @@ const reactCommentValidation = {
         commentId: Joi.string().trim().required(),
     }),
     query: Joi.object({
-        key: Joi.string().valid("wow", "sad", "like", "love", "haha", "angry").required(),
+        key: Joi.string().valid("sad", "wow", "like", "love", "haha", "angry").required(),
     }),
 };
 

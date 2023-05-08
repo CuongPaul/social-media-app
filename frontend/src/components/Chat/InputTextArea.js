@@ -7,8 +7,8 @@ import { IconButton, InputBase, Paper, makeStyles } from "@material-ui/core";
 
 import { UIContext } from "../../App";
 import useSendMessage from "../../hooks/useSendMessage";
-import FileField from "../Post/PostForm/PostDialog/FileField";
-import PreviewImage from "../Post/PostForm/PostDialog/PreviewImage";
+import FilesField from "../Post/PostForm/PostDialog/FilesField";
+import PreviewFile from "../Post/PostForm/PostDialog/PreviewFile";
 
 const useStyles = makeStyles(() => ({
     inputInput: {
@@ -93,7 +93,7 @@ const MessageInputTextArea = ({ textValue }) => {
                     backgroundColor: uiState.darkMode ? "rgb(24,25,26)" : "whitesmoke",
                 }}
             />
-            <FileField fileRef={fileRef} />
+            <FilesField fileRef={fileRef} />
             <input
                 type="file"
                 ref={fileRef}
@@ -118,7 +118,7 @@ const MessageInputTextArea = ({ textValue }) => {
             </IconButton>
             {previewImage && (
                 <>
-                    <PreviewImage previewImage={previewImage} removeFileImage={removeFileImage} />
+                    <PreviewFile filePreview={previewImage} handleRemoveFile={removeFileImage} />
                 </>
             )}
         </Paper>

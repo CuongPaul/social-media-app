@@ -1,5 +1,5 @@
 import Popover from "@material-ui/core/Popover";
-import React, { Fragment, useState } from "react";
+import React, { useState, Fragment } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 import PopoverProfileCard from "./PopoverProfileCard";

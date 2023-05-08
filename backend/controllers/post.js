@@ -45,7 +45,7 @@ const createPostController = async (req, res) => {
     try {
         const emptyReact = await new React().save();
 
-        if (body?.tag_friends.length) {
+        if (body?.tag_friends?.length) {
             const users = await User.find({ _id: { $in: body.tag_friends } });
 
             const newTagFriends = users.reduce((acc, cur) => {
@@ -69,7 +69,7 @@ const createPostController = async (req, res) => {
         }).save();
 
         const user = await User.findById(userId);
-        if (post && body?.tag_friends.length && privacy != "ONLY_ME") {
+        if (post && body?.tag_friends?.length && privacy != "ONLY_ME") {
             for (const friendId of body.tag_friends) {
                 const friend = await User.findById(friendId);
 

@@ -5,7 +5,7 @@ const reactPostValidation = {
         postId: Joi.string().trim().required(),
     }),
     query: Joi.object({
-        key: Joi.string().required().valid("wow", "sad", "like", "love", "haha", "angry"),
+        key: Joi.string().required().valid("sad", "wow", "like", "love", "haha", "angry"),
     }),
 };
 

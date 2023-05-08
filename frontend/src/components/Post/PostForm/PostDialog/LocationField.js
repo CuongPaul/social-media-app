@@ -15,7 +15,7 @@ import { ArrowBack } from "@material-ui/icons";
 import { faMap } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const LocationField = ({ body, setBody }) => {
+const LocationField = ({ body, setPostData }) => {
     const [open, setOpen] = useState(false);
 
     return (
@@ -55,8 +55,13 @@ const LocationField = ({ body, setBody }) => {
                                 <TextField
                                     label="Add Location"
                                     variant="outlined"
-                                    value={body.at}
-                                    onChange={(e) => setBody({ ...body, location: e.target.value })}
+                                    value={body?.location}
+                                    onChange={(e) =>
+                                        setPostData((pre) => ({
+                                            ...pre,
+                                            body: { ...body, location: e.target.value },
+                                        }))
+                                    }
                                     style={{ width: "100%" }}
                                 />
                                 <Button

@@ -2,37 +2,34 @@ import React from "react";
 import { Typography } from "@material-ui/core";
 
 const PostSubContent = ({ post }) => {
+    const bodyPost = post.body;
+
     const isContent = () => {
-        return post.body.at || post.body.date || post.body.feelings || post.body.with.length;
+        return bodyPost?.location || bodyPost?.feelings || bodyPost?.tag_friends?.length;
     };
 
     return (
         <div>
             <Typography>
                 <b>{isContent() && post.user.name}</b>
-                {post.body.feelings ? (
+                {bodyPost?.feelings ? (
                     <>
-                        &nbsp; is feeling <b>{post.body.feelings}</b>
+                        &nbsp; is feeling <b>{bodyPost?.feelings}</b>
                     </>
                 ) : null}
-                {post.body.with.length ? (
+                {bodyPost?.tag_friends?.length ? (
                     <>
                         {` with `}
                         <b>
-                            {post.body.with.map((u) => (
+                            {bodyPost?.tag_friends.map((u) => (
                                 <span key={u.id}> &nbsp;{u.name},</span>
                             ))}
                         </b>
                     </>
                 ) : null}
-                {post.body.at ? (
+                {bodyPost?.location ? (
                     <>
-                        {` at `} <b>{post.body.at} </b>
-                    </>
-                ) : null}
-                {post.body.date ? (
-                    <>
-                        <b>{new Date(post.body.date).toLocaleDateString()}</b>
+                        {` at `} <b>{bodyPost.location} </b>
                     </>
                 ) : null}
             </Typography>

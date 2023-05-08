@@ -14,7 +14,7 @@ const changeAdminController = async (req, res) => {
             return res.status(400).json({ message: "Group doesn't exist" });
         }
         if (admin != userId) {
-            return res.status(400).json({ message: "You don't have permission" });
+            return res.status(401).json({ message: "You don't have permission" });
         }
         if (!members.includes(member)) {
             return res.status(400).json({ message: "This user doesn't exist in group" });
@@ -144,7 +144,7 @@ const deleteChatRoomController = async (req, res) => {
             return res.status(400).json({ message: "Group doesn't exist" });
         }
         if (admin != userId) {
-            return res.status(400).json({ message: "You don't have permission" });
+            return res.status(401).json({ message: "You don't have permission" });
         }
 
         await chatRoom.remove();
@@ -223,7 +223,7 @@ const updateNameChatRoomController = async (req, res) => {
             return res.status(400).json({ message: "Group doesn't exist" });
         }
         if (admin != userId) {
-            return res.status(400).json({ message: "You don't have permission" });
+            return res.status(401).json({ message: "You don't have permission" });
         }
 
         await chatRoom.update({ name });
@@ -256,7 +256,7 @@ const updateAvatarChatRoomController = async (req, res) => {
             return res.status(400).json({ message: "Group doesn't exist" });
         }
         if (chatRoom.admin != userId) {
-            return res.status(400).json({ message: "You don't have permission" });
+            return res.status(401).json({ message: "You don't have permission" });
         }
 
         await chatRoom.update({ avatar_image });
@@ -281,7 +281,7 @@ const updateMemberChatRoomController = async (req, res) => {
             return res.status(400).json({ message: "Group doesn't exist" });
         }
         if (admin != userId) {
-            return res.status(400).json({ message: "You don't have permission" });
+            return res.status(401).json({ message: "You don't have permission" });
         }
 
         const users = await User.find({ _id: { $in: members } });
@@ -315,7 +315,7 @@ const updatePrivacyChatRoomController = async (req, res) => {
             return res.status(400).json({ message: "Group doesn't exist" });
         }
         if (chatRoom.admin != userId) {
-            return res.status(400).json({ message: "You don't have permission" });
+            return res.status(401).json({ message: "You don't have permission" });
         }
 
         await chatRoom.update({ is_public });
