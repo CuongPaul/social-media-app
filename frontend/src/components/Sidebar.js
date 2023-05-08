@@ -5,33 +5,33 @@ import { UIContext } from "../App";
 
 const Sidebar = ({
     children,
+    width = 350,
     anchor = "left",
     boxShadow = true,
-    drawerWidth = 380,
-    background = "white",
+    backgroundColor = "#fff",
 }) => {
     const { uiState } = useContext(UIContext);
 
-    const theme = useTheme();
-    const matches = useMediaQuery(theme.breakpoints.between(960, 1400));
+    const { breakpoints } = useTheme();
+    const matches = useMediaQuery(breakpoints.between(960, 1400));
 
     return (
         <Drawer
             elevation={0}
+            anchor={anchor}
             variant="permanent"
             PaperProps={{
                 style: {
                     border: "none",
-                    backgroundColor: background,
+                    backgroundColor: backgroundColor,
+                    width: matches ? width - 120 : width,
                     boxShadow: boxShadow
                         ? uiState.darkMode
                             ? "1px 1px 3px rgb(36,37,38)"
                             : "1px 1px 3px rgba(0,0,0,0.1)"
                         : null,
-                    width: matches ? drawerWidth - 120 : drawerWidth,
                 },
             }}
-            anchor={anchor}
         >
             <Toolbar />
             <div style={{ overflow: "auto" }}>{children}</div>

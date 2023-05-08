@@ -175,7 +175,7 @@ function Friends() {
         <div>
             <Grid container spacing={0}>
                 <Grid item md={3}>
-                    <Sidebar background={uiState.darkMode && "rgb(36,37,38)"}>
+                    <Sidebar backgroundColor={uiState.darkMode && "rgb(36,37,38)"}>
                         {metaData}
 
                         <UserLists users={userState.users} />

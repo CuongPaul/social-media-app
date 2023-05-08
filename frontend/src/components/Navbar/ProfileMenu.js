@@ -41,8 +41,8 @@ const ProfileItem = () => {
                     </Avatar>
                 ) : (
                     <AvartarText
-                        text={currentUser.name}
-                        background={currentUser.active ? "seagreen" : "tomato"}
+                        text={currentUser?.name}
+                        backgroundColor={currentUser?.active ? "seagreen" : "tomato"}
                     />
                 )}
             </ListItemIcon>

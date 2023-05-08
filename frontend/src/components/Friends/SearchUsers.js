@@ -94,8 +94,10 @@ const SearchUsers = () => {
                                                 </Avatar>
                                             ) : (
                                                 <AvartarText
-                                                    text={user.name}
-                                                    background={user.active ? "seagreen" : "tomato"}
+                                                    text={user?.name}
+                                                    backgroundColor={
+                                                        user.active ? "seagreen" : "tomato"
+                                                    }
                                                 />
                                             )}
                                         </ListItemIcon>

@@ -169,38 +169,38 @@ const App = () => {
                                     <Suspense fallback={<Loader />}>
                                         <Switch>
                                             <ProtectedRoute
-                                                exact
                                                 path="/post/:postId"
                                                 component={<Post />}
                                             />
                                             <ProtectedRoute
-                                                exact
                                                 path="/friends"
                                                 component={<Friends />}
                                             />
                                             <ProtectedRoute
-                                                exact
                                                 path="/profile/:userId"
                                                 component={<Profile />}
                                             />
                                             <ProtectedRoute
-                                                exact
                                                 path="/settings"
                                                 component={<Settings />}
                                             />
                                             <ProtectedRoute
-                                                exact
                                                 path="/messenger"
                                                 component={<Messenger />}
                                             />
+                                            <ProtectedRoute path="/home" component={Home} />
                                             <Route
-                                                exact
                                                 path="/"
                                                 render={() =>
                                                     token ? <Redirect to="/home" /> : <Auth />
                                                 }
                                             />
-                                            <ProtectedRoute exact path="/home" component={Home} />
+                                            <Route
+                                                path="*"
+                                                render={() => (
+                                                    <Redirect to={token ? "/home" : "/"} />
+                                                )}
+                                            />
                                         </Switch>
                                     </Suspense>
                                 </div>

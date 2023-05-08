@@ -91,9 +91,9 @@ const Post = () => {
                                             </Avatar>
                                         ) : (
                                             <AvartarText
-                                                text={postState.post.user.name}
-                                                background={
-                                                    postState.post.user.active
+                                                text={postState?.post?.user?.name}
+                                                backgroundColor={
+                                                    postState?.post.user?.active
                                                         ? "seagreen"
                                                         : "tomato"
                                                 }

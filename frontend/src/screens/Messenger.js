@@ -95,9 +95,9 @@ function Messenger() {
                                         </Avatar>
                                     ) : (
                                         <AvartarText
-                                            text={chatState.selectedFriend.name}
-                                            background={
-                                                chatState.selectedFriend.active
+                                            text={chatState?.selectedFriend?.name}
+                                            backgroundColor={
+                                                chatState?.selectedFriend?.active
                                                     ? "seagreen"
                                                     : "tomato"
                                             }

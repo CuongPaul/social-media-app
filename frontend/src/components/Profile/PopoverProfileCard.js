@@ -74,8 +74,8 @@ const AvartarCardHeader = ({ user }) => {
         >
             <AvartarText
                 size="70px"
-                text={user.name}
-                background={user.is_active ? "seagreen" : "tomato"}
+                text={user?.name}
+                backgroundColor={user?.is_active ? "seagreen" : "tomato"}
             />
         </StyledBadge>
     );

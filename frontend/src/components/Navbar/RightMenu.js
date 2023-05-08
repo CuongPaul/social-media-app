@@ -52,8 +52,8 @@ const AccountMenu = () => {
                     <Avatar alt="Natacha" src={userState.currentUser.profile_pic} />
                 ) : (
                     <AvartarText
-                        text={userState.currentUser.name}
-                        background={userState.currentUser.active ? "seagreen" : "tomato"}
+                        text={userState?.currentUser?.name}
+                        backgroundColor={userState?.currentUser?.active ? "seagreen" : "tomato"}
                     />
                 )
             }

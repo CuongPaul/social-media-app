@@ -44,8 +44,8 @@ const Friends = () => {
                                     <Avatar alt={friend.name} src={friend.profile_pic} />
                                 ) : (
                                     <AvartarText
-                                        text={friend.name}
-                                        background={friend.active ? "seagreen" : "tomato"}
+                                        text={friend?.name}
+                                        backgroundColor={friend.active ? "seagreen" : "tomato"}
                                     />
                                 )}
                             </ListItemAvatar>

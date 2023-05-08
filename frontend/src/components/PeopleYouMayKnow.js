@@ -64,10 +64,10 @@ const PeopleYouMayKnow = ({ users }) => {
                                                   />
                                               ) : (
                                                   <AvartarText
-                                                      background={
+                                                      backgroundColor={
                                                           user.active ? "seagreen" : "tomato"
                                                       }
-                                                      text={friend.name}
+                                                      text={friend?.name}
                                                       size="20px"
                                                   />
                                               )}

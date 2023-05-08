@@ -1,10 +1,10 @@
 import {
     List,
     Avatar,
-    ListItem,
     useTheme,
-    ListItemText,
+    ListItem,
     ListItemIcon,
+    ListItemText,
     useMediaQuery,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
@@ -16,67 +16,55 @@ import Posts from "../components/Post/Posts";
 import AvartarText from "../components/UI/AvartarText";
 import { UIContext, PostContext, UserContext } from "../App";
 import FriendList from "../components/Friends/FriendList";
+import ChatRoomList from "../components/Friends/ChatRoomList";
 import WritePostCard from "../components/Post/PostForm/WritePostCard";
 
-const homeLeftItems = [
-    { id: "friends-item", title: "Friends", img: "friends.png", to: "/friends" },
-    { id: "messenger-item", ttitle: "Messenger", img: "messenger.png", to: "/messenger" },
+const sidebarLeftItems = [
+    { id: "friends", title: "Friends", path: "/friends", icon: "friends.png" },
+    { id: "messenger", title: "Messenger", path: "/messenger", icon: "messenger.png" },
 ];
 
 const Home = () => {
     const { userState } = useContext(UserContext);
+    const { postDispatch } = useContext(PostContext);
     const { uiState, uiDispatch } = useContext(UIContext);
-    const { postState, postDispatch } = useContext(PostContext);
 
-    const theme = useTheme();
-    const match = useMediaQuery(theme.breakpoints.between(960, 1400));
+    const { breakpoints } = useTheme();
+    const match = useMediaQuery(breakpoints.between(960, 1400));
 
     useEffect(() => {
-        uiDispatch({ type: "SET_DRAWER", payload: false });
-        uiDispatch({ type: "SET_NAV_MENU", payload: true });
-
-        const loadPosts = async () => {
+        (async () => {
             try {
-                const { data, message } = await callApi({ method: "GET", url: "/post" });
-                postDispatch({
-                    type: "SET_POSTS",
-                    payload: data.rows,
-                });
+                const { data } = await callApi({ url: "/post", method: "GET" });
+                postDispatch({ type: "SET_POSTS", payload: data.rows });
             } catch (err) {
                 uiDispatch({
                     type: "SET_NOTIFICATION",
                     payload: { display: true, color: "error", text: err.message },
                 });
             }
-        };
-
-        loadPosts();
-
-        return () => {
-            uiDispatch({ type: "SET_DRAWER", payload: false });
-            uiDispatch({ type: "SET_NAV_MENU", payload: false });
-        };
+        })();
     }, []);
 
     return userState.currentUser ? (
         <Fragment>
             <div>
                 <Sidebar
-                    anchor="left"
                     boxShadow={false}
-                    background={uiState.darkMode ? "rgb(24,25,26)" : "rgb(240,242,245)"}
+                    backgroundColor={uiState.darkMode ? "rgb(24,25,26)" : "rgb(240,242,245)"}
                 >
-                    <List>
+                    <List style={{ marginLeft: "10px" }}>
                         <ListItem
                             button
                             component={Link}
+                            style={{ borderRadius: "10px" }}
                             to={`/profile/${userState.currentUser._id}`}
                         >
                             <ListItemIcon>
                                 {userState.currentUser.avatar_image ? (
                                     <Avatar style={{ width: "50px", height: "50px" }}>
                                         <img
-                                            alt="avatar"
+                                            alt=""
                                             width="100%"
                                             height="100%"
                                             src={userState.currentUser.avatar_image}
@@ -85,26 +73,29 @@ const Home = () => {
                                 ) : (
                                     <AvartarText
                                         text={userState.currentUser.name}
-                                        background={
+                                        backgroundColor={
                                             userState.currentUser.is_active ? "seagreen" : "tomato"
                                         }
                                     />
                                 )}
                             </ListItemIcon>
                             <ListItemText
-                                style={{ marginLeft: "6px" }}
+                                style={{ marginLeft: "5px" }}
                                 primary={userState.currentUser.name}
                             />
                         </ListItem>
-                        {homeLeftItems.map((item) => (
-                            <ListItem button key={item.id} component={Link} to={item.to}>
+                        {sidebarLeftItems.map((item) => (
+                            <ListItem
+                                button
+                                key={item.id}
+                                to={item.path}
+                                component={Link}
+                                style={{ borderRadius: "10px" }}
+                            >
                                 <ListItemIcon>
-                                    <Avatar
-                                        alt={item.title}
-                                        src={require(`../assets/${item.img}`)}
-                                    />
+                                    <Avatar alt="" src={require(`../assets/${item.icon}`)} />
                                 </ListItemIcon>
-                                <ListItemText primary={item.title} />
+                                <ListItemText primary={item.title} style={{ marginLeft: "5px" }} />
                             </ListItem>
                         ))}
                     </List>
@@ -112,23 +103,22 @@ const Home = () => {
                 <Sidebar
                     anchor="right"
                     boxShadow={false}
-                    drawerWidth={380}
-                    background={uiState.darkMode ? "rgb(24,25,26)" : "rgb(240,242,245)"}
+                    backgroundColor={uiState.darkMode ? "rgb(24,25,26)" : "rgb(240,242,245)"}
                 >
-                    <FriendList key="friend-list" />
+                    <FriendList />
+                    <ChatRoomList />
                 </Sidebar>
             </div>
             <div
                 style={{
-                    maxWidth: match ? "45vw" : "38vw",
                     margin: "auto",
+                    minHeight: "100vh",
                     paddingTop: "100px",
                     paddingBottom: "100px",
-                    minHeight: "100vh",
+                    maxWidth: match ? "45vw" : "38vw",
                 }}
             >
                 <WritePostCard user={userState.currentUser} />
-
                 <Posts />
             </div>
         </Fragment>

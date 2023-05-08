@@ -81,7 +81,10 @@ const CommentTextArea = ({ post }) => {
                                 />
                             </Avatar>
                         ) : (
-                            <AvartarText text={userState.currentUser.name} background="tomato" />
+                            <AvartarText
+                                text={userState?.currentUser?.name}
+                                backgroundColor="tomato"
+                            />
                         )}
                     </StyledBadge>
                 </Grid>

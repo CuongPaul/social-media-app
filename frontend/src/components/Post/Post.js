@@ -42,8 +42,8 @@ const Post = ({ post, handleDeletePost }) => {
                         </Avatar>
                     ) : (
                         <AvartarText
-                            text={post.user.name}
-                            background={post.user.active ? "seagreen" : "tomato"}
+                            text={post?.user?.name}
+                            backgroundColor={post?.user?.active ? "seagreen" : "tomato"}
                         />
                     )
                 }

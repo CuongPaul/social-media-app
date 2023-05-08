@@ -67,8 +67,8 @@ const Comment = ({ comment }) => {
                     </Avatar>
                 ) : (
                     <AvartarText
-                        text={comment.user.name}
-                        background={comment.user.active ? "seagreen" : "tomato"}
+                        text={comment?.user?.name}
+                        backgroundColor={comment.user.active ? "seagreen" : "tomato"}
                     />
                 )}
             </ListItemAvatar>

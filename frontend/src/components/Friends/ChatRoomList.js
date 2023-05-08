@@ -21,14 +21,14 @@ const Subheader = () => {
         <ListSubheader>
             <Grid container alignItems="center" justifyContent="flex-start">
                 <Typography style={{ fontWeight: "800", color: "rgb(101,103,107)" }}>
-                    Contacts
+                    Groups
                 </Typography>
             </Grid>
         </ListSubheader>
     );
 };
 
-const FriendList = () => {
+const ChatRoomList = () => {
     const { userState } = useContext(UserContext);
 
     const length = userState?.currentUser?.friends.length;
@@ -62,14 +62,8 @@ const FriendList = () => {
                                         ) : (
                                             <AvartarText
                                                 text={user.name}
-                                                // backgroundColor={
-                                                //     user.is_active ? "seagreen" : "tomato"
-                                                // }
                                                 backgroundColor={
-                                                    "#" +
-                                                    Math.floor(Math.random() * 16777215).toString(
-                                                        16
-                                                    )
+                                                    user.is_active ? "seagreen" : "tomato"
                                                 }
                                             />
                                         )}
@@ -88,4 +82,4 @@ const FriendList = () => {
     );
 };
 
-export default FriendList;
+export default ChatRoomList;

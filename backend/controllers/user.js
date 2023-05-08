@@ -179,7 +179,12 @@ const getCurrentUserController = async (req, res) => {
     const userId = req.user_id;
 
     try {
-        const user = await User.findById(userId, { password: 0 });
+        const user = await User.findById(userId, { password: 0 }).populate("friends", {
+            _id: 1,
+            name: 1,
+            is_active: 1,
+            avatar_image: 1,
+        });
 
         if (!user) {
             return res.status(400).json({ message: "User doesn't exist" });

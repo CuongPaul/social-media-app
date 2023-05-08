@@ -2,10 +2,9 @@ import { useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
 
 import callApi from "../api";
-import { storage } from "../firebase/firebase";
 import { UIContext, PostContext } from "../App";
 
-const useCreatePost = ({ postData, body, isCameraImage, filesUpload }) => {
+const useCreatePost = ({ postData, body, filesUpload }) => {
     const { uiDispatch } = useContext(UIContext);
     const { postDispatch } = useContext(PostContext);
 

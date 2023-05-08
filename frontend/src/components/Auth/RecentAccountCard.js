@@ -40,7 +40,7 @@ const RecentAccountCard = ({ account }) => {
                             }}
                         >
                             <AvartarText
-                                background="teal"
+                                backgroundColor="teal"
                                 size="60px"
                                 fontSize="25px"
                                 text={account?.name}

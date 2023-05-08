@@ -28,7 +28,7 @@ const DialogHeader = ({ handleCloseDialog, body }) => {
                             />
                         </Avatar>
                     ) : (
-                        <AvartarText background="teal" text={userState.currentUser.name} />
+                        <AvartarText backgroundColor="teal" text={userState?.currentUser?.name} />
                     )
                 }
                 title={

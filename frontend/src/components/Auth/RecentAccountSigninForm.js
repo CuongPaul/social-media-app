@@ -64,7 +64,7 @@ const RecentAccountSigninForm = ({ account, isShowSigninForm, setIsShowSigninFor
                         }}
                     >
                         <AvartarText
-                            background="teal"
+                            backgroundColor="teal"
                             size="100px"
                             fontSize="35px"
                             text={account?.name}
