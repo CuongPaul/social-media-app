@@ -168,27 +168,18 @@ const App = () => {
                                 >
                                     <Suspense fallback={<Loader />}>
                                         <Switch>
-                                            <ProtectedRoute
-                                                path="/post/:postId"
-                                                component={<Post />}
-                                            />
-                                            <ProtectedRoute
-                                                path="/friends"
-                                                component={<Friends />}
-                                            />
-                                            <ProtectedRoute
-                                                path="/profile/:userId"
-                                                component={<Profile />}
-                                            />
-                                            <ProtectedRoute
-                                                path="/settings"
-                                                component={<Settings />}
-                                            />
-                                            <ProtectedRoute
+                                            {/* <ProtectedRoute
                                                 path="/messenger"
-                                                component={<Messenger />}
+                                                component={Messenger}
                                             />
+                                            <ProtectedRoute
+                                                component={Profile}
+                                                path="/profile/:userId"
+                                            /> */}
                                             <ProtectedRoute path="/home" component={Home} />
+                                            {/* <ProtectedRoute path="/friends" component={Friends} />
+                                            <ProtectedRoute path="/settings" component={Settings} /> */}
+                                            <ProtectedRoute path="/post/:postId" component={Post} />
                                             <Route
                                                 path="/"
                                                 render={() =>

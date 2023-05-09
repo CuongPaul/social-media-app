@@ -10,7 +10,7 @@ const Posts = () => {
     const { postDispatch } = useContext(PostContext);
     const posts = postState.posts;
     const { fetchPosts } = useFetchPost();
-console.log("posts:" , posts);
+
     const handleFetchPosts = () => {
         fetchPosts();
     };

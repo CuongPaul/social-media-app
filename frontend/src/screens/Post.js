@@ -4,18 +4,20 @@ import {
     Paper,
     Avatar,
     Button,
-    useTheme,
-    CardMedia,
     Container,
     CardHeader,
     Typography,
     CardContent,
-    useMediaQuery,
+    Divider,
 } from "@material-ui/core";
 import moment from "moment";
 import { useParams } from "react-router-dom";
-import React, { useContext, useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 
+import SlideImage from "../components/Post/SlideImage";
+
+import PostFooter from "../components/Post/PostFooter";
+import callApi from "../api";
 import { PostContext, UIContext } from "../App";
 import useFetchPost from "../hooks/useFetchPost";
 import Comment from "../components/Comment/Comment";
@@ -24,69 +26,74 @@ import PostSubContent from "../components/Post/PostSubContent";
 import CommentTextArea from "../components/Comment/CommentTextArea";
 
 const Post = () => {
-    const { uiState } = useContext(UIContext);
+    const { uiState, uiDispatch } = useContext(UIContext);
     const { postState, postDispatch } = useContext(PostContext);
 
-    const theme = useTheme();
-    const params = useParams();
-    const xsScreen = useMediaQuery(theme.breakpoints.only("xs"));
+    const { postId } = useParams();
 
     const { fetchComments } = useFetchPost();
 
     useEffect(() => {
-        const post = postState.posts.find((post) => post.id === params.postId);
-        postDispatch({ type: "SET_CURRENT_POST", payload: post });
-        fetchComments(params.postId);
+        (async () => {
+            try {
+                const { data } = await callApi({ url: "/post", method: "GET" });
+                postDispatch({ type: "SET_POSTS", payload: data.rows });
 
-        return () => {
-            postDispatch({ type: "REMOVE_CURRENT_POST" });
-        };
-    }, [fetchComments, params.postId, postDispatch, postState.posts]);
+                const { data: abc } = await callApi({
+                    url: "/comment",
+                    method: "GET",
+                    query: { post_id: postId },
+                });
+                postDispatch({ type: "SET_POST_COMMENTS", payload: abc.rows });
+            } catch (err) {
+                uiDispatch({
+                    type: "SET_NOTIFICATION",
+                    payload: { display: true, color: "error", text: err.message },
+                });
+            }
+        })();
+    }, []);
+
+    useEffect(() => {
+        const post = postState.posts.find((post) => post._id === postId);
+        postDispatch({ type: "SET_CURRENT_POST", payload: post });
+        fetchComments(postId);
+    }, [postId, postDispatch, postState.posts]);
 
     const isContent = () => {
         return (
-            postState.post.body.at ||
-            postState.post.body.date ||
+            postState.post.body.location ||
             postState.post.body.feelings ||
-            postState.post.body.with.length
+            postState.post.body.tag_friends.length
         );
     };
-
     const handleFetchComments = () => {
-        fetchComments(params.postId);
+        fetchComments(postId);
     };
 
-    return (
-        <div
-            style={{
-                paddingTop: "100px",
-                minHeight: "100vh",
-            }}
-        >
+    return postState.post ? (
+        <div style={{ minHeight: "100vh", paddingTop: "100px" }}>
             <Container>
-                <Grid container spacing={3}>
-                    <Grid item md={7} sm={12} xs={12}>
+                <Grid spacing={3} container>
+                    <Grid item md={7} xs={12} sm={12}>
                         <Card
                             style={{
+                                top: "100px",
                                 width: "100%",
                                 height: "80vh",
                                 position: "sticky",
-                                top: 100,
                                 backgroundColor: uiState.darkMode && "rgb(36,37,38)",
                             }}
                         >
                             {postState.post.user && (
                                 <CardHeader
                                     avatar={
-                                        postState.post.user.profile_pic ? (
+                                        postState.post.user.avatar_image ? (
                                             <Avatar>
                                                 <img
-                                                    src={postState.post.user.profile_pic}
-                                                    style={{
-                                                        width: "100%",
-                                                        height: "100%",
-                                                    }}
                                                     alt=""
+                                                    src={postState.post.user.avatar_image}
+                                                    style={{ width: "100%", height: "100%" }}
                                                 />
                                             </Avatar>
                                         ) : (
@@ -125,67 +132,19 @@ const Post = () => {
                             <CardContent>
                                 <Typography
                                     style={{
-                                        fontWeight: "400",
                                         fontSize: "16px",
+                                        fontWeight: "400",
                                         fontFamily: "fantasy",
                                     }}
                                 >
-                                    {postState.post.content && postState.post.content}
+                                    {postState.post.text && postState.post.text}
                                 </Typography>
                             </CardContent>
 
-                            {postState.post.image && (
-                                <CardMedia
-                                    component={
-                                        postState.post.image.split(".").pop().substring(0, 3) ===
-                                        "mp4"
-                                            ? "video"
-                                            : "img"
-                                    }
-                                    style={{
-                                        width: "100%",
-                                        height: "100%",
-                                        objectFit: "contain",
-                                    }}
-                                    image={postState.post.image}
-                                    title="Paella dish"
-                                    controls
-                                />
-                            )}
+                            {postState.post.images && <SlideImage images={postState.post.images} />}
 
-                            {postState.post.profilePostData &&
-                            Object.keys(postState.post.profilePostData).length ? (
-                                <>
-                                    <CardMedia
-                                        style={{
-                                            width: "100%",
-                                            height: "200px",
-                                        }}
-                                        image={postState.post.profilePostData.coverImage}
-                                        title={postState.post.user.name}
-                                    />
-
-                                    <Avatar
-                                        style={{
-                                            border: "6px solid tomato",
-                                            width: xsScreen ? "300px" : "400px",
-                                            height: xsScreen ? "300px" : "400px",
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            margin: "auto",
-                                            borderRadius: "100%",
-                                            bottom: 130,
-                                        }}
-                                    >
-                                        <img
-                                            src={postState.post.profilePostData.profileImage}
-                                            width="100%"
-                                            height="100%"
-                                            alt=""
-                                        />
-                                    </Avatar>
-                                </>
-                            ) : null}
+                            <Divider />
+                            <PostFooter post={postState.post} />
                         </Card>
                     </Grid>
 
@@ -232,7 +191,7 @@ const Post = () => {
                 </Grid>
             </Container>
         </div>
-    );
+    ) : null;
 };
 
 export default Post;

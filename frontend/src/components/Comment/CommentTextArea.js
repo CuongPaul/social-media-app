@@ -24,7 +24,10 @@ const CommentTextArea = ({ post }) => {
     const [commentImage, setCommentImage] = useState(null);
 
     const handleImageChange = (e) => {
-        setCommentImage(e.target.files[0]);
+        const formData = new FormData();
+        formData.append("files", e.target.files[0]);
+        setCommentImage(formData);
+        formData.append("folder", "comment");
 
         const reader = new FileReader();
         reader.readAsDataURL(e.target.files[0]);
@@ -56,10 +59,10 @@ const CommentTextArea = ({ post }) => {
         setCommentText,
         setCommentImage,
         removeFileImage,
-        post_id: post.id,
+        post_id: post._id,
     });
 
-    return (
+    return userState.currentUser ? (
         <>
             <Grid
                 container
@@ -71,12 +74,12 @@ const CommentTextArea = ({ post }) => {
                 }}
             >
                 <Grid item>
-                    <StyledBadge isActive={userState.currentUser.active}>
-                        {userState.currentUser.profile_pic ? (
+                    <StyledBadge isActive={userState.currentUser.is_active}>
+                        {userState.currentUser.avatar_image ? (
                             <Avatar>
                                 <img
                                     alt={userState.currentUser.name}
-                                    src={userState.currentUser.profile_pic}
+                                    src={userState.currentUser.avatar_image}
                                     style={{ width: "100%", height: "100%" }}
                                 />
                             </Avatar>
@@ -105,7 +108,12 @@ const CommentTextArea = ({ post }) => {
                             background: uiState.darkMode ? "rgb(24,25,26)" : "rgb(240,242,245)",
                         }}
                     />
-                    <FilesField fileRef={fileRef} />
+                    {/* <FilesField fileRef={fileRef} /> */}
+                    <FilesField
+                        multipleUpload={false}
+                        setFilesUpload={setCommentImage}
+                        setFilesPreview={setPreviewImage}
+                    />
                     <input
                         type="file"
                         ref={fileRef}
@@ -149,7 +157,7 @@ const CommentTextArea = ({ post }) => {
                 </>
             )}
         </>
-    );
+    ) : null;
 };
 
 export default CommentTextArea;

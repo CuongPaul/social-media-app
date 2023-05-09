@@ -21,7 +21,6 @@ const useUpdateProfilePic = ({ profile_pic, cover_pic, history }) => {
                 setLoading(true);
             },
             (err) => {
-                console.log("error from firebase");
                 setLoading(false);
             },
             () => {
@@ -45,7 +44,6 @@ const useUpdateProfilePic = ({ profile_pic, cover_pic, history }) => {
                 setLoading(true);
             },
             (err) => {
-                console.log("error from firebase");
                 setLoading(false);
             },
             () => {

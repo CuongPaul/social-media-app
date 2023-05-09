@@ -64,7 +64,6 @@ const useSendMessage = ({
                     setLoading(true);
                 },
                 (err) => {
-                    console.log("error from firebase");
                     setLoading(false);
                 },
                 () => {

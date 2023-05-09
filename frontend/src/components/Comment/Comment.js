@@ -31,10 +31,10 @@ const Comment = ({ comment }) => {
     const [error, setError] = useState("");
     const [isOpen, setIsOpen] = useState(null);
     const [isEdit, setIsEdit] = useState(false);
-    const [commentText, setCommentText] = useState(comment.body.text ? comment.body.text : "");
+    const [commentText, setCommentText] = useState(comment.text ? comment.text : "");
 
     const handleLikeComment = () => {
-        reactComment(comment.id).then((res) => {
+        reactComment(comment._id).then((res) => {
             if (res.data) {
                 postDispatch({ type: "LIKE_UNLIKE_COMMENT", payload: res.data.comment });
                 uiDispatch({
@@ -46,7 +46,7 @@ const Comment = ({ comment }) => {
     };
 
     const isLiked = () => {
-        return comment.likes.includes(userState.currentUser.id);
+        return comment.react.like.includes(userState.currentUser._id);
     };
 
     const handleEditComment = (e) => {
@@ -57,10 +57,10 @@ const Comment = ({ comment }) => {
     const listItems = (
         <ListItem alignItems="flex-start">
             <ListItemAvatar>
-                {comment.user.profile_pic ? (
+                {comment.user.avatar_image ? (
                     <Avatar>
                         <img
-                            src={comment.user.profile_pic}
+                            src={comment.user.avatar_image}
                             style={{ width: "100%", height: "100%" }}
                             alt={comment.user.name}
                         />
@@ -68,7 +68,7 @@ const Comment = ({ comment }) => {
                 ) : (
                     <AvartarText
                         text={comment?.user?.name}
-                        backgroundColor={comment.user.active ? "seagreen" : "tomato"}
+                        backgroundColor={comment.user.is_active ? "seagreen" : "tomato"}
                     />
                 )}
             </ListItemAvatar>
@@ -102,7 +102,7 @@ const Comment = ({ comment }) => {
                                 <IconButton
                                     onClick={() => {
                                         updateComment({
-                                            id: comment.id,
+                                            id: comment._id,
                                             body: { text: commentText },
                                         }).then((res) => {
                                             if (res.data.message === "success") {
@@ -118,10 +118,10 @@ const Comment = ({ comment }) => {
                             commentText
                         )}
 
-                        {comment.body.image && (
+                        {comment.image && (
                             <CardMedia
                                 component={
-                                    comment.body.image.split(".").pop().substring(0, 3) === "mp4"
+                                    comment.image.split(".").pop().substring(0, 3) === "mp4"
                                         ? "video"
                                         : "img"
                                 }
@@ -130,7 +130,7 @@ const Comment = ({ comment }) => {
                                     height: "100%",
                                     objectFit: "contain",
                                 }}
-                                image={comment.body.image}
+                                image={comment.image}
                                 title="Paella dish"
                                 controls
                             />
@@ -159,10 +159,10 @@ const Comment = ({ comment }) => {
                     </MenuItem>
                     <MenuItem
                         onClick={() => {
-                            deleteComment(comment.id).then((res) => {
+                            deleteComment(comment._id).then((res) => {
                                 if (res.data.message === "success") {
                                     const newComments = postState.post.comments.filter(
-                                        (item) => comment.id !== item.id
+                                        (item) => comment._id !== item.id
                                     );
                                     postDispatch({ type: "DELETE_COMMENT", payload: newComments });
                                 }
@@ -199,7 +199,7 @@ const Comment = ({ comment }) => {
                             )
                         }
                     >
-                        ({comment.likes.length})
+                        ({comment.react.like.length})
                     </Button>
                 </div>
                 <Divider variant="inset" component="li" />

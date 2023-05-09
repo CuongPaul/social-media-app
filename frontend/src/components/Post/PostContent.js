@@ -14,8 +14,6 @@ const PostContent = ({ post }) => {
         return bodyPost?.feelings || bodyPost?.tag_friends?.length || bodyPost?.location;
     };
 
-    console.log("post: ", post);
-
     return (
         <Fragment>
             {isContent() && (

@@ -13,17 +13,50 @@ const FilesField = ({ multipleUpload, setFilesUpload, setFilesPreview }) => {
 
     const handleChangeFile = (e) => {
         const { files } = e.target;
+        if (multipleUpload) {
+            setFilesUpload((preValue) => [...preValue, ...files]);
 
-        setFilesUpload((preValue) => [...preValue, ...files]);
+            for (const file of files) {
+                const reader = new FileReader();
 
-        for (const file of files) {
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    setFilesPreview((preValue) => [...preValue, reader.result]);
+                };
+            }
+        } else {
+            const formData = new FormData();
+            formData.append("files", files[0]);
+            formData.append("folder", "comment");
+            setFilesUpload(formData);
+
             const reader = new FileReader();
-
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(files[0]);
             reader.onload = () => {
-                setFilesPreview((preValue) => [...preValue, reader.result]);
+                setFilesPreview(reader.result);
             };
         }
+        // if (multipleUpload) {
+        //     setFilesUpload((preValue) => [...preValue, ...files]);
+
+        //     for (const file of files) {
+        //         const reader = new FileReader();
+
+        //         reader.readAsDataURL(file);
+        //         reader.onload = () => {
+        //             setFilesPreview((preValue) => [...preValue, reader.result]);
+        //         };
+        //     }
+        // } else {
+        //     setFilesUpload(files[0]);
+
+        //     const reader = new FileReader();
+
+        //     reader.readAsDataURL(files[0]);
+        //     reader.onload = () => {
+        //         setFilesPreview(reader.result);
+        //     };
+        // }
     };
 
     return (

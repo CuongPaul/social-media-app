@@ -79,14 +79,10 @@ export const PostReducer = (state, action) => {
                 post: {
                     ...state.post,
                     commentPagination: {
-                        ...state.post.commentPagination,
                         totalPage: action.payload.totalPage,
                         currentPage: action.payload.currentPage,
                     },
-                    comments:
-                        state.post.comments && state.post.comments.length
-                            ? [...state.post.comments, ...action.payload.comments]
-                            : [...action.payload.comments],
+                    comments: action.payload.comments,
                 },
             };
 

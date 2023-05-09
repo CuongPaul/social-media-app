@@ -76,7 +76,6 @@ const PostFormDialog = () => {
         postData,
         filesUpload,
     });
-    console.log("ABC: ", filesUpload);
     const handleUpdatePost = (postId) => {
         updatePost({ ...postData, id: postId }).then((res) => {
             if (res.data.message === "success") {

@@ -15,13 +15,11 @@ const useCreatePost = ({ postData, body, filesUpload }) => {
         setLoading(true);
 
         try {
-            console.log(formValue);
             const { message } = await callApi({
                 url: "/post",
                 method: "POST",
                 data: formValue,
             });
-            console.log(message);
             setLoading(false);
 
             if (message) {

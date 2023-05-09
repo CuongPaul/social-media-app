@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import axios from "axios";
 import { PostContext, UIContext } from "../App";
 import { storage } from "../firebase/firebase";
-
+import callApi from "../api";
 const url = process.env.REACT_APP_BASE_API_URL;
 
 const useCreateComment = ({
@@ -19,68 +19,47 @@ const useCreateComment = ({
     const { postDispatch } = useContext(PostContext);
     const { uiDispatch } = useContext(UIContext);
 
-    const createComment = async (uri = "") => {
+    const createComment = async (uri) => {
         setLoading(true);
         try {
-            let token = JSON.parse(localStorage.getItem("token"));
-            const response = await axios.post(
-                `${url}/api/post/${post_id}/comment`,
-                { text: commentText, image: uri ? uri : "" },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            if (response.data) {
-                setCommentText("");
-                postDispatch({ type: "ADD_POST_COMMENT", payload: response.data.comment });
-                uiDispatch({
-                    type: "SET_NOTIFICATION",
-                    payload: {
-                        color: "success",
-                        display: true,
-                        text: response.data.message,
-                    },
-                });
-            }
-            setLoading(false);
+            const { message } = await callApi({
+                url: "/comment",
+                method: "POST",
+                data: { text: commentText, image: uri, post_id: post_id },
+            });
+
+            setCommentText("");
+            postDispatch({
+                type: "ADD_POST_COMMENT",
+                payload: { text: commentText, image: uri, post_id: post_id },
+            });
+            uiDispatch({
+                type: "SET_NOTIFICATION",
+                payload: {
+                    color: "success",
+                    display: true,
+                    text: message,
+                },
+            });
         } catch (err) {
             setLoading(false);
-            console.log(err);
-            if (err && err.response) {
-                if (err.response.status === 422) {
-                    setError(err.response.data.error);
-                }
 
-                uiDispatch({ type: "SET_NOTIFICATION", payload: err.response.data.error });
-            }
+            uiDispatch({
+                type: "SET_NOTIFICATION",
+                payload: { text: err.message, display: true, color: "error" },
+            });
         }
     };
 
-    const handleSubmitComment = (e) => {
+    const handleSubmitComment = async (e) => {
         if (commentImage) {
-            let filename = `comment/comment-${Date.now()}-${commentImage.name}`;
-            const uploadTask = storage.ref(`images/${filename}`).put(commentImage);
-            uploadTask.on(
-                "state_changed",
-                () => {
-                    setLoading(true);
-                },
-                (err) => {
-                    console.log("error from firebase");
-                    setLoading(false);
-                },
-                () => {
-                    storage
-                        .ref("images")
-                        .child(filename)
-                        .getDownloadURL()
-                        .then((uri) => {
-                            createComment(uri);
-                        });
-                }
-            );
+            const { data } = await callApi({
+                url: "/upload/files",
+                method: "POST",
+                data: commentImage,
+            });
+
+            createComment(data.images[0]);
         } else {
             createComment();
         }

@@ -1,5 +1,6 @@
 import { useState, useContext } from "react";
 
+import callApi from "../api";
 import { UIContext, PostContext } from "../App";
 import { getAllPosts } from "../services/PostServices";
 import { getCommentsByPost } from "../services/CommentService";
@@ -11,30 +12,30 @@ const useFetchPost = () => {
     const [loading, setLoading] = useState(false);
 
     const fetchComments = async (post_id) => {
-        if (
-            postState.post.commentPagination.currentPage >
-            postState.post.commentPagination.totalPage
-        ) {
-            return;
-        }
         setLoading(true);
-        try {
-            const { data } = await getCommentsByPost(post_id);
 
-            if (data) {
-                postDispatch({
-                    type: "COMMENT_PAGINATION",
-                    payload: {
-                        currentPage: data.pagination.currentPage + 1,
-                        totalPage: data.pagination.totalPage,
-                        comments: data.comments,
-                    },
-                });
-            }
+        try {
+            const { data } = await callApi({
+                method: "GET",
+                url: "/comment",
+                query: { post_id: post_id },
+            });
+
             setLoading(false);
+            postDispatch({
+                type: "COMMENT_PAGINATION",
+                payload: {
+                    currentPage: 1,
+                    totalPage: data.count,
+                    comments: data.rows,
+                },
+            });
         } catch (err) {
             setLoading(false);
-            console.log(err);
+            uiDispatch({
+                type: "SET_NOTIFICATION",
+                payload: { display: true, color: "error", text: err.message },
+            });
         }
     };
 

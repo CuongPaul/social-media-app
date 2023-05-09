@@ -3,7 +3,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { User } from "../models";
 import storage from "../config/firebase";
 
-const uploadImagesController = async (req, res) => {
+const uploadFilesController = async (req, res) => {
     const { folder } = req.body;
     const { files, user_id } = req;
 
@@ -39,4 +39,4 @@ const uploadImagesController = async (req, res) => {
     }
 };
 
-export { uploadImagesController };
+export { uploadFilesController };

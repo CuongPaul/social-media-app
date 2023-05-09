@@ -20,8 +20,8 @@ import FriendRequestRoutes from "./routes/friend-request";
 
 dotenv.config();
 
-const PORT = process.env.PORT || 5000;
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/facebook-clone";
+const PORT = process.env.PORT;
+const MONGODB_URI = process.env.MONGODB_URI;
 
 const app = express();
 const httpServer = createServer(app);

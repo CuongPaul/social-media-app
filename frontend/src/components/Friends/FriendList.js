@@ -14,6 +14,7 @@ import React, { Fragment, useState, useEffect, useContext } from "react";
 import { UserContext } from "../../App";
 import AvartarText from "../UI/AvartarText";
 import StyledBadge from "../UI/StyledBadge";
+import generateColor from "../../utils/generate-color";
 import PopoverProfile from "../Profile/PopoverProfile";
 
 const Subheader = () => {
@@ -62,15 +63,7 @@ const FriendList = () => {
                                         ) : (
                                             <AvartarText
                                                 text={user.name}
-                                                // backgroundColor={
-                                                //     user.is_active ? "seagreen" : "tomato"
-                                                // }
-                                                backgroundColor={
-                                                    "#" +
-                                                    Math.floor(Math.random() * 16777215).toString(
-                                                        16
-                                                    )
-                                                }
+                                                backgroundColor={generateColor(user.name)}
                                             />
                                         )}
                                     </StyledBadge>

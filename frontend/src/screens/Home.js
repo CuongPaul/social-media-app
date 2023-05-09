@@ -19,7 +19,7 @@ import FriendList from "../components/Friends/FriendList";
 import ChatRoomList from "../components/Friends/ChatRoomList";
 import WritePostCard from "../components/Post/PostForm/WritePostCard";
 
-const sidebarLeftItems = [
+const leftSidebarItems = [
     { id: "friends", title: "Friends", path: "/friends", icon: "friends.png" },
     { id: "messenger", title: "Messenger", path: "/messenger", icon: "messenger.png" },
 ];
@@ -84,7 +84,7 @@ const Home = () => {
                                 primary={userState.currentUser.name}
                             />
                         </ListItem>
-                        {sidebarLeftItems.map((item) => (
+                        {leftSidebarItems.map((item) => (
                             <ListItem
                                 button
                                 key={item.id}
