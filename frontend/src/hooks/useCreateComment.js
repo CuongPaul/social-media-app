@@ -52,11 +52,17 @@ const useCreateComment = ({
     };
 
     const handleSubmitComment = async (e) => {
+        e.preventDefault();
+
         if (commentImage) {
+            const formData = new FormData();
+            formData.append("files", commentImage);
+            formData.append("folder", "comment");
+
             const { data } = await callApi({
                 url: "/upload/files",
                 method: "POST",
-                data: commentImage,
+                data: formData,
             });
 
             createComment(data.images[0]);

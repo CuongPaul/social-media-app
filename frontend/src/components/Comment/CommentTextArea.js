@@ -23,18 +23,18 @@ const CommentTextArea = ({ post }) => {
     const [previewImage, setPreviewImage] = useState("");
     const [commentImage, setCommentImage] = useState(null);
 
-    const handleImageChange = (e) => {
-        const formData = new FormData();
-        formData.append("files", e.target.files[0]);
-        setCommentImage(formData);
-        formData.append("folder", "comment");
+    // const handleImageChange = (e) => {
+    //     const formData = new FormData();
+    //     formData.append("files", e.target.files[0]);
+    //     setCommentImage(formData);
+    //     formData.append("folder", "comment");
 
-        const reader = new FileReader();
-        reader.readAsDataURL(e.target.files[0]);
-        reader.onload = () => {
-            setPreviewImage(reader.result);
-        };
-    };
+    //     const reader = new FileReader();
+    //     reader.readAsDataURL(e.target.files[0]);
+    //     reader.onload = () => {
+    //         setPreviewImage(reader.result);
+    //     };
+    // };
 
     const removeFileImage = () => {
         setPreviewImage("");
@@ -114,14 +114,14 @@ const CommentTextArea = ({ post }) => {
                         setFilesUpload={setCommentImage}
                         setFilesPreview={setPreviewImage}
                     />
-                    <input
+                    {/* <input
                         type="file"
                         ref={fileRef}
                         capture="user"
                         accept="image/*,video/*"
                         style={{ display: "none" }}
                         onChange={handleImageChange}
-                    />
+                    /> */}
                     <IconButton onClick={() => setShowEmoji(!showEmoji)}>
                         <FontAwesomeIcon icon={faSmile} color="rgb(250,199,94)" />
                     </IconButton>
