@@ -4,14 +4,16 @@ import { Slide } from "react-slideshow-image";
 import "react-slideshow-image/dist/styles.css";
 
 const SlideImage = ({ images }) => {
+    const isMultipleImage = images.length > 1;
+
     return (
         <Fragment>
             <Slide
-                arrows={true}
                 duration={5000}
-                infinite={true}
                 indicators={true}
+                arrows={isMultipleImage}
                 transitionDuration={500}
+                infinite={isMultipleImage}
             >
                 {images.map((item) => (
                     <CardMedia

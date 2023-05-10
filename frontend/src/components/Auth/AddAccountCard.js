@@ -10,7 +10,7 @@ import {
     CardActionArea,
 } from "@material-ui/core";
 import { Add, Close } from "@material-ui/icons";
-import React, { useState, useContext, Fragment } from "react";
+import React, { useState, Fragment, useContext } from "react";
 
 import SigninForm from "./SigninForm";
 import { UIContext } from "../../App";
@@ -30,7 +30,7 @@ const AddAccountCard = () => {
                             height: "150px",
                             alignItems: "center",
                             justifyContent: "center",
-                            background: uiState.darkMode ? null : "rgb(245,246,247)",
+                            background: uiState.darkMode && "rgb(245,246,247)",
                         }}
                     >
                         <Avatar
@@ -45,7 +45,7 @@ const AddAccountCard = () => {
                         </Avatar>
                     </CardMedia>
                     <CardContent>
-                        <Typography style={{ fontWeight: "600", textAlign: "center" }}>
+                        <Typography style={{ fontWeight: 600, textAlign: "center" }}>
                             Add account
                         </Typography>
                     </CardContent>
@@ -53,10 +53,6 @@ const AddAccountCard = () => {
             </Card>
             {isShowAddAccountForm && (
                 <Dialog
-                    fullWidth
-                    scroll="body"
-                    maxWidth="sm"
-                    disableEscapeKeyDown
                     style={{ width: "100%" }}
                     open={isShowAddAccountForm}
                     onClose={() => setIsShowAddAccountForm(false)}

@@ -183,7 +183,7 @@ function Friends() {
                 </Grid>
                 <Grid item md={8} style={{ margin: "auto" }}>
                     {userState.selectedUserProfile && (
-                        <UserProfile user={userState.selectedUserProfile} conScreen={true} />
+                        <UserProfile userId={userState.selectedUserProfile} conScreen={true} />
                     )}
                 </Grid>
             </Grid>

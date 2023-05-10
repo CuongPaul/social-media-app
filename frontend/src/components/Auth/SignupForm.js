@@ -48,7 +48,7 @@ const SignupForm = () => {
                 {loading ? (
                     <CircularProgress size={25} variant="indeterminate" style={{ color: "#fff" }} />
                 ) : (
-                    " Sign up"
+                    "Sign up"
                 )}
             </Button>
         </form>

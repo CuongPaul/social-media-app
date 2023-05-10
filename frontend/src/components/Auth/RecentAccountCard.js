@@ -8,7 +8,7 @@ import {
     CardActionArea,
 } from "@material-ui/core";
 import { Close, Notifications } from "@material-ui/icons";
-import React, { useContext, useState, Fragment } from "react";
+import React, { useState, Fragment, useContext } from "react";
 
 import { UserContext } from "../../App";
 import AvartarText from "../UI/AvartarText";
@@ -19,8 +19,8 @@ const RecentAccountCard = ({ account }) => {
 
     const [isShowSigninForm, setIsShowSigninForm] = useState(false);
 
-    const handleRemoveAccount = (account_id) => {
-        userDispatch({ type: "REMOVE_RECENT_ACCOUNT", payload: account_id });
+    const handleRemoveAccount = () => {
+        userDispatch({ type: "REMOVE_RECENT_ACCOUNT", payload: account._id });
     };
 
     return (
@@ -28,7 +28,7 @@ const RecentAccountCard = ({ account }) => {
             <Card style={{ position: "relative" }}>
                 <CardActionArea onClick={() => setIsShowSigninForm(true)}>
                     {account?.avatar_image ? (
-                        <CardMedia style={{ height: "150px" }} image={account?.avatar_image} />
+                        <CardMedia style={{ height: "150px" }} image={account.avatar_image} />
                     ) : (
                         <CardMedia
                             style={{
@@ -49,12 +49,12 @@ const RecentAccountCard = ({ account }) => {
                     )}
                     <CardHeader
                         avatar={
-                            <Badge badgeContent={5} color={"primary"}>
+                            <Badge badgeContent={5} color={"primary"} overlap="rectangular">
                                 <Notifications style={{ color: "GrayText" }} />
                             </Badge>
                         }
                         subheader={
-                            <Typography style={{ fontWeight: "800" }}>{account?.name}</Typography>
+                            <Typography style={{ fontWeight: "800" }}>{account.name}</Typography>
                         }
                     />
                 </CardActionArea>
@@ -67,7 +67,7 @@ const RecentAccountCard = ({ account }) => {
                         background: "tomato",
                         position: "absolute",
                     }}
-                    onClick={() => handleRemoveAccount(account?._id)}
+                    onClick={handleRemoveAccount}
                 >
                     <Close />
                 </IconButton>

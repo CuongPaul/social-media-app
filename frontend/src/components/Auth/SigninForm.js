@@ -4,10 +4,10 @@ import { Button, TextField, FormControl, CircularProgress } from "@material-ui/c
 import { useSignin } from "../../hooks";
 
 const SigninForm = () => {
-    const { loading, handleSignin, handleChangeEmail, handleChangePassword } = useSignin();
+    const { loading, handleClickSignin, handleChangeEmail, handleChangePassword } = useSignin();
 
     return (
-        <form onSubmit={handleSignin}>
+        <form onSubmit={handleClickSignin}>
             <FormControl style={{ width: "100%" }}>
                 <TextField
                     label="Email"

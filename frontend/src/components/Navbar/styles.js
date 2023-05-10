@@ -8,11 +8,6 @@ export default makeStyles((theme) => ({
         alignItems: "center",
     },
 
-    logoImg: {
-        width: theme.spacing(7),
-        height: theme.spacing(7),
-    },
-
     middleMenu: {
         flexGrow: 5,
         display: "flex",

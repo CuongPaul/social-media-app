@@ -18,7 +18,6 @@ const useFetchComments = (post_id) => {
                 },
             });
             if (response.data) {
-                console.log(response.data);
                 postDispatch({
                     type: "SET_COMMENTS",
                     payload: response.data.comments,

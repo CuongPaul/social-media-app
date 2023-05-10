@@ -15,7 +15,7 @@ const ProfileTimeline = ({ user }) => {
     return (
         <Grid container justifyContent="center" style={{ marginTop: "25px" }} spacing={2}>
             <Grid item xs={12} sm={12} md={8}>
-                {userState.currentUser.id === user.id && <WritePostCard />}
+                {userState.currentUser._id === user._id && <WritePostCard />}
                 <Posts posts={getUserPost()} />
             </Grid>
         </Grid>

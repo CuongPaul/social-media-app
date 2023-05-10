@@ -115,7 +115,6 @@ const PostFormDialog = () => {
                             <Select
                                 value={postData.privacy}
                                 onChange={(e) => {
-                                    console.log(e.target.value);
                                     setPostData({ ...postData, privacy: e.target.value });
                                 }}
                             >

@@ -1,18 +1,28 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Paper, AppBar, Tabs, Tab, Box, Grid, Divider } from "@material-ui/core";
 
+import callApi from "../../api";
 import Friends from "./Friends";
 import { UIContext } from "../../App";
 import ProfileHeader from "./ProfileHeader";
 import ProfileTimeline from "./ProfileTimeline";
 
-const UserProfile = ({ user, conScreen }) => {
+const UserProfile = ({ userId, conScreen }) => {
     const { uiState } = useContext(UIContext);
     const [value, setValue] = useState(0);
+    const [user, setUser] = useState(null);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
+
+    useEffect(() => {
+        (async () => {
+            const { data } = await callApi({ url: `/user/${userId}`, method: "GET" });
+            console.log("data: ", data);
+            setUser(data);
+        })();
+    }, []);
 
     return (
         <div style={{ minHeight: "100vh" }}>
@@ -22,7 +32,7 @@ const UserProfile = ({ user, conScreen }) => {
                     backgroundColor: uiState.darkMode && "rgb(36,37,38)",
                 }}
             >
-                <ProfileHeader user={user} />
+                {user && <ProfileHeader user={user} />}
                 <Grid container justifyContent="center" alignItems="center">
                     <Grid item xs={12} sm={12} md={6}>
                         <Divider />
@@ -52,9 +62,11 @@ const UserProfile = ({ user, conScreen }) => {
             </Paper>
             <Grid container justifyContent="center">
                 <Grid item xs={12} sm={12} md={conScreen ? 12 : 6}>
-                    <TabPanel value={value} index={0}>
-                        <ProfileTimeline user={user} />
-                    </TabPanel>
+                    {user && (
+                        <TabPanel value={value} index={0}>
+                            <ProfileTimeline user={user} />
+                        </TabPanel>
+                    )}
 
                     <TabPanel value={value} index={1}>
                         <Friends user={user} />

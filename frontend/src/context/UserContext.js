@@ -1,3 +1,5 @@
+import uniqueArray from "../utils/unique-array";
+
 const initialUserState = {
     users: [],
     isLoggedIn: false,
@@ -15,7 +17,7 @@ const UserReducer = (state, action) => {
 
         case "REMOVE_RECENT_ACCOUNT":
             const accountArray = state.recentAccounts.filter(
-                (account) => account.id !== action.payload
+                (account) => account._id !== action.payload
             );
 
             localStorage.setItem("accounts", JSON.stringify(accountArray));
@@ -58,7 +60,10 @@ const UserReducer = (state, action) => {
             return { ...state, users: newUsers };
 
         case "USER_SIGNOUT":
-            const newRecentAccounts = [...new Set([...state.recentAccounts, state.currentUser])];
+            const newRecentAccounts = uniqueArray(
+                [...state.recentAccounts, state.currentUser],
+                "_id"
+            );
 
             localStorage.removeItem("token");
             localStorage.setItem("accounts", JSON.stringify(newRecentAccounts));

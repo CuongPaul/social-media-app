@@ -58,7 +58,7 @@ const Auth = () => {
                         <Grid container spacing={2}>
                             <Grid container spacing={2}>
                                 {userState.recentAccounts.map((account) => (
-                                    <Grid item xs={6} sm={6} md={3} key={account?._id}>
+                                    <Grid item xs={6} sm={6} md={3} key={account._id}>
                                         <RecentAccountCard account={account} />
                                     </Grid>
                                 ))}

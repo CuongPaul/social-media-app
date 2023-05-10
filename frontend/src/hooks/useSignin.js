@@ -17,7 +17,7 @@ const useSignin = (formData = null) => {
         setFormValue({ ...formValue, password });
     };
 
-    const handleSignin = async (e) => {
+    const handleClickSignin = async (e) => {
         e.preventDefault();
         setLoading(true);
 
@@ -52,7 +52,7 @@ const useSignin = (formData = null) => {
 
     return {
         loading,
-        handleSignin,
+        handleClickSignin,
         handleChangeEmail,
         handleChangePassword,
     };

@@ -19,7 +19,7 @@ import { useSignin } from "../../hooks";
 import AvartarText from "../UI/AvartarText";
 
 const RecentAccountSigninForm = ({ account, isShowSigninForm, setIsShowSigninForm }) => {
-    const { loading, handleSignin, handleChangePassword } = useSignin(account);
+    const { loading, handleClickSignin, handleChangePassword } = useSignin(account);
 
     return (
         <Dialog
@@ -50,7 +50,7 @@ const RecentAccountSigninForm = ({ account, isShowSigninForm, setIsShowSigninFor
                         }}
                     >
                         <Avatar
-                            src={account?.avatar_image}
+                            src={account.avatar_image}
                             style={{ height: "200px", width: "200px" }}
                         />
                     </CardMedia>
@@ -64,10 +64,10 @@ const RecentAccountSigninForm = ({ account, isShowSigninForm, setIsShowSigninFor
                         }}
                     >
                         <AvartarText
-                            backgroundColor="teal"
                             size="100px"
                             fontSize="35px"
-                            text={account?.name}
+                            text={account.name}
+                            backgroundColor="teal"
                         />
                     </CardMedia>
                 )}
@@ -88,17 +88,17 @@ const RecentAccountSigninForm = ({ account, isShowSigninForm, setIsShowSigninFor
                                 fontWeight: "800",
                             }}
                         >
-                            {account?.name}
+                            {account.name}
                         </Typography>
                     </div>
-                    <form onSubmit={handleSignin}>
+                    <form onSubmit={handleClickSignin}>
                         <FormControl style={{ width: "100%" }}>
                             <TextField
                                 type="password"
                                 label="Password"
                                 variant="outlined"
                                 style={{ marginTop: "16px" }}
-                                onChange={handleChangePassword}
+                                onChange={(e) => handleChangePassword(e.target.value)}
                             />
                         </FormControl>
                         <Button
