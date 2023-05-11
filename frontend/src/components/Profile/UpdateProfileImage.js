@@ -27,7 +27,7 @@ const UpdateProfileImage = ({ user }) => {
     const [previewImage, setPreviewImage] = useState(null);
 
     const { updateProfilePic, loading } = useUpdateProfilePic({
-        profile_pic: profilePic,
+        avatar_image: profilePic,
         history,
     });
 
@@ -59,6 +59,7 @@ const UpdateProfileImage = ({ user }) => {
     return (
         <div>
             <Badge
+                overlap="rectangular"
                 badgeContent={
                     userState.currentUser.id === user.id && (
                         <IconButton style={{ bottom: -140, left: -20 }} onClick={handleImageClick}>
@@ -77,14 +78,14 @@ const UpdateProfileImage = ({ user }) => {
                     left: "40%",
                 }}
             >
-                {user.profile_pic ? (
+                {user.avatar_image ? (
                     <Avatar
                         style={{
                             width: "170px",
                             height: "170px",
                         }}
                     >
-                        <img src={user.profile_pic} width="100%" height="100%" alt={user.name} />
+                        <img src={user.avatar_image} width="100%" height="100%" alt={user.name} />
                     </Avatar>
                 ) : (
                     <AvartarText

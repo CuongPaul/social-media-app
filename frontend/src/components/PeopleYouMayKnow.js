@@ -44,10 +44,10 @@ const PeopleYouMayKnow = ({ users }) => {
                 {users.map((user) => (
                     <Grid item md={4} xs={4} sm={4} key={user.id}>
                         <Card elevation={0}>
-                            {user.profile_pic && (
+                            {user.avatar_image && (
                                 <CardMedia
                                     style={{ width: "100%", height: "200px" }}
-                                    image={user.profile_pic}
+                                    image={user.avatar_image}
                                     title="Contemplative Reptile"
                                 />
                             )}
@@ -56,11 +56,11 @@ const PeopleYouMayKnow = ({ users }) => {
                                 {user.friends && user.friends.length
                                     ? user.friends.map((friend) => (
                                           <div style={{ display: "flex" }} key={friend.id}>
-                                              {friend.profile_pic ? (
+                                              {friend.avatar_image ? (
                                                   <Avatar
                                                       style={{ width: "20px", height: "20px" }}
                                                       alt="Remy Sharp"
-                                                      src={friend.profile_pic}
+                                                      src={friend.avatar_image}
                                                   />
                                               ) : (
                                                   <AvartarText

@@ -8,7 +8,7 @@ const Friend = ({ user, children }) => {
     const { userDispatch } = useContext(UserContext);
     const { uiState, uiDispatch } = useContext(UIContext);
 
-    return (
+    return user ? (
         <Fragment>
             <Card
                 elevation={0}
@@ -30,11 +30,11 @@ const Friend = ({ user, children }) => {
                             justifyContent: "flex-start",
                         }}
                     >
-                        {user.profile_pic ? (
+                        {user.avatar_image ? (
                             <Avatar style={{ width: "60px", height: "60px" }}>
                                 <img
                                     alt="avatar"
-                                    src={user.profile_pic}
+                                    src={user.avatar_image}
                                     style={{ width: "100%", height: "100%" }}
                                 />
                             </Avatar>
@@ -65,7 +65,7 @@ const Friend = ({ user, children }) => {
                 {children}
             </Card>
         </Fragment>
-    );
+    ) : null;
 };
 
 export default Friend;

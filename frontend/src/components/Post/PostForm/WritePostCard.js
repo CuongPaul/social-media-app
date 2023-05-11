@@ -25,11 +25,11 @@ const PostCard = () => {
                         justifyContent: "flex-start",
                     }}
                 >
-                    {userState.currentUser.profile_pic ? (
+                    {userState.currentUser.avatar_image ? (
                         <Avatar>
                             <img
                                 alt="avatar"
-                                src={userState.currentUser.profile_pic}
+                                src={userState.currentUser.avatar_image}
                                 width="100%"
                                 height="100%"
                             />

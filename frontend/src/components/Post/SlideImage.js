@@ -15,9 +15,10 @@ const SlideImage = ({ images }) => {
                 transitionDuration={500}
                 infinite={isMultipleImage}
             >
-                {images.map((item) => (
+                {images.map((item, index) => (
                     <CardMedia
                         controls
+                        key={index}
                         image={item}
                         style={{ width: "100%", maxHeight: "500px", objectFit: "fill" }}
                         component={

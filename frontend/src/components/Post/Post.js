@@ -32,11 +32,11 @@ const Post = ({ post, handleDeletePost }) => {
         >
             <CardHeader
                 avatar={
-                    post.user && post.user.profile_pic ? (
+                    post.user && post.user.avatar_image ? (
                         <Avatar>
                             <img
                                 alt="avatar"
-                                src={post.user.profile_pic}
+                                src={post.user.avatar_image}
                                 style={{ width: "100%", height: "100%" }}
                             />
                         </Avatar>

@@ -40,8 +40,8 @@ const Friends = () => {
                     return (
                         <ListItem key={friend.id} button onClick={() => handleClickFriend(friend)}>
                             <ListItemAvatar>
-                                {friend.profile_pic ? (
-                                    <Avatar alt={friend.name} src={friend.profile_pic} />
+                                {friend.avatar_image ? (
+                                    <Avatar alt={friend.name} src={friend.avatar_image} />
                                 ) : (
                                     <AvartarText
                                         text={friend?.name}

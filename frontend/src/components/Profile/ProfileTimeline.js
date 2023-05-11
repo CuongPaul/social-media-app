@@ -1,25 +1,32 @@
 import { Grid } from "@material-ui/core";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import Posts from "../Post/Posts";
-import { UserContext, PostContext } from "../../App";
+import { UserContext } from "../../App";
 import WritePostCard from "../Post/PostForm/WritePostCard";
+import callApi from "../../api";
 
 const ProfileTimeline = ({ user }) => {
     const { userState } = useContext(UserContext);
-    const { postState } = useContext(PostContext);
 
-    const getUserPost = () => {
-        return postState.posts.filter((post) => post.user.id === user.id);
-    };
-    return (
+    const [postUser, setPostUser] = useState(null);
+
+    useEffect(() => {
+        (async () => {
+            const { data } = await callApi({ url: `/post/user/${user._id}`, method: "GET" });
+            console.log("data: ", data.rows);
+            setPostUser(data.rows);
+        })();
+    }, []);
+
+    return postUser ? (
         <Grid container justifyContent="center" style={{ marginTop: "25px" }} spacing={2}>
             <Grid item xs={12} sm={12} md={8}>
                 {userState.currentUser._id === user._id && <WritePostCard />}
-                <Posts posts={getUserPost()} />
+                <Posts postUser={postUser} />
             </Grid>
         </Grid>
-    );
+    ) : null;
 };
 
 export default ProfileTimeline;

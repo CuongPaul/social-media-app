@@ -7,12 +7,12 @@ import { unfriend } from "../../services/UserServices";
 
 const Friends = ({ user }) => {
     const { userDispatch } = useContext(UserContext);
-
+    console.log(user);
     return (
         <Grid container spacing={2}>
             {user.friends &&
                 user.friends.map((friend) => (
-                    <Grid item xs={12} sm={6} md={6} key={friend.id}>
+                    <Grid item xs={12} sm={6} md={6} key={friend._id}>
                         <Paper
                             style={{
                                 padding: "16px",
@@ -21,8 +21,8 @@ const Friends = ({ user }) => {
                                 alignItems: "center",
                             }}
                         >
-                            {friend.profile_pic ? (
-                                <Avatar src={friend.profile_pic} variant="square" />
+                            {friend.avatar_image ? (
+                                <Avatar src={friend.avatar_image} variant="square" />
                             ) : (
                                 <AvartarText
                                     backgroundColor={friend?.active ? "seagreen" : "tomato"}

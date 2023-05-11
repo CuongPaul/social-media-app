@@ -4,17 +4,17 @@ import { UserContext, UIContext } from "../App";
 import { storage } from "../firebase/firebase";
 const url = process.env.REACT_APP_BASE_API_URL;
 
-const useUpdateProfilePic = ({ profile_pic, cover_pic, history }) => {
+const useUpdateProfilePic = ({ avatar_image, cover_pic, history }) => {
     const [loading, setLoading] = useState(false);
 
     const { userState, userDispatch } = useContext(UserContext);
     const { uiDispatch } = useContext(UIContext);
 
     const updateProfilePic = () => {
-        let filename = `profile_pic/${userState.currentUser.name}-${Date.now()}-${
-            profile_pic.name
+        let filename = `avatar_image/${userState.currentUser.name}-${Date.now()}-${
+            avatar_image.name
         }`;
-        const uploadTask = storage.ref(`images/${filename}`).put(profile_pic);
+        const uploadTask = storage.ref(`images/${filename}`).put(avatar_image);
         uploadTask.on(
             "state_changed",
             () => {
@@ -63,7 +63,7 @@ const useUpdateProfilePic = ({ profile_pic, cover_pic, history }) => {
         try {
             let token = JSON.parse(localStorage.getItem("token"));
             const response = await axios.put(
-                `${url}/api/user/profile_pic/update`,
+                `${url}/api/user/avatar_image/update`,
                 { profile_url },
                 {
                     headers: {

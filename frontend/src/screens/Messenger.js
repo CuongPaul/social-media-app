@@ -85,11 +85,11 @@ function Messenger() {
                                         backgroundColor: uiState.darkMode && "rgb(36,37,38)",
                                     }}
                                 >
-                                    {chatState.selectedFriend.profile_pic ? (
+                                    {chatState.selectedFriend.avatar_image ? (
                                         <Avatar>
                                             <img
                                                 alt="avatar"
-                                                src={chatState.selectedFriend.profile_pic}
+                                                src={chatState.selectedFriend.avatar_image}
                                                 style={{ width: "100%", height: "100%" }}
                                             />
                                         </Avatar>

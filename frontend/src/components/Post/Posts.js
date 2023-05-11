@@ -5,10 +5,11 @@ import Post from "./Post";
 import { PostContext } from "../../App";
 import useFetchPost from "../../hooks/useFetchPost";
 
-const Posts = () => {
+const Posts = ({ postUser }) => {
     const { postState } = useContext(PostContext);
     const { postDispatch } = useContext(PostContext);
-    const posts = postState.posts;
+    const posts = postUser ? postUser : postState.posts;
+    console.log("posts: ", postUser);
     const { fetchPosts } = useFetchPost();
 
     const handleFetchPosts = () => {

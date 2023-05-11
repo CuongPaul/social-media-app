@@ -48,8 +48,8 @@ const AccountMenu = () => {
             label={<h3>{userState.currentUser.name.split(" ")[0].slice(0, 5) + ".."}</h3>}
             className={classes.profile_chip}
             avatar={
-                userState.currentUser.profile_pic ? (
-                    <Avatar alt="Natacha" src={userState.currentUser.profile_pic} />
+                userState.currentUser.avatar_image ? (
+                    <Avatar alt="Natacha" src={userState.currentUser.avatar_image} />
                 ) : (
                     <AvartarText
                         text={userState?.currentUser?.name}
