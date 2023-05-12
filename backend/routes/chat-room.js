@@ -12,6 +12,7 @@ import {
     updateAvatarChatRoomValidation,
     updateMemberChatRoomValidation,
     updatePrivacyChatRoomValidation,
+    createChatRoomForTwoPeopleValidation,
 } from "../validator/chat-room";
 import {
     changeAdminController,
@@ -25,6 +26,7 @@ import {
     updateAvatarChatRoomController,
     updateMemberChatRoomController,
     updatePrivacyChatRoomController,
+    createChatRoomForTwoPeopleController,
 } from "../controllers/chat-room";
 import verifyToken from "../middleware/verify-token";
 
@@ -77,6 +79,12 @@ router.put(
     validate(updatePrivacyChatRoomValidation),
     verifyToken,
     updatePrivacyChatRoomController
+);
+router.post(
+    "/two-people",
+    validate(createChatRoomForTwoPeopleValidation),
+    verifyToken,
+    createChatRoomForTwoPeopleController
 );
 router.get("/", verifyToken, getChatRoomsByUserController);
 router.post("/", validate(createChatRoomValidation), verifyToken, createChatRoomController);

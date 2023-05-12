@@ -16,8 +16,6 @@ const UserLists = () => {
     };
 
     const filterUser = (user) => {
-        console.log("user: ", user);
-        console.log("userState: ", userState);
         let s_index = userState.sendedFriendRequests.findIndex(
             (request) => request.sender._id === user._id
         );

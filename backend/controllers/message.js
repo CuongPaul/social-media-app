@@ -1,7 +1,7 @@
 import { React, Message, ChatRoom } from "../models";
 
 const getMessagesController = async (req, res) => {
-    const limit = 5;
+    const pageSize = 5;
     const userId = req.user_id;
     const page = parseInt(req.query.page) || 1;
     const chatRoomId = req.params.chatRoomId;
@@ -16,8 +16,8 @@ const getMessagesController = async (req, res) => {
 
         const messages = await Message.find(query, { chat_room: 0, updatedAt: 0 })
             .sort()
-            .limit(limit)
-            .skip(page * limit)
+            .limit(pageSize)
+            .skip((page - 1) * pageSize)
             .populate("sender", { _id: 1, name: 1, avatar_image: 1 })
             .populate({
                 path: "react",

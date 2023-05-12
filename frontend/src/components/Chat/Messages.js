@@ -13,6 +13,7 @@ import { MoreHoriz } from "@material-ui/icons";
 import React, { Fragment, useContext, useEffect, useRef, useState } from "react";
 
 import { ChatContext, UIContext, UserContext } from "../../App";
+import callApi from "../../api";
 
 const useStyles = makeStyles(() => ({
     me: {
@@ -48,6 +49,7 @@ const Messages = ({ setTextValue }) => {
     const classes = useStyles();
     const scrollDiv = useRef(null);
     const [isOpen, setIsOpen] = useState(null);
+    const [messages, setMessages] = useState([]);
 
     const scrollToBottom = () => {
         scrollDiv.current.scrollIntoView({ behavior: "smooth" });
@@ -55,14 +57,20 @@ const Messages = ({ setTextValue }) => {
 
     useEffect(() => {
         scrollToBottom();
+        (async () => {
+            const { data } = await callApi({
+                url: `/message/chat-room/${chatState.selectedFriend._id}`,
+                method: "GET",
+            });
+        })();
     }, [chatState.messages.length]);
 
     return (
         <Grid container>
-            {chatState.messages.length
-                ? chatState.messages.map((message) => (
-                      <Fragment key={message.id}>
-                          {userState.currentUser.id !== message.sender.id ? (
+            {chatState?.messages?.length
+                ? chatState?.messages?.map((message) => (
+                      <Fragment key={message._id}>
+                          {userState.currentUser._id !== message.sender._id ? (
                               <Grid item xs={12} md={12} sm={12}>
                                   <Paper
                                       className={classes.partner}
@@ -73,18 +81,16 @@ const Messages = ({ setTextValue }) => {
                                           color: uiState.darkMode && "#fff",
                                       }}
                                   >
-                                      {message.body.text && (
+                                      {message.text && (
                                           <Typography style={{ wordWrap: "break-word" }}>
-                                              {message.body.text}
+                                              {message.text}
                                           </Typography>
                                       )}
-                                      {message.body.image && (
+                                      {message.image && (
                                           <CardMedia
                                               component={
-                                                  message.body.image
-                                                      .split(".")
-                                                      .pop()
-                                                      .substring(0, 3) === "mp4"
+                                                  message.image.split(".").pop().substring(0, 3) ===
+                                                  "mp4"
                                                       ? "video"
                                                       : "img"
                                               }
@@ -93,7 +99,7 @@ const Messages = ({ setTextValue }) => {
                                                   height: "100%",
                                                   objectFit: "contain",
                                               }}
-                                              image={message.body.image}
+                                              image={message.image}
                                               title="Paella dish"
                                               controls
                                           />
@@ -124,18 +130,16 @@ const Messages = ({ setTextValue }) => {
                                           color: uiState.darkMode && "#fff",
                                       }}
                                   >
-                                      {message.body.text && (
+                                      {message.text && (
                                           <Typography style={{ wordWrap: "break-word" }}>
-                                              {message.body.text}
+                                              {message.text}
                                           </Typography>
                                       )}
-                                      {message.body.image && (
+                                      {message.image && (
                                           <CardMedia
                                               component={
-                                                  message.body.image
-                                                      .split(".")
-                                                      .pop()
-                                                      .substring(0, 3) === "mp4"
+                                                  message.image.split(".").pop().substring(0, 3) ===
+                                                  "mp4"
                                                       ? "video"
                                                       : "img"
                                               }
@@ -144,7 +148,7 @@ const Messages = ({ setTextValue }) => {
                                                   height: "100%",
                                                   objectFit: "contain",
                                               }}
-                                              image={message.body.image}
+                                              image={message.image}
                                               title="Paella dish"
                                               controls
                                           />
@@ -156,7 +160,7 @@ const Messages = ({ setTextValue }) => {
                                           {moment(message.createdAt).fromNow()}
                                       </Typography>
                                   </Paper>
-                                  <Fragment key={message.id}>
+                                  <Fragment key={message._id}>
                                       <IconButton onClick={(e) => setIsOpen(e.currentTarget)}>
                                           <MoreHoriz />
                                       </IconButton>
@@ -170,10 +174,10 @@ const Messages = ({ setTextValue }) => {
                                           <MenuItem
                                               onClick={() => {
                                                   setIsOpen(null);
-                                                  setTextValue(message.body.text);
+                                                  setTextValue(message.text);
                                               }}
                                           >
-                                              Edit {message.body.text && message.body.text}
+                                              Edit {message.text && message.text}
                                           </MenuItem>
                                           <MenuItem
                                               onClick={() => {

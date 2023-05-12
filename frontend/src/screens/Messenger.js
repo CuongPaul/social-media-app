@@ -134,7 +134,10 @@ function Messenger() {
                                         width: "100%",
                                     }}
                                 >
-                                    <InputTextArea textValue={textValue} />
+                                    <InputTextArea
+                                        textValue={textValue}
+                                        chatRoomId={chatState.selectedFriend._id}
+                                    />
                                 </div>
                             </Grid>
                         ) : (

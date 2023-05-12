@@ -2,7 +2,7 @@ import { Send } from "@material-ui/icons";
 import EmojiPicker from "emoji-picker-react";
 import { faSmile } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useContext, useState, useRef, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { IconButton, InputBase, Paper, makeStyles } from "@material-ui/core";
 
 import { UIContext } from "../../App";
@@ -20,12 +20,11 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const MessageInputTextArea = ({ textValue }) => {
+const MessageInputTextArea = ({ textValue, chatRoomId }) => {
     const classes = useStyles();
     const { uiState } = useContext(UIContext);
-    const [textMessage, setTextMessage] = useState("");
 
-    const fileRef = useRef();
+    const [textMessage, setTextMessage] = useState("");
     const [showEmoji, setShowEmoji] = useState(false);
     const [previewImage, setPreviewImage] = useState("");
     const [messageImage, setMessageImage] = useState(null);
@@ -35,15 +34,15 @@ const MessageInputTextArea = ({ textValue }) => {
         setMessageImage(null);
     };
 
-    const handleImageChange = (e) => {
-        setMessageImage(e.target.files[0]);
+    // const handleImageChange = (e) => {
+    //     setMessageImage(e.target.files[0]);
 
-        const reader = new FileReader();
-        reader.readAsDataURL(e.target.files[0]);
-        reader.onload = () => {
-            setPreviewImage(reader.result);
-        };
-    };
+    //     const reader = new FileReader();
+    //     reader.readAsDataURL(e.target.files[0]);
+    //     reader.onload = () => {
+    //         setPreviewImage(reader.result);
+    //     };
+    // };
 
     const onEmojiClick = (e, emojiObject) => {
         setTextMessage(textMessage + emojiObject.emoji);
@@ -55,15 +54,13 @@ const MessageInputTextArea = ({ textValue }) => {
         messageImage,
         setTextMessage,
         removeFileImage,
+        chatRoomId,
     });
 
-    const handleSendMessage = (e) => {
-        e.preventDefault();
-        handleSubmitMessage();
-    };
-
     useEffect(() => {
-        setTextMessage(textValue);
+        if (textValue) {
+            setTextMessage(textValue);
+        }
     }, [textValue]);
 
     return (
@@ -93,21 +90,27 @@ const MessageInputTextArea = ({ textValue }) => {
                     backgroundColor: uiState.darkMode ? "rgb(24,25,26)" : "whitesmoke",
                 }}
             />
-            <FilesField fileRef={fileRef} />
-            <input
+            {/* <FilesField fileRef={fileRef} /> */}
+
+            <FilesField
+                multipleUpload={false}
+                setFilesUpload={setMessageImage}
+                setFilesPreview={setPreviewImage}
+            />
+            {/* <input
                 type="file"
                 ref={fileRef}
                 capture="user"
                 accept="image/*,video/*"
                 style={{ display: "none" }}
                 onChange={handleImageChange}
-            />
+            /> */}
             <IconButton onClick={() => setShowEmoji(!showEmoji)}>
                 <FontAwesomeIcon icon={faSmile} color="rgb(250,199,94)" />
             </IconButton>
             {showEmoji && <EmojiPicker onEmojiClick={onEmojiClick} className="emoji-container" />}
             <IconButton
-                onClick={handleSendMessage}
+                onClick={handleSubmitMessage}
                 style={{
                     backgroundColor: "rgb(1,133,243)",
                     color: "#fff",

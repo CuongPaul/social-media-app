@@ -79,6 +79,12 @@ const updatePrivacyChatRoomValidation = {
     }),
 };
 
+const createChatRoomForTwoPeopleValidation = {
+    body: Joi.object({
+        reciver: Joi.string().trim().required(),
+    }),
+};
+
 export {
     changeAdminValidation,
     joinChatRoomValidation,
@@ -90,4 +96,5 @@ export {
     updateAvatarChatRoomValidation,
     updateMemberChatRoomValidation,
     updatePrivacyChatRoomValidation,
+    createChatRoomForTwoPeopleValidation,
 };
