@@ -9,7 +9,7 @@ const Posts = ({ postUser }) => {
     const { postState } = useContext(PostContext);
     const { postDispatch } = useContext(PostContext);
     const posts = postUser ? postUser : postState.posts;
-    console.log("posts: ", postUser);
+
     const { fetchPosts } = useFetchPost();
 
     const handleFetchPosts = () => {

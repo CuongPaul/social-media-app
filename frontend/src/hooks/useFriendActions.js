@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import axios from "axios";
 import { UserContext, UIContext } from "../App";
+import callApi from "../api";
 
 const url = process.env.REACT_APP_BASE_API_URL;
 
@@ -97,25 +98,18 @@ const useFriendAction = () => {
     };
 
     const sendFriendRequest = async (user_id) => {
-        let token = JSON.parse(localStorage.getItem("token"));
-
         try {
             setLoading(true);
-
-            const { data } = await axios.get(`${url}/api/user/friend_request/${user_id}/send`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+            const { message } = await callApi({
+                url: "/friend-request",
+                method: "POST",
+                data: { receiver_id: user_id },
             });
             setLoading(false);
-            if (data) {
-                userDispatch({
-                    type: "ADD_FRIENDS_REQUEST_SENDED",
-                    payload: data.friend,
-                });
+            if (message) {
                 uiDispatch({
                     type: "SET_NOTIFICATION",
-                    payload: { color: "success", display: true, text: data.message },
+                    payload: { color: "success", display: true, text: message },
                 });
             }
         } catch (err) {

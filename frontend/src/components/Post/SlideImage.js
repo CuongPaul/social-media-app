@@ -17,6 +17,7 @@ const SlideImage = ({ images }) => {
             >
                 {images.map((item, index) => (
                     <CardMedia
+                        autoPause
                         controls
                         key={index}
                         image={item}

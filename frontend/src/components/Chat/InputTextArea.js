@@ -79,7 +79,7 @@ const MessageInputTextArea = ({ textValue }) => {
         >
             <InputBase
                 multiline
-                rowsMax={4}
+                maxRows={4}
                 value={textMessage}
                 classes={{
                     root: classes.inputRoot,

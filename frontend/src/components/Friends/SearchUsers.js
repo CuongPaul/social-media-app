@@ -77,9 +77,9 @@ const SearchUsers = () => {
                                 users.map((user) => (
                                     <ListItem
                                         button
-                                        key={user.id}
+                                        key={user._id}
                                         component={Link}
-                                        to={`/profile/${user.id}`}
+                                        to={`/profile/${user._id}`}
                                         onClick={() => setIsOpen(false)}
                                     >
                                         <ListItemIcon>

@@ -38,14 +38,14 @@ const Friends = () => {
             {userState.currentUser.friends && userState.currentUser.friends.length ? (
                 userState.currentUser.friends.map((friend) => {
                     return (
-                        <ListItem key={friend.id} button onClick={() => handleClickFriend(friend)}>
+                        <ListItem key={friend._id} button onClick={() => handleClickFriend(friend)}>
                             <ListItemAvatar>
                                 {friend.avatar_image ? (
                                     <Avatar alt={friend.name} src={friend.avatar_image} />
                                 ) : (
                                     <AvartarText
                                         text={friend?.name}
-                                        backgroundColor={friend.active ? "seagreen" : "tomato"}
+                                        backgroundColor={friend.is_active ? "seagreen" : "tomato"}
                                     />
                                 )}
                             </ListItemAvatar>

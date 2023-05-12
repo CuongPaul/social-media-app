@@ -133,6 +133,12 @@ const getSendedFriendRequestsController = async (req, res) => {
                 name: 1,
                 email: 1,
                 avatar_image: 1,
+            })
+            .populate("sender", {
+                _id: 1,
+                name: 1,
+                email: 1,
+                avatar_image: 1,
             });
 
         const count = await FriendRequest.countDocuments(query);
@@ -155,6 +161,12 @@ const getReceivedFriendRequestsController = async (req, res) => {
             .limit(pageSize)
             .sort({ createdAt: -1 })
             .skip((page - 1) * pageSize)
+            .populate("receiver", {
+                _id: 1,
+                name: 1,
+                email: 1,
+                avatar_image: 1,
+            })
             .populate("sender", {
                 _id: 1,
                 name: 1,

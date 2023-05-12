@@ -7,7 +7,7 @@ import { unfriend } from "../../services/UserServices";
 
 const Friends = ({ user }) => {
     const { userDispatch } = useContext(UserContext);
-    console.log(user);
+
     return (
         <Grid container spacing={2}>
             {user.friends &&

@@ -58,7 +58,7 @@ function Friends() {
         uiDispatch({ type: "SET_NAV_MENU", payload: true });
         async function sendedFriendRequest() {
             const { data } = await callApi({ url: "/friend-request/sended", method: "GET" });
-            console.log("sended: ", data);
+
             // const res = await getSendedFriendRequests();
             // if (res.data) {
             userDispatch({
@@ -70,7 +70,7 @@ function Friends() {
 
         async function incommingFriendRequest() {
             const { data } = await callApi({ url: "/friend-request/received", method: "GET" });
-            console.log("received: ", data);
+
             // const res = await getReceivedFriendRequests();
             // if (res && res.data) {
             userDispatch({
@@ -113,7 +113,7 @@ function Friends() {
     const handleCancelFriendRequest = (request_id) => {
         cancelFriendRequest(request_id);
     };
-    console.log("userState: ", userState);
+
     const metaData = (
         <div className={classes.sidebarContainer}>
             <Typography variant="h4">Friends</Typography>

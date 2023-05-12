@@ -14,7 +14,7 @@ const ProfileTimeline = ({ user }) => {
     useEffect(() => {
         (async () => {
             const { data } = await callApi({ url: `/post/user/${user._id}`, method: "GET" });
-            console.log("data: ", data.rows);
+
             setPostUser(data.rows);
         })();
     }, []);
