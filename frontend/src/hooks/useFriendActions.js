@@ -11,20 +11,11 @@ const useFriendAction = () => {
     const { uiDispatch } = useContext(UIContext);
 
     const acceptFriendRequest = async (request_id) => {
-        let token = JSON.parse(localStorage.getItem("token"));
-
         try {
-            setLoading(true);
-
-            const { data } = await axios.get(
-                `${url}/api/user/friend_request/${request_id}/accept`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            setLoading(false);
+            const { data } = await callApi({
+                url: `/friend-request/${request_id}`,
+                method: "PUT",
+            });
             if (data) {
                 userDispatch({
                     type: "ADD_FRIEND",
@@ -57,20 +48,11 @@ const useFriendAction = () => {
     };
 
     const declineFriendRequest = async (request_id) => {
-        let token = localStorage.getItem("token");
-
         try {
-            setLoading(true);
-
-            const { data } = await axios.get(
-                `${url}/api/user/friend_request/${request_id}/decline`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            setLoading(false);
+            const { data } = await callApi({
+                url: `/friend-request/${request_id}`,
+                method: "DELETE",
+            });
             if (data) {
                 userDispatch({
                     type: "REMOVE_FRIENDS_REQUEST_RECEIVED",
@@ -129,16 +111,11 @@ const useFriendAction = () => {
     };
 
     const cancelFriendRequest = async (request_id) => {
-        let token = localStorage.getItem("token");
         try {
-            const { data } = await axios.get(
-                `${url}/api/user/friend_request/${request_id}/cancel`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            const { data } = await callApi({
+                url: `/friend-request/${request_id}`,
+                method: "DELETE",
+            });
             if (data) {
                 userDispatch({
                     type: "REMOVE_FRIENDS_REQUEST_SENDED",

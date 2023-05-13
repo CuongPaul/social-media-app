@@ -17,13 +17,15 @@ import { Search } from "@material-ui/icons";
 import React, { useState, Fragment } from "react";
 
 import AvartarText from "../UI/AvartarText";
-import { useSearchUsers } from "../../hooks";
+import { useSearchUsers, useFriendActions } from "../../hooks";
 
 const SearchUsers = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
 
     const { users, isLoading, handleSearchUsers } = useSearchUsers();
+
+    const { sendFriendRequest } = useFriendActions();
 
     return (
         <Fragment>
@@ -75,41 +77,55 @@ const SearchUsers = () => {
                         <List>
                             {users &&
                                 users.map((user) => (
-                                    <ListItem
-                                        button
-                                        key={user._id}
-                                        component={Link}
-                                        to={`/profile/${user._id}`}
-                                        onClick={() => setIsOpen(false)}
-                                    >
-                                        <ListItemIcon>
-                                            {user.avatar_image ? (
-                                                <Avatar style={{ width: "60px", height: "60px" }}>
-                                                    <img
-                                                        width="100%"
-                                                        height="100%"
-                                                        alt={user.name}
-                                                        src={user.avatar_image}
+                                    <div>
+                                        <ListItem
+                                            button
+                                            key={user._id}
+                                            component={Link}
+                                            to={`/profile/${user._id}`}
+                                            onClick={() => setIsOpen(false)}
+                                        >
+                                            <ListItemIcon>
+                                                {user.avatar_image ? (
+                                                    <Avatar
+                                                        style={{ width: "60px", height: "60px" }}
+                                                    >
+                                                        <img
+                                                            width="100%"
+                                                            height="100%"
+                                                            alt={user.name}
+                                                            src={user.avatar_image}
+                                                        />
+                                                    </Avatar>
+                                                ) : (
+                                                    <AvartarText
+                                                        text={user?.name}
+                                                        backgroundColor={
+                                                            user.active ? "seagreen" : "tomato"
+                                                        }
                                                     />
-                                                </Avatar>
-                                            ) : (
-                                                <AvartarText
-                                                    text={user?.name}
-                                                    backgroundColor={
-                                                        user.active ? "seagreen" : "tomato"
-                                                    }
-                                                />
-                                            )}
-                                        </ListItemIcon>
-                                        <ListItemText style={{ marginLeft: "8px" }}>
-                                            <Typography
-                                                style={{ fontSize: "17px", fontWeight: "700" }}
-                                            >
-                                                {user.name}
-                                            </Typography>
-                                            <Typography>{user.email}</Typography>
-                                        </ListItemText>
-                                    </ListItem>
+                                                )}
+                                            </ListItemIcon>
+                                            <ListItemText style={{ marginLeft: "8px" }}>
+                                                <Typography
+                                                    style={{ fontSize: "17px", fontWeight: "700" }}
+                                                >
+                                                    {user.name}
+                                                </Typography>
+                                                <Typography>{user.email}</Typography>
+                                            </ListItemText>
+                                        </ListItem>
+                                        <Button
+                                            onClick={() => sendFriendRequest(user._id)}
+                                            variant="contained"
+                                            style={{
+                                                background: "rgb(1,133,243)",
+                                                color: "white",
+                                            }}
+                                        >
+                                            Add Friend
+                                        </Button>
+                                    </div>
                                 ))}
                         </List>
                     )}
