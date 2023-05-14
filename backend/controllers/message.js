@@ -1,4 +1,4 @@
-import { React, Message, ChatRoom } from "../models";
+import { User, React, Message, ChatRoom } from "../models";
 
 const getMessagesController = async (req, res) => {
     const pageSize = 5;
@@ -7,6 +7,7 @@ const getMessagesController = async (req, res) => {
     const chatRoomId = req.params.chatRoomId;
 
     try {
+        const user = await User.findById(userId);
         const chatRoom = await ChatRoom.findOne({ members: userId, _id: chatRoomId });
         if (!chatRoom) {
             throw new Error("You aren't in this group");
@@ -33,6 +34,12 @@ const getMessagesController = async (req, res) => {
             });
 
         const count = await Message.countDocuments(query);
+
+        const index = user.chat_rooms.findIndex((item) => item._id == chatRoom._id);
+        if (index != -1 && user.chat_rooms[index].furthest_unseen_message) {
+            user.chat_rooms[index].furthest_unseen_message = null;
+        }
+        await user.save();
 
         res.status(200).json({ message: "success", data: { count, rows: messages } });
     } catch (err) {
@@ -92,6 +99,24 @@ const createMessageController = async (req, res) => {
             react: emptyReact.id,
             chat_room: chat_room_id,
         }).save();
+
+        const members = await User.find({ _id: { $in: chatRoom.members } });
+        for (const member of members) {
+            if (member._id != userId) {
+                const index = member.chat_rooms.findIndex(
+                    (item) => String(item._id) === String(chatRoom._id)
+                );
+                if (index != -1) {
+                    if (
+                        member.chat_rooms[index] &&
+                        !member.chat_rooms[index].furthest_unseen_message
+                    ) {
+                        member.chat_rooms[index].furthest_unseen_message = newMessage._id;
+                        await member.save();
+                    }
+                }
+            }
+        }
 
         req.io.to(chat_room_id).emit("new-message", { data: newMessage });
 

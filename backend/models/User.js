@@ -2,7 +2,9 @@ import mongoose from "mongoose";
 
 const { model, Schema } = mongoose;
 
-const UserIdType = { ref: "user", type: Schema.Types.ObjectId };
+const ObjectIdType = Schema.Types.ObjectId;
+
+const UserIdType = { ref: "user", type: ObjectIdType };
 const DefaultStringType = { trim: true, default: "", type: String };
 const RequiredStringType = { trim: true, type: String, required: true };
 
@@ -19,6 +21,12 @@ const userSchema = new Schema(
         avatar_image: DefaultStringType,
         is_active: { default: true, type: Boolean },
         email: { unique: true, ...RequiredStringType },
+        chat_rooms: [
+            {
+                _id: { ref: "chat-room", type: ObjectIdType },
+                furthest_unseen_message: { ref: "message", type: ObjectIdType },
+            },
+        ],
     },
     { timestamps: true, versionKey: false }
 );

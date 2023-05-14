@@ -64,6 +64,19 @@ const Friends = () => {
                             <ListItemAvatar>
                                 {friend.avatar_image ? (
                                     <Avatar alt={friend.name} src={friend.avatar_image} />
+                                ) : friend.members.length === 2 ? (
+                                    <Avatar
+                                        alt={
+                                            friend.members.find(
+                                                (item) => item._id !== userState.currentUser._id
+                                            ).name
+                                        }
+                                        src={
+                                            friend.members.find(
+                                                (item) => item._id !== userState.currentUser._id
+                                            ).avatar_image
+                                        }
+                                    />
                                 ) : (
                                     <AvartarText
                                         text={friend?.name}
@@ -71,7 +84,15 @@ const Friends = () => {
                                     />
                                 )}
                             </ListItemAvatar>
-                            <ListItemText primary={friend.name} />
+                            <ListItemText
+                                primary={
+                                    friend.members.length === 2
+                                        ? friend.members.find(
+                                              (item) => item._id !== userState.currentUser._id
+                                          ).name
+                                        : friend.name
+                                }
+                            />
                         </ListItem>
                     );
                 })

@@ -229,7 +229,7 @@ const getRecommendUsersController = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
 
     try {
-        const user = await User.findOne({ _id: userId, is_active: true }).populate("friends");
+        const user = await User.findOne({ _id: userId, is_active: true });
 
         const recommendUserIds = [
             ...new Set(user.friends.reduce((acc, cur) => acc.concat(cur.friends), [])),

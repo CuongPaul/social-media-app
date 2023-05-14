@@ -69,8 +69,8 @@ const Messages = ({ setTextValue }) => {
         <Grid container>
             {chatState?.messages?.length
                 ? chatState?.messages?.map((message) => (
-                      <Fragment key={message._id}>
-                          {userState.currentUser._id !== message.sender._id ? (
+                      <Fragment key={message?._id}>
+                          {userState.currentUser._id !== message?.sender?._id ? (
                               <Grid item xs={12} md={12} sm={12}>
                                   <Paper
                                       className={classes.partner}
@@ -81,16 +81,18 @@ const Messages = ({ setTextValue }) => {
                                           color: uiState.darkMode && "#fff",
                                       }}
                                   >
-                                      {message.text && (
+                                      {message?.text && (
                                           <Typography style={{ wordWrap: "break-word" }}>
                                               {message.text}
                                           </Typography>
                                       )}
-                                      {message.image && (
+                                      {message?.image && (
                                           <CardMedia
                                               component={
-                                                  message.image.split(".").pop().substring(0, 3) ===
-                                                  "mp4"
+                                                  message?.image
+                                                      .split(".")
+                                                      .pop()
+                                                      .substring(0, 3) === "mp4"
                                                       ? "video"
                                                       : "img"
                                               }
@@ -105,7 +107,7 @@ const Messages = ({ setTextValue }) => {
                                           />
                                       )}
                                       <Typography className={classes.date}>
-                                          {moment(message.createdAt).fromNow()}
+                                          {moment(message?.createdAt).fromNow()}
                                       </Typography>
                                   </Paper>
                               </Grid>
@@ -130,16 +132,18 @@ const Messages = ({ setTextValue }) => {
                                           color: uiState.darkMode && "#fff",
                                       }}
                                   >
-                                      {message.text && (
+                                      {message?.text && (
                                           <Typography style={{ wordWrap: "break-word" }}>
-                                              {message.text}
+                                              {message?.text}
                                           </Typography>
                                       )}
-                                      {message.image && (
+                                      {message?.image && (
                                           <CardMedia
                                               component={
-                                                  message.image.split(".").pop().substring(0, 3) ===
-                                                  "mp4"
+                                                  message?.image
+                                                      .split(".")
+                                                      .pop()
+                                                      .substring(0, 3) === "mp4"
                                                       ? "video"
                                                       : "img"
                                               }
@@ -148,7 +152,7 @@ const Messages = ({ setTextValue }) => {
                                                   height: "100%",
                                                   objectFit: "contain",
                                               }}
-                                              image={message.image}
+                                              image={message?.image}
                                               title="Paella dish"
                                               controls
                                           />
@@ -157,7 +161,7 @@ const Messages = ({ setTextValue }) => {
                                           className={classes.date}
                                           style={{ color: uiState.darkMode ? "#fff" : "#00000099" }}
                                       >
-                                          {moment(message.createdAt).fromNow()}
+                                          {moment(message?.createdAt).fromNow()}
                                       </Typography>
                                   </Paper>
                                   <Fragment key={message._id}>
@@ -174,10 +178,10 @@ const Messages = ({ setTextValue }) => {
                                           <MenuItem
                                               onClick={() => {
                                                   setIsOpen(null);
-                                                  setTextValue(message.text);
+                                                  setTextValue(message?.text);
                                               }}
                                           >
-                                              Edit {message.text && message.text}
+                                              Edit {message?.text && message?.text}
                                           </MenuItem>
                                           <MenuItem
                                               onClick={() => {

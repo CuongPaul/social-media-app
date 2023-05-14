@@ -49,9 +49,9 @@ function Messenger() {
                                 height: "80vh",
                                 overflowY: "scroll",
                                 overflowX: "hidden",
-                                scrollbarColor: !uiState.darkMode
-                                    ? "#fff rgb(240,242,245)"
-                                    : " rgb(36,37,38) rgb(24,25,26)",
+                                scrollbarColor: uiState.darkMode
+                                    ? " rgb(36,37,38) rgb(24,25,26)"
+                                    : "#fff rgb(240,242,245)",
                             }}
                         >
                             <Paper elevation={0}>
