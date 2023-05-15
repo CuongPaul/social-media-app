@@ -3,8 +3,8 @@ import { User, React, Message, ChatRoom } from "../models";
 const getMessagesController = async (req, res) => {
     const pageSize = 5;
     const userId = req.user_id;
-    const page = parseInt(req.query.page) || 1;
     const chatRoomId = req.params.chatRoomId;
+    const page = parseInt(req.query.page) || 1;
 
     try {
         const user = await User.findById(userId);

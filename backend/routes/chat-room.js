@@ -8,9 +8,10 @@ import {
     createChatRoomValidation,
     deleteChatRoomValidation,
     searchChatRoomsValidation,
+    addMemberChatRoomValidation,
     updateNameChatRoomValidation,
+    removeMemberChatRoomValidation,
     updateAvatarChatRoomValidation,
-    updateMemberChatRoomValidation,
     updatePrivacyChatRoomValidation,
     createChatRoomForTwoPeopleValidation,
 } from "../validator/chat-room";
@@ -21,10 +22,11 @@ import {
     createChatRoomController,
     deleteChatRoomController,
     searchChatRoomsController,
+    addMemberChatRoomController,
     getChatRoomsByUserController,
     updateNameChatRoomController,
+    removeMemberChatRoomController,
     updateAvatarChatRoomController,
-    updateMemberChatRoomController,
     updatePrivacyChatRoomController,
     createChatRoomForTwoPeopleController,
 } from "../controllers/chat-room";
@@ -57,16 +59,22 @@ router.delete(
     deleteChatRoomController
 );
 router.put(
+    "/add-member/:chatRoomId",
+    validate(addMemberChatRoomValidation),
+    verifyToken,
+    addMemberChatRoomController
+);
+router.put(
     "/update-name/:chatRoomId",
     validate(updateNameChatRoomValidation),
     verifyToken,
     updateNameChatRoomController
 );
 router.put(
-    "/update-member/:chatRoomId",
-    validate(updateMemberChatRoomValidation),
+    "/remove-member/:chatRoomId",
+    validate(removeMemberChatRoomValidation),
     verifyToken,
-    updateMemberChatRoomController
+    removeMemberChatRoomController
 );
 router.put(
     "/update-avatar/:chatRoomId",

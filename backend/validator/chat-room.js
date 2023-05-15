@@ -43,6 +43,15 @@ const searchChatRoomsValidation = {
     }),
 };
 
+const addMemberChatRoomValidation = {
+    params: Joi.object({
+        chatRoomId: Joi.string().trim().required(),
+    }),
+    body: Joi.object({
+        members: Joi.array().items(Joi.string().trim().required()).min(1).required(),
+    }),
+};
+
 const updateNameChatRoomValidation = {
     body: Joi.object({
         name: Joi.string().trim().required(),
@@ -52,21 +61,21 @@ const updateNameChatRoomValidation = {
     }),
 };
 
+const removeMemberChatRoomValidation = {
+    params: Joi.object({
+        chatRoomId: Joi.string().trim().required(),
+    }),
+    body: Joi.object({
+        members: Joi.array().items(Joi.string().trim().required()).min(1).required(),
+    }),
+};
+
 const updateAvatarChatRoomValidation = {
     params: Joi.object({
         chatRoomId: Joi.string().trim().required(),
     }),
     body: Joi.object({
         avatar_image: Joi.string().trim().required(),
-    }),
-};
-
-const updateMemberChatRoomValidation = {
-    params: Joi.object({
-        chatRoomId: Joi.string().trim().required(),
-    }),
-    body: Joi.object({
-        members: Joi.array().items(Joi.string().trim().required()).min(1).required(),
     }),
 };
 
@@ -92,9 +101,10 @@ export {
     createChatRoomValidation,
     deleteChatRoomValidation,
     searchChatRoomsValidation,
+    addMemberChatRoomValidation,
     updateNameChatRoomValidation,
+    removeMemberChatRoomValidation,
     updateAvatarChatRoomValidation,
-    updateMemberChatRoomValidation,
     updatePrivacyChatRoomValidation,
     createChatRoomForTwoPeopleValidation,
 };
