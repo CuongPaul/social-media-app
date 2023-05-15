@@ -2,8 +2,7 @@ import { useState, useContext } from "react";
 
 import callApi from "../api";
 import { UIContext, PostContext } from "../App";
-import { getAllPosts } from "../services/PostServices";
-import { getCommentsByPost } from "../services/CommentService";
+// import { getAllPosts } from "../services/PostServices";
 
 const useFetchPost = () => {
     const { uiDispatch } = useContext(UIContext);
@@ -45,20 +44,20 @@ const useFetchPost = () => {
         } else {
             setLoading(true);
             try {
-                const { data } = await getAllPosts(postState.postPagination.currentPage);
+                // const { data } = await getAllPosts(postState.postPagination.currentPage);
 
                 setLoading(false);
 
-                if (data) {
-                    postDispatch({
-                        type: "POST_PAGINATION",
-                        payload: {
-                            currentPage: data.pagination.currentPage + 1,
-                            totalPage: data.pagination.totalPage,
-                            posts: data.posts,
-                        },
-                    });
-                }
+                // if (data) {
+                //     postDispatch({
+                //         type: "POST_PAGINATION",
+                //         payload: {
+                //             currentPage: data.pagination.currentPage + 1,
+                //             totalPage: data.pagination.totalPage,
+                //             posts: data.posts,
+                //         },
+                //     });
+                // }
             } catch (err) {
                 setLoading(false);
 

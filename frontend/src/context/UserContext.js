@@ -1,19 +1,26 @@
 import uniqueArray from "../utils/unique-array";
 
 const initialUserState = {
-    users: [],
-    isLoggedIn: false,
     currentUser: null,
     recentAccounts: [],
-    sendedFriendRequests: [],
-    selectedUserProfile: null,
-    receivedFriendRequests: [],
 };
 
 const UserReducer = (state, action) => {
     switch (action.type) {
-        case "RECENT_ACCOUNTS":
+        case "SET_RECENT_ACCOUNTS":
             return { ...state, recentAccounts: action.payload };
+
+        case "SIGN_OUT":
+            const newRecentAccounts = uniqueArray([...state.recentAccounts, state.currentUser]);
+
+            localStorage.removeItem("token");
+            localStorage.setItem("accounts", JSON.stringify(newRecentAccounts));
+
+            return {
+                ...state,
+                currentUser: null,
+                recentAccounts: newRecentAccounts,
+            };
 
         case "REMOVE_RECENT_ACCOUNT":
             const accountArray = state.recentAccounts.filter(
@@ -31,52 +38,7 @@ const UserReducer = (state, action) => {
             };
 
         case "SET_CURRENT_USER":
-            return { ...state, isLoggedIn: true, currentUser: action.payload };
-
-        case "SET_USERS":
-            return { ...state, users: action.payload };
-
-        case "ADD_USER":
-            const newItemUser_1 = state.users.findIndex((user) => user.id === action.payload.id);
-
-            if (newItemUser_1 === -1) {
-                return { ...state, users: [action.payload, ...state.users] };
-            } else {
-                return { ...state };
-            }
-
-        case "UPDATE_USER":
-            const newItemUser_2 = state.users.findIndex((user) => user.id === action.payload.id);
-
-            if (newItemUser_2 !== -1) {
-                state.users[newItemUser_2] = action.payload;
-            }
-
             return { ...state, currentUser: action.payload };
-
-        case "REMOVE_USER":
-            const newUsers = state.users.filter((user) => user.id !== action.payload);
-
-            return { ...state, users: newUsers };
-
-        case "USER_SIGNOUT":
-            const newRecentAccounts = uniqueArray(
-                [...state.recentAccounts, state.currentUser],
-                "_id"
-            );
-
-            localStorage.removeItem("token");
-            localStorage.setItem("accounts", JSON.stringify(newRecentAccounts));
-
-            return {
-                ...state,
-                users: [],
-                currentUser: null,
-                sendedFriendRequests: [],
-                selectedUserProfile: null,
-                receivedFriendRequests: [],
-                recentAccounts: newRecentAccounts,
-            };
 
         case "FRIEND_OFFLINE":
             const friends_1 = [...state.currentUser.friends];
@@ -100,44 +62,6 @@ const UserReducer = (state, action) => {
 
             return { ...state, currentUser: { ...state.currentUser, friends: [...friends_2] } };
 
-        case "SET_FRIENDS_REQUEST_SENDED":
-            return { ...state, sendedFriendRequests: action.payload };
-
-        case "ADD_FRIENDS_REQUEST_SENDED":
-            return {
-                ...state,
-                sendedFriendRequests: [action.payload, ...state.sendedFriendRequest],
-            };
-
-        case "REMOVE_FRIENDS_REQUEST_SENDED":
-            const newSendedFriendRequests = state.sendedFriendRequests.filter(
-                (item) => item._id !== action.payload
-            );
-
-            return {
-                ...state,
-                sendedFriendRequests: newSendedFriendRequests,
-            };
-
-        case "SET_FRIENDS_REQUEST_RECEIVED":
-            return { ...state, receivedFriendRequests: action.payload };
-
-        case "ADD_FRIENDS_REQUEST_RECEIVED":
-            return {
-                ...state,
-                receivedFriendRequests: [action.payload, ...state.receivedFriendRequest],
-            };
-
-        case "REMOVE_FRIENDS_REQUEST_RECEIVED":
-            const newReceivedFriendRequests = state.receivedFriendRequests.filter(
-                (item) => item.id !== action.payload
-            );
-
-            return {
-                ...state,
-                receivedFriendRequests: newReceivedFriendRequests,
-            };
-
         case "ADD_FRIEND":
             return {
                 ...state,
@@ -155,12 +79,6 @@ const UserReducer = (state, action) => {
                     friends: [...action.payload],
                 },
             };
-
-        case "ADD_SELECTED_USER_PROFILE":
-            return { ...state, selectedUserProfile: action.payload };
-
-        case "REMOVE_SELECTED_USER_PROFILE":
-            return { ...state, selectedUserProfile: null };
 
         default:
             throw new Error(`Action type ${action.type} is undefined`);

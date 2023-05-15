@@ -108,7 +108,7 @@ const SignoutItem = () => {
         try {
             await callApi({ method: "POST", url: "/auth/signout" });
 
-            userDispatch({ type: "USER_SIGNOUT" });
+            userDispatch({ type: "SIGN_OUT" });
 
             history.push("/");
         } catch (err) {

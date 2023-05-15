@@ -16,7 +16,7 @@ import { UIContext } from "../../App";
 import PostFooter from "./PostFooter";
 import PostContent from "./PostContent";
 import AvartarText from "../UI/AvartarText";
-import { deletePost } from "../../services/PostServices";
+// import { deletePost } from "../../services/PostServices";
 
 const Post = ({ post, handleDeletePost }) => {
     const { uiState, uiDispatch } = useContext(UIContext);
@@ -77,11 +77,11 @@ const Post = ({ post, handleDeletePost }) => {
                             </MenuItem>
                             <MenuItem
                                 onClick={() => {
-                                    deletePost(post.id).then((res) => {
-                                        if (res.data.message === "success") {
-                                            handleDeletePost(post.id);
-                                        }
-                                    });
+                                    // deletePost(post.id).then((res) => {
+                                    //     if (res.data.message === "success") {
+                                    //         handleDeletePost(post.id);
+                                    //     }
+                                    // });
                                 }}
                             >
                                 Delete

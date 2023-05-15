@@ -5,7 +5,7 @@ import {
     getMessagesValidatetion,
     reactMessageValidatetion,
     createMessageValidatetion,
-    deleteMessageValidatetion,
+    // deleteMessageValidatetion,
     updateMessagesValidatetion,
 } from "../validator/message";
 import {

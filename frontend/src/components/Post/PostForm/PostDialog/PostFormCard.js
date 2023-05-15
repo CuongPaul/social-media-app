@@ -22,7 +22,7 @@ import FeelingsCard from "./FeelingsCard";
 import LocationField from "./LocationField";
 import DialogLoading from "../../../UI/DialogLoading";
 import useCreatePost from "../../../../hooks/useCreatePost";
-import { updatePost } from "../../../../services/PostServices";
+// import { updatePost } from "../../../../services/PostServices";
 import { UIContext, UserContext, PostContext } from "../../../../App";
 
 const CameraField = lazy(() => import("./CameraField"));
@@ -77,12 +77,12 @@ const PostFormDialog = () => {
         filesUpload,
     });
     const handleUpdatePost = (postId) => {
-        updatePost({ ...postData, id: postId }).then((res) => {
-            if (res.data.message === "success") {
-                uiDispatch({ type: "SET_POST_MODEL", payload: false });
-                postDispatch({ type: "EDIT_POST", payload: { ...postData, id: postId } });
-            }
-        });
+        // updatePost({ ...postData, id: postId }).then((res) => {
+        //     if (res.data.message === "success") {
+        //         uiDispatch({ type: "SET_POST_MODEL", payload: false });
+        //         postDispatch({ type: "EDIT_POST", payload: { ...postData, id: postId } });
+        //     }
+        // });
     };
 
     return (

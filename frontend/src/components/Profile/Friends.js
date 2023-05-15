@@ -3,7 +3,7 @@ import { Paper, Grid, Typography, Button, Avatar } from "@material-ui/core";
 
 import { UserContext } from "../../App";
 import AvartarText from "../UI/AvartarText";
-import { unfriend } from "../../services/UserServices";
+// import { unfriend } from "../../services/UserServices";
 
 const Friends = ({ user }) => {
     const { userDispatch } = useContext(UserContext);
@@ -65,12 +65,12 @@ const Friends = ({ user }) => {
                                         (item) => item.id !== friend.id
                                     );
 
-                                    unfriend({ userRequest, friendRequest }).then((res) => {
-                                        userDispatch({
-                                            type: "REMOVE_FRIEND",
-                                            payload: newPayload,
-                                        });
-                                    });
+                                    // unfriend({ userRequest, friendRequest }).then((res) => {
+                                    //     userDispatch({
+                                    //         type: "REMOVE_FRIEND",
+                                    //         payload: newPayload,
+                                    //     });
+                                    // });
                                 }}
                             >
                                 Unfriend

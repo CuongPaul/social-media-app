@@ -27,14 +27,14 @@ const createMessageValidatetion = {
     }),
 };
 
-const deleteMessageValidatetion = {
-    params: Joi.object({
-        meassageId: Joi.string().required().trim(),
-    }),
-    query: Joi.object({
-        chat_room_id: Joi.string().required().trim(),
-    }),
-};
+// const deleteMessageValidatetion = {
+//     params: Joi.object({
+//         meassageId: Joi.string().required().trim(),
+//     }),
+//     query: Joi.object({
+//         chat_room_id: Joi.string().required().trim(),
+//     }),
+// };
 
 const updateMessagesValidatetion = {
     body: Joi.object({
@@ -51,6 +51,6 @@ export {
     getMessagesValidatetion,
     reactMessageValidatetion,
     createMessageValidatetion,
-    deleteMessageValidatetion,
+    // deleteMessageValidatetion,
     updateMessagesValidatetion,
 };

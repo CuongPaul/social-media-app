@@ -1,4 +1,4 @@
-const uniqueArray = (arr, key) => {
+const uniqueArray = (arr, key = "_id") => {
     const mappedArr = arr.map((item, index) => {
         if (item[key]) {
             return [item[key], item];

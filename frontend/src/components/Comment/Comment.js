@@ -21,7 +21,7 @@ import { faThumbsUp as filledLike } from "@fortawesome/free-solid-svg-icons";
 
 import AvartarText from "../UI/AvartarText";
 import { PostContext, UserContext, UIContext } from "../../App";
-import { reactComment, updateComment, deleteComment } from "../../services/CommentService";
+// import { reactComment, updateComment, deleteComment } from "../../services/CommentService";
 
 const Comment = ({ comment }) => {
     const { userState } = useContext(UserContext);
@@ -34,15 +34,15 @@ const Comment = ({ comment }) => {
     const [commentText, setCommentText] = useState(comment.text ? comment.text : "");
 
     const handleLikeComment = () => {
-        reactComment(comment._id).then((res) => {
-            if (res.data) {
-                postDispatch({ type: "LIKE_UNLIKE_COMMENT", payload: res.data.comment });
-                uiDispatch({
-                    type: "SET_NOTIFICATION",
-                    payload: { color: "success", text: res.data.message, display: true },
-                });
-            }
-        });
+        // reactComment(comment._id).then((res) => {
+        //     if (res.data) {
+        //         postDispatch({ type: "LIKE_UNLIKE_COMMENT", payload: res.data.comment });
+        //         uiDispatch({
+        //             type: "SET_NOTIFICATION",
+        //             payload: { color: "success", text: res.data.message, display: true },
+        //         });
+        //     }
+        // });
     };
 
     const isLiked = () => {
@@ -101,14 +101,14 @@ const Comment = ({ comment }) => {
                                 />
                                 <IconButton
                                     onClick={() => {
-                                        updateComment({
-                                            id: comment._id,
-                                            body: { text: commentText },
-                                        }).then((res) => {
-                                            if (res.data.message === "success") {
-                                                setIsEdit(false);
-                                            }
-                                        });
+                                        // updateComment({
+                                        //     id: comment._id,
+                                        //     body: { text: commentText },
+                                        // }).then((res) => {
+                                        //     if (res.data.message === "success") {
+                                        //         setIsEdit(false);
+                                        //     }
+                                        // });
                                     }}
                                 >
                                     <SendOutlined />
@@ -159,14 +159,14 @@ const Comment = ({ comment }) => {
                     </MenuItem>
                     <MenuItem
                         onClick={() => {
-                            deleteComment(comment._id).then((res) => {
-                                if (res.data.message === "success") {
-                                    const newComments = postState.post.comments.filter(
-                                        (item) => comment._id !== item.id
-                                    );
-                                    postDispatch({ type: "DELETE_COMMENT", payload: newComments });
-                                }
-                            });
+                            // deleteComment(comment._id).then((res) => {
+                            //     if (res.data.message === "success") {
+                            //         const newComments = postState.post.comments.filter(
+                            //             (item) => comment._id !== item.id
+                            //         );
+                            //         postDispatch({ type: "DELETE_COMMENT", payload: newComments });
+                            //     }
+                            // });
                         }}
                     >
                         Delete

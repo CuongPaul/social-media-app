@@ -2,10 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Grid, Paper, Button, Divider, Container, Typography } from "@material-ui/core";
 
 import { UIContext, UserContext } from "../App";
-import SigninForm from "../components/Auth/SigninForm";
-import SignupForm from "../components/Auth/SignupForm";
-import AddAccountCard from "../components/Auth/AddAccountCard";
-import RecentAccountCard from "../components/Auth/RecentAccountCard";
+import { SigninForm, SignupForm, AddAccountCard, RecentAccountCard } from "../components/Auth";
 
 const Auth = () => {
     const { uiState } = useContext(UIContext);
@@ -15,10 +12,10 @@ const Auth = () => {
 
     useEffect(() => {
         userDispatch({
-            type: "RECENT_ACCOUNTS",
+            type: "SET_RECENT_ACCOUNTS",
             payload: JSON.parse(localStorage.getItem("accounts")) || [],
         });
-    }, [userDispatch]);
+    }, []);
 
     return (
         <div style={{ minHeight: "100vh", paddingBottom: "100px" }}>

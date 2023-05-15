@@ -104,7 +104,7 @@ const createMessageController = async (req, res) => {
         for (const member of members) {
             if (member._id != userId) {
                 const index = member.chat_rooms.findIndex(
-                    (item) => String(item._id) === String(chatRoom._id)
+                    (item) => String(item._id) == String(chatRoom._id)
                 );
                 if (index != -1 && !member.chat_rooms[index].furthest_unseen_message) {
                     member.chat_rooms[index].furthest_unseen_message = newMessage._id;

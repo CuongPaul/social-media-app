@@ -136,7 +136,7 @@ const App = () => {
             const decodeToken = jwtDecode(token);
 
             if (decodeToken.exp * 1000 < Date.now()) {
-                userDispatch({ type: "USER_SIGNOUT" });
+                userDispatch({ type: "SIGN_OUT" });
             } else {
                 try {
                     getNotifications();

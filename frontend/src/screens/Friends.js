@@ -6,11 +6,11 @@ import { UIContext, UserContext } from "../App";
 import Profile from "../screens/Profile";
 import Friend from "../components/Friends/Friend";
 import useFriendAction from "../hooks/useFriendActions";
-import {
-    getReceivedFriendRequests,
-    getSendedFriendRequests,
-} from "../services/FriendRequestService";
-import { getRecommendUsers } from "../services/UserServices";
+// import {
+//     getReceivedFriendRequests,
+//     getSendedFriendRequests,
+// } from "../services/FriendRequestService";
+// import { getRecommendUsers } from "../services/UserServices";
 import callApi from "../api";
 const useStyles = makeStyles((theme) => ({
     sidebarContainer: {
@@ -81,13 +81,13 @@ function Friends() {
         }
 
         async function recommandedUser() {
-            const res = await getRecommendUsers();
-            if (res && res.data) {
-                userDispatch({
-                    type: "SET_USERS",
-                    payload: res.data.users,
-                });
-            }
+            // const res = await getRecommendUsers();
+            // if (res && res.data) {
+            //     userDispatch({
+            //         type: "SET_USERS",
+            //         payload: res.data.users,
+            //     });
+            // }
         }
 
         recommandedUser();
