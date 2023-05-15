@@ -78,27 +78,28 @@ const App = () => {
                 userDispatch({ type: "REMOVE_FRIENDS_REQUEST_SENDED", payload: requestId });
             });
 
-            socketIO.on("new-post", ({ data }) => {
+            socketIO.on("new-post", (data) => {
                 postDispatch({ type: "ADD_POST", payload: data });
             });
 
-            socketIO.on("react-post", ({ data }) => {
+            socketIO.on("react-post", (data) => {
                 postDispatch({ type: "LIKE_UNLIKE_POST", payload: data });
             });
 
-            socketIO.on("post-comment", ({ data }) => {
+            socketIO.on("post-comment", (data) => {
                 postDispatch({ type: "ADD_POST_COMMENT", payload: data });
             });
 
-            socketIO.on("react-comment", ({ data }) => {
+            socketIO.on("react-comment", (data) => {
                 postDispatch({ type: "LIKE_UNLIKE_COMMENT", payload: data });
             });
 
-            socketIO.on("new-message", ({ data }) => {
+            socketIO.on("new-message", (data) => {
+                console.log("new-message: ", data);
                 chatDispatch({ type: "ADD_MESSAGE", payload: data });
             });
 
-            socketIO.on("notification", ({ data }) => {
+            socketIO.on("notification", (data) => {
                 uiDispatch({ type: "ADD_NOTIFICATION", payload: data });
             });
 

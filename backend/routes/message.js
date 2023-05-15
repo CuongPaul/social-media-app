@@ -12,7 +12,7 @@ import {
     getMessagesController,
     reactMessageController,
     createMessageController,
-    deleteMessageController,
+    // deleteMessageController,
     updateMessagesController,
 } from "../controllers/message";
 import verifyToken from "../middleware/verify-token";
@@ -31,12 +31,12 @@ router.put(
     verifyToken,
     reactMessageController
 );
-router.delete(
-    "/:meassageId",
-    validate(deleteMessageValidatetion),
-    verifyToken,
-    deleteMessageController
-);
+// router.delete(
+//     "/:meassageId",
+//     validate(deleteMessageValidatetion),
+//     verifyToken,
+//     deleteMessageController
+// );
 router.put(
     "/:meassageId",
     validate(updateMessagesValidatetion),

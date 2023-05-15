@@ -38,8 +38,8 @@ const getMessagesController = async (req, res) => {
         const index = user.chat_rooms.findIndex((item) => String(item._id) == String(chatRoom._id));
         if (index != -1 && user.chat_rooms[index].furthest_unseen_message) {
             user.chat_rooms[index].furthest_unseen_message = null;
+            await user.save();
         }
-        await user.save();
 
         res.status(200).json({ message: "success", data: { count, rows: messages } });
     } catch (err) {
@@ -106,19 +106,14 @@ const createMessageController = async (req, res) => {
                 const index = member.chat_rooms.findIndex(
                     (item) => String(item._id) === String(chatRoom._id)
                 );
-                if (index != -1) {
-                    if (
-                        member.chat_rooms[index] &&
-                        !member.chat_rooms[index].furthest_unseen_message
-                    ) {
-                        member.chat_rooms[index].furthest_unseen_message = newMessage._id;
-                        await member.save();
-                    }
+                if (index != -1 && !member.chat_rooms[index].furthest_unseen_message) {
+                    member.chat_rooms[index].furthest_unseen_message = newMessage._id;
+                    await member.save();
                 }
             }
         }
 
-        req.io.to(chat_room_id).emit("new-message", { data: newMessage });
+        req.io.to(chat_room_id).emit("new-message", newMessage);
 
         res.status(200).json({ message: "success" });
     } catch (err) {
@@ -126,29 +121,29 @@ const createMessageController = async (req, res) => {
     }
 };
 
-const deleteMessageController = async (req, res) => {
-    const userId = req.user_id;
-    const meassageId = req.params.meassageId;
-    const chat_room_id = req.query.chat_room_id;
+// const deleteMessageController = async (req, res) => {
+//     const userId = req.user_id;
+//     const meassageId = req.params.meassageId;
+//     const chat_room_id = req.query.chat_room_id;
 
-    try {
-        const message = await Message.findOne({
-            sender: userId,
-            _id: meassageId,
-            chat_room: chat_room_id,
-        });
+//     try {
+//         const message = await Message.findOne({
+//             sender: userId,
+//             _id: meassageId,
+//             chat_room: chat_room_id,
+//         });
 
-        if (!message) {
-            return res.status(400).json({ message: "Message is not exists" });
-        }
+//         if (!message) {
+//             return res.status(400).json({ message: "Message is not exists" });
+//         }
 
-        await message.remove();
+//         await message.remove();
 
-        res.status(200).json({ message: "success" });
-    } catch (err) {
-        return res.status(500).json({ error: err.message });
-    }
-};
+//         res.status(200).json({ message: "success" });
+//     } catch (err) {
+//         return res.status(500).json({ error: err.message });
+//     }
+// };
 
 const updateMessagesController = async (req, res) => {
     const userId = req.user_id;
@@ -175,9 +170,9 @@ const updateMessagesController = async (req, res) => {
 };
 
 export {
-    createMessageController,
     getMessagesController,
     reactMessageController,
-    deleteMessageController,
+    createMessageController,
+    // deleteMessageController,
     updateMessagesController,
 };

@@ -72,7 +72,6 @@ const Friends = () => {
         }
     };
 
-    console.log("chatRooms: ", chatRooms);
     return (
         <List
             style={{ backgroundColor: uiState.darkMode && "rgb(36,37,38)" }}
