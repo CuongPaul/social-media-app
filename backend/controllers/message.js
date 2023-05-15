@@ -35,7 +35,7 @@ const getMessagesController = async (req, res) => {
 
         const count = await Message.countDocuments(query);
 
-        const index = user.chat_rooms.findIndex((item) => item._id == chatRoom._id);
+        const index = user.chat_rooms.findIndex((item) => String(item._id) == String(chatRoom._id));
         if (index != -1 && user.chat_rooms[index].furthest_unseen_message) {
             user.chat_rooms[index].furthest_unseen_message = null;
         }

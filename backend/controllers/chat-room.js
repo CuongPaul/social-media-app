@@ -123,12 +123,6 @@ const createChatRoomController = async (req, res) => {
 
         for (const memberId of membersValid) {
             if (memberId != userId) {
-                const usersValid = await User.find({ _id: { $in: membersValid } });
-
-                for (const userValid of usersValid) {
-                    await userValid.update({ $push: { chat_rooms: { _id: chatRoom._id } } });
-                }
-
                 await new Notification({
                     user: memberId,
                     chat_room: chatRoom._id,
@@ -136,6 +130,9 @@ const createChatRoomController = async (req, res) => {
                     content: `You have been added to the group ${name}`,
                 }).save();
             }
+            await User.findByIdAndUpdate(memberId, {
+                $push: { chat_rooms: { _id: chatRoom._id } },
+            });
         }
 
         res.status(200).json({ message: "success" });
@@ -230,7 +227,9 @@ const getChatRoomsByUserController = async (req, res) => {
 
         const result = [];
         for (const chatRoom of chatRooms) {
-            const index = user.chat_rooms.findIndex((item) => item._id == chatRoom._id);
+            const index = user.chat_rooms.findIndex(
+                (item) => String(item._id) == String(chatRoom._id)
+            );
 
             let unseen_message = 0;
             if (index != -1) {
@@ -238,6 +237,7 @@ const getChatRoomsByUserController = async (req, res) => {
                 if (furthest_unseen_message) {
                     const message = await Message.findById(furthest_unseen_message);
                     const furthestUnseenMessages = await Message.find({
+                        chat_room: chatRoom._id,
                         createdAt: { $gte: message.createdAt },
                     });
 
@@ -246,6 +246,7 @@ const getChatRoomsByUserController = async (req, res) => {
                     }
                 }
             }
+            console.log("unseen_message: ", unseen_message);
             result.push({ ...chatRoom, unseen_message });
         }
 
