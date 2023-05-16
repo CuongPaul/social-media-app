@@ -6,7 +6,7 @@ import { Chip, Avatar, IconButton, Badge, useMediaQuery, useTheme } from "@mater
 
 import useStyles from "./styles";
 import ProfileMenu from "./ProfileMenu";
-import AvartarText from "../UI/AvartarText";
+import AvartaText from "../UI/AvartaText";
 import CreatePostMenu from "./CreatePostMenu";
 import NotificationMenu from "../NotificationMenu";
 import { UIContext, UserContext } from "../../App";
@@ -51,10 +51,7 @@ const AccountMenu = () => {
                 userState.currentUser.avatar_image ? (
                     <Avatar alt="Natacha" src={userState.currentUser.avatar_image} />
                 ) : (
-                    <AvartarText
-                        text={userState?.currentUser?.name}
-                        backgroundColor={userState?.currentUser?.active ? "seagreen" : "tomato"}
-                    />
+                    <AvartaText text={userState?.currentUser?.name} />
                 )
             }
         />

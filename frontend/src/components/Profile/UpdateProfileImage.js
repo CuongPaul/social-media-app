@@ -13,7 +13,7 @@ import { CameraAlt as CameraIcon } from "@material-ui/icons";
 import React, { useContext, useRef, useState } from "react";
 
 import { UserContext } from "../../App";
-import AvartarText from "../UI/AvartarText";
+import AvartaText from "../UI/AvartaText";
 import DialogLoading from "../UI/DialogLoading";
 import useUpdateProfilePic from "../../hooks/useUpdateProfilePic";
 
@@ -88,12 +88,7 @@ const UpdateProfileImage = ({ user }) => {
                         <img src={user.avatar_image} width="100%" height="100%" alt={user.name} />
                     </Avatar>
                 ) : (
-                    <AvartarText
-                        text={user?.name}
-                        backgroundColor={user?.active ? "seagreen" : "tomato"}
-                        fontSize="40px"
-                        size="170px"
-                    />
+                    <AvartaText text={user?.name} fontSize="40px" size="170px" />
                 )}
             </Badge>
             <input

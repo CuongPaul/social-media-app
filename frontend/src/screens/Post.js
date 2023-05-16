@@ -21,7 +21,7 @@ import callApi from "../api";
 import { PostContext, UIContext } from "../App";
 import useFetchPost from "../hooks/useFetchPost";
 import Comment from "../components/Comment/Comment";
-import AvartarText from "../components/UI/AvartarText";
+import AvartaText from "../components/UI/AvartaText";
 import PostSubContent from "../components/Post/PostSubContent";
 import CommentTextArea from "../components/Comment/CommentTextArea";
 
@@ -97,14 +97,7 @@ const Post = () => {
                                                 />
                                             </Avatar>
                                         ) : (
-                                            <AvartarText
-                                                text={postState?.post?.user?.name}
-                                                backgroundColor={
-                                                    postState?.post.user?.active
-                                                        ? "seagreen"
-                                                        : "tomato"
-                                                }
-                                            />
+                                            <AvartaText text={postState?.post?.user?.name} />
                                         )
                                     }
                                     title={

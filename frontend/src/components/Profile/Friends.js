@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { Paper, Grid, Typography, Button, Avatar } from "@material-ui/core";
 
 import { UserContext } from "../../App";
-import AvartarText from "../UI/AvartarText";
+import AvartaText from "../UI/AvartaText";
 // import { unfriend } from "../../services/UserServices";
 
 const Friends = ({ user }) => {
@@ -24,11 +24,7 @@ const Friends = ({ user }) => {
                             {friend.avatar_image ? (
                                 <Avatar src={friend.avatar_image} variant="square" />
                             ) : (
-                                <AvartarText
-                                    backgroundColor={friend?.active ? "seagreen" : "tomato"}
-                                    text={friend?.name}
-                                    size="70px"
-                                />
+                                <AvartaText text={friend?.name} size="70px" />
                             )}
                             <Typography
                                 style={{ marginTop: "16px", flexGrow: 1 }}

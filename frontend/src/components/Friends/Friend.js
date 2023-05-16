@@ -1,7 +1,7 @@
 import React, { Fragment, useContext } from "react";
 import { Avatar, Typography, Card, CardActionArea, CardContent } from "@material-ui/core";
 
-import AvartarText from "../UI/AvartarText";
+import AvartaText from "../UI/AvartaText";
 import { UIContext, UserContext } from "../../App";
 
 const Friend = ({ user, children }) => {
@@ -39,10 +39,7 @@ const Friend = ({ user, children }) => {
                                 />
                             </Avatar>
                         ) : (
-                            <AvartarText
-                                text={user?.name}
-                                backgroundColor={user.active ? "seagreen" : " tomato"}
-                            />
+                            <AvartaText text={user?.name} />
                         )}
 
                         <div

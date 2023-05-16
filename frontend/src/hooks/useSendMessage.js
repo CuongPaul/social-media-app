@@ -2,7 +2,6 @@ import { useContext, useState } from "react";
 import axios from "axios";
 import { ChatContext, UIContext } from "../App";
 import callApi from "../api";
-import { storage } from "../firebase/firebase";
 
 const url = process.env.REACT_APP_BASE_API_URL;
 

@@ -1,9 +1,11 @@
 import React from "react";
 import { Avatar, Typography } from "@material-ui/core";
 
-const AvartarText = ({ text = "?", size = "40px", backgroundColor, fontSize = "16px" }) => {
+import generateColor from "../../utils/generate-color";
+
+const AvartaText = ({ text = "?", size = "40px", fontSize = "16px" }) => {
     return (
-        <Avatar style={{ width: size, height: size, backgroundColor }}>
+        <Avatar style={{ width: size, height: size, backgroundColor: generateColor(text) }}>
             <Typography style={{ fontSize, color: "#fff", fontWeight: "800" }}>
                 {text[0]}
             </Typography>
@@ -11,4 +13,4 @@ const AvartarText = ({ text = "?", size = "40px", backgroundColor, fontSize = "1
     );
 };
 
-export default AvartarText;
+export default AvartaText;

@@ -7,7 +7,7 @@ import { IconButton, InputBase, Paper, makeStyles } from "@material-ui/core";
 
 import { UIContext } from "../../App";
 import useSendMessage from "../../hooks/useSendMessage";
-import FilesField from "../Post/PostForm/PostDialog/FilesField";
+import FilesUpload from "../Post/PostForm/PostDialog/FilesUpload";
 import PreviewFile from "../Post/PostForm/PostDialog/PreviewFile";
 
 const useStyles = makeStyles(() => ({
@@ -90,9 +90,9 @@ const MessageInputTextArea = ({ textValue, chatRoomId }) => {
                     backgroundColor: uiState.darkMode ? "rgb(24,25,26)" : "whitesmoke",
                 }}
             />
-            {/* <FilesField fileRef={fileRef} /> */}
+            {/* <FilesUpload fileRef={fileRef} /> */}
 
-            <FilesField
+            <FilesUpload
                 multipleUpload={false}
                 setFilesUpload={setMessageImage}
                 setFilesPreview={setPreviewImage}

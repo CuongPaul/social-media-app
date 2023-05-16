@@ -50,27 +50,24 @@ const Auth = () => {
                         click your picture or add an account
                     </Typography>
                 </Grid>
-                <Grid container spacing={3} style={{ marginTop: "20px" }}>
-                    <Grid item xs={12} sm={6} md={8}>
-                        <Grid container spacing={2}>
-                            <Grid container spacing={2}>
-                                {userState.recentAccounts.map((account) => (
-                                    <Grid item xs={6} sm={6} md={3} key={account._id}>
-                                        <RecentAccountCard account={account} />
-                                    </Grid>
-                                ))}
+                <Grid container spacing={9} style={{ marginTop: "20px" }}>
+                    <Grid item sm={6} md={8} xs={12} container spacing={2}>
+                        {userState.recentAccounts.map((account) => (
+                            <Grid item md={3} xs={6} sm={6} key={account._id}>
+                                <RecentAccountCard account={account} />
                             </Grid>
-                            <Grid item xs={6} sm={6} md={3}>
-                                <AddAccountCard />
-                            </Grid>
+                        ))}
+                        <Grid item md={3} xs={6} sm={6}>
+                            <AddAccountCard />
                         </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={6} md={4}>
+                    <Grid item md={4} xs={12} sm={6}>
                         <Paper
                             elevation={8}
                             style={{
-                                padding: "16px",
+                                padding: "32px",
                                 display: "flex",
+                                borderRadius: "10px",
                                 flexDirection: "column",
                             }}
                         >
@@ -79,7 +76,7 @@ const Auth = () => {
                             <Button
                                 style={{
                                     color: "#fff",
-                                    marginTop: "32px",
+                                    marginTop: "16px",
                                     background: "rgb(74,183,43)",
                                 }}
                                 onClick={() => setIsShowSigninForm(!isShowSigninForm)}

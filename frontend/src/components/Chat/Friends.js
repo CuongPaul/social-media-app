@@ -16,7 +16,7 @@ import {
 } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 
-import AvartarText from "../UI/AvartarText";
+import AvartaText from "../UI/AvartaText";
 import { UserContext, ChatContext, UIContext } from "../../App";
 import callApi from "../../api";
 import { useSearchUsers } from "../../hooks";
@@ -156,12 +156,7 @@ const Friends = () => {
                                                         />
                                                     </Avatar>
                                                 ) : (
-                                                    <AvartarText
-                                                        text={user?.name}
-                                                        backgroundColor={
-                                                            user.active ? "seagreen" : "tomato"
-                                                        }
-                                                    />
+                                                    <AvartaText text={user?.name} />
                                                 )}
                                             </ListItemIcon>
                                             <ListItemText style={{ marginLeft: "8px" }}>
@@ -244,12 +239,7 @@ const Friends = () => {
                                             }
                                         />
                                     ) : (
-                                        <AvartarText
-                                            text={friend?.name}
-                                            backgroundColor={
-                                                friend.is_active ? "seagreen" : "tomato"
-                                            }
-                                        />
+                                        <AvartaText text={friend?.name} />
                                     )}
                                 </Badge>
                             </ListItemAvatar>
@@ -277,10 +267,7 @@ const Friends = () => {
                                 {friend.avatar_image ? (
                                     <Avatar alt={friend.name} src={friend.avatar_image} />
                                 ) : (
-                                    <AvartarText
-                                        text={friend?.name}
-                                        backgroundColor={friend.is_active ? "seagreen" : "tomato"}
-                                    />
+                                    <AvartaText text={friend?.name} />
                                 )}
                             </ListItemAvatar>
                             <ListItemText primary={friend.name} />

@@ -13,7 +13,6 @@ const SignupForm = () => {
                 <TextField
                     label="Name"
                     variant="outlined"
-                    style={{ marginTop: "16px" }}
                     onChange={(e) => handleChangeName(e.target.value)}
                 />
             </FormControl>
@@ -41,7 +40,7 @@ const SignupForm = () => {
                 style={{
                     width: "100%",
                     color: "#fff",
-                    marginTop: "16px",
+                    marginTop: "32px",
                     background: "rgb(24,119,242)",
                 }}
             >

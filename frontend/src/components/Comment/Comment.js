@@ -19,7 +19,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThumbsUp } from "@fortawesome/free-regular-svg-icons";
 import { faThumbsUp as filledLike } from "@fortawesome/free-solid-svg-icons";
 
-import AvartarText from "../UI/AvartarText";
+import AvartaText from "../UI/AvartaText";
 import { PostContext, UserContext, UIContext } from "../../App";
 // import { reactComment, updateComment, deleteComment } from "../../services/CommentService";
 
@@ -66,10 +66,7 @@ const Comment = ({ comment }) => {
                         />
                     </Avatar>
                 ) : (
-                    <AvartarText
-                        text={comment?.user?.name}
-                        backgroundColor={comment.user.is_active ? "seagreen" : "tomato"}
-                    />
+                    <AvartaText text={comment?.user?.name} />
                 )}
             </ListItemAvatar>
             <ListItemText

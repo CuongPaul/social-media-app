@@ -1,17 +1,16 @@
 import {
     Card,
-    Badge,
     CardMedia,
     CardHeader,
     IconButton,
     Typography,
     CardActionArea,
 } from "@material-ui/core";
-import { Close, Notifications } from "@material-ui/icons";
+import { Close } from "@material-ui/icons";
 import React, { useState, Fragment, useContext } from "react";
 
 import { UserContext } from "../../App";
-import AvartarText from "../UI/AvartarText";
+import AvartaText from "../UI/AvartaText";
 import RecentAccountSigninForm from "./RecentAccountSigninForm";
 
 const RecentAccountCard = ({ account }) => {
@@ -25,9 +24,9 @@ const RecentAccountCard = ({ account }) => {
 
     return (
         <Fragment>
-            <Card style={{ position: "relative" }}>
+            <Card style={{ position: "relative", borderRadius: "5px" }}>
                 <CardActionArea onClick={() => setIsShowSigninForm(true)}>
-                    {account?.avatar_image ? (
+                    {account.avatar_image ? (
                         <CardMedia style={{ height: "150px" }} image={account.avatar_image} />
                     ) : (
                         <CardMedia
@@ -39,22 +38,14 @@ const RecentAccountCard = ({ account }) => {
                                 background: "rgb(245,246,247)",
                             }}
                         >
-                            <AvartarText
-                                backgroundColor="teal"
-                                size="60px"
-                                fontSize="25px"
-                                text={account?.name}
-                            />
+                            <AvartaText size="60px" fontSize="25px" text={account.name} />
                         </CardMedia>
                     )}
                     <CardHeader
-                        avatar={
-                            <Badge badgeContent={5} color={"primary"} overlap="rectangular">
-                                <Notifications style={{ color: "GrayText" }} />
-                            </Badge>
-                        }
                         subheader={
-                            <Typography style={{ fontWeight: "800" }}>{account.name}</Typography>
+                            <Typography style={{ fontWeight: 800, textAlign: "center" }}>
+                                {account.name}
+                            </Typography>
                         }
                     />
                 </CardActionArea>

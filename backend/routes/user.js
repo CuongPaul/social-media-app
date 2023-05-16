@@ -8,6 +8,7 @@ import {
     getUserByIdValidation,
     searchUsersValidation,
     updateProfileValidation,
+    searchFriendsValidation,
     updatePasswordValidation,
     updateCoverImageValidation,
     getRecommendUsersValidation,
@@ -20,6 +21,7 @@ import {
     getUserByIdController,
     searchUsersController,
     updateProfileController,
+    searchFriendsController,
     getCurrentUserController,
     updatePasswordController,
     updateCoverImageController,
@@ -35,6 +37,18 @@ router.put(
     validate(updateProfileValidation),
     verifyToken,
     updateProfileController
+);
+router.get(
+    "/search-friends",
+    validate(searchFriendsValidation),
+    verifyToken,
+    searchFriendsController
+);
+router.put(
+    "/update-password",
+    validate(updatePasswordValidation),
+    verifyToken,
+    updatePasswordController
 );
 router.put(
     "/cover-image",
@@ -53,12 +67,6 @@ router.put(
     validate(updateAvatarImageValidation),
     verifyToken,
     updateAvatarImageController
-);
-router.put(
-    "/update-password",
-    validate(updatePasswordValidation),
-    verifyToken,
-    updatePasswordController
 );
 router.get("/", verifyToken, getCurrentUserController);
 router.get("/friends", validate(friendListValidation), verifyToken, friendListController);

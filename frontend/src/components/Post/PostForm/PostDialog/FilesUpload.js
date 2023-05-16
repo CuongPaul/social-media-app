@@ -3,7 +3,7 @@ import { Tooltip, IconButton } from "@material-ui/core";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const FilesField = ({ multipleUpload, setFilesUpload, setFilesPreview }) => {
+const FilesUpload = ({ multipleUpload, setFilesUpload, setFilesPreview }) => {
     const fileRef = useRef();
 
     const handleClickUpload = (e) => {
@@ -13,6 +13,7 @@ const FilesField = ({ multipleUpload, setFilesUpload, setFilesPreview }) => {
 
     const handleChangeFile = (e) => {
         const { files } = e.target;
+
         if (multipleUpload) {
             setFilesUpload((preValue) => [...preValue, ...files]);
 
@@ -20,29 +21,16 @@ const FilesField = ({ multipleUpload, setFilesUpload, setFilesPreview }) => {
                 const reader = new FileReader();
 
                 reader.readAsDataURL(file);
-                reader.onload = () => {
-                    setFilesPreview((preValue) => [...preValue, reader.result]);
-                };
+                reader.onload = () => setFilesPreview((preValue) => [...preValue, reader.result]);
             }
         } else {
-            // const formData = new FormData();
-            // formData.append("files", files[0]);
-            // formData.append("folder", "comment");
-            // setFilesUpload(formData);
-
-            // const reader = new FileReader();
-            // reader.readAsDataURL(files[0]);
-            // reader.onload = () => {
-            //     setFilesPreview(reader.result);
-            // };
-
-            setFilesUpload(files[0]);
-
+            const file = file[0];
             const reader = new FileReader();
-            reader.readAsDataURL(files[0]);
-            reader.onload = () => {
-                setFilesPreview(reader.result);
-            };
+
+            setFilesUpload(file);
+
+            reader.readAsDataURL(file);
+            reader.onload = () => setFilesPreview(reader.result);
         }
     };
 
@@ -65,4 +53,4 @@ const FilesField = ({ multipleUpload, setFilesUpload, setFilesPreview }) => {
     );
 };
 
-export default FilesField;
+export default FilesUpload;

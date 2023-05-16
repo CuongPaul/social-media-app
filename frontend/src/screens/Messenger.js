@@ -6,7 +6,7 @@ import Messages from "../components/Chat/Messages";
 import Friends from "../components/Chat/Friends";
 import InputTextArea from "../components/Chat/InputTextArea";
 import EmptyMessageArea from "../components/Chat/EmptyMessageArea";
-import AvartarText from "../components/UI/AvartarText";
+import AvartaText from "../components/UI/AvartaText";
 
 function Messenger() {
     const { uiDispatch, uiState } = useContext(UIContext);
@@ -94,14 +94,7 @@ function Messenger() {
                                             />
                                         </Avatar>
                                     ) : (
-                                        <AvartarText
-                                            text={chatState?.selectedFriend?.name}
-                                            backgroundColor={
-                                                chatState?.selectedFriend?.active
-                                                    ? "seagreen"
-                                                    : "tomato"
-                                            }
-                                        />
+                                        <AvartaText text={chatState?.selectedFriend?.name} />
                                     )}
                                     <Typography style={{ marginLeft: "16px" }}>
                                         {chatState.selectedFriend.name}

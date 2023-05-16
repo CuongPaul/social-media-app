@@ -16,7 +16,7 @@ import { Link } from "react-router-dom";
 import { Search } from "@material-ui/icons";
 import React, { useState, Fragment } from "react";
 
-import AvartarText from "../UI/AvartarText";
+import AvartaText from "../UI/AvartaText";
 import { useSearchUsers, useFriendActions } from "../../hooks";
 
 const SearchUsers = () => {
@@ -98,12 +98,7 @@ const SearchUsers = () => {
                                                         />
                                                     </Avatar>
                                                 ) : (
-                                                    <AvartarText
-                                                        text={user?.name}
-                                                        backgroundColor={
-                                                            user.active ? "seagreen" : "tomato"
-                                                        }
-                                                    />
+                                                    <AvartaText text={user?.name} />
                                                 )}
                                             </ListItemIcon>
                                             <ListItemText style={{ marginLeft: "8px" }}>

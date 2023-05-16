@@ -19,7 +19,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 
 import callApi from "../../api";
-import AvartarText from "../UI/AvartarText";
+import AvartaText from "../UI/AvartaText";
 import { UIContext, UserContext } from "../../App";
 
 const ProfileItem = () => {
@@ -40,10 +40,7 @@ const ProfileItem = () => {
                         />
                     </Avatar>
                 ) : (
-                    <AvartarText
-                        text={currentUser?.name}
-                        backgroundColor={currentUser?.active ? "seagreen" : "tomato"}
-                    />
+                    <AvartaText text={currentUser?.name} />
                 )}
             </ListItemIcon>
             <ListItemText>

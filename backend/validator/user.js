@@ -46,6 +46,13 @@ const updateProfileValidation = {
     }),
 };
 
+const searchFriendsValidation = {
+    query: Joi.object({
+        name: Joi.string().required().trim(),
+        page: Joi.number().integer().allow(null),
+    }),
+};
+
 const updatePasswordValidation = {
     body: Joi.object({
         new_password: Joi.string().required().trim(),
@@ -79,6 +86,7 @@ export {
     searchUsersValidation,
     deleteAccountValidation,
     updateProfileValidation,
+    searchFriendsValidation,
     updatePasswordValidation,
     updateCoverImageValidation,
     getRecommendUsersValidation,

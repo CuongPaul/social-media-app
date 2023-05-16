@@ -51,34 +51,32 @@ const AddAccountCard = () => {
                     </CardContent>
                 </CardActionArea>
             </Card>
-            {isShowAddAccountForm && (
-                <Dialog
-                    style={{ width: "100%" }}
-                    open={isShowAddAccountForm}
-                    onClose={() => setIsShowAddAccountForm(false)}
-                >
-                    <Card style={{ width: "100%" }}>
-                        <CardHeader
-                            action={
-                                <IconButton
-                                    color="primary"
-                                    onClick={() => setIsShowAddAccountForm(false)}
-                                >
-                                    <Close />
-                                </IconButton>
-                            }
-                            subheader={
-                                <Typography style={{ fontWeight: "700", fontSize: "20px" }}>
-                                    Add account
-                                </Typography>
-                            }
-                        />
-                        <CardContent>
-                            <SigninForm />
-                        </CardContent>
-                    </Card>
-                </Dialog>
-            )}
+            <Dialog
+                style={{ width: "100%" }}
+                open={isShowAddAccountForm}
+                onClose={() => setIsShowAddAccountForm(false)}
+            >
+                <Card style={{ width: "100%" }}>
+                    <CardHeader
+                        action={
+                            <IconButton
+                                color="primary"
+                                onClick={() => setIsShowAddAccountForm(false)}
+                            >
+                                <Close />
+                            </IconButton>
+                        }
+                        subheader={
+                            <Typography style={{ fontWeight: "700", fontSize: "20px" }}>
+                                Add account
+                            </Typography>
+                        }
+                    />
+                    <CardContent>
+                        <SigninForm />
+                    </CardContent>
+                </Card>
+            </Dialog>
         </Fragment>
     );
 };

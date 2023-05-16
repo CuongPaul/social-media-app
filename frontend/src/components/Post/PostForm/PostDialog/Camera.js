@@ -12,11 +12,12 @@ import {
 import React, { useRef, useState, Fragment } from "react";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Check, Close, Camera, ArrowBack } from "@material-ui/icons";
+import { Check, Close, ArrowBack, Camera as CameraMaterial } from "@material-ui/icons";
 
-const CameraField = ({ setFilesUpload, setFilesPreview }) => {
+const Camera = ({ setFilesUpload, setFilesPreview }) => {
     const videoRef = useRef();
     const canvasRef = useRef();
+
     const [isOpen, setIsOpen] = useState(false);
     const [isCaptured, setIsCaptured] = useState(false);
 
@@ -50,6 +51,7 @@ const CameraField = ({ setFilesUpload, setFilesPreview }) => {
     const handleCloseCamera = () => {
         stopCamera();
         setIsOpen(false);
+        setIsCaptured(false);
     };
 
     const handleClickCapture = () => {
@@ -61,8 +63,8 @@ const CameraField = ({ setFilesUpload, setFilesPreview }) => {
 
         canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        setIsCaptured(true);
         stopCamera();
+        setIsCaptured(true);
     };
 
     const handleAddCaptureImage = () => {
@@ -77,8 +79,8 @@ const CameraField = ({ setFilesUpload, setFilesPreview }) => {
     };
 
     const handleRemoveCaptureImage = () => {
-        setIsCaptured(false);
         startCamera();
+        setIsCaptured(false);
     };
 
     return (
@@ -162,7 +164,7 @@ const CameraField = ({ setFilesUpload, setFilesPreview }) => {
                                             onClick={handleClickCapture}
                                         >
                                             <Avatar style={{ color: "white", background: "teal" }}>
-                                                <Camera />
+                                                <CameraMaterial />
                                             </Avatar>
                                         </IconButton>
                                     )}
@@ -176,4 +178,4 @@ const CameraField = ({ setFilesUpload, setFilesPreview }) => {
     );
 };
 
-export default CameraField;
+export default Camera;

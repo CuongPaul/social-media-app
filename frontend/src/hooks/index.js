@@ -5,6 +5,7 @@ import useFetchPost from "./useFetchPost";
 import useCreatePost from "./useCreatePost";
 import useSearchUsers from "./useSearchUsers";
 import useSendMessage from "./useSendMessage";
+import useSearchFriends from "./useSearchFriends";
 import useCreateComment from "./useCreateComment";
 import useFetchComments from "./useFetchComments";
 import useFriendActions from "./useFriendActions";
@@ -24,6 +25,7 @@ export {
     useFetchComments,
     useFriendActions,
     useUpdateProfile,
+    useSearchFriends,
     useLocationService,
     useUpdateProfilePic,
 };

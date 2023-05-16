@@ -13,7 +13,6 @@
         "@material-ui/lab": "^4.0.0-alpha.56",
         "axios": "^0.20.0",
         "emoji-picker-react": "^3.2.4",
-        "firebase": "^7.22.0",
         "jwt-decode": "^3.0.0",
         "moment": "^2.29.1",
         "react": "^16.13.1",

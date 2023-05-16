@@ -10,7 +10,7 @@ import {
     CardContent,
 } from "@material-ui/core";
 
-import AvartarText from "./UI/AvartarText";
+import AvartaText from "./UI/AvartaText";
 import { MoreHoriz as MoreHorizIcon } from "@material-ui/icons";
 
 const PeopleYouMayKnow = ({ users }) => {
@@ -63,13 +63,7 @@ const PeopleYouMayKnow = ({ users }) => {
                                                       src={friend.avatar_image}
                                                   />
                                               ) : (
-                                                  <AvartarText
-                                                      backgroundColor={
-                                                          user.active ? "seagreen" : "tomato"
-                                                      }
-                                                      text={friend?.name}
-                                                      size="20px"
-                                                  />
+                                                  <AvartaText text={friend?.name} size="20px" />
                                               )}
 
                                               <Typography

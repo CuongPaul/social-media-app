@@ -15,7 +15,7 @@ import React, { useState, useContext } from "react";
 import { UIContext } from "../../App";
 import PostFooter from "./PostFooter";
 import PostContent from "./PostContent";
-import AvartarText from "../UI/AvartarText";
+import AvartaText from "../UI/AvartaText";
 // import { deletePost } from "../../services/PostServices";
 
 const Post = ({ post, handleDeletePost }) => {
@@ -41,10 +41,7 @@ const Post = ({ post, handleDeletePost }) => {
                             />
                         </Avatar>
                     ) : (
-                        <AvartarText
-                            text={post?.user?.name}
-                            backgroundColor={post?.user?.active ? "seagreen" : "tomato"}
-                        />
+                        <AvartaText text={post?.user?.name} />
                     )
                 }
                 action={

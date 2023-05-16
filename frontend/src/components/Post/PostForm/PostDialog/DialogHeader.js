@@ -10,7 +10,7 @@ import React, { useContext } from "react";
 import { Close } from "@material-ui/icons";
 
 import { UserContext } from "../../../../App";
-import AvartarText from "../../../UI/AvartarText";
+import AvartaText from "../../../UI/AvartaText";
 import CustomHeaderText from "./CustomHeaderText";
 
 const DialogHeader = ({ handleCloseDialog, body }) => {
@@ -28,7 +28,7 @@ const DialogHeader = ({ handleCloseDialog, body }) => {
                             />
                         </Avatar>
                     ) : (
-                        <AvartarText backgroundColor="teal" text={userState?.currentUser?.name} />
+                        <AvartaText text={userState?.currentUser?.name} />
                     )
                 }
                 title={

@@ -5,12 +5,12 @@ import React, { useContext, useState, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Grid, Paper, Avatar, TextField, IconButton, LinearProgress } from "@material-ui/core";
 
-import AvartarText from "../UI/AvartarText";
+import AvartaText from "../UI/AvartaText";
 import StyledBadge from "../UI/StyledBadge";
 import { UIContext, UserContext } from "../../App";
 import useCreateComment from "../../hooks/useCreateComment";
 import PreviewFile from "../Post/PostForm/PostDialog/PreviewFile";
-import FilesField from "../Post/PostForm/PostDialog/FilesField";
+import FilesUpload from "../Post/PostForm/PostDialog/FilesUpload";
 
 const CommentTextArea = ({ post }) => {
     const { uiState } = useContext(UIContext);
@@ -84,10 +84,7 @@ const CommentTextArea = ({ post }) => {
                                 />
                             </Avatar>
                         ) : (
-                            <AvartarText
-                                text={userState?.currentUser?.name}
-                                backgroundColor="tomato"
-                            />
+                            <AvartaText text={userState?.currentUser?.name} />
                         )}
                     </StyledBadge>
                 </Grid>
@@ -108,8 +105,8 @@ const CommentTextArea = ({ post }) => {
                             background: uiState.darkMode ? "rgb(24,25,26)" : "rgb(240,242,245)",
                         }}
                     />
-                    {/* <FilesField fileRef={fileRef} /> */}
-                    <FilesField
+                    {/* <FilesUpload fileRef={fileRef} /> */}
+                    <FilesUpload
                         multipleUpload={false}
                         setFilesUpload={setCommentImage}
                         setFilesPreview={setPreviewImage}

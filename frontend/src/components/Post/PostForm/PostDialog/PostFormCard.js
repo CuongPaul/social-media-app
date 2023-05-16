@@ -14,18 +14,17 @@ import {
 import EmojiPicker from "emoji-picker-react";
 import React, { lazy, useState, Fragment, useEffect, useContext } from "react";
 
-import FilesField from "./FilesField";
-import TagUserCard from "./TagUserCard";
-import DialogHeader from "./DialogHeader";
+import FilesUpload from "./FilesUpload";
 import PreviewFile from "./PreviewFile";
+import TagFriends from "./TagFriends";
+import DialogHeader from "./DialogHeader";
 import FeelingsCard from "./FeelingsCard";
 import LocationField from "./LocationField";
 import DialogLoading from "../../../UI/DialogLoading";
-import useCreatePost from "../../../../hooks/useCreatePost";
-// import { updatePost } from "../../../../services/PostServices";
 import { UIContext, UserContext, PostContext } from "../../../../App";
+import { useCreatePost } from "../../../../hooks";
 
-const CameraField = lazy(() => import("./CameraField"));
+const Camera = lazy(() => import("./Camera"));
 
 const PostFormDialog = () => {
     const { userState } = useContext(UserContext);
@@ -60,9 +59,15 @@ const PostFormDialog = () => {
         uiDispatch({ type: "SET_POST_MODEL", payload: false });
     };
 
-    const handleRemoveFile = () => {
-        setFilesPreview("");
-        setFilesUpload(null);
+    const handleRemoveFile = (fileIndex) => {
+        const newFilesPreview = [...filesPreview];
+        const newFilesUpload = [...filesUpload];
+
+        newFilesPreview.splice(fileIndex, 1);
+        newFilesUpload.splice(fileIndex, 1);
+
+        setFilesPreview(newFilesPreview);
+        setFilesUpload(newFilesUpload);
     };
 
     useEffect(() => {
@@ -167,26 +172,27 @@ const PostFormDialog = () => {
                         </Grid>
                         <Grid container alignItems="center" justifyContent="center">
                             <Grid item md={6} sm={6} xs={12}>
-                                <FilesField
+                                <FilesUpload
                                     multipleUpload={true}
                                     setFilesUpload={setFilesUpload}
                                     setFilesPreview={setFilesPreview}
                                 />
-                                <CameraField
+                                <Camera
                                     setFilesUpload={setFilesUpload}
                                     setFilesPreview={setFilesPreview}
                                 />
-                                <LocationField body={postData.body} setPostData={setPostData} />
-                                <FeelingsCard body={postData.body} setPostData={setPostData} />
-                                <TagUserCard body={postData.body} setPostData={setPostData} />
+                                <LocationField setPostData={setPostData} />
+                                <FeelingsCard setPostData={setPostData} />
+                                <TagFriends setPostData={setPostData} />
                             </Grid>
                         </Grid>
 
                         {filesPreview.length
-                            ? filesPreview.map((item) => (
+                            ? filesPreview.map((item, index) => (
                                   <PreviewFile
+                                      key={index}
                                       filePreview={item}
-                                      handleRemoveFile={handleRemoveFile}
+                                      handleRemoveFile={() => handleRemoveFile(index)}
                                   />
                               ))
                             : null}

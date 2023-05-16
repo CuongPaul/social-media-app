@@ -104,7 +104,11 @@ const searchUsersController = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
 
     try {
-        const query = { _id: { $ne: userId }, name: { $regex: name, $options: "i" } };
+        const query = {
+            _id: { $ne: userId },
+            block_users: { $nin: [userId] },
+            name: { $regex: name, $options: "i" },
+        };
 
         const users = await User.find(query, {
             _id: 1,
@@ -153,6 +157,36 @@ const updateProfileController = async (req, res) => {
         await user.update({ name, gender, hometown, education });
 
         return res.status(200).json({ message: "Update profile successfully" });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+};
+
+const searchFriendsController = async (req, res) => {
+    const pageSize = 5;
+    const userId = req.user_id;
+    const { name } = req.query;
+    const page = parseInt(req.query.page) || 1;
+
+    try {
+        const query = {
+            friends: userId,
+            _id: { $ne: userId },
+            block_users: { $nin: [userId] },
+            name: { $regex: name, $options: "i" },
+        };
+
+        const users = await User.find(query, {
+            _id: 1,
+            name: 1,
+            avatar_image: 1,
+        })
+            .limit(pageSize)
+            .skip((page - 1) * pageSize);
+
+        const count = await User.countDocuments(query);
+
+        return res.status(200).json({ message: "success", data: { count, rows: users } });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -279,6 +313,7 @@ export {
     searchUsersController,
     deleteAccountController,
     updateProfileController,
+    searchFriendsController,
     updatePasswordController,
     getCurrentUserController,
     updateCoverImageController,

@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 import React, { Fragment, useState, useEffect, useContext } from "react";
 
 import { UserContext } from "../../App";
-import AvartarText from "../UI/AvartarText";
+import AvartaText from "../UI/AvartaText";
 import StyledBadge from "../UI/StyledBadge";
 import PopoverProfile from "../Profile/PopoverProfile";
 
@@ -60,12 +60,7 @@ const ChatRoomList = () => {
                                         {user.avatar_image ? (
                                             <Avatar alt={user.name} src={user.avatar_image} />
                                         ) : (
-                                            <AvartarText
-                                                text={user.name}
-                                                backgroundColor={
-                                                    user.is_active ? "seagreen" : "tomato"
-                                                }
-                                            />
+                                            <AvartaText text={user.name} />
                                         )}
                                     </StyledBadge>
                                 </ListItemAvatar>

@@ -13,9 +13,9 @@ import React, { Fragment, useEffect, useContext } from "react";
 import callApi from "../api";
 import Sidebar from "../components/Sidebar";
 import Posts from "../components/Post/Posts";
-import AvartarText from "../components/UI/AvartarText";
-import { UIContext, PostContext, UserContext } from "../App";
+import AvartaText from "../components/UI/AvartaText";
 import FriendList from "../components/Friends/FriendList";
+import { UIContext, PostContext, UserContext } from "../App";
 import ChatRoomList from "../components/Friends/ChatRoomList";
 import WritePostCard from "../components/Post/PostForm/WritePostCard";
 
@@ -71,12 +71,7 @@ const Home = () => {
                                         />
                                     </Avatar>
                                 ) : (
-                                    <AvartarText
-                                        text={userState.currentUser.name}
-                                        backgroundColor={
-                                            userState.currentUser.is_active ? "seagreen" : "tomato"
-                                        }
-                                    />
+                                    <AvartaText text={userState.currentUser.name} />
                                 )}
                             </ListItemIcon>
                             <ListItemText

@@ -16,7 +16,7 @@ import {
 import { Close } from "@material-ui/icons";
 
 import { useSignin } from "../../hooks";
-import AvartarText from "../UI/AvartarText";
+import AvartaText from "../UI/AvartaText";
 
 const RecentAccountSigninForm = ({ account, isShowSigninForm, setIsShowSigninForm }) => {
     const { loading, handleClickSignin, handleChangePassword } = useSignin(account);
@@ -24,14 +24,11 @@ const RecentAccountSigninForm = ({ account, isShowSigninForm, setIsShowSigninFor
     return (
         <Dialog
             fullWidth
-            maxWidth="sm"
-            scroll="body"
-            disableEscapeKeyDown
             open={isShowSigninForm}
             style={{ width: "100%" }}
             onClose={() => setIsShowSigninForm(false)}
         >
-            <Card style={{ width: "100%" }}>
+            <Card style={{ width: "100%", borderRadius: "5px" }}>
                 <CardHeader
                     action={
                         <IconButton color="primary" onClick={() => setIsShowSigninForm(false)}>
@@ -39,7 +36,7 @@ const RecentAccountSigninForm = ({ account, isShowSigninForm, setIsShowSigninFor
                         </IconButton>
                     }
                 />
-                {account?.avatar_image ? (
+                {account.avatar_image ? (
                     <CardMedia
                         style={{
                             width: "100%",
@@ -63,34 +60,20 @@ const RecentAccountSigninForm = ({ account, isShowSigninForm, setIsShowSigninFor
                             justifyContent: "center",
                         }}
                     >
-                        <AvartarText
-                            size="100px"
-                            fontSize="35px"
-                            text={account.name}
-                            backgroundColor="teal"
-                        />
+                        <AvartaText size="100px" fontSize="35px" text={account.name} />
                     </CardMedia>
                 )}
                 <CardContent>
-                    <div
+                    <Typography
                         style={{
-                            display: "flex",
-                            marginTop: "20px",
-                            alignItems: "center",
-                            flexDirection: "column",
-                            justifyContent: "center",
+                            fontSize: "20px",
+                            marginTop: "8px",
+                            fontWeight: "800",
+                            textAlign: "center",
                         }}
                     >
-                        <Typography
-                            style={{
-                                fontSize: "20px",
-                                marginTop: "8px",
-                                fontWeight: "800",
-                            }}
-                        >
-                            {account.name}
-                        </Typography>
-                    </div>
+                        {account.name}
+                    </Typography>
                     <form onSubmit={handleClickSignin}>
                         <FormControl style={{ width: "100%" }}>
                             <TextField
