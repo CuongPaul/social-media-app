@@ -19,7 +19,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThumbsUp } from "@fortawesome/free-regular-svg-icons";
 import { faThumbsUp as filledLike } from "@fortawesome/free-solid-svg-icons";
 
-import AvartaText from "../UI/AvartaText";
+import AvatarIcon from "../UI/AvatarIcon";
 import { PostContext, UserContext, UIContext } from "../../App";
 // import { reactComment, updateComment, deleteComment } from "../../services/CommentService";
 
@@ -57,17 +57,7 @@ const Comment = ({ comment }) => {
     const listItems = (
         <ListItem alignItems="flex-start">
             <ListItemAvatar>
-                {comment.user.avatar_image ? (
-                    <Avatar>
-                        <img
-                            src={comment.user.avatar_image}
-                            style={{ width: "100%", height: "100%" }}
-                            alt={comment.user.name}
-                        />
-                    </Avatar>
-                ) : (
-                    <AvartaText text={comment?.user?.name} />
-                )}
+                <AvatarIcon text={comment.user.name} imageUrl={comment.user.avatar_image} />
             </ListItemAvatar>
             <ListItemText
                 primary={

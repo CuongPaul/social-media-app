@@ -16,7 +16,7 @@ import {
 import { Close } from "@material-ui/icons";
 
 import { useSignin } from "../../hooks";
-import AvartaText from "../UI/AvartaText";
+import AvatarIcon from "../UI/AvatarIcon";
 
 const RecentAccountSigninForm = ({ account, isShowSigninForm, setIsShowSigninForm }) => {
     const { loading, handleClickSignin, handleChangePassword } = useSignin(account);
@@ -60,7 +60,7 @@ const RecentAccountSigninForm = ({ account, isShowSigninForm, setIsShowSigninFor
                             justifyContent: "center",
                         }}
                     >
-                        <AvartaText size="100px" fontSize="35px" text={account.name} />
+                        <AvatarIcon text={account.name} size="100px" fontSize="35px" />
                     </CardMedia>
                 )}
                 <CardContent>

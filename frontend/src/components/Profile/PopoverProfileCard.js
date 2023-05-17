@@ -4,7 +4,7 @@ import { faUsers, faMapMarkerAlt, faUserGraduate } from "@fortawesome/free-solid
 import { Card, Chip, Grid, Avatar, CardHeader, Typography, CardActions } from "@material-ui/core";
 
 import StyledBadge from "../UI/StyledBadge";
-import AvartaText from "../UI/AvartaText";
+import AvatarIcon from "../UI/AvatarIcon";
 
 const Subheader = ({ user }) => {
     return (
@@ -72,7 +72,7 @@ const AvartarCardHeader = ({ user }) => {
             isActive={user.is_active}
             border={`3px solid ${user.is_active ? "green" : "red"}`}
         >
-            <AvartaText size="70px" text={user?.name} />
+            <AvatarIcon size="70px" text={user?.name} />
         </StyledBadge>
     );
 };

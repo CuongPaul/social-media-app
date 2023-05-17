@@ -21,7 +21,7 @@ import callApi from "../api";
 import { PostContext, UIContext } from "../App";
 import useFetchPost from "../hooks/useFetchPost";
 import Comment from "../components/Comment/Comment";
-import AvartaText from "../components/UI/AvartaText";
+import AvatarIcon from "../components/UI/AvatarIcon";
 import PostSubContent from "../components/Post/PostSubContent";
 import CommentTextArea from "../components/Comment/CommentTextArea";
 
@@ -88,17 +88,10 @@ const Post = () => {
                             {postState.post.user && (
                                 <CardHeader
                                     avatar={
-                                        postState.post.user.avatar_image ? (
-                                            <Avatar>
-                                                <img
-                                                    alt=""
-                                                    src={postState.post.user.avatar_image}
-                                                    style={{ width: "100%", height: "100%" }}
-                                                />
-                                            </Avatar>
-                                        ) : (
-                                            <AvartaText text={postState?.post?.user?.name} />
-                                        )
+                                        <AvatarIcon
+                                            text={postState?.post?.user?.name}
+                                            imageUrl={postState.post.user.avatar_image}
+                                        />
                                     }
                                     title={
                                         postState.post && (

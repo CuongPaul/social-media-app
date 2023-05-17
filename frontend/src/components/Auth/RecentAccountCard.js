@@ -10,7 +10,7 @@ import { Close } from "@material-ui/icons";
 import React, { useState, Fragment, useContext } from "react";
 
 import { UserContext } from "../../App";
-import AvartaText from "../UI/AvartaText";
+import AvatarIcon from "../UI/AvatarIcon";
 import RecentAccountSigninForm from "./RecentAccountSigninForm";
 
 const RecentAccountCard = ({ account }) => {
@@ -38,7 +38,7 @@ const RecentAccountCard = ({ account }) => {
                                 background: "rgb(245,246,247)",
                             }}
                         >
-                            <AvartaText size="60px" fontSize="25px" text={account.name} />
+                            <AvatarIcon text={account.name} size="60px" fontSize="25px" />
                         </CardMedia>
                     )}
                     <CardHeader

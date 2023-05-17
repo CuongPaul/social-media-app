@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { Paper, Grid, Typography, Button, Avatar } from "@material-ui/core";
 
 import { UserContext } from "../../App";
-import AvartaText from "../UI/AvartaText";
+import AvatarIcon from "../UI/AvatarIcon";
 // import { unfriend } from "../../services/UserServices";
 
 const Friends = ({ user }) => {
@@ -21,11 +21,11 @@ const Friends = ({ user }) => {
                                 alignItems: "center",
                             }}
                         >
-                            {friend.avatar_image ? (
-                                <Avatar src={friend.avatar_image} variant="square" />
-                            ) : (
-                                <AvartaText text={friend?.name} size="70px" />
-                            )}
+                            <AvatarIcon
+                                size="70px"
+                                text={friend.name}
+                                imageUrl={friend.avatar_image}
+                            />
                             <Typography
                                 style={{ marginTop: "16px", flexGrow: 1 }}
                                 variant="h5"

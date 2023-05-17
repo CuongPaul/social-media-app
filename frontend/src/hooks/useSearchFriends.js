@@ -13,24 +13,14 @@ const useSearchFriends = () => {
         setIsLoading(true);
 
         try {
-            setTimeout(async () => {
-                const { data } = await callApi({
-                    method: "GET",
-                    query: { name },
-                    url: "/user/search-friends",
-                });
+            const { data } = await callApi({
+                method: "GET",
+                query: { name },
+                url: "/user/search-friends",
+            });
 
-                setIsLoading(false);
-                setFriends(data.rows);
-            }, 5000);
-            // const { data } = await callApi({
-            //     method: "GET",
-            //     query: { name },
-            //     url: "/user/search-friends",
-            // });
-
-            // setIsLoading(false);
-            // setFriends(data.rows);
+            setIsLoading(false);
+            setFriends(data.rows);
         } catch (err) {
             setIsLoading(false);
             uiDispatch({

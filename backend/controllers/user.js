@@ -170,8 +170,8 @@ const searchFriendsController = async (req, res) => {
 
     try {
         const query = {
-            friends: userId,
             _id: { $ne: userId },
+            friends: { $nin: [userId] },
             block_users: { $nin: [userId] },
             name: { $regex: name, $options: "i" },
         };

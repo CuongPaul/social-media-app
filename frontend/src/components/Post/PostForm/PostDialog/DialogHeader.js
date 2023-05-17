@@ -1,53 +1,61 @@
-import {
-    Paper,
-    Avatar,
-    IconButton,
-    Typography,
-    CardHeader,
-    DialogContent,
-} from "@material-ui/core";
 import React, { useContext } from "react";
 import { Close } from "@material-ui/icons";
+import { CardHeader, IconButton, Typography, DialogContent } from "@material-ui/core";
 
 import { UserContext } from "../../../../App";
-import AvartaText from "../../../UI/AvartaText";
-import CustomHeaderText from "./CustomHeaderText";
+import AvatarIcon from "../../../UI/AvatarIcon";
 
-const DialogHeader = ({ handleCloseDialog, body }) => {
+const DialogHeader = ({ postBody, handleCloseDialog }) => {
     const { userState } = useContext(UserContext);
+
     return (
         <div>
             <CardHeader
-                avatar={
-                    userState.currentUser.avatar_image ? (
-                        <Avatar>
-                            <img
-                                alt="avatar"
-                                style={{ width: "100%", height: "100%" }}
-                                src={userState.currentUser.avatar_image}
-                            />
-                        </Avatar>
-                    ) : (
-                        <AvartaText text={userState?.currentUser?.name} />
-                    )
-                }
-                title={
-                    <>
-                        <Typography style={{ fontWeight: "800", fontSize: "16px" }}>
-                            {userState.currentUser.name}
-                        </Typography>
-                    </>
-                }
                 action={
                     <IconButton onClick={() => handleCloseDialog()}>
                         <Close />
                     </IconButton>
                 }
+                avatar={
+                    <AvatarIcon
+                        text={userState.currentUser.name}
+                        imageUrl={userState.currentUser.avatar_image}
+                    />
+                }
+                title={
+                    <Typography style={{ fontWeight: 800, fontSize: "16px" }}>
+                        {userState.currentUser.name}
+                    </Typography>
+                }
             />
             <DialogContent>
-                <Paper style={{ marginTop: "4px" }} elevation={0}>
-                    <CustomHeaderText body={body} />
-                </Paper>
+                <Typography>
+                    <b>{postBody && userState.currentUser.name}</b>
+                    {postBody?.feelings ? (
+                        <>
+                            &nbsp; is feeling <b>{postBody.feelings}</b>
+                        </>
+                    ) : null}
+                    {postBody?.tag_friends.length ? (
+                        <>
+                            {" with"}
+                            <b>
+                                {postBody?.tag_friends.map((friend, index) => (
+                                    <>
+                                        {" "}
+                                        &nbsp;{friend.name}
+                                        {index < postBody.tag_friends.length - 1 && ","}
+                                    </>
+                                ))}
+                            </b>
+                        </>
+                    ) : null}
+                    {postBody?.location ? (
+                        <>
+                            {` at `} <b>{postBody?.location} </b>
+                        </>
+                    ) : null}
+                </Typography>
             </DialogContent>
         </div>
     );

@@ -1,6 +1,6 @@
 import {
+    Chip,
     List,
-    Avatar,
     Button,
     Dialog,
     Tooltip,
@@ -13,20 +13,20 @@ import {
     ListItemIcon,
     ListItemText,
     DialogContent,
+    InputAdornment,
     CircularProgress,
 } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import React, { useState, Fragment } from "react";
-import { faUserTag } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes, faUserTag } from "@fortawesome/free-solid-svg-icons";
 
-import AvartaText from "../../../UI/AvartaText";
+import AvatarIcon from "../../../UI/AvatarIcon";
 import { useSearchFriends } from "../../../../hooks";
 
-const TagFriends = ({ setPostData }) => {
+const TagFriends = ({ tagFriends, setTagFriends }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
-    const [friendsSelected, setFriendsSelected] = useState([]);
 
     const { friends, isLoading, handleSearchFriends } = useSearchFriends();
 
@@ -56,91 +56,95 @@ const TagFriends = ({ setPostData }) => {
                     }
                 />
                 <DialogContent>
-                    <TextField
-                        variant="outlined"
-                        value={searchValue}
-                        placeholder="Enter name"
-                        style={{ width: "100%" }}
-                        onChange={(e) => setSearchValue(e.target.value)}
-                        onKeyPress={(e) => e.key === "Enter" && handleSearchFriends(searchValue)}
-                    />
-                    <Button
-                        color="primary"
-                        disabled={isLoading}
-                        variant="contained"
-                        onClick={() => handleSearchFriends(searchValue)}
-                        style={{ width: "100%", marginTop: "16px" }}
-                    >
-                        {isLoading ? (
-                            <CircularProgress
-                                size={25}
-                                variant="indeterminate"
-                                style={{ color: "#fff" }}
+                    <div style={{ marginBottom: "20px" }}>
+                        {tagFriends.map((friend) => (
+                            <Chip
+                                key={friend._id}
+                                label={friend.name}
+                                style={{ marginRight: "10px" }}
+                                onDelete={() =>
+                                    setTagFriends(
+                                        tagFriends.filter((item) => item._id !== friend._id)
+                                    )
+                                }
                             />
-                        ) : (
-                            "Search"
-                        )}
-                    </Button>
-                    {friends.length ? (
-                        <div>
-                            <Typography variant="h6" style={{ marginTop: "20px" }}>
-                                Search Results ({friends.length})
-                            </Typography>
-                            <List>
-                                {friends.map((user) => (
-                                    <ListItem key={user._id}>
-                                        <ListItemIcon>
-                                            {user.avatar_image ? (
-                                                <Avatar style={{ width: "60px", height: "60px" }}>
-                                                    <img
-                                                        width="100%"
-                                                        height="100%"
-                                                        alt={user.name}
-                                                        src={user.avatar_image}
-                                                    />
-                                                </Avatar>
-                                            ) : (
-                                                <AvartaText text={user?.name} />
-                                            )}
-                                        </ListItemIcon>
-                                        <ListItemText style={{ marginLeft: "8px" }}>
-                                            <Typography
-                                                style={{ fontSize: "17px", fontWeight: "700" }}
-                                            >
-                                                {user.name}
-                                            </Typography>
-                                            <Typography>{user.email}</Typography>
-                                        </ListItemText>
-                                        <ListItemIcon>
-                                            <Checkbox
-                                                onChange={(e) => {
-                                                    if (e.target.checked) {
-                                                        setFriendsSelected((pre) => [
-                                                            ...pre,
-                                                            user._id,
-                                                        ]);
-                                                    } else {
-                                                        setFriendsSelected((pre) =>
-                                                            pre.filter((item) => item != user._id)
-                                                        );
-                                                    }
-                                                }}
-                                                edge="start"
-                                                friendsSelected={
-                                                    friendsSelected.indexOf(user.id) !== -1
-                                                }
-                                                tabIndex={-1}
-                                                disableRipple
-                                                inputProps={{
-                                                    "aria-labelledby": user.id,
-                                                }}
-                                            />
-                                        </ListItemIcon>
-                                    </ListItem>
-                                ))}
-                            </List>
-                        </div>
-                    ) : null}
+                        ))}
+                    </div>
+                    <div style={{ display: "flex", marginBottom: "32px" }}>
+                        <TextField
+                            label="Name"
+                            variant="outlined"
+                            value={searchValue}
+                            placeholder="Enter name"
+                            onChange={(e) => setSearchValue(e.target.value)}
+                            style={{ flex: 4, width: "100%", marginRight: "16px" }}
+                            onKeyPress={(e) =>
+                                e.key === "Enter" && handleSearchFriends(searchValue)
+                            }
+                            InputProps={{
+                                endAdornment: searchValue && (
+                                    <InputAdornment position="end">
+                                        <FontAwesomeIcon
+                                            icon={faTimes}
+                                            onClick={() => setSearchValue("")}
+                                            style={{ marginRight: "10px", cursor: "pointer" }}
+                                        />
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                        <Button
+                            color="primary"
+                            variant="contained"
+                            disabled={isLoading}
+                            onClick={() => handleSearchFriends(searchValue)}
+                            style={{ flex: 1, width: "100%", borderRadius: "5px" }}
+                        >
+                            {isLoading ? (
+                                <CircularProgress
+                                    size={25}
+                                    variant="indeterminate"
+                                    style={{ color: "#fff" }}
+                                />
+                            ) : (
+                                "Search"
+                            )}
+                        </Button>
+                    </div>
+                    <List>
+                        {friends.map((friend) => (
+                            <ListItem key={friend._id}>
+                                <ListItemIcon>
+                                    <AvatarIcon
+                                        size="60px"
+                                        text={friend.name}
+                                        imageUrl={friend.avatar_image}
+                                    />
+                                </ListItemIcon>
+                                <ListItemText style={{ marginLeft: "32px" }}>
+                                    <Typography style={{ fontSize: "17px", fontWeight: "700" }}>
+                                        {friend.name}
+                                    </Typography>
+                                </ListItemText>
+                                <ListItemIcon>
+                                    <Checkbox
+                                        checked={tagFriends.some((item) => item._id === friend._id)}
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                setTagFriends([...tagFriends, friend]);
+                                            } else {
+                                                setTagFriends(
+                                                    tagFriends.filter(
+                                                        (item) => item._id !== friend._id
+                                                    )
+                                                );
+                                            }
+                                        }}
+                                    />
+                                </ListItemIcon>
+                            </ListItem>
+                        ))}
+                    </List>
                 </DialogContent>
             </Dialog>
         </Fragment>

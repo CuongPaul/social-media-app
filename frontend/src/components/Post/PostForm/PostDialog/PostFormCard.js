@@ -9,50 +9,40 @@ import {
     FormControl,
     DialogActions,
     DialogContent,
+    InputAdornment,
     CircularProgress,
 } from "@material-ui/core";
-import EmojiPicker from "emoji-picker-react";
 import React, { lazy, useState, Fragment, useEffect, useContext } from "react";
 
+import Feelings from "./Feelings";
+import Location from "./Location";
+import Emoji from "../../../Emoji";
+import TagFriends from "./TagFriends";
 import FilesUpload from "./FilesUpload";
 import PreviewFile from "./PreviewFile";
-import TagFriends from "./TagFriends";
 import DialogHeader from "./DialogHeader";
-import FeelingsCard from "./FeelingsCard";
-import LocationField from "./LocationField";
-import DialogLoading from "../../../UI/DialogLoading";
-import { UIContext, UserContext, PostContext } from "../../../../App";
 import { useCreatePost } from "../../../../hooks";
+import DialogLoading from "../../../UI/DialogLoading";
+import { UIContext, UserContext } from "../../../../App";
 
 const Camera = lazy(() => import("./Camera"));
 
 const PostFormDialog = () => {
     const { userState } = useContext(UserContext);
-    const { postDispatch } = useContext(PostContext);
     const { uiState, uiDispatch } = useContext(UIContext);
 
     const [filesUpload, setFilesUpload] = useState([]);
     const [filesPreview, setFilesPreview] = useState([]);
-    const [isShowEmoji, setIsShowEmoji] = useState(false);
     const [postData, setPostData] = useState({
         text: "",
         privacy: "public",
         body: { feelings: "", location: "", tag_friends: [] },
     });
-
-    const handleClickEmoji = (e, emojiObject) => {
-        setPostData({
-            ...postData,
-            text: postData.text + emojiObject.emoji,
-        });
-    };
-
-    const handleChangeContent = (e) => {
-        setPostData({
-            ...postData,
-            text: e.target.value,
-        });
-    };
+    const [text, setText] = useState("");
+    const [feelings, setFeelings] = useState("");
+    const [location, setLocation] = useState("");
+    const [privacy, setPrivacy] = useState("PUBLIC");
+    const [tagFriends, setTagFriends] = useState([]);
 
     const handleCloseDialog = () => {
         uiDispatch({ type: "EDIT_POST", payload: null });
@@ -78,17 +68,14 @@ const PostFormDialog = () => {
     }, [uiState.post]);
 
     const { handleSubmitPost, loading } = useCreatePost({
-        postData,
+        postData: {
+            text,
+            privacy,
+            body: { feelings, location, tagFriends },
+        },
         filesUpload,
     });
-    const handleUpdatePost = (postId) => {
-        // updatePost({ ...postData, id: postId }).then((res) => {
-        //     if (res.data.message === "success") {
-        //         uiDispatch({ type: "SET_POST_MODEL", payload: false });
-        //         postDispatch({ type: "EDIT_POST", payload: { ...postData, id: postId } });
-        //     }
-        // });
-    };
+    const handleUpdatePost = (postId) => {};
 
     return (
         <Fragment>
@@ -113,16 +100,11 @@ const PostFormDialog = () => {
                     style={{ width: "100%" }}
                     onClose={() => uiDispatch({ type: "SET_POST_MODEL", payload: false })}
                 >
-                    <DialogHeader body={postData.body} handleCloseDialog={handleCloseDialog} />
+                    <DialogHeader postBody={postData.body} handleCloseDialog={handleCloseDialog} />
                     <DialogContent>
                         <FormControl style={{ marginBottom: "16px" }}>
                             <InputLabel>Privacy</InputLabel>
-                            <Select
-                                value={postData.privacy}
-                                onChange={(e) => {
-                                    setPostData({ ...postData, privacy: e.target.value });
-                                }}
-                            >
+                            <Select value={privacy} onChange={(e) => setPrivacy(e.target.value)}>
                                 <option value={"PUBLIC"}>Public</option>
                                 <option value={"FRIEND"}>Friend</option>
                                 <option value={"ONLY_ME"}>Only me</option>
@@ -131,45 +113,22 @@ const PostFormDialog = () => {
                         <TextField
                             multiline
                             minRows={8}
-                            value={postData.text}
-                            onChange={handleChangeContent}
+                            value={text}
+                            onChange={(e) => setText(e.target.value)}
                             style={{
                                 width: "100%",
                                 border: "none",
                                 background: uiState.darkMode ? null : "#fff",
                             }}
                             placeholder={`What's in your mind, ${userState.currentUser.name}?`}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <Emoji setText={setText} />
+                                    </InputAdornment>
+                                ),
+                            }}
                         />
-
-                        <Grid
-                            container
-                            justifyContent="center"
-                            style={{ marginTop: "16px", marginBottom: "16px" }}
-                        >
-                            <Button
-                                size="small"
-                                color="secondary"
-                                variant="contained"
-                                onClick={() => setIsShowEmoji(!isShowEmoji)}
-                            >
-                                {isShowEmoji ? "Hide" : "Show"} emoji panel
-                            </Button>
-                        </Grid>
-                        <Grid
-                            container
-                            alignItems="center"
-                            justifyContent="center"
-                            style={{ marginTop: "16px", marginBottom: "16px" }}
-                        >
-                            <Grid item md={6} sm={6} xs={12}>
-                                {isShowEmoji && (
-                                    <EmojiPicker
-                                        className="emoji-container"
-                                        onEmojiClick={handleClickEmoji}
-                                    />
-                                )}
-                            </Grid>
-                        </Grid>
                         <Grid container alignItems="center" justifyContent="center">
                             <Grid item md={6} sm={6} xs={12}>
                                 <FilesUpload
@@ -181,9 +140,9 @@ const PostFormDialog = () => {
                                     setFilesUpload={setFilesUpload}
                                     setFilesPreview={setFilesPreview}
                                 />
-                                <LocationField setPostData={setPostData} />
-                                <FeelingsCard setPostData={setPostData} />
-                                <TagFriends setPostData={setPostData} />
+                                <Location location={location} setLocation={setLocation} />
+                                <Feelings feelings={feelings} setFeelings={setFeelings} />
+                                <TagFriends tagFriends={tagFriends} setTagFriends={setTagFriends} />
                             </Grid>
                         </Grid>
 

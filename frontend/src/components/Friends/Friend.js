@@ -1,7 +1,7 @@
 import React, { Fragment, useContext } from "react";
 import { Avatar, Typography, Card, CardActionArea, CardContent } from "@material-ui/core";
 
-import AvartaText from "../UI/AvartaText";
+import AvatarIcon from "../UI/AvatarIcon";
 import { UIContext, UserContext } from "../../App";
 
 const Friend = ({ user, children }) => {
@@ -30,18 +30,7 @@ const Friend = ({ user, children }) => {
                             justifyContent: "flex-start",
                         }}
                     >
-                        {user.avatar_image ? (
-                            <Avatar style={{ width: "60px", height: "60px" }}>
-                                <img
-                                    alt="avatar"
-                                    src={user.avatar_image}
-                                    style={{ width: "100%", height: "100%" }}
-                                />
-                            </Avatar>
-                        ) : (
-                            <AvartaText text={user?.name} />
-                        )}
-
+                        <AvatarIcon size="60px" text={user.name} imageUrl={user.avatar_image} />
                         <div
                             style={{
                                 display: "flex",

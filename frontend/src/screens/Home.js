@@ -13,7 +13,7 @@ import React, { Fragment, useEffect, useContext } from "react";
 import callApi from "../api";
 import Sidebar from "../components/Sidebar";
 import Posts from "../components/Post/Posts";
-import AvartaText from "../components/UI/AvartaText";
+import AvatarIcon from "../components/UI/AvatarIcon";
 import FriendList from "../components/Friends/FriendList";
 import { UIContext, PostContext, UserContext } from "../App";
 import ChatRoomList from "../components/Friends/ChatRoomList";
@@ -61,18 +61,10 @@ const Home = () => {
                             to={`/profile/${userState.currentUser._id}`}
                         >
                             <ListItemIcon>
-                                {userState.currentUser.avatar_image ? (
-                                    <Avatar style={{ width: "50px", height: "50px" }}>
-                                        <img
-                                            alt=""
-                                            width="100%"
-                                            height="100%"
-                                            src={userState.currentUser.avatar_image}
-                                        />
-                                    </Avatar>
-                                ) : (
-                                    <AvartaText text={userState.currentUser.name} />
-                                )}
+                                <AvatarIcon
+                                    text={userState.currentUser.name}
+                                    imageUrl={userState.currentUser.avatar_image}
+                                />
                             </ListItemIcon>
                             <ListItemText
                                 style={{ marginLeft: "5px" }}

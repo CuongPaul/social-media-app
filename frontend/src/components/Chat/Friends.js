@@ -16,7 +16,7 @@ import {
 } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 
-import AvartaText from "../UI/AvartaText";
+import AvatarIcon from "../UI/AvatarIcon";
 import { UserContext, ChatContext, UIContext } from "../../App";
 import callApi from "../../api";
 import { useSearchUsers } from "../../hooks";
@@ -144,20 +144,11 @@ const Friends = () => {
                                     <div>
                                         <ListItem button key={user._id}>
                                             <ListItemIcon>
-                                                {user.avatar_image ? (
-                                                    <Avatar
-                                                        style={{ width: "60px", height: "60px" }}
-                                                    >
-                                                        <img
-                                                            width="100%"
-                                                            height="100%"
-                                                            alt={user.name}
-                                                            src={user.avatar_image}
-                                                        />
-                                                    </Avatar>
-                                                ) : (
-                                                    <AvartaText text={user?.name} />
-                                                )}
+                                                <AvatarIcon
+                                                    size="60px"
+                                                    text={user.name}
+                                                    imageUrl={user.avatar_image}
+                                                />
                                             </ListItemIcon>
                                             <ListItemText style={{ marginLeft: "8px" }}>
                                                 <Typography
@@ -224,22 +215,31 @@ const Friends = () => {
                                     overlap="rectangular"
                                 >
                                     {friend.avatar_image ? (
-                                        <Avatar alt={friend.name} src={friend.avatar_image} />
+                                        <AvatarIcon
+                                            text={friend.name}
+                                            imageUrl={friend.avatar_image}
+                                        />
                                     ) : friend.members.length === 2 ? (
-                                        <Avatar
-                                            alt={
+                                        <AvatarIcon
+                                            text={
                                                 friend.members.find(
                                                     (item) => item._id !== userState.currentUser._id
                                                 ).name
                                             }
-                                            src={
+                                            imageUrl={
                                                 friend.members.find(
                                                     (item) => item._id !== userState.currentUser._id
                                                 ).avatar_image
                                             }
                                         />
                                     ) : (
-                                        <AvartaText text={friend?.name} />
+                                        <AvatarIcon
+                                            text={
+                                                friend.members.find(
+                                                    (item) => item._id !== userState.currentUser._id
+                                                ).name
+                                            }
+                                        />
                                     )}
                                 </Badge>
                             </ListItemAvatar>
@@ -264,11 +264,7 @@ const Friends = () => {
                     return (
                         <ListItem key={friend._id} button onClick={() => handleClickFriend(friend)}>
                             <ListItemAvatar>
-                                {friend.avatar_image ? (
-                                    <Avatar alt={friend.name} src={friend.avatar_image} />
-                                ) : (
-                                    <AvartaText text={friend?.name} />
-                                )}
+                                <AvatarIcon text={friend.name} imageUrl={friend.avatar_image} />
                             </ListItemAvatar>
                             <ListItemText primary={friend.name} />
                         </ListItem>

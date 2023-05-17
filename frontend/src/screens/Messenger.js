@@ -6,7 +6,7 @@ import Messages from "../components/Chat/Messages";
 import Friends from "../components/Chat/Friends";
 import InputTextArea from "../components/Chat/InputTextArea";
 import EmptyMessageArea from "../components/Chat/EmptyMessageArea";
-import AvartaText from "../components/UI/AvartaText";
+import AvatarIcon from "../components/UI/AvatarIcon";
 
 function Messenger() {
     const { uiDispatch, uiState } = useContext(UIContext);
@@ -85,17 +85,10 @@ function Messenger() {
                                         backgroundColor: uiState.darkMode && "rgb(36,37,38)",
                                     }}
                                 >
-                                    {chatState.selectedFriend.avatar_image ? (
-                                        <Avatar>
-                                            <img
-                                                alt="avatar"
-                                                src={chatState.selectedFriend.avatar_image}
-                                                style={{ width: "100%", height: "100%" }}
-                                            />
-                                        </Avatar>
-                                    ) : (
-                                        <AvartaText text={chatState?.selectedFriend?.name} />
-                                    )}
+                                    <AvatarIcon
+                                        text={chatState?.selectedFriend?.name}
+                                        imageUrl={chatState.selectedFriend.avatar_image}
+                                    />
                                     <Typography style={{ marginLeft: "16px" }}>
                                         {chatState.selectedFriend.name}
                                     </Typography>

@@ -19,7 +19,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 
 import callApi from "../../api";
-import AvartaText from "../UI/AvartaText";
+import AvatarIcon from "../UI/AvatarIcon";
 import { UIContext, UserContext } from "../../App";
 
 const ProfileItem = () => {
@@ -30,18 +30,7 @@ const ProfileItem = () => {
     return currentUser ? (
         <ListItem button component={Link} to={`/profile/${currentUser._id}`}>
             <ListItemIcon>
-                {currentUser.avatar_image ? (
-                    <Avatar style={{ width: "60px", height: "60px" }}>
-                        <img
-                            width="100%"
-                            height="100%"
-                            alt={currentUser.name}
-                            src={currentUser.avatar_image}
-                        />
-                    </Avatar>
-                ) : (
-                    <AvartaText text={currentUser?.name} />
-                )}
+                <AvatarIcon text={currentUser.name} imageUrl={currentUser.avatar_image} />
             </ListItemIcon>
             <ListItemText>
                 <Typography style={{ fontSize: "17px", fontWeight: "700" }}>

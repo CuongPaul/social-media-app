@@ -16,7 +16,7 @@ import { Link } from "react-router-dom";
 import { Search } from "@material-ui/icons";
 import React, { useState, Fragment } from "react";
 
-import AvartaText from "../UI/AvartaText";
+import AvatarIcon from "../UI/AvatarIcon";
 import { useSearchUsers, useFriendActions } from "../../hooks";
 
 const SearchUsers = () => {
@@ -86,20 +86,10 @@ const SearchUsers = () => {
                                             onClick={() => setIsOpen(false)}
                                         >
                                             <ListItemIcon>
-                                                {user.avatar_image ? (
-                                                    <Avatar
-                                                        style={{ width: "60px", height: "60px" }}
-                                                    >
-                                                        <img
-                                                            width="100%"
-                                                            height="100%"
-                                                            alt={user.name}
-                                                            src={user.avatar_image}
-                                                        />
-                                                    </Avatar>
-                                                ) : (
-                                                    <AvartaText text={user?.name} />
-                                                )}
+                                                <AvatarIcon
+                                                    text={user.name}
+                                                    imageUrl={user.avatar_image}
+                                                />
                                             </ListItemIcon>
                                             <ListItemText style={{ marginLeft: "8px" }}>
                                                 <Typography

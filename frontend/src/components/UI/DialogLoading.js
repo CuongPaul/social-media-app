@@ -1,18 +1,11 @@
 import React, { useState } from "react";
-import { Dialog, LinearProgress, Paper, Typography } from "@material-ui/core";
+import { Paper, Dialog, Typography, LinearProgress } from "@material-ui/core";
 
 const DialogLoading = ({ loading, text }) => {
-    const [open, setOpen] = useState(loading);
+    const [isOpen, setIsOpen] = useState(loading);
+
     return (
-        <Dialog
-            disableEscapeKeyDown
-            fullWidth
-            scroll="body"
-            maxWidth="sm"
-            open={open}
-            onClose={() => setOpen(false)}
-            style={{ width: "100%" }}
-        >
+        <Dialog fullWidth open={isOpen} style={{ width: "100%" }} onClose={() => setIsOpen(false)}>
             <Paper
                 style={{
                     width: "100%",

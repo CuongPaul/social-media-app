@@ -5,7 +5,7 @@ import React, { useContext, useState, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Grid, Paper, Avatar, TextField, IconButton, LinearProgress } from "@material-ui/core";
 
-import AvartaText from "../UI/AvartaText";
+import AvatarIcon from "../UI/AvatarIcon";
 import StyledBadge from "../UI/StyledBadge";
 import { UIContext, UserContext } from "../../App";
 import useCreateComment from "../../hooks/useCreateComment";
@@ -75,17 +75,10 @@ const CommentTextArea = ({ post }) => {
             >
                 <Grid item>
                     <StyledBadge isActive={userState.currentUser.is_active}>
-                        {userState.currentUser.avatar_image ? (
-                            <Avatar>
-                                <img
-                                    alt={userState.currentUser.name}
-                                    src={userState.currentUser.avatar_image}
-                                    style={{ width: "100%", height: "100%" }}
-                                />
-                            </Avatar>
-                        ) : (
-                            <AvartaText text={userState?.currentUser?.name} />
-                        )}
+                        <AvatarIcon
+                            text={userState.currentUser.name}
+                            imageUrl={userState.currentUser.avatar_image}
+                        />
                     </StyledBadge>
                 </Grid>
                 <Grid item md={8} sm={8} xs={8}>

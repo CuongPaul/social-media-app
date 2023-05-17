@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 import React, { Fragment, useState, useEffect, useContext } from "react";
 
 import { UserContext } from "../../App";
-import AvartaText from "../UI/AvartaText";
+import AvatarIcon from "../UI/AvatarIcon";
 import StyledBadge from "../UI/StyledBadge";
 import PopoverProfile from "../Profile/PopoverProfile";
 
@@ -57,11 +57,7 @@ const ChatRoomList = () => {
                             >
                                 <ListItemAvatar>
                                     <StyledBadge isActive={user.is_active}>
-                                        {user.avatar_image ? (
-                                            <Avatar alt={user.name} src={user.avatar_image} />
-                                        ) : (
-                                            <AvartaText text={user.name} />
-                                        )}
+                                        <AvatarIcon text={user.name} imageUrl={user.avatar_image} />
                                     </StyledBadge>
                                 </ListItemAvatar>
                                 <ListItemText primary={user.name} />

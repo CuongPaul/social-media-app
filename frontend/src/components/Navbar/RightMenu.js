@@ -6,7 +6,7 @@ import { Chip, Avatar, IconButton, Badge, useMediaQuery, useTheme } from "@mater
 
 import useStyles from "./styles";
 import ProfileMenu from "./ProfileMenu";
-import AvartaText from "../UI/AvartaText";
+import AvatarIcon from "../UI/AvatarIcon";
 import CreatePostMenu from "./CreatePostMenu";
 import NotificationMenu from "../NotificationMenu";
 import { UIContext, UserContext } from "../../App";
@@ -48,11 +48,10 @@ const AccountMenu = () => {
             label={<h3>{userState.currentUser.name.split(" ")[0].slice(0, 5) + ".."}</h3>}
             className={classes.profile_chip}
             avatar={
-                userState.currentUser.avatar_image ? (
-                    <Avatar alt="Natacha" src={userState.currentUser.avatar_image} />
-                ) : (
-                    <AvartaText text={userState?.currentUser?.name} />
-                )
+                <AvatarIcon
+                    text={userState.currentUser.name}
+                    imageUrl={userState.currentUser.avatar_image}
+                />
             }
         />
     ) : null;

@@ -46,13 +46,14 @@ const useCreatePost = ({ postData, body, filesUpload }) => {
     };
 
     const createUserPost = async (uri = "") => {
-        await createPost({
+        console.log({
             ...postData,
             images: uri ? [...uri] : null,
-            body: {
-                ...body,
-            },
         });
+        // await createPost({
+        //     ...postData,
+        //     images: uri ? [...uri] : null,
+        // });
     };
 
     const handleSubmitPost = async (e) => {

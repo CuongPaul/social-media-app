@@ -15,7 +15,7 @@ import React, { useState, useContext } from "react";
 import { UIContext } from "../../App";
 import PostFooter from "./PostFooter";
 import PostContent from "./PostContent";
-import AvartaText from "../UI/AvartaText";
+import AvatarIcon from "../UI/AvatarIcon";
 // import { deletePost } from "../../services/PostServices";
 
 const Post = ({ post, handleDeletePost }) => {
@@ -31,19 +31,7 @@ const Post = ({ post, handleDeletePost }) => {
             }}
         >
             <CardHeader
-                avatar={
-                    post.user && post.user.avatar_image ? (
-                        <Avatar>
-                            <img
-                                alt="avatar"
-                                src={post.user.avatar_image}
-                                style={{ width: "100%", height: "100%" }}
-                            />
-                        </Avatar>
-                    ) : (
-                        <AvartaText text={post?.user?.name} />
-                    )
-                }
+                avatar={<AvatarIcon text={post.user.name} imageUrl={post.user.avatar_image} />}
                 action={
                     <div>
                         <IconButton onClick={(e) => setIsOpen(e.currentTarget)}>

@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Paper, Avatar } from "@material-ui/core";
 
-import AvartaText from "../../UI/AvartaText";
+import AvatarIcon from "../../UI/AvatarIcon";
 import PostFormCard from "./PostDialog/PostFormCard";
 import { UIContext, UserContext } from "../../../App";
 
@@ -25,18 +25,10 @@ const PostCard = () => {
                         justifyContent: "flex-start",
                     }}
                 >
-                    {userState.currentUser.avatar_image ? (
-                        <Avatar>
-                            <img
-                                alt="avatar"
-                                src={userState.currentUser.avatar_image}
-                                width="100%"
-                                height="100%"
-                            />
-                        </Avatar>
-                    ) : (
-                        <AvartaText text={userState?.currentUser?.name} />
-                    )}
+                    <AvatarIcon
+                        text={userState.currentUser.name}
+                        imageUrl={userState.currentUser.avatar_image}
+                    />
                     <div style={{ width: "100%", marginLeft: "16px", marginRight: "16px" }}>
                         <PostFormCard />
                     </div>
