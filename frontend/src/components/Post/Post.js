@@ -1,12 +1,11 @@
 import {
     Card,
     Menu,
-    Avatar,
+    Divider,
     MenuItem,
     CardHeader,
     IconButton,
     Typography,
-    Divider,
 } from "@material-ui/core";
 import moment from "moment";
 import { MoreHoriz } from "@material-ui/icons";
@@ -16,12 +15,11 @@ import { UIContext } from "../../App";
 import PostFooter from "./PostFooter";
 import PostContent from "./PostContent";
 import AvatarIcon from "../UI/AvatarIcon";
-// import { deletePost } from "../../services/PostServices";
 
 const Post = ({ post, handleDeletePost }) => {
-    const { uiState, uiDispatch } = useContext(UIContext);
-
     const [isOpen, setIsOpen] = useState(false);
+
+    const { uiState, uiDispatch } = useContext(UIContext);
 
     return (
         <Card
@@ -37,13 +35,7 @@ const Post = ({ post, handleDeletePost }) => {
                         <IconButton onClick={(e) => setIsOpen(e.currentTarget)}>
                             <MoreHoriz />
                         </IconButton>
-
-                        <Menu
-                            id="post-action-menu"
-                            anchorEl={isOpen}
-                            open={Boolean(isOpen)}
-                            onClose={() => setIsOpen(null)}
-                        >
+                        <Menu open={Boolean(isOpen)} onClose={() => setIsOpen(null)}>
                             <MenuItem
                                 onClick={() => {
                                     setIsOpen(null);

@@ -21,8 +21,8 @@ import React, { useState, Fragment } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faUserTag } from "@fortawesome/free-solid-svg-icons";
 
-import AvatarIcon from "../../../UI/AvatarIcon";
-import { useSearchFriends } from "../../../../hooks";
+import AvatarIcon from "../../UI/AvatarIcon";
+import { useSearchFriends } from "../../../hooks";
 
 const TagFriends = ({ tagFriends, setTagFriends }) => {
     const [isOpen, setIsOpen] = useState(false);

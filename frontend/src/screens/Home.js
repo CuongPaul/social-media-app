@@ -1,14 +1,6 @@
-import {
-    List,
-    Avatar,
-    useTheme,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
-    useMediaQuery,
-} from "@material-ui/core";
 import { Link } from "react-router-dom";
 import React, { Fragment, useEffect, useContext } from "react";
+import { List, Avatar, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 
 import callApi from "../api";
 import Sidebar from "../components/Sidebar";
@@ -17,7 +9,7 @@ import AvatarIcon from "../components/UI/AvatarIcon";
 import FriendList from "../components/Friends/FriendList";
 import { UIContext, PostContext, UserContext } from "../App";
 import ChatRoomList from "../components/Friends/ChatRoomList";
-import WritePostCard from "../components/Post/PostForm/WritePostCard";
+import WritePostCard from "../components/Post/PostBar";
 
 const leftSidebarItems = [
     { id: "friends", title: "Friends", path: "/friends", icon: "friends.png" },
@@ -28,9 +20,6 @@ const Home = () => {
     const { userState } = useContext(UserContext);
     const { postDispatch } = useContext(PostContext);
     const { uiState, uiDispatch } = useContext(UIContext);
-
-    const { breakpoints } = useTheme();
-    const match = useMediaQuery(breakpoints.between(960, 1400));
 
     useEffect(() => {
         (async () => {
@@ -99,10 +88,10 @@ const Home = () => {
             <div
                 style={{
                     margin: "auto",
+                    maxWidth: "45vw",
                     minHeight: "100vh",
                     paddingTop: "100px",
                     paddingBottom: "100px",
-                    maxWidth: match ? "45vw" : "38vw",
                 }}
             >
                 <WritePostCard user={userState.currentUser} />

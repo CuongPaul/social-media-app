@@ -7,8 +7,8 @@ import { IconButton, InputBase, Paper, makeStyles } from "@material-ui/core";
 
 import { UIContext } from "../../App";
 import useSendMessage from "../../hooks/useSendMessage";
-import FilesUpload from "../Post/PostForm/PostDialog/FilesUpload";
-import PreviewFile from "../Post/PostForm/PostDialog/PreviewFile";
+import FilesUpload from "../Post/PostDialog/FilesUpload";
+import PreviewFile from "../Post/PostDialog/PreviewFile";
 
 const useStyles = makeStyles(() => ({
     inputInput: {

@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 
 import Posts from "../Post/Posts";
 import { UserContext } from "../../App";
-import WritePostCard from "../Post/PostForm/WritePostCard";
+import WritePostCard from "../Post/PostBar";
 import callApi from "../../api";
 
 const ProfileTimeline = ({ user }) => {

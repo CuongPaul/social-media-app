@@ -9,8 +9,8 @@ import AvatarIcon from "../UI/AvatarIcon";
 import StyledBadge from "../UI/StyledBadge";
 import { UIContext, UserContext } from "../../App";
 import useCreateComment from "../../hooks/useCreateComment";
-import PreviewFile from "../Post/PostForm/PostDialog/PreviewFile";
-import FilesUpload from "../Post/PostForm/PostDialog/FilesUpload";
+import PreviewFile from "../Post/PostDialog/PreviewFile";
+import FilesUpload from "../Post/PostDialog/FilesUpload";
 
 const CommentTextArea = ({ post }) => {
     const { uiState } = useContext(UIContext);

@@ -10,9 +10,11 @@ const postSchema = new Schema(
     {
         images: [TrimStringType],
         body: {
-            location: TrimStringType,
-            feelings: TrimStringType,
-            tag_friends: [UserIdType],
+            type: {
+                location: TrimStringType,
+                feelings: TrimStringType,
+                tag_friends: [UserIdType],
+            },
         },
         user: { ...UserIdType, required: true },
         text: { trim: true, type: String, required: true },

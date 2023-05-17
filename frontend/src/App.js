@@ -95,7 +95,6 @@ const App = () => {
             });
 
             socketIO.on("new-message", (data) => {
-                console.log("new-message: ", data);
                 chatDispatch({ type: "ADD_MESSAGE", payload: data });
             });
 

@@ -24,7 +24,7 @@ const PostContent = ({ post }) => {
                         padding: "16px",
                     }}
                 >
-                    <PostSubContent post={post} />
+                    <PostSubContent postBody={post.body} username={post.user.name} />
                 </CardContent>
             )}
             <CardContent>

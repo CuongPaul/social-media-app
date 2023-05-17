@@ -5,7 +5,6 @@ import {
     Select,
     TextField,
     InputLabel,
-    Typography,
     FormControl,
     DialogActions,
     DialogContent,
@@ -16,40 +15,35 @@ import React, { lazy, useState, Fragment, useEffect, useContext } from "react";
 
 import Feelings from "./Feelings";
 import Location from "./Location";
-import Emoji from "../../../Emoji";
+import Emoji from "../../Emoji";
 import TagFriends from "./TagFriends";
 import FilesUpload from "./FilesUpload";
 import PreviewFile from "./PreviewFile";
 import DialogHeader from "./DialogHeader";
-import { useCreatePost } from "../../../../hooks";
-import DialogLoading from "../../../UI/DialogLoading";
-import { UIContext, UserContext } from "../../../../App";
+import { useCreatePost } from "../../../hooks";
+import DialogLoading from "../../UI/DialogLoading";
+import { UIContext, UserContext } from "../../../App";
 
 const Camera = lazy(() => import("./Camera"));
 
-const PostFormDialog = () => {
+const PostFormDialog = ({ postData }) => {
     const { userState } = useContext(UserContext);
     const { uiState, uiDispatch } = useContext(UIContext);
 
-    const [filesUpload, setFilesUpload] = useState([]);
-    const [filesPreview, setFilesPreview] = useState([]);
-    const [postData, setPostData] = useState({
-        text: "",
-        privacy: "public",
-        body: { feelings: "", location: "", tag_friends: [] },
-    });
     const [text, setText] = useState("");
     const [feelings, setFeelings] = useState("");
     const [location, setLocation] = useState("");
     const [privacy, setPrivacy] = useState("PUBLIC");
     const [tagFriends, setTagFriends] = useState([]);
+    const [filesUpload, setFilesUpload] = useState([]);
+    const [filesPreview, setFilesPreview] = useState([]);
 
     const handleCloseDialog = () => {
         uiDispatch({ type: "EDIT_POST", payload: null });
         uiDispatch({ type: "SET_POST_MODEL", payload: false });
     };
 
-    const handleRemoveFile = (fileIndex) => {
+    const handleRemoveFilePreview = (fileIndex) => {
         const newFilesPreview = [...filesPreview];
         const newFilesUpload = [...filesUpload];
 
@@ -61,17 +55,21 @@ const PostFormDialog = () => {
     };
 
     useEffect(() => {
-        setPostData({
-            privacy: uiState.post ? uiState.post.privacy : "PUBLIC",
-            text: uiState.post ? uiState.post.text : "",
-        });
-    }, [uiState.post]);
+        if (postData) {
+            setText(postData.text);
+            setPrivacy(postData.privacy);
+            setFilesPreview(postData.images);
+            setFeelings(postData.body.feelings);
+            setLocation(postData.body.location);
+            setTagFriends(postData.body.tag_friends);
+        }
+    }, [postData]);
 
     const { handleSubmitPost, loading } = useCreatePost({
         postData: {
             text,
             privacy,
-            body: { feelings, location, tagFriends },
+            body: { feelings, location, tag_friends: tagFriends },
         },
         filesUpload,
     });
@@ -79,18 +77,6 @@ const PostFormDialog = () => {
 
     return (
         <Fragment>
-            <Typography
-                style={{
-                    padding: "8px",
-                    cursor: "pointer",
-                    borderRadius: "20px",
-                    color: uiState.darkMode ? null : "grey",
-                    background: uiState.darkMode ? null : "rgb(240,242,245)",
-                }}
-                onClick={() => uiDispatch({ type: "SET_POST_MODEL", payload: true })}
-            >
-                What's in your mind, {userState.currentUser.name}?
-            </Typography>
             {loading ? (
                 <DialogLoading loading={loading} text="Uploading post..." />
             ) : (
@@ -100,7 +86,11 @@ const PostFormDialog = () => {
                     style={{ width: "100%" }}
                     onClose={() => uiDispatch({ type: "SET_POST_MODEL", payload: false })}
                 >
-                    <DialogHeader postBody={postData.body} handleCloseDialog={handleCloseDialog} />
+                    <DialogHeader
+                        user={userState.currentUser}
+                        postBody={{ feelings, location, tag_friends: tagFriends }}
+                        handleCloseDialog={handleCloseDialog}
+                    />
                     <DialogContent>
                         <FormControl style={{ marginBottom: "16px" }}>
                             <InputLabel>Privacy</InputLabel>
@@ -151,7 +141,7 @@ const PostFormDialog = () => {
                                   <PreviewFile
                                       key={index}
                                       filePreview={item}
-                                      handleRemoveFile={() => handleRemoveFile(index)}
+                                      handleRemoveFile={() => handleRemoveFilePreview(index)}
                                   />
                               ))
                             : null}

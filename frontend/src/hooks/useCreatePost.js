@@ -46,14 +46,14 @@ const useCreatePost = ({ postData, body, filesUpload }) => {
     };
 
     const createUserPost = async (uri = "") => {
-        console.log({
+        await createPost({
             ...postData,
+            body: {
+                ...postData.body,
+                tag_friends: postData.body.tag_friends.map((item) => item._id),
+            },
             images: uri ? [...uri] : null,
         });
-        // await createPost({
-        //     ...postData,
-        //     images: uri ? [...uri] : null,
-        // });
     };
 
     const handleSubmitPost = async (e) => {

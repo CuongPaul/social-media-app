@@ -14,7 +14,7 @@ import React, { useState, Fragment } from "react";
 import { faSmile } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import Emoji from "../../../Emoji";
+import Emoji from "../../Emoji";
 
 const Feelings = ({ feelings, setFeelings }) => {
     const [isOpen, setIsOpen] = useState(false);

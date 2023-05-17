@@ -7,6 +7,7 @@ const DialogLoading = ({ loading, text }) => {
     return (
         <Dialog fullWidth open={isOpen} style={{ width: "100%" }} onClose={() => setIsOpen(false)}>
             <Paper
+                elevation={15}
                 style={{
                     width: "100%",
                     height: "100%",
@@ -16,7 +17,6 @@ const DialogLoading = ({ loading, text }) => {
                     justifyContent: "center",
                     flexDirection: "column",
                 }}
-                elevation={15}
             >
                 <Typography
                     style={{

@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Grid, Button } from "@material-ui/core";
 import { faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 
-import LikePost from "./LikePost";
+import LikePost from "./React";
 
 const PostFooter = ({ post }) => {
     return (

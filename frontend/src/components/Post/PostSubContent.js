@@ -1,39 +1,38 @@
 import React from "react";
 import { Typography } from "@material-ui/core";
 
-const PostSubContent = ({ post }) => {
-    const bodyPost = post.body;
-
-    const isContent = () => {
-        return bodyPost?.location || bodyPost?.feelings || bodyPost?.tag_friends?.length;
-    };
+const PostSubContent = ({ postBody, username }) => {
+    const isMetadata = postBody?.feelings || postBody?.tag_friends.length || postBody?.location;
 
     return (
-        <div>
-            <Typography>
-                <b>{isContent() && post.user.name}</b>
-                {bodyPost?.feelings ? (
-                    <>
-                        &nbsp; is feeling <b>{bodyPost?.feelings}</b>
-                    </>
-                ) : null}
-                {bodyPost?.tag_friends?.length ? (
-                    <>
-                        {` with `}
-                        <b>
-                            {bodyPost?.tag_friends.map((u) => (
-                                <span key={u.id}> &nbsp;{u.name},</span>
-                            ))}
-                        </b>
-                    </>
-                ) : null}
-                {bodyPost?.location ? (
-                    <>
-                        {` at `} <b>{bodyPost.location} </b>
-                    </>
-                ) : null}
-            </Typography>
-        </div>
+        <Typography>
+            <b>{isMetadata && username}</b>
+            {postBody?.feelings ? (
+                <>
+                    {` is feeling `}
+                    <b>{postBody.feelings}</b>
+                </>
+            ) : null}
+            {postBody?.tag_friends?.length ? (
+                <>
+                    {" with "}
+                    <b>
+                        {postBody.tag_friends.map((friend, index) => (
+                            <>
+                                {friend.name}
+                                {index < postBody.tag_friends.length - 1 ? ", " : " "}
+                            </>
+                        ))}
+                    </b>
+                </>
+            ) : null}
+            {postBody?.location ? (
+                <>
+                    {` at `}
+                    <b>{postBody.location}</b>
+                </>
+            ) : null}
+        </Typography>
     );
 };
 

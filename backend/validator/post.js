@@ -15,8 +15,8 @@ const createPostValidation = {
         privacy: Joi.string().valid("FRIEND", "PUBLIC", "ONLY_ME"),
         images: Joi.array().items(Joi.string().trim().required()).allow(null),
         body: Joi.object({
-            location: Joi.string().allow(null).trim(),
-            feelings: Joi.string().allow(null).trim(),
+            location: Joi.string().allow("", null).trim(),
+            feelings: Joi.string().allow("", null).trim(),
             tag_friends: Joi.array().items(Joi.string().trim().required()).min(1).allow(null),
         }).allow(null),
     }),
@@ -34,8 +34,8 @@ const updatePostValidation = {
         privacy: Joi.string().valid("FRIEND", "PUBLIC", "ONLY_ME"),
         images: Joi.array().items(Joi.string().trim().required()).allow(null),
         body: Joi.object({
-            location: Joi.string().allow(null).trim(),
-            feelings: Joi.string().allow(null).trim(),
+            location: Joi.string().allow("", null).trim(),
+            feelings: Joi.string().allow("", null).trim(),
             tag_friends: Joi.array().items(Joi.string().trim().required()).min(1).allow(null),
         }).allow(null),
     }),
