@@ -20,7 +20,7 @@ const callApi = async ({ url, data, query, method }) => {
             throw new Error(err.response.data.message);
         } else {
             if (err.request) {
-                throw new Error("The connection has time out");
+                throw new Error("Can't send request to server");
             } else {
                 throw new Error(err.message);
             }

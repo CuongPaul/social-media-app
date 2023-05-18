@@ -30,7 +30,7 @@ const useSearchFriends = () => {
         }
     };
 
-    return { friends, isLoading, handleSearchFriends };
+    return { friends, isLoading, setFriends, handleSearchFriends };
 };
 
 export default useSearchFriends;

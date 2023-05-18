@@ -28,7 +28,7 @@ const TagFriends = ({ tagFriends, setTagFriends }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
 
-    const { friends, isLoading, handleSearchFriends } = useSearchFriends();
+    const { friends, isLoading, setFriends, handleSearchFriends } = useSearchFriends();
 
     return (
         <Fragment>
@@ -86,7 +86,10 @@ const TagFriends = ({ tagFriends, setTagFriends }) => {
                                     <InputAdornment position="end">
                                         <FontAwesomeIcon
                                             icon={faTimes}
-                                            onClick={() => setSearchValue("")}
+                                            onClick={() => {
+                                                setFriends([]);
+                                                setSearchValue("");
+                                            }}
                                             style={{ marginRight: "10px", cursor: "pointer" }}
                                         />
                                     </InputAdornment>
