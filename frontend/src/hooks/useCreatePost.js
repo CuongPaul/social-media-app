@@ -25,7 +25,7 @@ const useCreatePost = ({ postData, body, filesUpload }) => {
             if (message) {
                 postDispatch({ type: "ADD_POST", payload: formValue });
                 uiDispatch({
-                    type: "SET_NOTIFICATION",
+                    type: "SET_ALERT_NOTIFICATION",
                     payload: {
                         display: true,
                         text: message,
@@ -39,7 +39,7 @@ const useCreatePost = ({ postData, body, filesUpload }) => {
             setLoading(false);
 
             uiDispatch({
-                type: "SET_NOTIFICATION",
+                type: "SET_ALERT_NOTIFICATION",
                 payload: { text: err.message, display: true, color: "error" },
             });
         }

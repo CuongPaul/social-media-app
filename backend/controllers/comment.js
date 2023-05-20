@@ -90,7 +90,7 @@ const updateCommentController = async (req, res) => {
             return res.status(400).json({ message: "This post is deleted" });
         }
 
-        await comment.update({ text, image });
+        await comment.updateOne({ text, image });
 
         return res.status(200).json({ message: "success" });
     } catch (err) {

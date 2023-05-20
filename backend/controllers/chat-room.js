@@ -23,7 +23,7 @@ const changeAdminController = async (req, res) => {
             return res.status(400).json({ message: "This user doesn't exist in group" });
         }
 
-        await chatRoom.update({ admin: member });
+        await chatRoom.updateOne({ admin: member });
 
         for (const memberId of members) {
             if (memberId != userId) {
@@ -62,7 +62,7 @@ const joinChatRoomController = async (req, res) => {
             return res.status(400).json({ message: "You are already in group" });
         }
 
-        await chatRoom.update({ $push: { members: userId } });
+        await chatRoom.updateOne({ $push: { members: userId } });
         await User.findByIdAndUpdate(userId, { $push: { chat_rooms: { _id: chatRoom._id } } });
 
         return res.status(200).json({ message: `You have joined the group ${chatRoom.name}` });
@@ -85,7 +85,7 @@ const leaveChatRoomController = async (req, res) => {
             return res.status(400).json({ message: "Can't leave group when you're admin" });
         }
 
-        await chatRoom.update({ $pull: { members: userId } });
+        await chatRoom.updateOne({ $pull: { members: userId } });
         await User.findByIdAndUpdate(userId, { $pull: { chat_rooms: { _id: chatRoomId } } });
 
         return res.status(200).json({ message: `You have left the group ${chatRoom.name}` });
@@ -233,12 +233,12 @@ const addMemberChatRoomController = async (req, res) => {
             }
         }, []);
 
-        await chatRoom.update({
+        await chatRoom.updateOne({
             $push: { members: [...new Set(newMembers.map((item) => item._id))] },
         });
 
         for (const newMember of newMembers) {
-            await newMember.update({ $push: { chat_rooms: { _id: chatRoom._id } } });
+            await newMember.updateOne({ $push: { chat_rooms: { _id: chatRoom._id } } });
         }
 
         return res
@@ -328,7 +328,7 @@ const updateNameChatRoomController = async (req, res) => {
             return res.status(401).json({ message: "You aren't in group" });
         }
 
-        await chatRoom.update({ name });
+        await chatRoom.updateOne({ name });
 
         for (const memberId of members) {
             if (memberId != userId) {
@@ -372,12 +372,12 @@ const removeMemberChatRoomController = async (req, res) => {
 
         const removeMembers = await User.find({ _id: { $in: members } });
 
-        await chatRoom.update({
+        await chatRoom.updateOne({
             $pull: { members: [...new Set(removeMembers.map((item) => item._id))] },
         });
 
         for (const removeMember of removeMembers) {
-            await removeMember.update({ $pull: { chat_rooms: { _id: chatRoom._id } } });
+            await removeMember.updateOne({ $pull: { chat_rooms: { _id: chatRoom._id } } });
         }
 
         return res
@@ -412,7 +412,7 @@ const updateAvatarChatRoomController = async (req, res) => {
             return res.status(401).json({ message: "You don't have permission" });
         }
 
-        await chatRoom.update({ avatar_image });
+        await chatRoom.updateOne({ avatar_image });
 
         return res.status(200).json({ message: "Update group avatar successfully" });
     } catch (err) {
@@ -444,7 +444,7 @@ const updatePrivacyChatRoomController = async (req, res) => {
             return res.status(401).json({ message: "You don't have permission" });
         }
 
-        await chatRoom.update({ is_public });
+        await chatRoom.updateOne({ is_public });
 
         return res.status(200).json({
             message: `Group privacy has been changed to ${is_public ? "public" : "private"}`,
@@ -475,8 +475,8 @@ const createChatRoomForTwoPeopleController = async (req, res) => {
             members: [reciver, userId],
         }).save();
 
-        await sender.update({ $push: { chat_rooms: { _id: chatRoom._id } } });
-        await reciver.update({ $push: { chat_rooms: { _id: chatRoom._id } } });
+        await sender.updateOne({ $push: { chat_rooms: { _id: chatRoom._id } } });
+        await reciver.updateOne({ $push: { chat_rooms: { _id: chatRoom._id } } });
 
         res.status(200).json({ message: "success" });
     } catch (err) {

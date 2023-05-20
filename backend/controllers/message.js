@@ -161,7 +161,7 @@ const updateMessagesController = async (req, res) => {
             return res.status(400).json({ message: "You don't allow edit this message" });
         }
 
-        await message.update({ text, image });
+        await message.updateOne({ text, image });
 
         res.status(200).json({ message: "success" });
     } catch (err) {

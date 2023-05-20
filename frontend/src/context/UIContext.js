@@ -17,7 +17,7 @@ const UIReducer = (state, action) => {
         case "SET_DRAWER":
             return { ...state, drawer: action.payload };
 
-        case "SET_NOTIFICATION":
+        case "SET_ALERT_NOTIFICATION":
             return { ...state, message: action.payload };
 
         case "SET_NAV_MENU":

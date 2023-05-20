@@ -125,7 +125,7 @@ const App = () => {
                 }
             } catch (err) {
                 uiDispatch({
-                    type: "SET_NOTIFICATION",
+                    type: "SET_ALERT_NOTIFICATION",
                     payload: { text: err.message, display: true, color: "error" },
                 });
             }
@@ -142,7 +142,7 @@ const App = () => {
                     getInfoCurrentUser();
                 } catch (err) {
                     uiDispatch({
-                        type: "SET_NOTIFICATION",
+                        type: "SET_ALERT_NOTIFICATION",
                         payload: { text: err.message, display: true, color: "error" },
                     });
                 }

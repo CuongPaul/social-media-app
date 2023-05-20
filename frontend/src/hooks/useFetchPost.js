@@ -32,7 +32,7 @@ const useFetchPost = () => {
         } catch (err) {
             setLoading(false);
             uiDispatch({
-                type: "SET_NOTIFICATION",
+                type: "SET_ALERT_NOTIFICATION",
                 payload: { display: true, color: "error", text: err.message },
             });
         }
@@ -62,7 +62,7 @@ const useFetchPost = () => {
                 setLoading(false);
 
                 uiDispatch({
-                    type: "SET_NOTIFICATION",
+                    type: "SET_ALERT_NOTIFICATION",
                     payload: {
                         text: err.message,
                         display: true,

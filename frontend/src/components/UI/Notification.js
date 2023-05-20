@@ -8,7 +8,7 @@ const Notification = () => {
     const { uiState, uiDispatch } = useContext(UIContext);
 
     const handleClose = () => {
-        uiDispatch({ payload: null, type: "SET_NOTIFICATION" });
+        uiDispatch({ payload: null, type: "SET_ALERT_NOTIFICATION" });
     };
 
     return (

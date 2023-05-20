@@ -193,7 +193,7 @@ const updatePostController = async (req, res) => {
             }
         }
 
-        await post.update({ body, text, images, privacy });
+        await post.updateOne({ body, text, images, privacy });
 
         return res.status(200).json({ message: "Update post successfully" });
     } catch (err) {

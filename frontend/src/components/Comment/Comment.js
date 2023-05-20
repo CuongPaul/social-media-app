@@ -38,7 +38,7 @@ const Comment = ({ comment }) => {
         //     if (res.data) {
         //         postDispatch({ type: "LIKE_UNLIKE_COMMENT", payload: res.data.comment });
         //         uiDispatch({
-        //             type: "SET_NOTIFICATION",
+        //             type: "SET_ALERT_NOTIFICATION",
         //             payload: { color: "success", text: res.data.message, display: true },
         //         });
         //     }

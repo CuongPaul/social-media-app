@@ -72,6 +72,7 @@ const TagFriends = ({ tagFriends, setTagFriends }) => {
                     </div>
                     <div style={{ display: "flex", marginBottom: "32px" }}>
                         <TextField
+                            autoFocus
                             label="Name"
                             variant="outlined"
                             value={searchValue}

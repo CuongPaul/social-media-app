@@ -42,7 +42,7 @@ const blockUserController = async (req, res) => {
             return res.status(400).json({ message: "User doesn't exist" });
         }
 
-        await user.update({ $push: { block_users: userIdBlocked } });
+        await user.updateOne({ $push: { block_users: userIdBlocked } });
 
         return res.status(200).json({ message: `You blocked ${userBlocked.name}` });
     } catch (err) {
@@ -154,7 +154,7 @@ const updateProfileController = async (req, res) => {
             return res.status(400).json({ message: "User doesn't exist" });
         }
 
-        await user.update({ name, gender, hometown, education });
+        await user.updateOne({ name, gender, hometown, education });
 
         return res.status(200).json({ message: "Update profile successfully" });
     } catch (err) {
@@ -209,7 +209,7 @@ const updatePasswordController = async (req, res) => {
 
         const hashPassword = await bcrypt.hash(new_password, 8);
 
-        await user.update({ password: hashPassword });
+        await user.updateOne({ password: hashPassword });
 
         return res.status(200).json({ message: "Password has been updated" });
     } catch (err) {
@@ -249,7 +249,7 @@ const updateCoverImageController = async (req, res) => {
             return res.status(400).json({ message: "User doesn't exist" });
         }
 
-        await user.update({ cover_image });
+        await user.updateOne({ cover_image });
 
         return res.status(200).json({ message: "success" });
     } catch (err) {
@@ -297,7 +297,7 @@ const updateAvatarImageController = async (req, res) => {
             return res.status(400).json({ message: "User doesn't exist" });
         }
 
-        await user.update({ avatar_image });
+        await user.updateOne({ avatar_image });
 
         return res.status(200).json({ message: "success" });
     } catch (err) {

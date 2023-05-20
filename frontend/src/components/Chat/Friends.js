@@ -66,7 +66,7 @@ const Friends = () => {
             });
         } catch (err) {
             uiDispatch({
-                type: "SET_NOTIFICATION",
+                type: "SET_ALERT_NOTIFICATION",
                 payload: { display: true, color: "error", text: err.message },
             });
         }

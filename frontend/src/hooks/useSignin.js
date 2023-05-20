@@ -32,13 +32,13 @@ const useSignin = (formData) => {
             localStorage.setItem("token", data.token);
 
             uiDispatch({
-                type: "SET_NOTIFICATION",
+                type: "SET_ALERT_NOTIFICATION",
                 payload: { display: true, text: message, color: "success" },
             });
         } catch (err) {
             setLoading(false);
             uiDispatch({
-                type: "SET_NOTIFICATION",
+                type: "SET_ALERT_NOTIFICATION",
                 payload: { display: true, color: "error", text: err.message },
             });
         }

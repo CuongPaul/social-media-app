@@ -70,7 +70,7 @@ const acceptFriendRequestController = async (req, res) => {
             return res.status(400).json({ message: "Request hasn't been sent" });
         }
         if (!friendRequest.is_accepted) {
-            await friendRequest.update({ is_accepted: true });
+            await friendRequest.updateOne({ is_accepted: true });
 
             await User.findByIdAndUpdate(senderId, { $push: { friends: receiverId } });
             await User.findByIdAndUpdate(receiverId, { $push: { friends: senderId } });

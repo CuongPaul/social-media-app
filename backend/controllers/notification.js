@@ -11,7 +11,7 @@ const readNotificationController = async (req, res) => {
             res.status(200).json({ message: "Notification doesn't exist" });
         }
 
-        await notification.update({ is_read: true });
+        await notification.updateOne({ is_read: true });
 
         return res.status(200).json({ message: "success" });
     } catch (err) {
