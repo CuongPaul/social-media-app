@@ -13,9 +13,9 @@ const Sidebar = ({ children, anchor = "left" }) => {
             PaperProps={{
                 style: {
                     border: "none",
-                    width: "350px",
+                    width: "300px",
                     marginTop: "75px",
-                    backgroundColor: uiState.darkMode ? "rgb(24,25,26)" : "rgb(240,242,245)",
+                    backgroundColor: uiState.darkMode ? "rgb(24,25,26)" : "rgb(244,245,246)",
                 },
             }}
         >

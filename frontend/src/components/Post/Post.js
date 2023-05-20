@@ -47,7 +47,7 @@ const Post = ({ post, handleDeletePost }) => {
                                             id: post.id,
                                         },
                                     });
-                                    uiDispatch({ type: "SET_POST_MODEL", payload: true });
+                                    uiDispatch({ type: "DISPLAY_POST_DIALOG", payload: true });
                                 }}
                             >
                                 Edit

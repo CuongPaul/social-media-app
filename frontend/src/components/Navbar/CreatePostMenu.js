@@ -12,7 +12,7 @@ const CreatePostMenu = () => {
 
     const handlePostOpen = () => {
         history.push("/home");
-        uiDispatch({ type: "SET_POST_MODEL", payload: true });
+        uiDispatch({ type: "DISPLAY_POST_DIALOG", payload: true });
     };
 
     return (

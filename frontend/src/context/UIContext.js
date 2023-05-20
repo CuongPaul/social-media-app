@@ -23,7 +23,7 @@ const UIReducer = (state, action) => {
         case "SET_NAV_MENU":
             return { ...state, navDrawerMenu: action.payload };
 
-        case "SET_POST_MODEL":
+        case "DISPLAY_POST_DIALOG":
             return { ...state, postModel: action.payload };
 
         case "SET_NOTIFICATIONS":

@@ -30,6 +30,15 @@ const TagFriends = ({ tagFriends, setTagFriends }) => {
 
     const { friends, isLoading, setFriends, handleSearchFriends } = useSearchFriends();
 
+    const handleClickFriend = (friend) => {
+        const isSelected = tagFriends.findIndex((item) => item._id === friend._id);
+        if (isSelected === -1) {
+            setTagFriends([...tagFriends, friend]);
+        } else {
+            setTagFriends(tagFriends.filter((item) => item._id !== friend._id));
+        }
+    };
+
     return (
         <Fragment>
             <Tooltip arrow placement="bottom" title="Tag your friends">
@@ -117,7 +126,16 @@ const TagFriends = ({ tagFriends, setTagFriends }) => {
                     </div>
                     <List>
                         {friends.map((friend) => (
-                            <ListItem key={friend._id}>
+                            <ListItem
+                                key={friend._id}
+                                style={{
+                                    cursor: "pointer",
+                                    borderRadius: "10px",
+                                    marginBottom: "10px",
+                                    background: "rgb(244,245,246)",
+                                }}
+                                onClick={() => handleClickFriend(friend)}
+                            >
                                 <ListItemIcon>
                                     <AvatarIcon
                                         size="60px"
@@ -133,17 +151,6 @@ const TagFriends = ({ tagFriends, setTagFriends }) => {
                                 <ListItemIcon>
                                     <Checkbox
                                         checked={tagFriends.some((item) => item._id === friend._id)}
-                                        onChange={(e) => {
-                                            if (e.target.checked) {
-                                                setTagFriends([...tagFriends, friend]);
-                                            } else {
-                                                setTagFriends(
-                                                    tagFriends.filter(
-                                                        (item) => item._id !== friend._id
-                                                    )
-                                                );
-                                            }
-                                        }}
                                     />
                                 </ListItemIcon>
                             </ListItem>

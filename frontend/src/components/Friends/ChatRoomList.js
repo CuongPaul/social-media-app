@@ -9,7 +9,7 @@ import {
     ListItemAvatar,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
-import React, { Fragment, useState, useEffect, useContext } from "react";
+import React, { useState, Fragment, useEffect, useContext } from "react";
 
 import { UserContext } from "../../App";
 import AvatarIcon from "../UI/AvatarIcon";
@@ -31,13 +31,13 @@ const Subheader = () => {
 const ChatRoomList = () => {
     const { userState } = useContext(UserContext);
 
-    const length = userState?.currentUser?.friends.length;
+    const length = userState?.currentUser?.friends?.length;
 
     const [number, setNumber] = useState(0);
-    const [friendsList, setFriendsList] = useState(userState?.currentUser?.friends.slice(0, 4));
+    const [friendsList, setFriendsList] = useState(userState?.currentUser?.friends?.slice(0, 4));
 
     useEffect(() => {
-        setFriendsList(userState?.currentUser?.friends.slice(number, number + 4));
+        setFriendsList(userState?.currentUser?.friends?.slice(number, number + 4));
     }, [number]);
 
     return (
@@ -46,7 +46,7 @@ const ChatRoomList = () => {
                 <button disabled={number <= 0} onClick={() => setNumber(number - 1)}>
                     UP
                 </button>
-                {friendsList.map((user, index) => (
+                {friendsList?.map((user, index) => (
                     <div key={index}>
                         <PopoverProfile user={user}>
                             <ListItem

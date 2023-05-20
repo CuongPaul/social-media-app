@@ -5,8 +5,14 @@ import { UIContext, UserContext } from "../App";
 import { SigninForm, SignupForm, AddAccountCard, RecentAccountCard } from "../components/Auth";
 
 const Auth = () => {
-    const { uiState, uiDispatch } = useContext(UIContext);
-    const { userState, userDispatch } = useContext(UserContext);
+    const {
+        uiDispatch,
+        uiState: { darkMode },
+    } = useContext(UIContext);
+    const {
+        userDispatch,
+        userState: { recentAccounts },
+    } = useContext(UserContext);
 
     const [isShowSigninForm, setIsShowSigninForm] = useState(true);
 
@@ -29,7 +35,7 @@ const Auth = () => {
                         variant="h4"
                         style={{
                             fontWeight: 800,
-                            color: uiState.darkMode ? "white" : "rgb(24,119,242)",
+                            color: darkMode ? "white" : "rgb(24,119,242)",
                         }}
                     >
                         Facebook
@@ -38,7 +44,7 @@ const Auth = () => {
                         variant="h6"
                         style={{
                             fontWeight: 800,
-                            color: uiState.darkMode ? "white" : "rgb(24,119,242)",
+                            color: darkMode ? "white" : "rgb(24,119,242)",
                         }}
                     >
                         Recent sign in
@@ -48,7 +54,7 @@ const Auth = () => {
                         style={{
                             fontWeight: 800,
                             marginTop: "16px",
-                            color: uiState.darkMode ? "white" : "rgb(24,119,242)",
+                            color: darkMode ? "white" : "rgb(24,119,242)",
                         }}
                     >
                         click your picture or add an account
@@ -56,7 +62,7 @@ const Auth = () => {
                 </Grid>
                 <Grid container spacing={9} style={{ marginTop: "20px" }}>
                     <Grid item sm={6} md={8} xs={12} container spacing={2}>
-                        {userState.recentAccounts.map((account) => (
+                        {recentAccounts.map((account) => (
                             <Grid item md={3} xs={6} sm={6} key={account._id}>
                                 <RecentAccountCard account={account} />
                             </Grid>

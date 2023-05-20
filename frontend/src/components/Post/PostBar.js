@@ -1,49 +1,47 @@
 import { Paper, Typography } from "@material-ui/core";
-import React, { Fragment, useContext } from "react";
+import React, { useState, Fragment, useContext } from "react";
 
 import PostDialog from "./PostDialog";
 import AvatarIcon from "../UI/AvatarIcon";
 import { UIContext, UserContext } from "../../App";
 
 const PostBar = () => {
-    const { userState } = useContext(UserContext);
-    const { uiState, uiDispatch } = useContext(UIContext);
+    const {
+        userState: { currentUser },
+    } = useContext(UserContext);
+    const { uiState } = useContext(UIContext);
+
+    const [isOpenPostDialog, setIsOpenPostDialog] = useState(false);
 
     return (
         <Fragment>
             <Paper
                 style={{
+                    display: "flex",
                     padding: "16px",
                     maxWidth: "100%",
+                    borderRadius: "10px",
                     backgroundColor: uiState.darkMode && "rgb(36,37,38)",
                 }}
             >
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "flex-start",
-                    }}
-                >
-                    <AvatarIcon
-                        text={userState.currentUser.name}
-                        imageUrl={userState.currentUser.avatar_image}
+                <AvatarIcon text={currentUser?.name} imageUrl={currentUser?.avatar_image} />
+                <div style={{ width: "100%", marginLeft: "16px" }}>
+                    <Typography
+                        style={{
+                            color: "grey",
+                            cursor: "pointer",
+                            borderRadius: "16px",
+                            padding: "10px 20px",
+                            background: uiState.darkMode ? null : "rgb(244,245,246)",
+                        }}
+                        onClick={() => setIsOpenPostDialog(true)}
+                    >
+                        What's in your mind, {currentUser?.name}?
+                    </Typography>
+                    <PostDialog
+                        isOpen={isOpenPostDialog}
+                        setIsOpenPostDialog={setIsOpenPostDialog}
                     />
-                    <div style={{ width: "100%", marginLeft: "16px", marginRight: "16px" }}>
-                        <Typography
-                            style={{
-                                padding: "8px",
-                                cursor: "pointer",
-                                borderRadius: "20px",
-                                color: uiState.darkMode ? null : "grey",
-                                background: uiState.darkMode ? null : "rgb(240,242,245)",
-                            }}
-                            onClick={() => uiDispatch({ type: "SET_POST_MODEL", payload: true })}
-                        >
-                            What's in your mind, {userState.currentUser.name}?
-                        </Typography>{" "}
-                        <PostDialog />
-                    </div>
                 </div>
             </Paper>
         </Fragment>

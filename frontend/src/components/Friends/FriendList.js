@@ -9,12 +9,11 @@ import {
     ListItemAvatar,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
-import React, { Fragment, useState, useEffect, useContext } from "react";
+import React, { useState, Fragment, useEffect, useContext } from "react";
 
 import { UserContext } from "../../App";
 import AvatarIcon from "../UI/AvatarIcon";
 import StyledBadge from "../UI/StyledBadge";
-import generateColor from "../../utils/generate-color";
 import PopoverProfile from "../Profile/PopoverProfile";
 
 const Subheader = () => {
@@ -32,13 +31,13 @@ const Subheader = () => {
 const FriendList = () => {
     const { userState } = useContext(UserContext);
 
-    const length = userState?.currentUser?.friends.length;
+    const length = userState?.currentUser?.friends?.length;
 
     const [number, setNumber] = useState(0);
-    const [friendsList, setFriendsList] = useState(userState?.currentUser?.friends.slice(0, 4));
+    const [friendsList, setFriendsList] = useState(userState?.currentUser?.friends?.slice(0, 4));
 
     useEffect(() => {
-        setFriendsList(userState?.currentUser?.friends.slice(number, number + 4));
+        setFriendsList(userState?.currentUser?.friends?.slice(number, number + 4));
     }, [number]);
 
     return (
@@ -47,7 +46,7 @@ const FriendList = () => {
                 <button disabled={number <= 0} onClick={() => setNumber(number - 1)}>
                     UP
                 </button>
-                {friendsList.map((user, index) => (
+                {friendsList?.map((user, index) => (
                     <div key={index}>
                         <PopoverProfile user={user}>
                             <ListItem

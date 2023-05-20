@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import React, { Fragment, useState, useEffect, useContext } from "react";
+import React, { useState, Fragment, useEffect, useContext } from "react";
 import { List, Avatar, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 
 import callApi from "../api";
@@ -17,8 +17,13 @@ const leftSidebarItems = [
 ];
 
 const Home = () => {
-    const { userState } = useContext(UserContext);
-    const { uiState, uiDispatch } = useContext(UIContext);
+    const {
+        uiDispatch,
+        uiState: { darkMode },
+    } = useContext(UIContext);
+    const {
+        userState: { currentUser },
+    } = useContext(UserContext);
 
     const [posts, setPosts] = useState([]);
 
@@ -36,29 +41,23 @@ const Home = () => {
         })();
     }, []);
 
-    return userState.currentUser ? (
+    return (
         <Fragment>
-            <Sidebar
-                boxShadow={false}
-                backgroundColor={uiState.darkMode ? "rgb(24,25,26)" : "rgb(240,242,245)"}
-            >
+            <Sidebar>
                 <List style={{ marginLeft: "10px" }}>
                     <ListItem
                         button
                         component={Link}
                         style={{ borderRadius: "10px" }}
-                        to={`/profile/${userState.currentUser._id}`}
+                        to={`/profile/${currentUser?._id}`}
                     >
                         <ListItemIcon>
                             <AvatarIcon
-                                text={userState.currentUser.name}
-                                imageUrl={userState.currentUser.avatar_image}
+                                text={currentUser?.name}
+                                imageUrl={currentUser?.avatar_image}
                             />
                         </ListItemIcon>
-                        <ListItemText
-                            style={{ marginLeft: "5px" }}
-                            primary={userState.currentUser.name}
-                        />
+                        <ListItemText style={{ marginLeft: "5px" }} primary={currentUser?.name} />
                     </ListItem>
                     {leftSidebarItems.map((item) => (
                         <ListItem
@@ -69,7 +68,7 @@ const Home = () => {
                             style={{ borderRadius: "10px" }}
                         >
                             <ListItemIcon>
-                                <Avatar alt="" src={require(`../assets/${item.icon}`)} />
+                                <Avatar alt={item.title} src={require(`../assets/${item.icon}`)} />
                             </ListItemIcon>
                             <ListItemText primary={item.title} style={{ marginLeft: "5px" }} />
                         </ListItem>
@@ -91,13 +90,13 @@ const Home = () => {
             <Sidebar
                 anchor="right"
                 boxShadow={false}
-                backgroundColor={uiState.darkMode ? "rgb(24,25,26)" : "rgb(240,242,245)"}
+                backgroundColor={darkMode ? "rgb(24,25,26)" : "rgb(240,242,245)"}
             >
                 <FriendList />
                 <ChatRoomList />
             </Sidebar>
         </Fragment>
-    ) : null;
+    );
 };
 
 export default Home;

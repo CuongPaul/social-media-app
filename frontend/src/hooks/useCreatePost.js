@@ -32,7 +32,7 @@ const useCreatePost = ({ postData, body, filesUpload }) => {
                         color: "success",
                     },
                 });
-                uiDispatch({ type: "SET_POST_MODEL", payload: false });
+                uiDispatch({ type: "DISPLAY_POST_DIALOG", payload: false });
                 history.push("/");
             }
         } catch (err) {
@@ -66,13 +66,25 @@ const useCreatePost = ({ postData, body, filesUpload }) => {
             }
             formData.append("folder", "post");
 
-            const { data } = await callApi({
-                url: "/upload/files",
+            formData.append("text", postData.text);
+            formData.append("privacy", postData.privacy);
+            console.log(" postData.body.tag_friends: ", postData.body.tag_friends);
+            postData.body.tag_friends = postData.body.tag_friends.map((item) => item._id);
+            formData.append("body", JSON.stringify(postData.body));
+
+            await callApi({
+                url: "/post",
                 method: "POST",
                 data: formData,
             });
 
-            createUserPost(data.images);
+            // const { data } = await callApi({
+            //     url: "/upload/files",
+            //     method: "POST",
+            //     data: formData,
+            // });
+
+            // createUserPost(data.images);
         } else {
             createUserPost();
         }

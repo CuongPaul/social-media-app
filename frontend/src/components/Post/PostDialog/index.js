@@ -13,9 +13,9 @@ import {
 } from "@material-ui/core";
 import React, { lazy, useState, Fragment, useEffect, useContext } from "react";
 
+import Emoji from "../../Emoji";
 import Feelings from "./Feelings";
 import Location from "./Location";
-import Emoji from "../../Emoji";
 import TagFriends from "./TagFriends";
 import FilesUpload from "./FilesUpload";
 import PreviewFile from "./PreviewFile";
@@ -26,9 +26,9 @@ import { UIContext, UserContext } from "../../../App";
 
 const Camera = lazy(() => import("./Camera"));
 
-const PostFormDialog = ({ postData }) => {
+const PostFormDialog = ({ postData, isOpen, setIsOpenPostDialog }) => {
+    const { uiState } = useContext(UIContext);
     const { userState } = useContext(UserContext);
-    const { uiState, uiDispatch } = useContext(UIContext);
 
     const [text, setText] = useState("");
     const [feelings, setFeelings] = useState("");
@@ -37,11 +37,6 @@ const PostFormDialog = ({ postData }) => {
     const [tagFriends, setTagFriends] = useState([]);
     const [filesUpload, setFilesUpload] = useState([]);
     const [filesPreview, setFilesPreview] = useState([]);
-
-    const handleCloseDialog = () => {
-        uiDispatch({ type: "EDIT_POST", payload: null });
-        uiDispatch({ type: "SET_POST_MODEL", payload: false });
-    };
 
     const handleRemoveFilePreview = (fileIndex) => {
         const newFilesPreview = [...filesPreview];
@@ -54,6 +49,16 @@ const PostFormDialog = ({ postData }) => {
         setFilesUpload(newFilesUpload);
     };
 
+    const { handleSubmitPost, loading } = useCreatePost({
+        postData: {
+            text,
+            privacy,
+            body: { feelings, location, tag_friends: tagFriends },
+        },
+        filesUpload,
+    });
+    const handleUpdatePost = (postId) => {};
+
     useEffect(() => {
         if (postData) {
             setText(postData.text);
@@ -65,16 +70,6 @@ const PostFormDialog = ({ postData }) => {
         }
     }, [postData]);
 
-    const { handleSubmitPost, loading } = useCreatePost({
-        postData: {
-            text,
-            privacy,
-            body: { feelings, location, tag_friends: tagFriends },
-        },
-        filesUpload,
-    });
-    const handleUpdatePost = (postId) => {};
-
     return (
         <Fragment>
             {loading ? (
@@ -82,14 +77,14 @@ const PostFormDialog = ({ postData }) => {
             ) : (
                 <Dialog
                     fullWidth
-                    open={uiState.postModel}
+                    open={isOpen}
                     style={{ width: "100%" }}
-                    onClose={() => uiDispatch({ type: "SET_POST_MODEL", payload: false })}
+                    onClose={() => setIsOpenPostDialog(false)}
                 >
                     <DialogHeader
                         user={userState.currentUser}
                         postBody={{ feelings, location, tag_friends: tagFriends }}
-                        handleCloseDialog={handleCloseDialog}
+                        handleCloseDialog={() => setIsOpenPostDialog(false)}
                     />
                     <DialogContent>
                         <FormControl style={{ marginBottom: "16px" }}>
@@ -110,7 +105,7 @@ const PostFormDialog = ({ postData }) => {
                                 border: "none",
                                 background: uiState.darkMode ? null : "#fff",
                             }}
-                            placeholder={`What's in your mind, ${userState.currentUser.name}?`}
+                            placeholder={`What's in your mind, ${userState?.currentUser?.name}?`}
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">
