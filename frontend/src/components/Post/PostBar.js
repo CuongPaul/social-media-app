@@ -5,7 +5,7 @@ import PostDialog from "./PostDialog";
 import AvatarIcon from "../UI/AvatarIcon";
 import { UIContext, UserContext } from "../../App";
 
-const PostCard = () => {
+const PostBar = () => {
     const { userState } = useContext(UserContext);
     const { uiState, uiDispatch } = useContext(UIContext);
 
@@ -50,4 +50,4 @@ const PostCard = () => {
     );
 };
 
-export default PostCard;
+export default PostBar;

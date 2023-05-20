@@ -1,6 +1,5 @@
 import {
     List,
-    Avatar,
     Button,
     Dialog,
     ListItem,
@@ -41,6 +40,7 @@ const SearchUsers = () => {
             >
                 <DialogContent>
                     <TextField
+                        autoFocus
                         variant="outlined"
                         value={searchValue}
                         placeholder="Enter name"
@@ -77,7 +77,7 @@ const SearchUsers = () => {
                         <List>
                             {users &&
                                 users.map((user) => (
-                                    <div>
+                                    <div key={user._id}>
                                         <ListItem
                                             button
                                             key={user._id}

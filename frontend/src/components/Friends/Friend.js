@@ -1,5 +1,5 @@
 import React, { Fragment, useContext } from "react";
-import { Avatar, Typography, Card, CardActionArea, CardContent } from "@material-ui/core";
+import { Typography, Card, CardActionArea, CardContent } from "@material-ui/core";
 
 import AvatarIcon from "../UI/AvatarIcon";
 import { UIContext, UserContext } from "../../App";

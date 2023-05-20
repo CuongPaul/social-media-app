@@ -1,187 +1,173 @@
-import React, { useContext, useEffect } from "react";
-import { Typography, makeStyles, Avatar, Grid, CardActions, Button } from "@material-ui/core";
-import Sidebar from "../components/Sidebar";
-import UserLists from "../components/Friends/UserLists";
-import { UIContext, UserContext } from "../App";
+import React, { useState, Fragment, useEffect, useContext } from "react";
+import { Grid, Avatar, Button, makeStyles, Typography, CardActions } from "@material-ui/core";
+
+import callApi from "../api";
 import Profile from "../screens/Profile";
+import Sidebar from "../components/Sidebar";
+import { UIContext, UserContext } from "../App";
 import Friend from "../components/Friends/Friend";
 import useFriendAction from "../hooks/useFriendActions";
-// import {
-//     getReceivedFriendRequests,
-//     getSendedFriendRequests,
-// } from "../services/FriendRequestService";
-// import { getRecommendUsers } from "../services/UserServices";
-import callApi from "../api";
+import UserLists from "../components/Friends/UserLists";
+
 const useStyles = makeStyles((theme) => ({
-    sidebarContainer: {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        justifyContent: "center",
-        marginLeft: "16px",
+    image: {
+        width: "100%",
+        height: "100%",
     },
 
-    noRequest: { marginLeft: "32px", marginTop: "16px", color: "grey" },
+    noRequest: {
+        color: "grey",
+        marginTop: "16px",
+        marginLeft: "32px",
+    },
+
     divider: {
         width: "90%",
         height: "1px",
         marginTop: "16px",
     },
 
-    main: {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-        marginLeft: "320px",
-        [theme.breakpoints.between("xs", "sm")]: {
-            marginLeft: 0,
-        },
-    },
-
-    avatar: { width: "112px", height: "112px", background: "transparent" },
-    image: { width: "100%", height: "100%" },
     selectText: {
         color: "#65676B",
         fontSize: "20px",
-        fontFamily: "sans-serif",
         fontWeight: "700",
+        fontFamily: "sans-serif",
+    },
+
+    sidebarContainer: {
+        display: "flex",
+        marginLeft: "16px",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        justifyContent: "center",
+    },
+
+    avatar: {
+        width: "112px",
+        height: "112px",
+        background: "transparent",
+    },
+
+    main: {
+        display: "flex",
+        minHeight: "100vh",
+        marginLeft: "320px",
+        alignItems: "center",
+        flexDirection: "column",
+        justifyContent: "center",
+        [theme.breakpoints.between("xs", "sm")]: { marginLeft: 0 },
     },
 }));
+
 function Friends() {
     const classes = useStyles();
+    const { userState } = useContext(UserContext);
     const { uiState, uiDispatch } = useContext(UIContext);
-    const { userState, userDispatch } = useContext(UserContext);
+
+    const [friendRequest, setFriendRequest] = useState([]);
+    const [friendIncomming, setFriendIncomming] = useState([]);
+
+    console.log("friendRequest: ", friendRequest);
+    console.log("friendIncomming: ", friendIncomming);
 
     useEffect(() => {
         uiDispatch({ type: "SET_NAV_MENU", payload: true });
-        async function sendedFriendRequest() {
-            const { data } = await callApi({ url: "/friend-request/sended", method: "GET" });
 
-            // const res = await getSendedFriendRequests();
-            // if (res.data) {
-            userDispatch({
-                type: "SET_FRIENDS_REQUEST_SENDED",
-                payload: data.rows,
+        (async () => {
+            const { data: data1 } = await callApi({ url: "/friend-request/sended", method: "GET" });
+            setFriendRequest(data1.rows);
+
+            const { data: data2 } = await callApi({
+                url: "/friend-request/received",
+                method: "GET",
             });
-            // }
-        }
+            setFriendIncomming(data2.rows);
+        })();
 
-        async function incommingFriendRequest() {
-            const { data } = await callApi({ url: "/friend-request/received", method: "GET" });
+        // return () => {
+        //     userDispatch({ type: "REMOVE_SELECTED_USER_PROFILE", payload: null });
+        //     uiDispatch({ type: "SET_NAV_MENU", payload: false });
+        // };
+    }, []);
 
-            // const res = await getReceivedFriendRequests();
-            // if (res && res.data) {
-            userDispatch({
-                type: "SET_FRIENDS_REQUEST_RECEIVED",
-                payload: data.rows,
-            });
-            // }
-        }
-
-        async function recommandedUser() {
-            // const res = await getRecommendUsers();
-            // if (res && res.data) {
-            //     userDispatch({
-            //         type: "SET_USERS",
-            //         payload: res.data.users,
-            //     });
-            // }
-        }
-
-        recommandedUser();
-        incommingFriendRequest();
-        sendedFriendRequest();
-
-        return () => {
-            userDispatch({ type: "REMOVE_SELECTED_USER_PROFILE", payload: null });
-            uiDispatch({ type: "SET_NAV_MENU", payload: false });
-        };
-    }, [uiDispatch, userDispatch]);
-
-    const { acceptFriendRequest, declineFriendRequest, cancelFriendRequest } = useFriendAction();
+    const { acceptFriendRequest, declineOrCancleFriendRequest } = useFriendAction();
 
     const handleAcceptFriendRequest = (request_id) => {
         acceptFriendRequest(request_id);
     };
 
-    const handleDeclineFriendRequest = (request_id) => {
-        declineFriendRequest(request_id);
+    const handleDeclineOrCancleFriendRequest = (request_id) => {
+        declineOrCancleFriendRequest(request_id);
     };
 
-    const handleCancelFriendRequest = (request_id) => {
-        cancelFriendRequest(request_id);
-    };
-
-    const metaData = (
-        <div className={classes.sidebarContainer}>
-            <Typography variant="h4">Friends</Typography>
-
-            {userState.sendedFriendRequests.length ? (
-                <>
-                    <Typography variant="h6">Sended Friend Request</Typography>
-                    {userState.sendedFriendRequests.map((request) => (
-                        <Friend user={request.receiver} key={request._id}>
-                            <CardActions>
-                                <Button
-                                    onClick={() => handleCancelFriendRequest(request._id)}
-                                    variant="contained"
-                                    style={{
-                                        background: "tomato",
-                                        color: "white",
-                                    }}
-                                >
-                                    Cancel
-                                </Button>
-                            </CardActions>
-                        </Friend>
-                    ))}
-                </>
-            ) : null}
-
-            {userState.receivedFriendRequests.length ? (
-                <>
-                    <Typography variant="h6">Incomming Friend Requests</Typography>
-
-                    {userState.receivedFriendRequests.map((request) => (
-                        <Friend user={request.sender} key={request._id}>
-                            <CardActions>
-                                <Button
-                                    onClick={() => handleAcceptFriendRequest(request._id)}
-                                    variant="contained"
-                                    style={{
-                                        background: "seagreen",
-                                        color: "white",
-                                    }}
-                                >
-                                    Accept
-                                </Button>
-                                <Button
-                                    variant="contained"
-                                    style={{
-                                        background: "tomato",
-                                        color: "white",
-                                    }}
-                                    onClick={() => handleDeclineFriendRequest(request._id)}
-                                >
-                                    Decline
-                                </Button>
-                            </CardActions>
-                        </Friend>
-                    ))}
-                </>
-            ) : null}
-        </div>
-    );
     return (
-        <div>
+        <Fragment>
             <Grid container spacing={0}>
                 <Grid item md={3}>
-                    <Sidebar backgroundColor={uiState.darkMode && "rgb(36,37,38)"}>
-                        {metaData}
+                    <Sidebar>
+                        <div className={classes.sidebarContainer}>
+                            <Typography variant="h4">Friends</Typography>
+                            <>
+                                <Typography variant="h6">Sended Friend Request</Typography>
+                                {friendRequest?.map((request) => (
+                                    <Friend user={request.receiver} key={request._id}>
+                                        <CardActions>
+                                            <Button
+                                                onClick={() =>
+                                                    handleDeclineOrCancleFriendRequest(request._id)
+                                                }
+                                                variant="contained"
+                                                style={{
+                                                    background: "tomato",
+                                                    color: "white",
+                                                }}
+                                            >
+                                                Cancel
+                                            </Button>
+                                        </CardActions>
+                                    </Friend>
+                                ))}
+                            </>
+                            <>
+                                <Typography variant="h6">Incomming Friend Requests</Typography>
 
-                        <UserLists users={userState.users} />
+                                {friendIncomming?.map((request) => (
+                                    <Friend user={request.sender} key={request._id}>
+                                        <CardActions>
+                                            <Button
+                                                onClick={() =>
+                                                    handleAcceptFriendRequest(request._id)
+                                                }
+                                                variant="contained"
+                                                style={{
+                                                    background: "seagreen",
+                                                    color: "white",
+                                                }}
+                                            >
+                                                Accept
+                                            </Button>
+                                            <Button
+                                                variant="contained"
+                                                style={{
+                                                    background: "tomato",
+                                                    color: "white",
+                                                }}
+                                                onClick={() =>
+                                                    handleDeclineOrCancleFriendRequest(request._id)
+                                                }
+                                            >
+                                                Decline
+                                            </Button>
+                                        </CardActions>
+                                    </Friend>
+                                ))}
+                            </>
+                        </div>
+
+                        <UserLists
+                            friendRequest={friendRequest}
+                            friendIncomming={friendIncomming}
+                        />
                     </Sidebar>
                 </Grid>
                 <Grid item md={8} style={{ margin: "auto" }}>
@@ -208,7 +194,7 @@ function Friends() {
                     </Typography>
                 </div>
             )}
-        </div>
+        </Fragment>
     );
 }
 

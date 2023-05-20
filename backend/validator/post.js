@@ -1,5 +1,11 @@
 import { Joi } from "express-validation";
 
+const getPostValidation = {
+    params: Joi.object({
+        postId: Joi.string().trim().required(),
+    }),
+};
+
 const reactPostValidation = {
     params: Joi.object({
         postId: Joi.string().trim().required(),
@@ -17,7 +23,7 @@ const createPostValidation = {
         body: Joi.object({
             location: Joi.string().allow("", null).trim(),
             feelings: Joi.string().allow("", null).trim(),
-            tag_friends: Joi.array().items(Joi.string().trim().required()).min(1).allow(null),
+            tag_friends: Joi.array().items(Joi.string().trim()).allow(null),
         }).allow(null),
     }),
 };
@@ -36,7 +42,7 @@ const updatePostValidation = {
         body: Joi.object({
             location: Joi.string().allow("", null).trim(),
             feelings: Joi.string().allow("", null).trim(),
-            tag_friends: Joi.array().items(Joi.string().trim().required()).min(1).allow(null),
+            tag_friends: Joi.array().items(Joi.string().trim()).allow(null),
         }).allow(null),
     }),
     params: Joi.object({
@@ -60,6 +66,7 @@ const getPostsByUserValidation = {
 };
 
 export {
+    getPostValidation,
     reactPostValidation,
     createPostValidation,
     deletePostValidation,

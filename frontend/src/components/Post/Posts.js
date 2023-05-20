@@ -2,25 +2,19 @@ import React, { Fragment, useContext } from "react";
 import { Button, Typography } from "@material-ui/core";
 
 import Post from "./Post";
-import { PostContext } from "../../App";
 import useFetchPost from "../../hooks/useFetchPost";
 
-const Posts = ({ postUser }) => {
-    const { postState } = useContext(PostContext);
-    const { postDispatch } = useContext(PostContext);
-    const posts = postUser ? postUser : postState.posts;
-
+const Posts = ({ posts }) => {
     const { fetchPosts } = useFetchPost();
+
+    const handleDeletePost = (postId) => {
+        posts.filter((post) => post.id !== postId);
+    };
 
     const handleFetchPosts = () => {
         fetchPosts();
     };
-    const handleDeletePost = (postId) => {
-        const newPosts = posts.filter((post) => post.id !== postId);
-
-        postDispatch({ type: "DELETE_POST", payload: newPosts });
-    };
-
+    console.log("ABC: ", posts);
     return (
         <Fragment>
             {posts.map((post) => (
@@ -35,15 +29,9 @@ const Posts = ({ postUser }) => {
                     justifyContent: "center",
                 }}
             >
-                {postState.postPagination.totalPage <= postState.postPagination.currentPage ? (
-                    <Typography style={{ color: "teal" }} variant="body2">
-                        No more posts
-                    </Typography>
-                ) : (
-                    <Button variant="contained" color="primary" onClick={handleFetchPosts}>
-                        More Posts
-                    </Button>
-                )}
+                <Button variant="contained" color="primary" onClick={handleFetchPosts}>
+                    More Posts
+                </Button>
             </div>
         </Fragment>
     );

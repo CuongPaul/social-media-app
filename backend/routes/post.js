@@ -2,6 +2,7 @@ import express from "express";
 import { validate } from "express-validation";
 
 import {
+    getPostValidation,
     reactPostValidation,
     createPostValidation,
     deletePostValidation,
@@ -10,6 +11,7 @@ import {
     getPostsByUserValidation,
 } from "../validator/post";
 import {
+    getPostController,
     reactPostController,
     createPostController,
     deletePostController,
@@ -28,6 +30,7 @@ router.get(
     getPostsByUserController
 );
 router.get("/", validate(getAllPostsValidation), getAllPostsController);
+router.get("/:postId", validate(getPostValidation), verifyToken, getPostController);
 router.post("/", validate(createPostValidation), verifyToken, createPostController);
 router.put("/:postId", validate(updatePostValidation), verifyToken, updatePostController);
 router.delete("/:postId", validate(deletePostValidation), verifyToken, deletePostController);

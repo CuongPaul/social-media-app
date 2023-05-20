@@ -2,11 +2,18 @@ import uniqueArray from "../utils/unique-array";
 
 const initialUserState = {
     currentUser: null,
+    selectedUserProfile: null,
     recentAccounts: [],
 };
 
 const UserReducer = (state, action) => {
     switch (action.type) {
+        case "ADD_SELECTED_USER_PROFILE":
+            return {
+                ...state,
+                selectedUserProfile: action.payload,
+            };
+
         case "SET_RECENT_ACCOUNTS":
             return { ...state, recentAccounts: action.payload };
 

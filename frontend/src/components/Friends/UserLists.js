@@ -6,7 +6,7 @@ import { UserContext } from "../../App";
 import useFriendActions from "../../hooks/useFriendActions";
 import callApi from "../../api";
 
-const UserLists = () => {
+const UserLists = ({ friendRequest, friendIncomming }) => {
     const { userState } = useContext(UserContext);
 
     const [users, setUsers] = useState(null);
@@ -16,12 +16,8 @@ const UserLists = () => {
     };
 
     const filterUser = (user) => {
-        let s_index = userState.sendedFriendRequests.findIndex(
-            (request) => request.sender._id === user._id
-        );
-        let r_index = userState.receivedFriendRequests.findIndex(
-            (request) => request.receiver._id === user._id
-        );
+        let s_index = friendRequest?.findIndex((request) => request.sender._id === user._id);
+        let r_index = friendIncomming?.findIndex((request) => request.receiver._id === user._id);
         let already_friend = userState.currentUser.friends.findIndex(
             (friend) => friend._id === user._id
         );
@@ -78,15 +74,6 @@ const UserLists = () => {
                                           }}
                                       >
                                           Add Friend
-                                      </Button>
-                                      <Button
-                                          variant="contained"
-                                          style={{
-                                              background: "rgb(240,242,245)",
-                                              color: "black",
-                                          }}
-                                      >
-                                          Remove
                                       </Button>
                                   </CardActions>
                               </Friend>

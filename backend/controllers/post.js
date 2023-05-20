@@ -1,5 +1,43 @@
 import { Post, User, React, Comment, Notification } from "../models";
 
+const getPostController = async (req, res) => {
+    const userId = req.user_id;
+    const { postId } = req.params;
+
+    try {
+        const post = await Post.findById(postId)
+            .populate("user", { _id: 1, name: 1, avatar_image: 1 })
+            .populate({
+                path: "react",
+                select: "_id wow sad like love haha angry",
+                populate: [
+                    { path: "wow", select: "_id name avatar_image" },
+                    { path: "sad", select: "_id name avatar_image" },
+                    { path: "like", select: "_id name avatar_image" },
+                    { path: "love", select: "_id name avatar_image" },
+                    { path: "haha", select: "_id name avatar_image" },
+                    { path: "angry", select: "_id name avatar_image" },
+                ],
+            })
+            .populate("body.tag_friends", { _id: 1, name: 1, avatar_image: 1 });
+
+        if (post.privacy == "ONLY_ME" && post.user != userId) {
+            return res.status(404).json({ message: "Post doesn't exist" });
+        }
+        if (post.privacy == "FRIEND") {
+            const user = await User.findOne({ _id: userId, friends: { $in: [userId] } });
+
+            if (!user) {
+                return res.status(404).json({ message: "Post doesn't exist" });
+            }
+        }
+
+        return res.status(200).json({ message: "success", data: post });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+};
+
 const reactPostController = async (req, res) => {
     const userId = req.user_id;
     const { postId } = req.params;
@@ -242,6 +280,7 @@ const getPostsByUserController = async (req, res) => {
 };
 
 export {
+    getPostController,
     reactPostController,
     createPostController,
     deletePostController,

@@ -81,7 +81,10 @@ const LikePost = ({ post }) => {
             ].map((item) => (
                 <div key={item.reactKey}>
                     <Tooltip arrow placement="bottom" title={<TooltipTitle />}>
-                        <Badge badgeContent={post?.react[item.reactKey].length}>
+                        <Badge
+                            badgeContent={post?.react[item.reactKey]?.length}
+                            overlap="rectangular"
+                        >
                             <IconButton onClick={() => handleReactPost(item.reactKey)}>
                                 <FontAwesomeIcon icon={faSmile} color="rgb(250,199,94)" />
                             </IconButton>
