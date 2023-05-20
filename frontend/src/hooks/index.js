@@ -2,7 +2,7 @@ import useTheme from "./useTheme";
 import useSignin from "./useSignin";
 import useSignup from "./useSignup";
 import useFetchPost from "./useFetchPost";
-import useCreatePost from "./useCreatePost";
+import useSubmitPost from "./useSubmitPost";
 import useSearchUsers from "./useSearchUsers";
 import useSendMessage from "./useSendMessage";
 import useSearchFriends from "./useSearchFriends";
@@ -18,7 +18,7 @@ export {
     useSignin,
     useSignup,
     useFetchPost,
-    useCreatePost,
+    useSubmitPost,
     useSearchUsers,
     useSendMessage,
     useCreateComment,

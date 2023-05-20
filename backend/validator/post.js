@@ -16,9 +16,9 @@ const reactPostValidation = {
 };
 
 const createPostValidation = Joi.object({
-    files: Joi.any().strip(),
+    images: Joi.any().strip(),
     text: Joi.string().trim().required(),
-    folder: Joi.string().trim().required(),
+    folder: Joi.string().trim().allow(null),
     privacy: Joi.string().valid("FRIEND", "PUBLIC", "ONLY_ME"),
     body: Joi.string()
         .allow(null)
@@ -31,13 +31,11 @@ const createPostValidation = Joi.object({
             }
         }),
 }).custom((value, helpers) => {
-    const body = value.body;
-
     const { error } = Joi.object({
         location: Joi.string().allow("", null).trim(),
         feelings: Joi.string().allow("", null).trim(),
         tag_friends: Joi.array().items(Joi.string().trim()).allow(null),
-    }).validate(body);
+    }).validate(value.body);
 
     if (error) {
         return helpers.error("any.invalid");
@@ -56,11 +54,9 @@ const updatePostValidation = {
     body: Joi.object({
         text: Joi.string().trim().required(),
         privacy: Joi.string().valid("FRIEND", "PUBLIC", "ONLY_ME"),
-        images: Joi.array().items(Joi.string().trim().required()).allow(null),
         body: Joi.object({
             location: Joi.string().allow("", null).trim(),
             feelings: Joi.string().allow("", null).trim(),
-            tag_friends: Joi.array().items(Joi.string().trim()).allow(null),
         }).allow(null),
     }),
     params: Joi.object({

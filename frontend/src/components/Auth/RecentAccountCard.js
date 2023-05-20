@@ -56,8 +56,8 @@ const RecentAccountCard = ({ account }) => {
                 <IconButton
                     size="small"
                     style={{
-                        top: -8,
-                        right: -8,
+                        top: "-8px",
+                        right: "-8px",
                         color: "#fff",
                         background: "tomato",
                         position: "absolute",

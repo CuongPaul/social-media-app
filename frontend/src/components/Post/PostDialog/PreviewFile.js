@@ -10,7 +10,7 @@ const PreviewFile = ({ filePreview, handleRemoveFile }) => {
     if (typeFile == "blob:http:") component = "blob";
 
     return (
-        <div style={{ position: "relative", marginBottom: "25px" }}>
+        <div style={{ position: "relative", margin: "20px 0px" }}>
             {component == "blob" ? (
                 <img
                     alt="File upload"
@@ -32,7 +32,7 @@ const PreviewFile = ({ filePreview, handleRemoveFile }) => {
                     position: "absolute",
                 }}
             >
-                <IconButton onClick={handleRemoveFile} size="medium">
+                <IconButton size="medium" onClick={handleRemoveFile}>
                     <Avatar style={{ background: "tomato", color: "white" }}>
                         <Close />
                     </Avatar>

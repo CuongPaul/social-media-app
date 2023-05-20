@@ -34,7 +34,7 @@ router.get(
 );
 router.get("/", validate(getAllPostsValidation), getAllPostsController);
 router.get("/:postId", validate(getPostValidation), verifyToken, getPostController);
-router.post("/", verifyToken, upload.any("files"), uploadFiles, createPostController);
+router.post("/", verifyToken, upload.any("images"), uploadFiles, createPostController);
 router.put("/:postId", validate(updatePostValidation), verifyToken, updatePostController);
 router.delete("/:postId", validate(deletePostValidation), verifyToken, deletePostController);
 router.put("/react-post/:postId", validate(reactPostValidation), verifyToken, reactPostController);

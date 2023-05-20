@@ -17,13 +17,6 @@ const uploadFiles = async (req, res, next) => {
     const { folder } = req.body;
     const { files, user_id } = req;
 
-    if (!folder || !folder.trim()) {
-        return res.status(400).json({ message: "Folder name is required" });
-    }
-    if (!files?.length) {
-        return res.status(400).json({ message: "No files have been uploaded" });
-    }
-
     try {
         const user = await User.findById(user_id);
         if (!user) {

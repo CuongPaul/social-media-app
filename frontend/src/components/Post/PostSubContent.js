@@ -2,11 +2,9 @@ import React from "react";
 import { Typography } from "@material-ui/core";
 
 const PostSubContent = ({ postBody, username }) => {
-    const isMetadata = postBody?.feelings || postBody?.tag_friends.length || postBody?.location;
-
     return (
         <Typography>
-            <b>{isMetadata && username}</b>
+            <b>{username}</b>
             {postBody?.feelings ? (
                 <>
                     {` is feeling `}

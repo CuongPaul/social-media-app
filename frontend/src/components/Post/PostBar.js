@@ -18,7 +18,7 @@ const PostBar = () => {
             <Paper
                 style={{
                     display: "flex",
-                    padding: "16px",
+                    padding: "20px",
                     maxWidth: "100%",
                     borderRadius: "10px",
                     backgroundColor: uiState.darkMode && "rgb(36,37,38)",

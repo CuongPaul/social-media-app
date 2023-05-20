@@ -81,7 +81,7 @@ function Messenger() {
                                         padding: "16px",
                                         width: "100%",
                                         position: "sticky",
-                                        top: 0,
+                                        top: "0px",
                                         backgroundColor: uiState.darkMode && "rgb(36,37,38)",
                                     }}
                                 >
@@ -115,8 +115,8 @@ function Messenger() {
                                 <div
                                     style={{
                                         position: "sticky",
-                                        bottom: 0,
-                                        left: 0,
+                                        bottom: "0px",
+                                        left: "0px",
                                         width: "100%",
                                     }}
                                 >

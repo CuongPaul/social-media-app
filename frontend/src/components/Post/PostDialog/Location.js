@@ -43,12 +43,14 @@ const Location = ({ location, setLocation }) => {
                 />
                 <DialogContent style={{ display: "flex", marginBottom: "32px" }}>
                     <TextField
+                        autoFocus
                         label="Location"
                         value={location}
                         variant="outlined"
                         placeholder="Enter location"
                         onChange={(e) => setLocation(e.target.value)}
                         style={{ flex: 4, width: "100%", marginRight: "16px" }}
+                        onKeyPress={(e) => e.key === "Enter" && setIsOpen(false)}
                     />
                     <Button
                         color="primary"

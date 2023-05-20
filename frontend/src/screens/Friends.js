@@ -67,9 +67,6 @@ function Friends() {
     const [friendRequest, setFriendRequest] = useState([]);
     const [friendIncomming, setFriendIncomming] = useState([]);
 
-    console.log("friendRequest: ", friendRequest);
-    console.log("friendIncomming: ", friendIncomming);
-
     useEffect(() => {
         uiDispatch({ type: "SET_NAV_MENU", payload: true });
 

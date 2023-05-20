@@ -16,7 +16,7 @@ const useStyles = makeStyles(() => ({
         backgroundRepeat: "no-repeat",
     },
     overlay: {
-        top: 0,
+        top: "0px",
         width: "100%",
         height: "40vh",
         position: "absolute",

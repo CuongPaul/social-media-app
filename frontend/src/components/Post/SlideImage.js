@@ -17,10 +17,10 @@ const SlideImage = ({ images }) => {
             >
                 {images.map((item, index) => (
                     <CardMedia
-                        autoPause
                         controls
                         key={index}
                         image={item}
+                        autopause="true"
                         style={{ width: "100%", maxHeight: "500px", objectFit: "fill" }}
                         component={
                             item.split(".").pop().substring(0, 3) === "mp4" ? "video" : "img"

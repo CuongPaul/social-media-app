@@ -23,7 +23,7 @@ const Feelings = ({ feelings, setFeelings }) => {
         <Fragment>
             <Tooltip arrow placement="bottom" title="Share feelings with post">
                 <IconButton onClick={() => setIsOpen(true)}>
-                    <FontAwesomeIcon icon={faSmile} color="rgb(250,199,94)" />
+                    <FontAwesomeIcon icon={faSmile} color="rgb(14,143,37)" />
                 </IconButton>
             </Tooltip>
             <Dialog
@@ -46,12 +46,11 @@ const Feelings = ({ feelings, setFeelings }) => {
                 />
                 <DialogContent style={{ display: "flex", marginBottom: "32px" }}>
                     <TextField
+                        autoFocus
                         label="Feelings"
                         value={feelings}
                         variant="outlined"
                         placeholder="Enter feelings"
-                        onChange={(e) => setFeelings(e.target.value)}
-                        style={{ flex: 4, width: "100%", marginRight: "16px" }}
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
@@ -59,6 +58,9 @@ const Feelings = ({ feelings, setFeelings }) => {
                                 </InputAdornment>
                             ),
                         }}
+                        onChange={(e) => setFeelings(e.target.value)}
+                        style={{ flex: 4, width: "100%", marginRight: "16px" }}
+                        onKeyPress={(e) => e.key === "Enter" && setIsOpen(false)}
                     />
                     <Button
                         color="primary"
