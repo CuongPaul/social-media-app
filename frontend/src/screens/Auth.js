@@ -5,46 +5,50 @@ import { UIContext, UserContext } from "../App";
 import { SigninForm, SignupForm, AddAccountCard, RecentAccountCard } from "../components/Auth";
 
 const Auth = () => {
-    const { uiState } = useContext(UIContext);
+    const { uiState, uiDispatch } = useContext(UIContext);
     const { userState, userDispatch } = useContext(UserContext);
 
     const [isShowSigninForm, setIsShowSigninForm] = useState(true);
 
     useEffect(() => {
+        uiDispatch({
+            type: "SET_DARK_MODE",
+            payload: JSON.parse(localStorage.getItem("dark_mode")) || false,
+        });
         userDispatch({
             type: "SET_RECENT_ACCOUNTS",
-            payload: JSON.parse(localStorage.getItem("accounts")) || [],
+            payload: JSON.parse(localStorage.getItem("recent_accounts")) || [],
         });
     }, []);
 
     return (
-        <div style={{ minHeight: "100vh", paddingBottom: "100px" }}>
+        <div style={{ minHeight: "100vh" }}>
             <Container>
-                <Grid
-                    container
-                    direction="column"
-                    justifyContent="center"
-                    alignItems="flex-start"
-                    style={{ paddingTop: "30px" }}
-                >
+                <Grid style={{ paddingTop: "30px" }}>
                     <Typography
                         variant="h4"
-                        style={{ fontWeight: 800, color: uiState.darkMode ? "white" : "black" }}
+                        style={{
+                            fontWeight: 800,
+                            color: uiState.darkMode ? "white" : "rgb(24,119,242)",
+                        }}
                     >
                         Facebook
                     </Typography>
                     <Typography
                         variant="h6"
-                        style={{ fontWeight: 800, color: uiState.darkMode ? "white" : "black" }}
+                        style={{
+                            fontWeight: 800,
+                            color: uiState.darkMode ? "white" : "rgb(24,119,242)",
+                        }}
                     >
-                        Sign in recent
+                        Recent sign in
                     </Typography>
                     <Typography
                         variant="body2"
                         style={{
                             fontWeight: 800,
                             marginTop: "16px",
-                            color: uiState.darkMode ? "white" : "black",
+                            color: uiState.darkMode ? "white" : "rgb(24,119,242)",
                         }}
                     >
                         click your picture or add an account

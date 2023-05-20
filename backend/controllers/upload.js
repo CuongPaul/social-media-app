@@ -17,7 +17,7 @@ const uploadFilesController = async (req, res) => {
     try {
         const user = await User.findById(user_id);
         if (!user) {
-            return res.status(401).json({ message: "You don't have permission" });
+            return res.status(403).json({ message: "You don't have permission" });
         }
 
         const imagesUrl = [];

@@ -110,22 +110,15 @@ const App = () => {
 
     useEffect(() => {
         const getInfoCurrentUser = async () => {
-            const { data } = await callApi({ url: "/user", method: "GET" });
-
-            if (data) {
-                userDispatch({ type: "SET_CURRENT_USER", payload: data });
-            }
-        };
-        const getNotifications = async () => {
             try {
-                const { data } = await callApi({ method: "GET", url: "/notification" });
+                const { data } = await callApi({ url: "/user", method: "GET" });
 
                 if (data) {
-                    uiDispatch({ type: "SET_NOTIFICATIONS", payload: data.rows });
+                    userDispatch({ type: "SET_CURRENT_USER", payload: data });
                 }
             } catch (err) {
                 uiDispatch({
-                    type: "SET_ALERT_NOTIFICATION",
+                    type: "SET_ALERT_MESSAGE",
                     payload: { text: err.message, display: true, color: "error" },
                 });
             }
@@ -137,15 +130,7 @@ const App = () => {
             if (decodeToken.exp * 1000 < Date.now()) {
                 userDispatch({ type: "SIGN_OUT" });
             } else {
-                try {
-                    getNotifications();
-                    getInfoCurrentUser();
-                } catch (err) {
-                    uiDispatch({
-                        type: "SET_ALERT_NOTIFICATION",
-                        payload: { text: err.message, display: true, color: "error" },
-                    });
-                }
+                getInfoCurrentUser();
             }
         }
     }, [token]);
@@ -163,7 +148,7 @@ const App = () => {
                                     style={{
                                         backgroundColor: uiState.darkMode
                                             ? "rgb(24,25,26)"
-                                            : "rgb(240,242,245)",
+                                            : "rgb(244,245,246)",
                                     }}
                                 >
                                     <Suspense fallback={<Loader />}>

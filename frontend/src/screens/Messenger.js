@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Avatar, Container, Grid, Paper, Typography } from "@material-ui/core";
+import { Container, Grid, Paper, Typography } from "@material-ui/core";
 import { ChatContext, UIContext } from "../App";
 import Messages from "../components/Chat/Messages";
 

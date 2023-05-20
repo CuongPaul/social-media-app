@@ -3,9 +3,16 @@ import { Avatar, Typography } from "@material-ui/core";
 
 import generateColor from "../../utils/generate-color";
 
-const AvatarIcon = ({ text = "?", size = "40px", imageUrl, fontSize = "16px" }) => {
+const AvatarIcon = ({ text = "?", size = "40px", variant, imageUrl, fontSize = "16px" }) => {
     return (
-        <Avatar style={{ width: size, height: size, backgroundColor: generateColor(text) }}>
+        <Avatar
+            variant={imageUrl && variant}
+            style={{
+                backgroundColor: generateColor(text),
+                width: variant === "square" && imageUrl ? "100%" : size,
+                height: variant === "square" && imageUrl ? "100%" : size,
+            }}
+        >
             {imageUrl ? (
                 <img alt={text} width="100%" height="100%" src={imageUrl} />
             ) : (

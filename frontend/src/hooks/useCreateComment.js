@@ -33,7 +33,7 @@ const useCreateComment = ({
                 payload: { text: commentText, image: uri, post_id: post_id },
             });
             uiDispatch({
-                type: "SET_ALERT_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: {
                     color: "success",
                     display: true,
@@ -44,7 +44,7 @@ const useCreateComment = ({
             setLoading(false);
 
             uiDispatch({
-                type: "SET_ALERT_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: { text: err.message, display: true, color: "error" },
             });
         }

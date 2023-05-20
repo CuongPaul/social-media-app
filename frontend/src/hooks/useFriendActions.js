@@ -19,13 +19,13 @@ const useFriendAction = () => {
             setLoading(false);
 
             uiDispatch({
-                type: "SET_ALERT_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: { display: true, text: message, color: "success" },
             });
         } catch (err) {
             setLoading(false);
             uiDispatch({
-                type: "SET_ALERT_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
             });
         }
@@ -42,13 +42,13 @@ const useFriendAction = () => {
             setLoading(false);
 
             uiDispatch({
-                type: "SET_ALERT_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: { display: true, text: message, color: "success" },
             });
         } catch (err) {
             setLoading(false);
             uiDispatch({
-                type: "SET_ALERT_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
             });
         }
@@ -66,13 +66,13 @@ const useFriendAction = () => {
             setLoading(false);
 
             uiDispatch({
-                type: "SET_ALERT_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: { display: true, text: message, color: "success" },
             });
         } catch (err) {
             setLoading(false);
             uiDispatch({
-                type: "SET_ALERT_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
             });
         }

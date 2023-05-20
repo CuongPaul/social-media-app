@@ -72,7 +72,7 @@ const useUpdateProfilePic = ({ avatar_image, cover_pic, history }) => {
             );
             if (response.data) {
                 uiDispatch({
-                    type: "SET_ALERT_NOTIFICATION",
+                    type: "SET_ALERT_MESSAGE",
                     payload: {
                         text: response.data.message,
                         color: "success",
@@ -104,7 +104,7 @@ const useUpdateProfilePic = ({ avatar_image, cover_pic, history }) => {
             );
             if (response.data) {
                 uiDispatch({
-                    type: "SET_ALERT_NOTIFICATION",
+                    type: "SET_ALERT_MESSAGE",
                     payload: {
                         text: response.data.message,
                         color: "success",

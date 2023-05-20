@@ -51,7 +51,7 @@ const Post = () => {
                 setPost(postData);
             } catch (err) {
                 uiDispatch({
-                    type: "SET_ALERT_NOTIFICATION",
+                    type: "SET_ALERT_MESSAGE",
                     payload: { display: true, color: "error", text: err.message },
                 });
             }
@@ -65,7 +65,7 @@ const Post = () => {
     // }, [postId, setPost, post.posts]);
 
     const isContent = () => {
-        return post.body.location || post.body.feelings || post.body.tag_friends.length;
+        return post?.body?.location || post?.body?.feelings || post?.body?.tag_friends?.length;
     };
     const handleFetchComments = () => {
         fetchComments(postId);
@@ -156,20 +156,13 @@ const Post = () => {
                                         justifyContent: "center",
                                     }}
                                 >
-                                    {post.commentPagination.totalPage ===
-                                    post.commentPagination.currentPage ? (
-                                        <Typography variant="h6" color="primary">
-                                            No more comments
-                                        </Typography>
-                                    ) : (
-                                        <Button
-                                            variant="contained"
-                                            color="primary"
-                                            onClick={handleFetchComments}
-                                        >
-                                            More Comments
-                                        </Button>
-                                    )}
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={handleFetchComments}
+                                    >
+                                        More Comments
+                                    </Button>
                                 </div>
                             </>
                         ) : null}

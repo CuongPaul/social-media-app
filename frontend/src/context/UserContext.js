@@ -2,41 +2,49 @@ import uniqueArray from "../utils/unique-array";
 
 const initialUserState = {
     currentUser: null,
-    selectedUserProfile: null,
     recentAccounts: [],
+    selectedUserProfile: null,
 };
 
 const UserReducer = (state, action) => {
     switch (action.type) {
+        case "SET_RECENT_ACCOUNTS":
+            return { ...state, recentAccounts: action.payload };
+
+        case "REMOVE_RECENT_ACCOUNT":
+            const recentAccountsAfterRemove = state.recentAccounts.filter(
+                (account) => account._id !== action.payload
+            );
+
+            localStorage.setItem("recent_accounts", JSON.stringify(recentAccountsAfterRemove));
+
+            return { ...state, recentAccounts: recentAccountsAfterRemove };
+
+        case "SIGN_OUT":
+            const recentAccountsAfterSignout = uniqueArray([
+                ...state.recentAccounts,
+                state.currentUser,
+            ]).map((account) => ({
+                _id: account._id,
+                name: account.name,
+                email: account.email,
+                avatar_image: account.avatar_image,
+            }));
+
+            localStorage.removeItem("token");
+            localStorage.setItem("recent_accounts", JSON.stringify(recentAccountsAfterSignout));
+
+            return {
+                ...state,
+                currentUser: null,
+                recentAccounts: recentAccountsAfterSignout,
+            };
+
         case "ADD_SELECTED_USER_PROFILE":
             return {
                 ...state,
                 selectedUserProfile: action.payload,
             };
-
-        case "SET_RECENT_ACCOUNTS":
-            return { ...state, recentAccounts: action.payload };
-
-        case "SIGN_OUT":
-            const newRecentAccounts = uniqueArray([...state.recentAccounts, state.currentUser]);
-
-            localStorage.removeItem("token");
-            localStorage.setItem("accounts", JSON.stringify(newRecentAccounts));
-
-            return {
-                ...state,
-                currentUser: null,
-                recentAccounts: newRecentAccounts,
-            };
-
-        case "REMOVE_RECENT_ACCOUNT":
-            const accountArray = state.recentAccounts.filter(
-                (account) => account._id !== action.payload
-            );
-
-            localStorage.setItem("accounts", JSON.stringify(accountArray));
-
-            return { ...state, recentAccounts: accountArray };
 
         case "UPDATE_PROFILE":
             return {

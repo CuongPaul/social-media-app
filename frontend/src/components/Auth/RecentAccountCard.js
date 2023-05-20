@@ -24,11 +24,9 @@ const RecentAccountCard = ({ account }) => {
 
     return (
         <Fragment>
-            <Card style={{ position: "relative", borderRadius: "5px" }}>
-                <CardActionArea onClick={() => setIsShowSigninForm(true)}>
-                    {account.avatar_image ? (
-                        <CardMedia style={{ height: "150px" }} image={account.avatar_image} />
-                    ) : (
+            <div style={{ position: "relative" }}>
+                <Card style={{ borderRadius: "8px" }}>
+                    <CardActionArea onClick={() => setIsShowSigninForm(true)}>
                         <CardMedia
                             style={{
                                 display: "flex",
@@ -38,22 +36,28 @@ const RecentAccountCard = ({ account }) => {
                                 background: "rgb(245,246,247)",
                             }}
                         >
-                            <AvatarIcon text={account.name} size="60px" fontSize="25px" />
+                            <AvatarIcon
+                                size="80px"
+                                fontSize="40px"
+                                variant="square"
+                                text={account.name}
+                                imageUrl={account.avatar_image}
+                            />
                         </CardMedia>
-                    )}
-                    <CardHeader
-                        subheader={
-                            <Typography style={{ fontWeight: 800, textAlign: "center" }}>
-                                {account.name}
-                            </Typography>
-                        }
-                    />
-                </CardActionArea>
+                        <CardHeader
+                            subheader={
+                                <Typography style={{ fontWeight: 800, textAlign: "center" }}>
+                                    {account.name}
+                                </Typography>
+                            }
+                        />
+                    </CardActionArea>
+                </Card>
                 <IconButton
                     size="small"
                     style={{
-                        top: 0,
-                        right: 0,
+                        top: -8,
+                        right: -8,
                         color: "#fff",
                         background: "tomato",
                         position: "absolute",
@@ -62,14 +66,12 @@ const RecentAccountCard = ({ account }) => {
                 >
                     <Close />
                 </IconButton>
-            </Card>
-            {isShowSigninForm && (
-                <RecentAccountSigninForm
-                    account={account}
-                    isShowSigninForm={isShowSigninForm}
-                    setIsShowSigninForm={setIsShowSigninForm}
-                />
-            )}
+            </div>
+            <RecentAccountSigninForm
+                account={account}
+                isShowSigninForm={isShowSigninForm}
+                setIsShowSigninForm={setIsShowSigninForm}
+            />
         </Fragment>
     );
 };

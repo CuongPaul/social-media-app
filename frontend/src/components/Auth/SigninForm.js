@@ -1,9 +1,19 @@
-import React from "react";
-import { Button, TextField, FormControl, CircularProgress } from "@material-ui/core";
+import {
+    Button,
+    TextField,
+    IconButton,
+    FormControl,
+    InputAdornment,
+    CircularProgress,
+} from "@material-ui/core";
+import React, { useState } from "react";
+import { Visibility, VisibilityOff } from "@material-ui/icons";
 
 import { useSignin } from "../../hooks";
 
 const SigninForm = () => {
+    const [isShowPassword, setIsShowPassword] = useState(false);
+
     const { loading, handleClickSignin, handleChangeEmail, handleChangePassword } = useSignin();
 
     return (
@@ -17,11 +27,20 @@ const SigninForm = () => {
             </FormControl>
             <FormControl style={{ width: "100%" }}>
                 <TextField
-                    type="password"
                     label="Password"
                     variant="outlined"
                     style={{ marginTop: "16px" }}
+                    type={isShowPassword ? "text" : "password"}
                     onChange={(e) => handleChangePassword(e.target.value)}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton onClick={() => setIsShowPassword(!isShowPassword)}>
+                                    {isShowPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
                 />
             </FormControl>
             <Button

@@ -14,8 +14,8 @@ import {
 } from "@material-ui/core";
 import moment from "moment";
 import { faBell } from "@fortawesome/free-regular-svg-icons";
-import React, { useState, Fragment, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useState, Fragment, useEffect, useContext } from "react";
 import { Label, Forum, PersonAdd, PlaylistAddCheck } from "@material-ui/icons";
 
 import callApi from "../api";
@@ -38,7 +38,7 @@ const Subheader = () => {
             });
         } catch (err) {
             uiDispatch({
-                type: "SET_ALERT_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
             });
         }
@@ -80,7 +80,7 @@ const ListNotification = () => {
             });
         } catch (err) {
             uiDispatch({
-                type: "SET_ALERT_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
             });
         }
@@ -127,7 +127,7 @@ const ListNotification = () => {
 };
 
 const NotificationMenu = () => {
-    const { uiState } = useContext(UIContext);
+    const { uiState, uiDispatch } = useContext(UIContext);
 
     const [isOpenMenu, setIsOpenMenu] = useState(false);
     const [notificationMenu, setNotificationMenu] = useState(null);
@@ -139,6 +139,23 @@ const NotificationMenu = () => {
         setIsOpenMenu(!isOpenMenu);
         setNotificationMenu(e.currentTarget);
     };
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const { data } = await callApi({ method: "GET", url: "/notification" });
+
+                if (data) {
+                    uiDispatch({ type: "SET_NOTIFICATIONS", payload: data.rows });
+                }
+            } catch (err) {
+                uiDispatch({
+                    type: "SET_ALERT_MESSAGE",
+                    payload: { text: err.message, display: true, color: "error" },
+                });
+            }
+        })();
+    }, []);
 
     return (
         <Fragment>

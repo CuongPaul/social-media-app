@@ -24,7 +24,7 @@ const useSearchFriends = () => {
         } catch (err) {
             setIsLoading(false);
             uiDispatch({
-                type: "SET_ALERT_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
             });
         }
