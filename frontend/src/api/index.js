@@ -17,6 +17,9 @@ const callApi = async ({ url, data, query, method }) => {
 
     const res = await axios(options).catch((err) => {
         if (err.response) {
+            if (err.response.status === 401) {
+                localStorage.removeItem("token");
+            }
             throw new Error(err.response.data.message);
         } else {
             if (err.request) {

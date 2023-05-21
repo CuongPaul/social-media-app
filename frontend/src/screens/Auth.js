@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import { Grid, Paper, Button, Divider, Container, Typography } from "@material-ui/core";
 
 import { UIContext, UserContext } from "../App";
@@ -6,26 +6,13 @@ import { SigninForm, SignupForm, AddAccountCard, RecentAccountCard } from "../co
 
 const Auth = () => {
     const {
-        uiDispatch,
         uiState: { darkMode },
     } = useContext(UIContext);
     const {
-        userDispatch,
         userState: { recentAccounts },
     } = useContext(UserContext);
 
     const [isShowSigninForm, setIsShowSigninForm] = useState(true);
-
-    useEffect(() => {
-        uiDispatch({
-            type: "SET_DARK_MODE",
-            payload: JSON.parse(localStorage.getItem("dark_mode")) || false,
-        });
-        userDispatch({
-            type: "SET_RECENT_ACCOUNTS",
-            payload: JSON.parse(localStorage.getItem("recent_accounts")) || [],
-        });
-    }, []);
 
     return (
         <div style={{ minHeight: "100vh" }}>

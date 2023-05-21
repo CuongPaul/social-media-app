@@ -1,23 +1,17 @@
 import moment from "moment";
-import { MoreHoriz } from "@material-ui/icons";
-import React, { useState, Fragment, useContext } from "react";
-import { Card, Menu, Button, Divider, MenuItem, CardHeader, IconButton } from "@material-ui/core";
+import React, { Fragment, useContext } from "react";
+import { Card, Button, Divider, CardHeader, Typography, CardContent } from "@material-ui/core";
 
-import PostDialog from "./PostDialog";
+import PostAction from "./PostAction";
 import PostFooter from "./PostFooter";
-import PostContent from "./PostContent";
+import SlideImage from "./SlideImage";
+import { UIContext } from "../../App";
 import AvatarIcon from "../UI/AvatarIcon";
 import PostSubContent from "./PostSubContent";
-import { UIContext, UserContext } from "../../App";
 import useFetchPost from "../../hooks/useFetchPost";
 
 const Posts = ({ posts }) => {
     const { uiState } = useContext(UIContext);
-    const { userState } = useContext(UserContext);
-
-    const [postData, setPostData] = useState(null);
-    const [isShowAction, setIsShowAction] = useState(null);
-    const [isOpenPostDialog, setIsOpenPostDialog] = useState(false);
 
     const { fetchPosts } = useFetchPost();
 
@@ -37,57 +31,25 @@ const Posts = ({ posts }) => {
                     }}
                 >
                     <CardHeader
+                        action={<PostAction post={post} />}
                         subheader={moment(post.createdAt).fromNow()}
                         title={<PostSubContent postBody={post.body} username={post.user.name} />}
                         avatar={
                             <AvatarIcon text={post.user.name} imageUrl={post.user.avatar_image} />
                         }
-                        action={
-                            post.user._id === userState.currentUser._id && (
-                                <div>
-                                    <IconButton
-                                        onClick={(e) => {
-                                            setPostData(post);
-                                            setIsShowAction(e.currentTarget);
-                                        }}
-                                    >
-                                        <MoreHoriz />
-                                    </IconButton>
-                                    <Menu
-                                        anchorEl={isShowAction}
-                                        open={Boolean(isShowAction)}
-                                        onClose={() => setIsShowAction(null)}
-                                    >
-                                        <MenuItem
-                                            onClick={() => {
-                                                setIsShowAction(null);
-                                                setIsOpenPostDialog(true);
-                                            }}
-                                        >
-                                            Edit
-                                        </MenuItem>
-                                        <MenuItem
-                                            onClick={() => {
-                                                setIsShowAction(null);
-                                            }}
-                                        >
-                                            Delete
-                                        </MenuItem>
-                                    </Menu>
-                                </div>
-                            )
-                        }
                     />
-                    <PostContent post={post} />
+                    <CardContent>
+                        <Typography
+                            style={{ fontWeight: "400", fontSize: "16px", fontFamily: "fantasy" }}
+                        >
+                            {post.text}
+                        </Typography>
+                    </CardContent>
+                    {post?.images && <SlideImage images={post.images} />}
                     <Divider />
                     <PostFooter post={post} />
                 </Card>
             ))}
-            <PostDialog
-                postData={postData}
-                isOpen={isOpenPostDialog}
-                setIsOpenPostDialog={setIsOpenPostDialog}
-            />
             <div
                 style={{
                     display: "flex",

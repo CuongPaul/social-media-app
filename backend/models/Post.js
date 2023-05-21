@@ -9,17 +9,14 @@ const UserIdType = { ref: "user", type: ObjectIdType };
 const postSchema = new Schema(
     {
         images: [TrimStringType],
-        body: {
-            type: {
-                location: TrimStringType,
-                feelings: TrimStringType,
-                tag_friends: [UserIdType],
-            },
-        },
         user: { ...UserIdType, required: true },
         text: { trim: true, type: String, required: true },
         react: { ref: "react", required: true, type: ObjectIdType },
         privacy: { type: String, default: "PUBLIC", enum: ["FRIEND", "PUBLIC", "ONLY_ME"] },
+        body: new Schema(
+            { location: TrimStringType, feelings: TrimStringType, tag_friends: [UserIdType] },
+            { _id: false }
+        ),
     },
     { timestamps: true, versionKey: false }
 );

@@ -49,6 +49,17 @@ const App = () => {
     );
 
     useEffect(() => {
+        uiDispatch({
+            type: "SET_DARK_MODE",
+            payload: JSON.parse(localStorage.getItem("dark_mode")) || false,
+        });
+        userDispatch({
+            type: "SET_RECENT_ACCOUNTS",
+            payload: JSON.parse(localStorage.getItem("recent_accounts")) || [],
+        });
+    }, []);
+
+    useEffect(() => {
         if (token) {
             const socketIO = io(`${process.env.REACT_APP_BASE_API_URL}`);
 
@@ -125,13 +136,7 @@ const App = () => {
         };
 
         if (token) {
-            const decodeToken = jwtDecode(token);
-
-            if (decodeToken.exp * 1000 < Date.now()) {
-                userDispatch({ type: "SIGN_OUT" });
-            } else {
-                getInfoCurrentUser();
-            }
+            getInfoCurrentUser();
         }
     }, [token]);
 

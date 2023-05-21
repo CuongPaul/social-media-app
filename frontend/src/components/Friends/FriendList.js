@@ -1,7 +1,6 @@
 import {
     Grid,
     List,
-    Avatar,
     ListItem,
     Typography,
     ListItemText,

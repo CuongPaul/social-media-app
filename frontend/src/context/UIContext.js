@@ -36,6 +36,7 @@ const UIReducer = (state, action) => {
             return { ...state, loading: action.payload };
 
         case "SET_DARK_MODE":
+            localStorage.setItem("dark_mode", action.payload);
             return { ...state, darkMode: action.payload };
 
         case "READ_ALL_NOTIFICATIONS":

@@ -1,5 +1,3 @@
-import uniqueArray from "../utils/unique-array";
-
 const initialUserState = {
     currentUser: null,
     recentAccounts: [],
@@ -21,23 +19,11 @@ const UserReducer = (state, action) => {
             return { ...state, recentAccounts: recentAccountsAfterRemove };
 
         case "SIGN_OUT":
-            const recentAccountsAfterSignout = uniqueArray([
-                ...state.recentAccounts,
-                state.currentUser,
-            ]).map((account) => ({
-                _id: account._id,
-                name: account.name,
-                email: account.email,
-                avatar_image: account.avatar_image,
-            }));
-
             localStorage.removeItem("token");
-            localStorage.setItem("recent_accounts", JSON.stringify(recentAccountsAfterSignout));
 
             return {
                 ...state,
                 currentUser: null,
-                recentAccounts: recentAccountsAfterSignout,
             };
 
         case "ADD_SELECTED_USER_PROFILE":
@@ -53,7 +39,25 @@ const UserReducer = (state, action) => {
             };
 
         case "SET_CURRENT_USER":
-            return { ...state, currentUser: action.payload };
+            const recentAccountStored = JSON.parse(localStorage.getItem("recent_accounts")) || [];
+            const isStored = recentAccountStored.find((item) => item._id === action.payload._id);
+
+            if (!isStored) {
+                recentAccountStored.push({
+                    _id: action.payload._id,
+                    name: action.payload.name,
+                    email: action.payload.email,
+                    avatar_image: action.payload.avatar_image,
+                });
+
+                localStorage.setItem("recent_accounts", JSON.stringify(recentAccountStored));
+            }
+
+            return {
+                ...state,
+                currentUser: action.payload,
+                recentAccounts: recentAccountStored,
+            };
 
         case "FRIEND_OFFLINE":
             const friends_1 = [...state.currentUser.friends];

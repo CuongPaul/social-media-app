@@ -16,17 +16,6 @@ const PostContent = ({ post }) => {
 
     return (
         <Fragment>
-            {isContent() && (
-                <CardContent
-                    style={{
-                        marginBottom: "16px",
-                        background: uiState.darkMode ? "rgb(76,76,76)" : "rgb(240,242,245)",
-                        padding: "16px",
-                    }}
-                >
-                    <PostSubContent postBody={post.body} username={post.user.name} />
-                </CardContent>
-            )}
             <CardContent>
                 <Typography style={{ fontWeight: "400", fontSize: "16px", fontFamily: "fantasy" }}>
                     {post?.text}

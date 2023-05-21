@@ -75,7 +75,7 @@ const Comment = ({ comment }) => {
                                     value={commentText}
                                     onChange={handleEditComment}
                                     multiline
-                                    rowsMax={4}
+                                    maxRows={4}
                                     style={{
                                         width: "100%",
                                         borderRadius: "20px",

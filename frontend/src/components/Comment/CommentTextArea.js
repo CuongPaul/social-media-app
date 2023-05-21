@@ -84,7 +84,7 @@ const CommentTextArea = ({ post }) => {
                 <Grid item md={8} sm={8} xs={8}>
                     <TextField
                         multiline
-                        rowsMax={4}
+                        maxRows={4}
                         helperText={error}
                         value={commentText}
                         error={error ? true : false}

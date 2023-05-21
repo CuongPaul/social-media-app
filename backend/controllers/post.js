@@ -80,11 +80,13 @@ const createPostController = async (req, res) => {
     const userId = req.user_id;
     const { body, text, images, privacy } = req.body;
 
+    const bodyInvalid = typeof body == "string" ? JSON.parse(body) : body;
+
     try {
         const emptyReact = await new React().save();
 
-        if (body?.tag_friends?.length) {
-            const users = await User.find({ _id: { $in: body.tag_friends } });
+        if (bodyInvalid?.tag_friends?.length) {
+            const users = await User.find({ _id: { $in: bodyInvalid.tag_friends } });
 
             const newTagFriends = users.reduce((acc, cur) => {
                 if (!cur.block_users.includes(userId) && cur.friends.includes(userId)) {
@@ -94,21 +96,21 @@ const createPostController = async (req, res) => {
                 }
             }, []);
 
-            body.tag_friends = newTagFriends;
+            bodyInvalid.tag_friends = newTagFriends;
         }
 
         const post = await new Post({
-            body,
             text,
             images,
             privacy,
             user: userId,
+            body: bodyInvalid,
             react: emptyReact._id,
         }).save();
 
         const user = await User.findById(userId);
-        if (post && body?.tag_friends?.length && privacy != "ONLY_ME") {
-            for (const friendId of body.tag_friends) {
+        if (post && bodyInvalid?.tag_friends?.length && privacy != "ONLY_ME") {
+            for (const friendId of bodyInvalid.tag_friends) {
                 const friend = await User.findById(friendId);
 
                 if (!friend.block_users.includes(userId)) {
