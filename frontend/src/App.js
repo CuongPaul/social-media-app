@@ -94,6 +94,11 @@ const App = () => {
 
             socketIO.current.emit("client-connection", { user_id: userState.currentUser._id });
 
+            socketIO.current.on("test-event", (data) => {
+                console.log("data: ", data);
+                console.log("socketId: ", socketIO.current.id);
+            });
+
             window.addEventListener("beforeunload", () => {
                 socketIO.current.emit("client-disconnect", { user_id: userState.currentUser._id });
             });
