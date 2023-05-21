@@ -2,24 +2,23 @@ import {
     List,
     Badge,
     Button,
-    Avatar,
+    Dialog,
     ListItem,
+    TextField,
     Typography,
+    ListItemIcon,
     ListItemText,
+    DialogContent,
     ListSubheader,
     ListItemAvatar,
-    Dialog,
-    TextField,
-    ListItemIcon,
-    DialogContent,
     CircularProgress,
 } from "@material-ui/core";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 
-import AvatarIcon from "../UI/AvatarIcon";
-import { UserContext, ChatContext, UIContext } from "../../App";
 import callApi from "../../api";
+import AvatarIcon from "../UI/AvatarIcon";
 import { useSearchUsers } from "../../hooks";
+import { UserContext, ChatContext, UIContext } from "../../App";
 
 const Friends = () => {
     const { userState } = useContext(UserContext);
@@ -46,17 +45,18 @@ const Friends = () => {
     const handleClickFriend = async (friend) => {
         uiDispatch({ type: "SET_DRAWER", payload: false });
         chatDispatch({ type: "SET_SELECTED_FRIEND", payload: friend });
-        const { message } = await callApi({
-            url: `/chat-room/two-people`,
+        await callApi({
             method: "POST",
+            url: `/chat-room/two-people`,
             data: { reciver: friend._id },
         });
     };
 
-    const { users, isLoading, handleSearchUsers } = useSearchUsers();
     const [groupName, setGroupName] = useState("");
     const [groupMember, setGroupMember] = useState([]);
     const [searchValue, setSearchValue] = useState("");
+    const { users, isLoading, handleSearchUsers } = useSearchUsers();
+
     const handleCreateGroup = async () => {
         try {
             await callApi({
@@ -142,28 +142,28 @@ const Friends = () => {
                             {users &&
                                 users.map((user) => (
                                     <div>
-                                        <ListItem button key={user._id}>
+                                        <ListItem button key={user?._id}>
                                             <ListItemIcon>
                                                 <AvatarIcon
                                                     size="60px"
-                                                    text={user.name}
-                                                    imageUrl={user.avatar_image}
+                                                    text={user?.name}
+                                                    imageUrl={user?.avatar_image}
                                                 />
                                             </ListItemIcon>
                                             <ListItemText style={{ marginLeft: "8px" }}>
                                                 <Typography
                                                     style={{ fontSize: "17px", fontWeight: "700" }}
                                                 >
-                                                    {user.name}
+                                                    {user?.name}
                                                 </Typography>
-                                                <Typography>{user.email}</Typography>
+                                                <Typography>{user?.email}</Typography>
                                             </ListItemText>
                                         </ListItem>
 
-                                        {!groupMember.includes(user._id) ? (
+                                        {!groupMember.includes(user?._id) ? (
                                             <Button
                                                 onClick={() =>
-                                                    setGroupMember((pre) => [...pre, user._id])
+                                                    setGroupMember((pre) => [...pre, user?._id])
                                                 }
                                                 variant="contained"
                                                 style={{
@@ -177,7 +177,7 @@ const Friends = () => {
                                             <Button
                                                 onClick={() => {
                                                     const index = groupMember.findIndex(
-                                                        (item) => user._id == item
+                                                        (item) => user?._id == item
                                                     );
                                                     if (index !== -1) {
                                                         const newGroupMember = [...groupMember];
@@ -204,7 +204,7 @@ const Friends = () => {
             {chatRooms && chatRooms.length ? (
                 chatRooms.map((friend) => {
                     return (
-                        <ListItem key={friend._id} button onClick={() => handleClickChat(friend)}>
+                        <ListItem key={friend?._id} button onClick={() => handleClickChat(friend)}>
                             <ListItemAvatar>
                                 <Badge
                                     max={9}
@@ -214,20 +214,20 @@ const Friends = () => {
                                     }
                                     overlap="rectangular"
                                 >
-                                    {friend.avatar_image ? (
+                                    {friend?.avatar_image ? (
                                         <AvatarIcon
-                                            text={friend.name}
-                                            imageUrl={friend.avatar_image}
+                                            text={friend?.name}
+                                            imageUrl={friend?.avatar_image}
                                         />
-                                    ) : friend.members.length === 2 ? (
+                                    ) : friend?.members.length === 2 ? (
                                         <AvatarIcon
                                             text={
-                                                friend.members.find(
+                                                friend?.members.find(
                                                     (item) => item._id !== userState.currentUser._id
                                                 ).name
                                             }
                                             imageUrl={
-                                                friend.members.find(
+                                                friend?.members.find(
                                                     (item) => item._id !== userState.currentUser._id
                                                 ).avatar_image
                                             }
@@ -235,7 +235,7 @@ const Friends = () => {
                                     ) : (
                                         <AvatarIcon
                                             text={
-                                                friend.members.find(
+                                                friend?.members.find(
                                                     (item) => item._id !== userState.currentUser._id
                                                 ).name
                                             }
@@ -245,11 +245,11 @@ const Friends = () => {
                             </ListItemAvatar>
                             <ListItemText
                                 primary={
-                                    friend.members.length === 2
-                                        ? friend.members.find(
+                                    friend?.members.length === 2
+                                        ? friend?.members.find(
                                               (item) => item._id !== userState.currentUser._id
                                           ).name
-                                        : friend.name
+                                        : friend?.name
                                 }
                             />
                         </ListItem>
@@ -262,11 +262,15 @@ const Friends = () => {
             {userState?.currentUser?.friends && userState?.currentUser?.friends?.length ? (
                 userState.currentUser.friends.map((friend) => {
                     return (
-                        <ListItem key={friend._id} button onClick={() => handleClickFriend(friend)}>
+                        <ListItem
+                            key={friend?._id}
+                            button
+                            onClick={() => handleClickFriend(friend)}
+                        >
                             <ListItemAvatar>
-                                <AvatarIcon text={friend.name} imageUrl={friend.avatar_image} />
+                                <AvatarIcon text={friend?.name} imageUrl={friend?.avatar_image} />
                             </ListItemAvatar>
-                            <ListItemText primary={friend.name} />
+                            <ListItemText primary={friend?.name} />
                         </ListItem>
                     );
                 })

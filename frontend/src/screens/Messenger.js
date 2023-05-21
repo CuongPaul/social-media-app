@@ -1,17 +1,19 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Container, Grid, Paper, Typography } from "@material-ui/core";
-import { ChatContext, UIContext } from "../App";
-import Messages from "../components/Chat/Messages";
 
+import { ChatContext, UIContext } from "../App";
 import Friends from "../components/Chat/Friends";
+import Messages from "../components/Chat/Messages";
+import AvatarIcon from "../components/UI/AvatarIcon";
 import InputTextArea from "../components/Chat/InputTextArea";
 import EmptyMessageArea from "../components/Chat/EmptyMessageArea";
-import AvatarIcon from "../components/UI/AvatarIcon";
 
-function Messenger() {
+const Messenger = () => {
     const { uiDispatch, uiState } = useContext(UIContext);
     const { chatState, chatDispatch } = useContext(ChatContext);
+
     const [textValue, setTextValue] = useState("");
+
     useEffect(() => {
         uiDispatch({ type: "SET_NAV_MENU", payload: true });
         uiDispatch({ type: "SET_DRAWER", payload: false });
@@ -24,20 +26,14 @@ function Messenger() {
     }, [uiDispatch, chatDispatch]);
 
     return (
-        <div
-            style={{
-                paddingTop: "100px",
-                paddingBottom: "40px",
-                minHeight: "100vh",
-            }}
-        >
+        <div style={{ minHeight: "100vh", paddingTop: "100px", paddingBottom: "40px" }}>
             <Container>
                 <Paper style={{ backgroundColor: uiState.darkMode && "rgb(36,37,38)" }}>
                     <Grid
                         container
+                        spacing={2}
                         justifyContent="center"
                         alignItems="flex-start"
-                        spacing={2}
                         style={{ padding: "16px" }}
                     >
                         <Grid
@@ -86,11 +82,11 @@ function Messenger() {
                                     }}
                                 >
                                     <AvatarIcon
-                                        text={chatState?.selectedFriend?.name}
-                                        imageUrl={chatState.selectedFriend.avatar_image}
+                                        // text={chatState?.selectedFriend?.name}
+                                        imageUrl={chatState?.selectedFriend?.avatar_image}
                                     />
                                     <Typography style={{ marginLeft: "16px" }}>
-                                        {chatState.selectedFriend.name}
+                                        {chatState?.selectedFriend?.name}
                                     </Typography>
                                 </Paper>
 
@@ -122,7 +118,7 @@ function Messenger() {
                                 >
                                     <InputTextArea
                                         textValue={textValue}
-                                        chatRoomId={chatState.selectedFriend._id}
+                                        chatRoomId={chatState?.selectedFriend?._id}
                                     />
                                 </div>
                             </Grid>
@@ -134,6 +130,6 @@ function Messenger() {
             </Container>
         </div>
     );
-}
+};
 
 export default Messenger;

@@ -470,8 +470,10 @@ const createChatRoomForTwoPeopleController = async (req, res) => {
         }
 
         const chatRoom = await new ChatRoom({
+            name: null,
             admin: null,
             is_public: false,
+            avatar_image: null,
             members: [reciver, userId],
         }).save();
 

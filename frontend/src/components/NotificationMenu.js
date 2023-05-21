@@ -64,8 +64,19 @@ const Subheader = () => {
     );
 };
 
-const ListNotification = () => {
+const NotificationMenu = () => {
     const { uiState, uiDispatch } = useContext(UIContext);
+
+    const [isOpenMenu, setIsOpenMenu] = useState(false);
+    const [notificationMenu, setNotificationMenu] = useState(null);
+
+    const { breakpoints } = useTheme();
+    const xsScreen = useMediaQuery(breakpoints.only("xs"));
+
+    const handleOpenMenu = (e) => {
+        setIsOpenMenu(!isOpenMenu);
+        setNotificationMenu(e.currentTarget);
+    };
 
     const handleReadNotifications = async (notification_id) => {
         try {
@@ -84,60 +95,6 @@ const ListNotification = () => {
                 payload: { display: true, color: "error", text: err.message },
             });
         }
-    };
-
-    return (
-        <List subheader={<Subheader />}>
-            {uiState.notifications.map((notification) => (
-                <ListItem
-                    button
-                    key={notification._id}
-                    onClick={() => handleReadNotifications(notification._id)}
-                    style={{ backgroundColor: notification.is_read && "rgba(0,0,0,0.08)" }}
-                >
-                    <ListItemIcon>
-                        <Avatar style={{ color: "#fff", background: "seagreen" }}>
-                            {notification.type.includes("CHATROOM") ? (
-                                <Forum />
-                            ) : notification.type.includes("POST") ? (
-                                <Label />
-                            ) : (
-                                <PersonAdd />
-                            )}
-                        </Avatar>
-                    </ListItemIcon>
-                    <ListItemText>
-                        <Typography variant="body1" style={{ fontSize: "15px" }}>
-                            {notification.content}
-                        </Typography>
-                        <Typography
-                            variant="body1"
-                            style={{
-                                fontSize: "13px",
-                                color: uiState.darkMode ? null : "#65676B",
-                            }}
-                        >
-                            {moment(notification.createdAt).fromNow()}
-                        </Typography>
-                    </ListItemText>
-                </ListItem>
-            ))}
-        </List>
-    );
-};
-
-const NotificationMenu = () => {
-    const { uiState, uiDispatch } = useContext(UIContext);
-
-    const [isOpenMenu, setIsOpenMenu] = useState(false);
-    const [notificationMenu, setNotificationMenu] = useState(null);
-
-    const { breakpoints } = useTheme();
-    const xsScreen = useMediaQuery(breakpoints.only("xs"));
-
-    const handleOpenMenu = (e) => {
-        setIsOpenMenu(!isOpenMenu);
-        setNotificationMenu(e.currentTarget);
     };
 
     useEffect(() => {
@@ -182,7 +139,42 @@ const NotificationMenu = () => {
                 style={{ marginTop: "50px" }}
                 onClose={() => setIsOpenMenu(false)}
             >
-                <ListNotification />
+                <List subheader={<Subheader />}>
+                    {uiState.notifications.map((notification) => (
+                        <ListItem
+                            button
+                            key={notification._id}
+                            onClick={() => handleReadNotifications(notification._id)}
+                            style={{ backgroundColor: notification.is_read && "rgba(0,0,0,0.08)" }}
+                        >
+                            <ListItemIcon>
+                                <Avatar style={{ color: "#fff", background: "seagreen" }}>
+                                    {notification.type.includes("CHATROOM") ? (
+                                        <Forum />
+                                    ) : notification.type.includes("POST") ? (
+                                        <Label />
+                                    ) : (
+                                        <PersonAdd />
+                                    )}
+                                </Avatar>
+                            </ListItemIcon>
+                            <ListItemText>
+                                <Typography variant="body1" style={{ fontSize: "15px" }}>
+                                    {notification.content}
+                                </Typography>
+                                <Typography
+                                    variant="body1"
+                                    style={{
+                                        fontSize: "13px",
+                                        color: uiState.darkMode ? null : "#65676B",
+                                    }}
+                                >
+                                    {moment(notification.createdAt).fromNow()}
+                                </Typography>
+                            </ListItemText>
+                        </ListItem>
+                    ))}
+                </List>
             </Menu>
         </Fragment>
     );

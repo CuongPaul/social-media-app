@@ -1,6 +1,8 @@
 import { MoreHoriz } from "@material-ui/icons";
 import React, { useState, useContext } from "react";
-import { Menu, MenuItem, IconButton } from "@material-ui/core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Menu, MenuItem, IconButton, Typography } from "@material-ui/core";
 
 import PostDialog from "./PostDialog";
 import { UserContext } from "../../App";
@@ -34,14 +36,16 @@ const PostAction = ({ post }) => {
                             setIsOpenPostDialog(true);
                         }}
                     >
-                        Edit
+                        <FontAwesomeIcon icon={faPen} />
+                        <Typography style={{ marginLeft: "20px" }}>Edit</Typography>
                     </MenuItem>
                     <MenuItem
                         onClick={() => {
                             setIsShowAction(null);
                         }}
                     >
-                        Delete
+                        <FontAwesomeIcon icon={faTrash} />
+                        <Typography style={{ marginLeft: "20px" }}>Delete</Typography>
                     </MenuItem>
                 </Menu>
                 <PostDialog
