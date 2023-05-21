@@ -26,17 +26,11 @@ const MONGODB_URI = process.env.MONGODB_URI;
 const app = express();
 const httpServer = createServer(app);
 
-const io = new Server(httpServer);
-socketServer(io);
+socketServer(new Server(httpServer));
 
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
-app.use((req, _res, next) => {
-    io.req = req;
-    req.io = io;
-    next();
-});
 
 app.use("/auth", AuthRoutes);
 app.use("/post", PostRoutes);

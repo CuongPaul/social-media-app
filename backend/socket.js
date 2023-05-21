@@ -1,14 +1,15 @@
+import redisClient from "./config/redis";
+
 const socketServer = (io) => {
     io.on("connection", (socket) => {
-        if (io.req) {
-            const userId = io.req.user_id;
+        socket.on("client-connection", async ({ user_id }) => {
+            await redisClient.RPUSH(`socket-io:${user_id}`, socket.id);
+            await redisClient.expire(`socket-io:${user_id}`, 12 * 60 * 60);
+        });
 
-            socket.broadcast.emit("friend-online", { user_id: userId });
-
-            socket.on("disconnect", () => {
-                socket.broadcast.emit("friend-offline", { user_id: userId });
-            });
-        }
+        socket.on("client-disconnect", async ({ user_id }) => {
+            await redisClient.LREM(`socket-io:${user_id}`, 0, socket.id);
+        });
     });
 };
 

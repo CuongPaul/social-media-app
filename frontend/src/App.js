@@ -1,8 +1,15 @@
+import React, {
+    lazy,
+    useRef,
+    useMemo,
+    Suspense,
+    useEffect,
+    useReducer,
+    createContext,
+} from "react";
 import io from "socket.io-client";
-import jwtDecode from "jwt-decode";
 import { createTheme, ThemeProvider } from "@material-ui/core/styles";
 import { Route, Switch, Redirect, BrowserRouter } from "react-router-dom";
-import React, { lazy, useMemo, Suspense, useEffect, useReducer, createContext } from "react";
 
 import callApi from "./api";
 import Loader from "./components/Loader";
@@ -28,6 +35,7 @@ const Settings = lazy(() => import("./screens/Settings"));
 const Messenger = lazy(() => import("./screens/Messenger"));
 
 const App = () => {
+    const socketIO = useRef();
     const token = localStorage.getItem("token");
 
     const [uiState, uiDispatch] = useReducer(UIReducer, initialUIState);
@@ -60,67 +68,7 @@ const App = () => {
     }, []);
 
     useEffect(() => {
-        if (token) {
-            const socketIO = io(`${process.env.REACT_APP_BASE_API_URL}`);
-
-            socketIO.on("friend-offline", ({ user_id }) => {
-                userDispatch({ type: "FRIEND_OFFLINE", payload: user_id });
-            });
-
-            socketIO.on("friend-online", ({ user_id }) => {
-                userDispatch({ type: "FRIEND_ONLINE", payload: user_id });
-            });
-
-            socketIO.on("friend-request-status", ({ sender }) => {
-                userDispatch({ type: "ADD_FRIENDS_REQUEST_RECEIVED", payload: sender });
-            });
-
-            socketIO.on("sended-friend-request-cancel", ({ requestId }) => {
-                userDispatch({ type: "REMOVE_FRIENDS_REQUEST_RECEIVED", payload: requestId });
-            });
-
-            socketIO.on("friend-request-accept-status", ({ user, request_id }) => {
-                userDispatch({ type: "ADD_FRIEND", payload: user });
-                userDispatch({ type: "REMOVE_FRIENDS_REQUEST_SENDED", payload: request_id });
-                userDispatch({ type: "REMOVE_FRIENDS_REQUEST_RECEIVED", payload: request_id });
-            });
-
-            socketIO.on("received-friend-request-decline", ({ requestId }) => {
-                userDispatch({ type: "REMOVE_FRIENDS_REQUEST_SENDED", payload: requestId });
-            });
-
-            socketIO.on("new-post", (data) => {
-                postDispatch({ type: "ADD_POST", payload: data });
-            });
-
-            socketIO.on("react-post", (data) => {
-                postDispatch({ type: "LIKE_UNLIKE_POST", payload: data });
-            });
-
-            socketIO.on("post-comment", (data) => {
-                postDispatch({ type: "ADD_POST_COMMENT", payload: data });
-            });
-
-            socketIO.on("react-comment", (data) => {
-                postDispatch({ type: "LIKE_UNLIKE_COMMENT", payload: data });
-            });
-
-            socketIO.on("new-message", (data) => {
-                chatDispatch({ type: "ADD_MESSAGE", payload: data });
-            });
-
-            socketIO.on("notification", (data) => {
-                uiDispatch({ type: "ADD_NOTIFICATION", payload: data });
-            });
-
-            return () => {
-                socketIO.disconnect();
-            };
-        }
-    }, [token]);
-
-    useEffect(() => {
-        const getInfoCurrentUser = async () => {
+        const getCurrentUserInfo = async () => {
             try {
                 const { data } = await callApi({ url: "/user", method: "GET" });
 
@@ -136,9 +84,21 @@ const App = () => {
         };
 
         if (token) {
-            getInfoCurrentUser();
+            getCurrentUserInfo();
         }
-    }, [token]);
+    }, []);
+
+    useEffect(() => {
+        if (userState.currentUser) {
+            socketIO.current = io(`${process.env.REACT_APP_BASE_API_URL}`);
+
+            socketIO.current.emit("client-connection", { user_id: userState.currentUser._id });
+
+            window.addEventListener("beforeunload", () => {
+                socketIO.current.emit("client-disconnect", { user_id: userState.currentUser._id });
+            });
+        }
+    }, [userState.currentUser]);
 
     return (
         <UIContext.Provider value={{ uiState, uiDispatch }}>
