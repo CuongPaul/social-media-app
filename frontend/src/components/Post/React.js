@@ -25,19 +25,19 @@ const LikePost = ({ post }) => {
             await callApi({
                 method: "PUT",
                 query: { key: type },
-                url: `/post/react-post/${post._id}`,
+                url: `/post/react-post/${post?._id}`,
             });
             const newPostReact = [...postState.posts];
             for (const item of newPostReact) {
-                if (item._id === post._id) {
+                if (item?._id === post?._id) {
                     const abc = item.react[type].findIndex(
-                        (ele) => ele._id === userState.currentUser._id
+                        (ele) => ele?._id === userState?.currentUser?._id
                     );
 
                     if (abc == -1) {
                         const pushItem = {
-                            avatar_image: userState.currentUser.avatar_image,
-                            _id: userState.currentUser._id,
+                            avatar_image: userState?.currentUser?.avatar_image,
+                            _id: userState?.currentUser?._id,
                             name: userState.currentUser.name,
                         };
                         item.react[type].push(pushItem);
@@ -92,7 +92,7 @@ const LikePost = ({ post }) => {
                     </Tooltip>
                     <span>
                         {post?.react[item.reactKey].find(
-                            (item) => item._id === userState.currentUser._id
+                            (item) => item?._id === userState?.currentUser?._id
                         ) && "YOU"}
                     </span>
                 </div>

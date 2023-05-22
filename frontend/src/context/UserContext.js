@@ -1,5 +1,6 @@
 const initialUserState = {
     currentUser: null,
+    friendsOnline: [],
     recentAccounts: [],
     selectedUserProfile: null,
 };
@@ -25,6 +26,19 @@ const UserReducer = (state, action) => {
                 ...state,
                 currentUser: null,
             };
+
+        case "SET_FRIENDS_ONLINE":
+            return { ...state, friendsOnline: action.payload };
+
+        case "ADD_FRIENDS_ONLINE":
+            return { ...state, friendsOnline: [...state.friendsOnline, action.payload] };
+
+        case "REMOVE_FRIENDS_ONLINE":
+            const friendsOnlineAfterRemove = state.friendsOnline.filter(
+                (friend) => friend._id !== action.payload
+            );
+
+            return { ...state, friendsOnline: friendsOnlineAfterRemove };
 
         case "ADD_SELECTED_USER_PROFILE":
             return {

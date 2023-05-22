@@ -68,6 +68,20 @@ const App = () => {
     }, []);
 
     useEffect(() => {
+        const getOnlineUsers = async () => {
+            try {
+                const { data } = await callApi({ url: "/user/friends-online", method: "GET" });
+
+                if (data) {
+                    userDispatch({ type: "SET_FRIENDS_ONLINE", payload: data.rows });
+                }
+            } catch (err) {
+                uiDispatch({
+                    type: "SET_ALERT_MESSAGE",
+                    payload: { text: err.message, display: true, color: "error" },
+                });
+            }
+        };
         const getCurrentUserInfo = async () => {
             try {
                 const { data } = await callApi({ url: "/user", method: "GET" });
@@ -84,26 +98,40 @@ const App = () => {
         };
 
         if (token) {
+            getOnlineUsers();
             getCurrentUserInfo();
         }
     }, []);
 
     useEffect(() => {
-        if (userState.currentUser) {
+        if (userState?.currentUser?._id) {
             socketIO.current = io(`${process.env.REACT_APP_BASE_API_URL}`);
 
-            socketIO.current.emit("client-connection", { user_id: userState.currentUser._id });
+            socketIO.current.emit("client-connection", {
+                _id: userState.currentUser._id,
+                name: userState.currentUser.name,
+                avatar_image: userState.currentUser.avatar_image,
+            });
+
+            socketIO.current.on("user-online", (data) => {
+                if (data._id !== userState.currentUser._id) {
+                    userDispatch({ type: "ADD_FRIENDS_ONLINE", payload: data });
+                }
+            });
 
             socketIO.current.on("test-event", (data) => {
-                console.log("data: ", data);
-                console.log("socketId: ", socketIO.current.id);
+                console.log("test-event-data: ", data);
             });
 
             window.addEventListener("beforeunload", () => {
                 socketIO.current.emit("client-disconnect", { user_id: userState.currentUser._id });
             });
+
+            socketIO.current.on("user-offline", (user_id) => {
+                userDispatch({ type: "REMOVE_FRIENDS_ONLINE", payload: user_id });
+            });
         }
-    }, [userState.currentUser]);
+    }, [userState?.currentUser?._id]);
 
     return (
         <UIContext.Provider value={{ uiState, uiDispatch }}>

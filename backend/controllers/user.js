@@ -1,4 +1,5 @@
 import { User } from "../models";
+import redisClient from "../config/redis";
 
 const unfriendController = async (req, res) => {
     const userId = req.user_id;
@@ -260,6 +261,31 @@ const getCurrentUserController = async (req, res) => {
     }
 };
 
+const getOnlineUsersController = async (req, res) => {
+    const userId = req.user_id;
+
+    try {
+        const user = await User.findById(userId).populate("friends");
+
+        const friendsOnline = [];
+        for (const item of user.friends) {
+            const sockets = await redisClient.LRANGE(`socket-io:${item._id}`, 0, -1);
+
+            if (sockets.length) {
+                const { _id, name, avatar_image } = item;
+                friendsOnline.push({ _id, name, sockets, avatar_image });
+            }
+        }
+
+        return res.status(200).json({
+            message: "success",
+            data: { rows: friendsOnline, count: friendsOnline.length },
+        });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+};
+
 const updateCoverImageController = async (req, res) => {
     const userId = req.user_id;
     const { cover_image } = req.body;
@@ -339,6 +365,7 @@ export {
     searchFriendsController,
     updatePasswordController,
     getCurrentUserController,
+    getOnlineUsersController,
     updateCoverImageController,
     getRecommendUsersController,
     updateAvatarImageController,

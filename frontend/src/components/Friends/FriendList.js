@@ -45,21 +45,24 @@ const FriendList = () => {
                 <button disabled={number <= 0} onClick={() => setNumber(number - 1)}>
                     UP
                 </button>
-                {friendsList?.map((user, index) => (
+                {userState?.friendsOnline?.map((user, index) => (
                     <div key={index}>
                         <PopoverProfile user={user}>
                             <ListItem
                                 button
-                                key={user._id}
+                                key={user?._id}
                                 to={`/profile/${user._id}`}
                                 component={Link}
                             >
                                 <ListItemAvatar>
-                                    <StyledBadge isActive={user.is_active}>
-                                        <AvatarIcon text={user.name} imageUrl={user.avatar_image} />
+                                    <StyledBadge isActive={true}>
+                                        <AvatarIcon
+                                            text={user?.name}
+                                            imageUrl={user?.avatar_image}
+                                        />
                                     </StyledBadge>
                                 </ListItemAvatar>
-                                <ListItemText primary={user.name} />
+                                <ListItemText primary={user?.name} />
                             </ListItem>
                         </PopoverProfile>
                     </div>

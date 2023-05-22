@@ -20,6 +20,9 @@ const callApi = async ({ url, data, query, method }) => {
             if (err.response.status === 401) {
                 localStorage.removeItem("token");
             }
+            if (err.response.status === 500) {
+                throw new Error("Internal server error");
+            }
             throw new Error(err.response.data.message);
         } else {
             if (err.request) {
