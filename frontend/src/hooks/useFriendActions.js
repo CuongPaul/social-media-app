@@ -8,6 +8,52 @@ const useFriendAction = () => {
 
     const [loading, setLoading] = useState(false);
 
+    const blockUser = async (userId) => {
+        setLoading(true);
+
+        try {
+            const { message } = await callApi({
+                method: "PUT",
+                url: `/user/block/${userId}`,
+            });
+            setLoading(false);
+
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, text: message, color: "success" },
+            });
+        } catch (err) {
+            setLoading(false);
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, color: "error", text: err.message },
+            });
+        }
+    };
+
+    const unblockUser = async (userId) => {
+        setLoading(true);
+
+        try {
+            const { message } = await callApi({
+                method: "PUT",
+                url: `/user/unblock/${userId}`,
+            });
+            setLoading(false);
+
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, text: message, color: "success" },
+            });
+        } catch (err) {
+            setLoading(false);
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, color: "error", text: err.message },
+            });
+        }
+    };
+
     const acceptFriendRequest = async (request_id) => {
         setLoading(true);
 
@@ -80,6 +126,8 @@ const useFriendAction = () => {
 
     return {
         loading,
+        blockUser,
+        unblockUser,
         sendFriendRequest,
         acceptFriendRequest,
         declineOrCancleFriendRequest,

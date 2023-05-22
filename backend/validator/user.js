@@ -24,6 +24,12 @@ const getUserByIdValidation = {
     }),
 };
 
+const unblockUserValidation = {
+    params: Joi.object({
+        userId: Joi.string().required().trim(),
+    }),
+};
+
 const searchUsersValidation = {
     query: Joi.object({
         name: Joi.string().required().trim(),
@@ -83,6 +89,7 @@ export {
     blockUserValidation,
     friendListValidation,
     getUserByIdValidation,
+    unblockUserValidation,
     searchUsersValidation,
     deleteAccountValidation,
     updateProfileValidation,

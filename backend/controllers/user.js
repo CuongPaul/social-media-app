@@ -128,6 +128,26 @@ const searchUsersController = async (req, res) => {
     }
 };
 
+const unblockUserController = async (req, res) => {
+    const userId = req.user_id;
+    const userIdUnblocked = req.params.userId;
+
+    try {
+        const user = await User.findById(userId);
+
+        const userBlocked = await User.findById(userIdUnblocked);
+        if (!userBlocked) {
+            return res.status(400).json({ message: "User doesn't exist" });
+        }
+
+        await user.updateOne({ $pull: { block_users: userIdUnblocked } });
+
+        return res.status(200).json({ message: `You unblocked ${userBlocked.name}` });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+};
+
 const deleteAccountController = async (req, res) => {
     const userId = req.user_id;
 
@@ -313,6 +333,7 @@ export {
     friendListController,
     getUserByIdController,
     searchUsersController,
+    unblockUserController,
     deleteAccountController,
     updateProfileController,
     searchFriendsController,

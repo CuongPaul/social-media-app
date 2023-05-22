@@ -13,18 +13,21 @@ import {
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { Search } from "@material-ui/icons";
-import React, { useState, Fragment } from "react";
+import React, { useState, Fragment, useContext } from "react";
 
+import { UserContext } from "../../App";
 import AvatarIcon from "../UI/AvatarIcon";
 import { useSearchUsers, useFriendActions } from "../../hooks";
 
 const SearchUsers = () => {
+    const { userState } = useContext(UserContext);
+
     const [isOpen, setIsOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
 
     const { users, isLoading, handleSearchUsers } = useSearchUsers();
 
-    const { sendFriendRequest } = useFriendActions();
+    const { blockUser, unblockUser, sendFriendRequest } = useFriendActions();
 
     return (
         <Fragment>
@@ -110,6 +113,29 @@ const SearchUsers = () => {
                                         >
                                             Add Friend
                                         </Button>
+                                        {userState.currentUser.block_users.includes(user._id) ? (
+                                            <Button
+                                                onClick={() => unblockUser(user._id)}
+                                                variant="contained"
+                                                style={{
+                                                    background: "rgb(1,133,243)",
+                                                    color: "white",
+                                                }}
+                                            >
+                                                Unblock user
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                onClick={() => blockUser(user._id)}
+                                                variant="contained"
+                                                style={{
+                                                    background: "rgb(1,133,243)",
+                                                    color: "white",
+                                                }}
+                                            >
+                                                Block user
+                                            </Button>
+                                        )}
                                     </div>
                                 ))}
                         </List>

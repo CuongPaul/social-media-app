@@ -7,6 +7,7 @@ import {
     friendListValidation,
     getUserByIdValidation,
     searchUsersValidation,
+    unblockUserValidation,
     updateProfileValidation,
     searchFriendsValidation,
     updatePasswordValidation,
@@ -20,6 +21,7 @@ import {
     friendListController,
     getUserByIdController,
     searchUsersController,
+    unblockUserController,
     updateProfileController,
     searchFriendsController,
     getCurrentUserController,
@@ -74,5 +76,6 @@ router.get("/search", validate(searchUsersValidation), verifyToken, searchUsersC
 router.get("/:userId", validate(getUserByIdValidation), verifyToken, getUserByIdController);
 router.put("/block/:userId", validate(blockUserValidation), verifyToken, blockUserController);
 router.put("/unfriend/:friendId", validate(unfriendValidation), verifyToken, unfriendController);
+router.put("/unblock/:userId", validate(unblockUserValidation), verifyToken, unblockUserController);
 
 export default router;
