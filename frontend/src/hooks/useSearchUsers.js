@@ -14,8 +14,8 @@ const useSearchUsers = () => {
 
         try {
             const { data } = await callApi({ method: "GET", query: { name }, url: "/user/search" });
-
             setIsLoading(false);
+
             setUsers(data.rows);
         } catch (err) {
             setIsLoading(false);

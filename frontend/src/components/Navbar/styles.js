@@ -11,8 +11,6 @@ export default makeStyles((theme) => ({
     middleMenu: {
         flexGrow: 5,
         display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
         justifyContent: "center",
     },
 
@@ -37,14 +35,10 @@ export default makeStyles((theme) => ({
 
     activeBtn: {
         borderRadius: "0px",
-        background: "transparent",
         borderBottom: "4px solid #3578E5",
     },
 
     buttonItemMiddle: {
-        width: "auto",
-        height: "auto",
         padding: "10px 50px 10px 50px",
-        borderRadius: "10px 10px 10px 10px",
     },
 }));

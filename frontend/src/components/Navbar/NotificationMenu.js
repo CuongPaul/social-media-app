@@ -18,8 +18,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState, Fragment, useEffect, useContext } from "react";
 import { Label, Forum, PersonAdd, PlaylistAddCheck } from "@material-ui/icons";
 
-import callApi from "../api";
-import { UIContext } from "../App";
+import callApi from "../../api";
+import { UIContext } from "../../App";
 
 const Subheader = () => {
     const { uiState, uiDispatch } = useContext(UIContext);

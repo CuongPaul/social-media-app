@@ -11,10 +11,6 @@ const UserLists = ({ friendRequest, friendIncomming }) => {
 
     const [users, setUsers] = useState(null);
 
-    const handleSendFriendRequest = (user_id) => {
-        sendFriendRequest(user_id);
-    };
-
     const filterUser = (user) => {
         let s_index = friendRequest?.findIndex((request) => request.sender._id === user._id);
         let r_index = friendIncomming?.findIndex((request) => request.receiver._id === user._id);
@@ -36,7 +32,7 @@ const UserLists = ({ friendRequest, friendIncomming }) => {
         })();
     }, []);
 
-    const { sendFriendRequest } = useFriendActions();
+    const { handleSendFriendRequest } = useFriendActions();
 
     return (
         <div

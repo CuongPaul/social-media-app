@@ -13,7 +13,7 @@ import { Route, Switch, Redirect, BrowserRouter } from "react-router-dom";
 
 import callApi from "./api";
 import Loader from "./components/Loader";
-import Navbar from "./components/Navbar/Navbar";
+import Navbar from "./components/Navbar";
 import ProtectedRoute from "./utils/protected-route";
 import Notification from "./components/UI/Notification";
 import { UIReducer, initialUIState } from "./context/UIContext";

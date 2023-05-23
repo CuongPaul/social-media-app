@@ -63,20 +63,13 @@ function Friends() {
     const { userState } = useContext(UserContext);
     const { uiState, uiDispatch } = useContext(UIContext);
 
+    const [userSelected, setUserSelected] = useState(null);
+
+    const { handleAcceptFriendRequest, handleDeclineOrCancleFriendRequest } = useFriendAction();
+
     useEffect(() => {
         uiDispatch({ type: "SET_NAV_MENU", payload: true });
     }, []);
-
-    const { acceptFriendRequest, declineOrCancleFriendRequest } = useFriendAction();
-
-    const handleAcceptFriendRequest = (request_id) => {
-        acceptFriendRequest(request_id);
-    };
-
-    const handleDeclineOrCancleFriendRequest = (request_id) => {
-        declineOrCancleFriendRequest(request_id);
-    };
-    const [userSelected, setUserSelected] = useState(null);
 
     return (
         <Fragment>

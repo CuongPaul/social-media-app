@@ -20,33 +20,43 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import React, { useState, Fragment, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { UserContext } from "../../App";
 import AvatarIcon from "../UI/AvatarIcon";
+import { UIContext, UserContext } from "../../App";
 import { useSearchUsers, useFriendActions } from "../../hooks";
 
 const SearchUsers = () => {
-    const { userState } = useContext(UserContext);
-    console.log("userState: ", userState);
+    const {
+        uiState: { darkMode },
+    } = useContext(UIContext);
+    const {
+        userState: { currentUser, sendedFriendRequest },
+    } = useContext(UserContext);
+
     const [isOpen, setIsOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
 
+    const {
+        handleUnfriend,
+        handleBlockUser,
+        handleUnblockUser,
+        handleSendFriendRequest,
+        handleDeclineOrCancleFriendRequest,
+    } = useFriendActions();
     const { users, setUsers, isLoading, handleSearchUsers } = useSearchUsers();
-    const { blockUser, unblockUser, unfriend, sendFriendRequest, declineOrCancleFriendRequest } =
-        useFriendActions();
 
     return (
         <Fragment>
             <Typography
                 style={{
-                    color: "grey",
                     display: "flex",
                     cursor: "pointer",
-                    minWidth: "200px",
-                    paddingLeft: "15px",
+                    minWidth: "220px",
+                    paddingLeft: "20px",
                     alignItems: "center",
-                    borderRadius: "16px",
-                    background: "rgb(244,245,246)",
+                    borderRadius: "20px",
+                    color: "rgb(176,179,184)",
                     justifyContent: "space-between",
+                    background: darkMode ? "rgb(58,59,60)" : "rgb(240,242,245)",
                 }}
                 onClick={() => setIsOpen(true)}
             >
@@ -55,24 +65,19 @@ const SearchUsers = () => {
                     <Search />
                 </IconButton>
             </Typography>
-            <Dialog
-                fullWidth
-                open={isOpen}
-                style={{ marginTop: "50px" }}
-                onClose={() => setIsOpen(false)}
-            >
+            <Dialog fullWidth open={isOpen} onClose={() => setIsOpen(false)}>
                 <CardHeader
+                    action={
+                        <IconButton onClick={() => setIsOpen(false)}>
+                            <Close />
+                        </IconButton>
+                    }
                     subheader={
                         <Typography
                             style={{ fontWeight: 800, fontSize: "20px", marginLeft: "10px" }}
                         >
                             Search users
                         </Typography>
-                    }
-                    action={
-                        <IconButton color="primary" onClick={() => setIsOpen(false)}>
-                            <Close />
-                        </IconButton>
                     }
                 />
                 <DialogContent>
@@ -85,7 +90,6 @@ const SearchUsers = () => {
                             placeholder="Enter name"
                             onChange={(e) => setSearchValue(e.target.value)}
                             style={{ flex: 4, width: "100%", marginRight: "16px" }}
-                            onKeyPress={(e) => e.key === "Enter" && handleSearchUsers(searchValue)}
                             InputProps={{
                                 endAdornment: searchValue && (
                                     <InputAdornment position="end">
@@ -100,13 +104,14 @@ const SearchUsers = () => {
                                     </InputAdornment>
                                 ),
                             }}
+                            onKeyPress={(e) => e.key === "Enter" && handleSearchUsers(searchValue)}
                         />
                         <Button
                             color="primary"
                             variant="contained"
                             disabled={isLoading}
                             onClick={() => handleSearchUsers(searchValue)}
-                            style={{ flex: 1, width: "100%", borderRadius: "5px" }}
+                            style={{ flex: 1, width: "100%", borderRadius: "10px" }}
                         >
                             {isLoading ? (
                                 <CircularProgress
@@ -122,17 +127,16 @@ const SearchUsers = () => {
                     <List>
                         {users.map((user) => (
                             <div
+                                key={user._id}
                                 style={{
                                     display: "flex",
                                     cursor: "pointer",
-                                    borderRadius: "10px",
+                                    borderRadius: "5px",
                                     marginBottom: "10px",
-                                    background: "rgb(244,245,246)",
+                                    background: "rgb(240,242,245)",
                                 }}
                             >
                                 <ListItem
-                                    button
-                                    key={user._id}
                                     component={Link}
                                     to={`/profile/${user._id}`}
                                     onClick={() => setIsOpen(false)}
@@ -140,81 +144,92 @@ const SearchUsers = () => {
                                     <ListItemIcon>
                                         <AvatarIcon text={user.name} imageUrl={user.avatar_image} />
                                     </ListItemIcon>
-                                    <ListItemText style={{ marginLeft: "8px" }}>
+                                    <ListItemText style={{ marginLeft: "6px" }}>
                                         <Typography style={{ fontWeight: 700, fontSize: "17px" }}>
                                             {user.name}
                                         </Typography>
                                     </ListItemText>
                                 </ListItem>
-                                <div>
-                                    {userState?.currentUser.friends.find(
-                                        (friend) => friend._id === user._id
-                                    ) ? (
-                                        <Button
-                                            onClick={() => unfriend(user._id)}
-                                            variant="contained"
-                                            style={{
-                                                background: "rgb(1,133,243)",
-                                                color: "white",
-                                            }}
-                                        >
-                                            Unfriend
-                                        </Button>
-                                    ) : userState?.sendedFriendRequest?.find(
-                                          (item) => item.receiver._id === user._id
-                                      ) ? (
-                                        <Button
-                                            onClick={() =>
-                                                declineOrCancleFriendRequest(
-                                                    userState?.sendedFriendRequest?.find(
-                                                        (item) => item.receiver._id === user._id
-                                                    )._id
-                                                )
-                                            }
-                                            variant="contained"
-                                            style={{
-                                                background: "rgb(1,133,243)",
-                                                color: "white",
-                                            }}
-                                        >
-                                            Cancle Friend Request
-                                        </Button>
-                                    ) : (
-                                        <Button
-                                            onClick={() => sendFriendRequest(user._id)}
-                                            variant="contained"
-                                            style={{
-                                                background: "rgb(1,133,243)",
-                                                color: "white",
-                                            }}
-                                        >
-                                            Add Friend
-                                        </Button>
-                                    )}
-                                    {userState.currentUser.block_users.includes(user._id) ? (
-                                        <Button
-                                            onClick={() => unblockUser(user._id)}
-                                            variant="contained"
-                                            style={{
-                                                background: "rgb(1,133,243)",
-                                                color: "white",
-                                            }}
-                                        >
-                                            Unblock user
-                                        </Button>
-                                    ) : (
-                                        <Button
-                                            onClick={() => blockUser(user._id)}
-                                            variant="contained"
-                                            style={{
-                                                background: "rgb(1,133,243)",
-                                                color: "white",
-                                            }}
-                                        >
-                                            Block user
-                                        </Button>
-                                    )}
-                                </div>
+                                {currentUser?.friends.find((friend) => friend._id === user._id) ? (
+                                    <Button
+                                        variant="contained"
+                                        style={{
+                                            color: "white",
+                                            margin: "10px",
+                                            minWidth: "80px",
+                                            fontSize: "10px",
+                                            background: "rgb(108,117,125)",
+                                        }}
+                                        onClick={() => handleUnfriend(user._id)}
+                                    >
+                                        Unfriend
+                                    </Button>
+                                ) : sendedFriendRequest?.find(
+                                      (item) => item.receiver._id === user._id
+                                  ) ? (
+                                    <Button
+                                        variant="contained"
+                                        style={{
+                                            color: "white",
+                                            margin: "10px",
+                                            minWidth: "80px",
+                                            fontSize: "10px",
+                                            background: "rgb(255,193,7)",
+                                        }}
+                                        onClick={() =>
+                                            handleDeclineOrCancleFriendRequest(
+                                                sendedFriendRequest?.find(
+                                                    (item) => item.receiver._id === user._id
+                                                )._id
+                                            )
+                                        }
+                                    >
+                                        Cancel
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        variant="contained"
+                                        style={{
+                                            color: "white",
+                                            margin: "10px",
+                                            minWidth: "80px",
+                                            fontSize: "10px",
+                                            background: "rgb(0,123,255)",
+                                        }}
+                                        onClick={() => handleSendFriendRequest(user._id)}
+                                    >
+                                        Add
+                                    </Button>
+                                )}
+                                {currentUser.block_users.includes(user._id) ? (
+                                    <Button
+                                        variant="contained"
+                                        style={{
+                                            color: "white",
+                                            margin: "10px",
+                                            minWidth: "80px",
+                                            fontSize: "10px",
+                                            background: "rgb(23,162,184)",
+                                        }}
+                                        onClick={() => handleUnblockUser(user._id)}
+                                    >
+                                        Unblock
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        variant="contained"
+                                        style={{
+                                            color: "white",
+                                            margin: "10px",
+                                            minWidth: "80px",
+                                            fontSize: "10px",
+                                            background: "rgb(220,53,69)",
+                                        }}
+                                        onClick={() => handleBlockUser(user._id)}
+                                    >
+                                        Block
+                                    </Button>
+                                )}
                             </div>
                         ))}
                     </List>
