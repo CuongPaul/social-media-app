@@ -29,7 +29,7 @@ const SearchUsers = () => {
         uiState: { darkMode },
     } = useContext(UIContext);
     const {
-        userState: { currentUser, sendedFriendRequest },
+        userState: { currentUser, sendedFriendRequests },
     } = useContext(UserContext);
 
     const [isOpen, setIsOpen] = useState(false);
@@ -172,7 +172,7 @@ const SearchUsers = () => {
                                     >
                                         Unfriend
                                     </Button>
-                                ) : sendedFriendRequest?.find(
+                                ) : sendedFriendRequests?.find(
                                       (item) => item.receiver._id === user._id
                                   ) ? (
                                     <Button
@@ -186,7 +186,7 @@ const SearchUsers = () => {
                                         }}
                                         onClick={() =>
                                             handleCancelFriendRequest(
-                                                sendedFriendRequest?.find(
+                                                sendedFriendRequests?.find(
                                                     (item) => item.receiver._id === user._id
                                                 )._id
                                             )

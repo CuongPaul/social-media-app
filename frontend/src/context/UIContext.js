@@ -1,7 +1,7 @@
 const initialUIState = {
     post: null,
     drawer: false,
-    message: null,
+    alert_message: null,
     loading: false,
     darkMode: false,
     postModel: false,
@@ -18,7 +18,7 @@ const UIReducer = (state, action) => {
             return { ...state, drawer: action.payload };
 
         case "SET_ALERT_MESSAGE":
-            return { ...state, message: action.payload };
+            return { ...state, alert_message: action.payload };
 
         case "SET_NAV_MENU":
             return { ...state, navDrawerMenu: action.payload };

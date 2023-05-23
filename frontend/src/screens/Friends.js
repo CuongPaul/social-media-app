@@ -80,7 +80,7 @@ function Friends() {
                             <Typography variant="h4">Friends</Typography>
                             <>
                                 <Typography variant="h6">Sended Friend Request</Typography>
-                                {userState?.sendedFriendRequest?.map((request) => (
+                                {userState?.sendedFriendRequests?.map((request) => (
                                     <Friend
                                         user={request.receiver}
                                         key={request._id}
@@ -106,7 +106,7 @@ function Friends() {
                             <>
                                 <Typography variant="h6">Incomming Friend Requests</Typography>
 
-                                {userState?.incommingFriendRequest?.map((request) => (
+                                {userState?.incommingFriendRequests?.map((request) => (
                                     <Friend
                                         user={request.sender}
                                         key={request._id}
@@ -144,8 +144,8 @@ function Friends() {
                         </div>
 
                         <UserLists
-                            friendRequest={userState?.sendedFriendRequest}
-                            friendIncomming={userState?.incommingFriendRequest}
+                            friendRequest={userState?.sendedFriendRequests}
+                            friendIncomming={userState?.incommingFriendRequests}
                         />
                     </Sidebar>
                 </Grid>

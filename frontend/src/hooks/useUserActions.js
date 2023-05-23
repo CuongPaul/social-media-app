@@ -13,10 +13,7 @@ const useUserActions = () => {
         setLoading(true);
 
         try {
-            const { message } = await callApi({
-                method: "PUT",
-                url: `/user/unfriend/${friendId}`,
-            });
+            const { message } = await callApi({ method: "PUT", url: `/user/unfriend/${friendId}` });
             setLoading(false);
 
             userDispatch({ type: "UNFRIEND", payload: friendId });
@@ -38,10 +35,7 @@ const useUserActions = () => {
         setLoading(true);
 
         try {
-            const { message } = await callApi({
-                method: "PUT",
-                url: `/user/block/${userId}`,
-            });
+            const { message } = await callApi({ method: "PUT", url: `/user/block/${userId}` });
             setLoading(false);
 
             userDispatch({ type: "BLOCK_USER", payload: userId });
@@ -63,10 +57,7 @@ const useUserActions = () => {
         setLoading(true);
 
         try {
-            const { message } = await callApi({
-                method: "PUT",
-                url: `/user/unblock/${userId}`,
-            });
+            const { message } = await callApi({ method: "PUT", url: `/user/unblock/${userId}` });
             setLoading(false);
 
             userDispatch({ type: "UNBLOCK_USER", payload: userId });

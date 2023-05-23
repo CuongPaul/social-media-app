@@ -175,7 +175,7 @@ const App = () => {
                         <ThemeProvider theme={theme}>
                             <BrowserRouter>
                                 {token && <Navbar />}
-                                {uiState.message && <Notification />}
+                                {uiState.alert_message && <Notification />}
                                 <div
                                     style={{
                                         backgroundColor: uiState.darkMode
