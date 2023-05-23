@@ -3,14 +3,12 @@ import {
     List,
     Badge,
     Avatar,
-    useTheme,
     ListItem,
     IconButton,
     Typography,
     ListItemIcon,
     ListItemText,
     ListSubheader,
-    useMediaQuery,
 } from "@material-ui/core";
 import moment from "moment";
 import { faBell } from "@fortawesome/free-regular-svg-icons";
@@ -65,30 +63,18 @@ const Subheader = () => {
 };
 
 const NotificationMenu = () => {
-    const { uiState, uiDispatch } = useContext(UIContext);
+    const {
+        uiState: { darkMode, notifications },
+        uiDispatch,
+    } = useContext(UIContext);
 
-    const [isOpenMenu, setIsOpenMenu] = useState(false);
-    const [notificationMenu, setNotificationMenu] = useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
 
-    const { breakpoints } = useTheme();
-    const xsScreen = useMediaQuery(breakpoints.only("xs"));
-
-    const handleOpenMenu = (e) => {
-        setIsOpenMenu(!isOpenMenu);
-        setNotificationMenu(e.currentTarget);
-    };
-
-    const handleReadNotifications = async (notification_id) => {
+    const handleReadNotifications = async (notificationId) => {
         try {
-            await callApi({
-                method: "PUT",
-                url: `/notification/read/${notification_id}`,
-            });
+            await callApi({ method: "PUT", url: `/notification/read/${notificationId}` });
 
-            uiDispatch({
-                type: "READ_NOTIFICATIONS",
-                payload: notification_id,
-            });
+            uiDispatch({ type: "READ_NOTIFICATIONS", payload: notificationId });
         } catch (err) {
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
@@ -117,35 +103,40 @@ const NotificationMenu = () => {
     return (
         <Fragment>
             <IconButton
-                onClick={handleOpenMenu}
+                onClick={(e) => setAnchorEl(e.currentTarget)}
                 style={{
-                    marginLeft: xsScreen ? "4px" : "8px",
-                    color: uiState.darkMode ? null : "black",
-                    backgroundColor: uiState.darkMode ? null : "#F0F2F5",
+                    marginLeft: "16px",
+                    color: darkMode ? "rgb(227,229,233)" : "rgb(5,5,5)",
+                    backgroundColor: darkMode ? "rgb(58,59,60)" : "rgb(226,228,232)",
                 }}
             >
                 <Badge
                     max={9}
                     color="error"
                     overlap="rectangular"
-                    badgeContent={uiState.notifications.filter((item) => !item.is_read).length}
+                    badgeContent={notifications.filter((item) => !item.is_read).length}
                 >
-                    <FontAwesomeIcon icon={faBell} size={xsScreen ? "xs" : "sm"} />
+                    <FontAwesomeIcon icon={faBell} />
                 </Badge>
             </IconButton>
             <Menu
-                open={isOpenMenu}
-                anchorEl={notificationMenu}
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
                 style={{ marginTop: "50px" }}
-                onClose={() => setIsOpenMenu(false)}
+                onClose={() => setAnchorEl(null)}
             >
                 <List subheader={<Subheader />}>
-                    {uiState.notifications.map((notification) => (
+                    {notifications.map((notification) => (
                         <ListItem
                             button
                             key={notification._id}
                             onClick={() => handleReadNotifications(notification._id)}
-                            style={{ backgroundColor: notification.is_read && "rgba(0,0,0,0.08)" }}
+                            style={{
+                                width: "auto",
+                                margin: "5px 15px",
+                                borderRadius: "10px",
+                                backgroundColor: notification.is_read && "rgba(0,0,0,0.08)",
+                            }}
                         >
                             <ListItemIcon>
                                 <Avatar style={{ color: "#fff", background: "seagreen" }}>
@@ -166,7 +157,7 @@ const NotificationMenu = () => {
                                     variant="body1"
                                     style={{
                                         fontSize: "13px",
-                                        color: uiState.darkMode ? null : "#65676B",
+                                        color: darkMode ? null : "#65676B",
                                     }}
                                 >
                                     {moment(notification.createdAt).fromNow()}

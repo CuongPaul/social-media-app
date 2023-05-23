@@ -6,17 +6,23 @@ import { faFacebookMessenger } from "@fortawesome/free-brands-svg-icons";
 
 import { UIContext } from "../../App";
 
-const MessengerMenu = () => {
-    const { uiState } = useContext(UIContext);
+const Messenger = () => {
+    const {
+        uiState: { darkMode },
+    } = useContext(UIContext);
 
     return (
         <IconButton
             to="/messenger"
             component={NavLink}
-            activeStyle={{ color: "rgb(1,133,243)" }}
             style={{
-                color: uiState.darkMode ? null : "black",
-                backgroundColor: uiState.darkMode ? null : "#F0F2F5",
+                marginLeft: "16px",
+                color: darkMode ? "rgb(227,229,233)" : "rgb(5,5,5)",
+                backgroundColor: darkMode ? "rgb(58,59,60)" : "rgb(226,228,232)",
+            }}
+            activeStyle={{
+                color: "rgb(24,118,242)",
+                backgroundColor: darkMode ? "rgb(38,57,81)" : "rgb(230,242,254)",
             }}
         >
             <Badge max={9} color="error" badgeContent={8} overlap="rectangular">
@@ -26,4 +32,4 @@ const MessengerMenu = () => {
     );
 };
 
-export default MessengerMenu;
+export default Messenger;

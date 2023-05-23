@@ -5,10 +5,11 @@ import useFetchPost from "./useFetchPost";
 import useSubmitPost from "./useSubmitPost";
 import useSearchUsers from "./useSearchUsers";
 import useSendMessage from "./useSendMessage";
+import useUserActions from "./useUserActions";
 import useSearchFriends from "./useSearchFriends";
 import useCreateComment from "./useCreateComment";
 import useFetchComments from "./useFetchComments";
-import useFriendActions from "./useFriendActions";
+import useFriendActions from "./useFriendRequest";
 import useUpdateProfile from "./useUpdateProfile";
 import useLocationService from "./useLocationService";
 import useUpdateProfilePic from "./useUpdateProfilePic";
@@ -21,6 +22,7 @@ export {
     useSubmitPost,
     useSearchUsers,
     useSendMessage,
+    useUserActions,
     useCreateComment,
     useFetchComments,
     useFriendActions,

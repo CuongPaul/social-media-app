@@ -41,6 +41,23 @@ const sendFriendRequestController = async (req, res) => {
                 friend_request: newFriendRequest._id,
                 content: `${user.name} has send you friend request`,
             }).save();
+
+            const friendRequestSaved = await FriendRequest.findById(newFriendRequest)
+                .populate("receiver", {
+                    _id: 1,
+                    name: 1,
+                    email: 1,
+                    avatar_image: 1,
+                })
+                .populate("sender", {
+                    _id: 1,
+                    name: 1,
+                    email: 1,
+                    avatar_image: 1,
+                });
+            return res
+                .status(200)
+                .json({ data: friendRequestSaved, message: "Friend request sent successfully" });
         }
 
         return res.status(200).json({ message: "Friend request sent successfully" });

@@ -5,13 +5,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { NavLink, useHistory, useLocation } from "react-router-dom";
 import { Home, Person, HomeOutlined, PersonOutlined } from "@material-ui/icons";
 
+import Account from "./Account";
+import Actions from "./Actions";
+import Messenger from "./Messenger";
+import CreatePost from "./CreatePost";
 import { UIContext } from "../../App";
-import AccountMenu from "./AccountMenu";
-import ProfileMenu from "./ProfileMenu";
-import MessengerMenu from "./MessengerMenu";
-import CreatePostMenu from "./CreatePostMenu";
-import SearchUsers from "../Friends/SearchUsers";
-import NotificationMenu from "./NotificationMenu";
+import SearchUsers from "./SearchUsers";
+import Notifications from "./Notifications";
 
 const Navbar = () => {
     const {
@@ -19,7 +19,7 @@ const Navbar = () => {
     } = useContext(UIContext);
 
     const history = useHistory();
-    const location = useLocation();
+    const { pathname } = useLocation();
 
     return (
         <AppBar
@@ -36,7 +36,6 @@ const Navbar = () => {
                             width: "45px",
                             height: "45px",
                             cursor: "pointer",
-                            marginRight: "12px",
                             color: "rgb(10,128,236)",
                         }}
                         onClick={() => history.push("/home")}
@@ -56,14 +55,18 @@ const Navbar = () => {
                         component={NavLink}
                         style={{
                             padding: "10px 50px",
-                            borderBottom:
-                                location.pathname === "/home" && "5px solid rgb(27,116,228)",
+                            borderBottom: pathname === "/home" && "5px solid rgb(27,116,228)",
                         }}
                     >
-                        {location.pathname === "/home" ? (
+                        {pathname === "/home" ? (
                             <Home fontSize="large" style={{ color: "rgb(27,116,228)" }} />
                         ) : (
-                            <HomeOutlined fontSize="large" />
+                            <HomeOutlined
+                                fontSize="large"
+                                style={{
+                                    color: darkMode ? "rgb(177,179,185)" : "rgb(101,103,107)",
+                                }}
+                            />
                         )}
                     </Button>
                     <Button
@@ -71,23 +74,34 @@ const Navbar = () => {
                         component={NavLink}
                         style={{
                             padding: "10px 50px",
-                            borderBottom:
-                                location.pathname === "/friends" && "5px solid rgb(27,116,228)",
+                            borderBottom: pathname === "/friends" && "5px solid rgb(27,116,228)",
                         }}
                     >
-                        {location.pathname === "/friends" ? (
+                        {pathname === "/friends" ? (
                             <Person fontSize="large" style={{ color: "rgb(27,116,228)" }} />
                         ) : (
-                            <PersonOutlined fontSize="large" />
+                            <PersonOutlined
+                                fontSize="large"
+                                style={{
+                                    color: darkMode ? "rgb(177,179,185)" : "rgb(101,103,107)",
+                                }}
+                            />
                         )}
                     </Button>
                 </div>
-                <div style={{ flex: 1, display: "flex", alignItems: "center" }}>
-                    <AccountMenu />
-                    <CreatePostMenu />
-                    <MessengerMenu />
-                    <NotificationMenu />
-                    <ProfileMenu />
+                <div
+                    style={{
+                        flex: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "end",
+                    }}
+                >
+                    <Account />
+                    <CreatePost />
+                    <Messenger />
+                    <Notifications />
+                    <Actions />
                 </div>
             </Toolbar>
         </AppBar>

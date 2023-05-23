@@ -16,13 +16,13 @@ import {
 import { Link } from "react-router-dom";
 import { Close } from "@material-ui/icons";
 import { Search } from "@material-ui/icons";
+import React, { useState, useContext } from "react";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import React, { useState, Fragment, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import AvatarIcon from "../UI/AvatarIcon";
 import { UIContext, UserContext } from "../../App";
-import { useSearchUsers, useFriendActions } from "../../hooks";
+import { useSearchUsers, useUserActions, useFriendActions } from "../../hooks";
 
 const SearchUsers = () => {
     const {
@@ -35,22 +35,17 @@ const SearchUsers = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
 
-    const {
-        handleUnfriend,
-        handleBlockUser,
-        handleUnblockUser,
-        handleSendFriendRequest,
-        handleDeclineOrCancleFriendRequest,
-    } = useFriendActions();
     const { users, setUsers, isLoading, handleSearchUsers } = useSearchUsers();
+    const { handleUnfriend, handleBlockUser, handleUnblockUser } = useUserActions();
+    const { handleSendFriendRequest, handleCancelFriendRequest } = useFriendActions();
 
     return (
-        <Fragment>
+        <div style={{ marginLeft: "16px" }}>
             <Typography
                 style={{
                     display: "flex",
                     cursor: "pointer",
-                    minWidth: "220px",
+                    minWidth: "200px",
                     paddingLeft: "20px",
                     alignItems: "center",
                     borderRadius: "20px",
@@ -88,8 +83,8 @@ const SearchUsers = () => {
                             variant="outlined"
                             value={searchValue}
                             placeholder="Enter name"
+                            style={{ flex: 4, width: "100%" }}
                             onChange={(e) => setSearchValue(e.target.value)}
-                            style={{ flex: 4, width: "100%", marginRight: "16px" }}
                             InputProps={{
                                 endAdornment: searchValue && (
                                     <InputAdornment position="end">
@@ -110,8 +105,13 @@ const SearchUsers = () => {
                             color="primary"
                             variant="contained"
                             disabled={isLoading}
+                            style={{
+                                flex: 1,
+                                width: "100%",
+                                marginLeft: "16px",
+                                borderRadius: "10px",
+                            }}
                             onClick={() => handleSearchUsers(searchValue)}
-                            style={{ flex: 1, width: "100%", borderRadius: "10px" }}
                         >
                             {isLoading ? (
                                 <CircularProgress
@@ -133,7 +133,7 @@ const SearchUsers = () => {
                                     cursor: "pointer",
                                     borderRadius: "5px",
                                     marginBottom: "10px",
-                                    background: "rgb(240,242,245)",
+                                    background: darkMode ? "rgb(58,59,60)" : "rgb(240,242,245)",
                                 }}
                             >
                                 <ListItem
@@ -145,7 +145,15 @@ const SearchUsers = () => {
                                         <AvatarIcon text={user.name} imageUrl={user.avatar_image} />
                                     </ListItemIcon>
                                     <ListItemText style={{ marginLeft: "6px" }}>
-                                        <Typography style={{ fontWeight: 700, fontSize: "17px" }}>
+                                        <Typography
+                                            style={{
+                                                fontWeight: 700,
+                                                fontSize: "17px",
+                                                color: darkMode
+                                                    ? "rgb(255,255,255)"
+                                                    : "rgb(33,33,33)",
+                                            }}
+                                        >
                                             {user.name}
                                         </Typography>
                                     </ListItemText>
@@ -177,7 +185,7 @@ const SearchUsers = () => {
                                             background: "rgb(255,193,7)",
                                         }}
                                         onClick={() =>
-                                            handleDeclineOrCancleFriendRequest(
+                                            handleCancelFriendRequest(
                                                 sendedFriendRequest?.find(
                                                     (item) => item.receiver._id === user._id
                                                 )._id
@@ -235,7 +243,7 @@ const SearchUsers = () => {
                     </List>
                 </DialogContent>
             </Dialog>
-        </Fragment>
+        </div>
     );
 };
 

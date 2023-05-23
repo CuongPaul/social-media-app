@@ -47,10 +47,55 @@ const UserReducer = (state, action) => {
 
             return { ...state, friendsOnline: friendsOnlineAfterRemove };
 
-        case "ADD_SELECTED_USER_PROFILE":
+        case "UNFRIEND":
+            const friendsAfterRemove = [...state.currentUser.friends].filter(
+                (friend) => friend._id !== action.payload
+            );
+
             return {
                 ...state,
-                selectedUserProfile: action.payload,
+                currentUser: {
+                    ...state.currentUser,
+                    friends: friendsAfterRemove,
+                },
+            };
+
+        case "CANCEL_FRIEND_REQUEST":
+            const sendedFriendRequestAfterRemove = [...state.sendedFriendRequest].filter(
+                (friendRequest) => friendRequest._id !== action.payload
+            );
+
+            return {
+                ...state,
+                sendedFriendRequest: sendedFriendRequestAfterRemove,
+            };
+
+        case "SEND_FRIEND_REQUEST":
+            return {
+                ...state,
+                sendedFriendRequest: [...state.sendedFriendRequest, action.payload],
+            };
+
+        case "BLOCK_USER":
+            return {
+                ...state,
+                currentUser: {
+                    ...state.currentUser,
+                    block_users: [...state.currentUser.block_users, action.payload],
+                },
+            };
+
+        case "UNBLOCK_USER":
+            const blockUsersAfterRemove = [...state.currentUser.block_users].filter(
+                (item) => item !== action.payload
+            );
+
+            return {
+                ...state,
+                currentUser: {
+                    ...state.currentUser,
+                    block_users: blockUsersAfterRemove,
+                },
             };
 
         case "UPDATE_PROFILE":
@@ -108,15 +153,6 @@ const UserReducer = (state, action) => {
                 currentUser: {
                     ...state.currentUser,
                     friends: [action.payload, ...state.currentUser.friend],
-                },
-            };
-
-        case "REMOVE_FRIEND":
-            return {
-                ...state,
-                currentUser: {
-                    ...state.currentUser,
-                    friends: [...action.payload],
                 },
             };
 

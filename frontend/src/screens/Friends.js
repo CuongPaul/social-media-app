@@ -5,7 +5,7 @@ import Profile from "../screens/Profile";
 import Sidebar from "../components/Sidebar";
 import { UIContext, UserContext } from "../App";
 import Friend from "../components/Friends/Friend";
-import useFriendAction from "../hooks/useFriendActions";
+import useFriendAction from "../hooks/useFriendRequest";
 import UserLists from "../components/Friends/UserLists";
 
 const useStyles = makeStyles((theme) => ({
@@ -65,7 +65,7 @@ function Friends() {
 
     const [userSelected, setUserSelected] = useState(null);
 
-    const { handleAcceptFriendRequest, handleDeclineOrCancleFriendRequest } = useFriendAction();
+    const { handleAcceptFriendRequest, handleDeclineOrCancelFriendRequest } = useFriendAction();
 
     useEffect(() => {
         uiDispatch({ type: "SET_NAV_MENU", payload: true });
@@ -89,7 +89,7 @@ function Friends() {
                                         <CardActions>
                                             <Button
                                                 onClick={() =>
-                                                    handleDeclineOrCancleFriendRequest(request._id)
+                                                    handleDeclineOrCancelFriendRequest(request._id)
                                                 }
                                                 variant="contained"
                                                 style={{
@@ -132,7 +132,7 @@ function Friends() {
                                                     color: "white",
                                                 }}
                                                 onClick={() =>
-                                                    handleDeclineOrCancleFriendRequest(request._id)
+                                                    handleDeclineOrCancelFriendRequest(request._id)
                                                 }
                                             >
                                                 Decline

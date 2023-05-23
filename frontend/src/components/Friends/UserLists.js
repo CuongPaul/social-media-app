@@ -3,7 +3,7 @@ import { Button, CardActions, Typography } from "@material-ui/core";
 
 import Friend from "./Friend";
 import { UserContext } from "../../App";
-import useFriendActions from "../../hooks/useFriendActions";
+import useFriendActions from "../../hooks/useFriendRequest";
 import callApi from "../../api";
 
 const UserLists = ({ friendRequest, friendIncomming }) => {

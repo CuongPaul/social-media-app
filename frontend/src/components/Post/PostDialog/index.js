@@ -15,8 +15,9 @@ import {
     CircularProgress,
 } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
-import React, { lazy, useState, Fragment, useEffect, useContext } from "react";
+import React, { useState, Fragment, useEffect, useContext } from "react";
 
+import Camera from "./Camera";
 import Emoji from "../../Emoji";
 import Feelings from "./Feelings";
 import Location from "./Location";
@@ -28,8 +29,6 @@ import { useSubmitPost } from "../../../hooks";
 import PostSubContent from "../PostSubContent";
 import DialogLoading from "../../UI/DialogLoading";
 import { UIContext, UserContext } from "../../../App";
-
-const Camera = lazy(() => import("./Camera"));
 
 const PostFormDialog = ({ postData, isOpen, setIsOpenPostDialog }) => {
     const { uiState } = useContext(UIContext);

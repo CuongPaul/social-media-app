@@ -119,14 +119,13 @@ const SignoutItem = () => {
     );
 };
 
-const ProfileMenu = () => {
-    const { uiState } = useContext(UIContext);
+const Actions = () => {
+    const {
+        uiState: { darkMode },
+    } = useContext(UIContext);
 
     const [isOpenMenu, setIsOpenMenu] = useState(false);
     const [profileMenu, setProfileMenu] = useState(null);
-
-    const { breakpoints } = useTheme();
-    const xsScreen = useMediaQuery(breakpoints.only("xs"));
 
     const handleOpenMenu = (e) => {
         setIsOpenMenu(!isOpenMenu);
@@ -138,12 +137,12 @@ const ProfileMenu = () => {
             <IconButton
                 onClick={handleOpenMenu}
                 style={{
-                    marginLeft: xsScreen ? "4px" : "8px",
-                    color: uiState.darkMode ? null : "dark",
-                    backgroundColor: uiState.darkMode ? null : "#F0F2F5",
+                    marginLeft: "16px",
+                    color: darkMode ? "rgb(227,229,233)" : "rgb(5,5,5)",
+                    backgroundColor: darkMode ? "rgb(58,59,60)" : "rgb(226,228,232)",
                 }}
             >
-                <FontAwesomeIcon icon={faChevronDown} size={xsScreen ? "xs" : "sm"} />
+                <FontAwesomeIcon icon={faChevronDown} />
             </IconButton>
             <Menu
                 open={isOpenMenu}
@@ -162,4 +161,4 @@ const ProfileMenu = () => {
     );
 };
 
-export default ProfileMenu;
+export default Actions;
