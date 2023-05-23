@@ -124,8 +124,32 @@ const useFriendAction = () => {
         }
     };
 
+    const unfriend = async (friendId) => {
+        setLoading(true);
+
+        try {
+            const { message } = await callApi({
+                method: "PUT",
+                url: `/user/unfriend/${friendId}`,
+            });
+            setLoading(false);
+
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, text: message, color: "success" },
+            });
+        } catch (err) {
+            setLoading(false);
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, color: "error", text: err.message },
+            });
+        }
+    };
+
     return {
         loading,
+        unfriend,
         blockUser,
         unblockUser,
         sendFriendRequest,

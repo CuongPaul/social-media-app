@@ -1,7 +1,6 @@
-import React, { useState, Fragment, useEffect, useContext } from "react";
+import React, { Fragment, useEffect, useContext, useState } from "react";
 import { Grid, Avatar, Button, makeStyles, Typography, CardActions } from "@material-ui/core";
 
-import callApi from "../api";
 import Profile from "../screens/Profile";
 import Sidebar from "../components/Sidebar";
 import { UIContext, UserContext } from "../App";
@@ -64,27 +63,8 @@ function Friends() {
     const { userState } = useContext(UserContext);
     const { uiState, uiDispatch } = useContext(UIContext);
 
-    const [friendRequest, setFriendRequest] = useState([]);
-    const [friendIncomming, setFriendIncomming] = useState([]);
-
     useEffect(() => {
         uiDispatch({ type: "SET_NAV_MENU", payload: true });
-
-        (async () => {
-            const { data: data1 } = await callApi({ url: "/friend-request/sended", method: "GET" });
-            setFriendRequest(data1.rows);
-
-            const { data: data2 } = await callApi({
-                url: "/friend-request/received",
-                method: "GET",
-            });
-            setFriendIncomming(data2.rows);
-        })();
-
-        // return () => {
-        //     userDispatch({ type: "REMOVE_SELECTED_USER_PROFILE", payload: null });
-        //     uiDispatch({ type: "SET_NAV_MENU", payload: false });
-        // };
     }, []);
 
     const { acceptFriendRequest, declineOrCancleFriendRequest } = useFriendAction();
@@ -96,6 +76,7 @@ function Friends() {
     const handleDeclineOrCancleFriendRequest = (request_id) => {
         declineOrCancleFriendRequest(request_id);
     };
+    const [userSelected, setUserSelected] = useState(null);
 
     return (
         <Fragment>
@@ -106,8 +87,12 @@ function Friends() {
                             <Typography variant="h4">Friends</Typography>
                             <>
                                 <Typography variant="h6">Sended Friend Request</Typography>
-                                {friendRequest?.map((request) => (
-                                    <Friend user={request.receiver} key={request._id}>
+                                {userState?.sendedFriendRequest?.map((request) => (
+                                    <Friend
+                                        user={request.receiver}
+                                        key={request._id}
+                                        setUserSelected={setUserSelected}
+                                    >
                                         <CardActions>
                                             <Button
                                                 onClick={() =>
@@ -128,8 +113,12 @@ function Friends() {
                             <>
                                 <Typography variant="h6">Incomming Friend Requests</Typography>
 
-                                {friendIncomming?.map((request) => (
-                                    <Friend user={request.sender} key={request._id}>
+                                {userState?.incommingFriendRequest?.map((request) => (
+                                    <Friend
+                                        user={request.sender}
+                                        key={request._id}
+                                        setUserSelected={setUserSelected}
+                                    >
                                         <CardActions>
                                             <Button
                                                 onClick={() =>
@@ -162,19 +151,17 @@ function Friends() {
                         </div>
 
                         <UserLists
-                            friendRequest={friendRequest}
-                            friendIncomming={friendIncomming}
+                            friendRequest={userState?.sendedFriendRequest}
+                            friendIncomming={userState?.incommingFriendRequest}
                         />
                     </Sidebar>
                 </Grid>
                 <Grid item md={8} style={{ margin: "auto" }}>
-                    {userState.selectedUserProfile && (
-                        <Profile userId={userState.selectedUserProfile} conScreen={true} />
-                    )}
+                    {userSelected && <Profile userId={userSelected} conScreen={true} />}
                 </Grid>
             </Grid>
 
-            {!userState.selectedUserProfile && (
+            {!userSelected && (
                 <div
                     className={classes.main}
                     style={{ backgroundColor: uiState.darkMode ? "rgb(24,25,26)" : null }}

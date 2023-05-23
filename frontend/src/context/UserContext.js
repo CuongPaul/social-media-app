@@ -2,7 +2,8 @@ const initialUserState = {
     currentUser: null,
     friendsOnline: [],
     recentAccounts: [],
-    selectedUserProfile: null,
+    sendedFriendRequest: [],
+    incommingFriendRequest: [],
 };
 
 const UserReducer = (state, action) => {
@@ -29,6 +30,12 @@ const UserReducer = (state, action) => {
 
         case "SET_FRIENDS_ONLINE":
             return { ...state, friendsOnline: action.payload };
+
+        case "SET_SENDED_FRIEND_REQUEST":
+            return { ...state, sendedFriendRequest: action.payload };
+
+        case "SET_INCOMMING_FRIEND_REQUEST":
+            return { ...state, incommingFriendRequest: action.payload };
 
         case "ADD_FRIENDS_ONLINE":
             return { ...state, friendsOnline: [...state.friendsOnline, action.payload] };

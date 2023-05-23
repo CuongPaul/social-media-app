@@ -96,10 +96,40 @@ const App = () => {
                 });
             }
         };
+        const getSendedFriendRequest = async () => {
+            try {
+                const { data } = await callApi({ url: "/friend-request/sended", method: "GET" });
+
+                if (data) {
+                    userDispatch({ type: "SET_SENDED_FRIEND_REQUEST", payload: data.rows });
+                }
+            } catch (err) {
+                uiDispatch({
+                    type: "SET_ALERT_MESSAGE",
+                    payload: { text: err.message, display: true, color: "error" },
+                });
+            }
+        };
+        const getIncommingFriendRequest = async () => {
+            try {
+                const { data } = await callApi({ url: "/friend-request/received", method: "GET" });
+
+                if (data) {
+                    userDispatch({ type: "SET_INCOMMING_FRIEND_REQUEST", payload: data.rows });
+                }
+            } catch (err) {
+                uiDispatch({
+                    type: "SET_ALERT_MESSAGE",
+                    payload: { text: err.message, display: true, color: "error" },
+                });
+            }
+        };
 
         if (token) {
             getOnlineUsers();
             getCurrentUserInfo();
+            getSendedFriendRequest();
+            getIncommingFriendRequest();
         }
     }, []);
 

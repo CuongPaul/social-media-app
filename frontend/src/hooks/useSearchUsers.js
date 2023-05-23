@@ -26,7 +26,7 @@ const useSearchUsers = () => {
         }
     };
 
-    return { users, isLoading, handleSearchUsers };
+    return { users, setUsers, isLoading, handleSearchUsers };
 };
 
 export default useSearchUsers;

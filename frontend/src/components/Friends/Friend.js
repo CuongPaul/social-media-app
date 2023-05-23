@@ -4,7 +4,7 @@ import { Typography, Card, CardActionArea, CardContent } from "@material-ui/core
 import AvatarIcon from "../UI/AvatarIcon";
 import { UIContext, UserContext } from "../../App";
 
-const Friend = ({ user, children }) => {
+const Friend = ({ user, children, setUserSelected }) => {
     const { userDispatch } = useContext(UserContext);
     const { uiState, uiDispatch } = useContext(UIContext);
 
@@ -19,7 +19,8 @@ const Friend = ({ user, children }) => {
             >
                 <CardActionArea
                     onClick={() => {
-                        userDispatch({ type: "ADD_SELECTED_USER_PROFILE", payload: user });
+                        setUserSelected(user);
+                        // userDispatch({ type: "ADD_SELECTED_USER_PROFILE", payload: user });
                         uiDispatch({ type: "SET_DRAWER", payload: false });
                     }}
                 >
