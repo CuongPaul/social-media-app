@@ -9,7 +9,7 @@ import useUserActions from "./useUserActions";
 import useSearchFriends from "./useSearchFriends";
 import useCreateComment from "./useCreateComment";
 import useFetchComments from "./useFetchComments";
-import useFriendActions from "./useFriendRequest";
+import useFriendRequest from "./useFriendRequest";
 import useUpdateProfile from "./useUpdateProfile";
 import useLocationService from "./useLocationService";
 import useUpdateProfilePic from "./useUpdateProfilePic";
@@ -25,7 +25,7 @@ export {
     useUserActions,
     useCreateComment,
     useFetchComments,
-    useFriendActions,
+    useFriendRequest,
     useUpdateProfile,
     useSearchFriends,
     useLocationService,

@@ -1,9 +1,10 @@
 const initialUIState = {
+    darkMode: false,
+    //
     post: null,
     drawer: false,
     alert_message: null,
     loading: false,
-    darkMode: false,
     postModel: false,
     notifications: [],
     navDrawerMenu: false,
@@ -11,6 +12,10 @@ const initialUIState = {
 
 const UIReducer = (state, action) => {
     switch (action.type) {
+        case "SET_DARK_MODE":
+            localStorage.setItem("dark_mode", action.payload);
+            return { ...state, darkMode: action.payload };
+        //
         case "EDIT_POST":
             return { ...state, post: action.payload };
 
@@ -34,10 +39,6 @@ const UIReducer = (state, action) => {
 
         case "SET_LOADING":
             return { ...state, loading: action.payload };
-
-        case "SET_DARK_MODE":
-            localStorage.setItem("dark_mode", action.payload);
-            return { ...state, darkMode: action.payload };
 
         case "READ_ALL_NOTIFICATIONS":
             const newNotifications = [...state.notifications];

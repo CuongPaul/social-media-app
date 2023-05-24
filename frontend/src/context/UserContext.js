@@ -1,15 +1,16 @@
 const initialUserState = {
     currentUser: null,
-    friendsOnline: [],
-    recentAccounts: [],
     sendedFriendRequests: [],
     incommingFriendRequests: [],
+    //
+    friendsOnline: [],
+    recentAccounts: [],
 };
 
 const UserReducer = (state, action) => {
     switch (action.type) {
         case "UNFRIEND":
-            const friendsAfterRemove = [...state.currentUser.friends].filter(
+            const friendsAfterUnfriend = [...state.currentUser.friends].filter(
                 (friend) => friend._id !== action.payload
             );
 
@@ -17,7 +18,7 @@ const UserReducer = (state, action) => {
                 ...state,
                 currentUser: {
                     ...state.currentUser,
-                    friends: friendsAfterRemove,
+                    friends: friendsAfterUnfriend,
                 },
             };
 
@@ -31,7 +32,7 @@ const UserReducer = (state, action) => {
             };
 
         case "UNBLOCK_USER":
-            const blockUsersAfterRemove = [...state.currentUser.block_users].filter(
+            const blockUsersAfterUnblock = [...state.currentUser.block_users].filter(
                 (item) => item !== action.payload
             );
 
@@ -39,7 +40,7 @@ const UserReducer = (state, action) => {
                 ...state,
                 currentUser: {
                     ...state.currentUser,
-                    block_users: blockUsersAfterRemove,
+                    block_users: blockUsersAfterUnblock,
                 },
             };
 
@@ -50,17 +51,44 @@ const UserReducer = (state, action) => {
             };
 
         case "CANCEL_FRIEND_REQUEST":
-            const sendedFriendRequestsAfterRemove = [...state.sendedFriendRequests].filter(
+            const sendedFriendRequestsAfterCancel = [...state.sendedFriendRequests].filter(
                 (friendRequest) => friendRequest._id !== action.payload
             );
 
             return {
                 ...state,
-                sendedFriendRequests: sendedFriendRequestsAfterRemove,
+                sendedFriendRequests: sendedFriendRequestsAfterCancel,
             };
 
-        //
+        case "DECLINE_FRIEND_REQUEST":
+            const incommingFriendRequestsAfterDecline = [...state.incommingFriendRequests].filter(
+                (friendRequest) => friendRequest._id !== action.payload
+            );
 
+            return {
+                ...state,
+                incommingFriendRequests: incommingFriendRequestsAfterDecline,
+            };
+
+        case "ACCEPT_FRIEND_REQUEST":
+            const incommingFriendRequestsAfterAccept = [...state.incommingFriendRequests].filter(
+                (friendRequest) => friendRequest._id !== action.payload
+            );
+
+            return {
+                ...state,
+                incommingFriendRequests: incommingFriendRequestsAfterAccept,
+            };
+
+        case "ADD_FRIEND":
+            return {
+                ...state,
+                currentUser: {
+                    ...state.currentUser,
+                    friends: [...state.currentUser.friends, action.payload],
+                },
+            };
+        //
         case "SET_RECENT_ACCOUNTS":
             return { ...state, recentAccounts: action.payload };
 
@@ -148,15 +176,6 @@ const UserReducer = (state, action) => {
             }
 
             return { ...state, currentUser: { ...state.currentUser, friends: [...friends_2] } };
-
-        case "ADD_FRIEND":
-            return {
-                ...state,
-                currentUser: {
-                    ...state.currentUser,
-                    friends: [action.payload, ...state.currentUser.friend],
-                },
-            };
 
         default:
             throw new Error(`Action type ${action.type} is undefined`);

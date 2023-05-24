@@ -2,13 +2,22 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 import { User } from "../models";
 import storage from "../config/firebase";
-import { createPostValidation } from "../validator/post";
+import { createPostValidation, updatePostValidation } from "../validator/post";
 
 const uploadFiles = async (req, res, next) => {
     try {
-        const { error } = createPostValidation.validate(req.body);
-        if (error) {
-            return res.status(400).json({ message: error.details[0].message });
+        let validater = null;
+
+        if (req.method == "POST" && req.baseUrl == "/post") {
+            validater = createPostValidation.validate(req.body);
+        }
+
+        if (req.method == "PUT" && req.baseUrl == "/post") {
+            validater = updatePostValidation.validate(req.body);
+        }
+
+        if (validater?.error) {
+            return res.status(400).json({ message: validater.error.details[0].message });
         }
     } catch (err) {
         return res.status(500).json({ error: err.message });
@@ -36,7 +45,12 @@ const uploadFiles = async (req, res, next) => {
             imagesUrl.push(url);
         }
 
-        req.body.images = imagesUrl;
+        if (req.body.old_images) {
+            req.body.images = [...JSON.parse(req.body.old_images), ...imagesUrl];
+        } else {
+            req.body.images = imagesUrl;
+        }
+
         next();
     } catch (err) {
         return res.status(500).json({ error: err.message });

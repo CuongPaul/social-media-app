@@ -158,6 +158,8 @@ const updatePostController = async (req, res) => {
     const { postId } = req.params;
     const { body, text, images, privacy } = req.body;
 
+    const bodyInvalid = typeof body == "string" ? JSON.parse(body) : body;
+
     try {
         const post = await Post.findOne({ user: userId, _id: postId }).populate("user");
 
@@ -165,8 +167,8 @@ const updatePostController = async (req, res) => {
             return res.status(404).json({ message: "Post does not exist" });
         }
 
-        if (body?.tag_friends.length) {
-            const users = await User.find({ _id: { $in: body.tag_friends } });
+        if (bodyInvalid?.tag_friends.length) {
+            const users = await User.find({ _id: { $in: bodyInvalid.tag_friends } });
             const newTagFriends = users.reduce((acc, cur) => {
                 if (!cur.block_users.includes(userId) && cur.friends.includes(userId)) {
                     return acc.concat(cur._id);
@@ -174,7 +176,7 @@ const updatePostController = async (req, res) => {
                     return acc;
                 }
             }, []);
-            body.tag_friends = newTagFriends;
+            bodyInvalid.tag_friends = newTagFriends;
 
             const newFriendsTaged = newTagFriends.filter(
                 (item) => !post.body.tag_friends.includes(item)
@@ -195,7 +197,7 @@ const updatePostController = async (req, res) => {
             }
         }
 
-        await post.updateOne({ body, text, images, privacy });
+        await post.updateOne({ text, images, privacy, body: bodyInvalid });
 
         return res.status(200).json({ message: "Update post successfully" });
     } catch (err) {

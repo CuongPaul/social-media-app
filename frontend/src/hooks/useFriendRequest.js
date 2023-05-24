@@ -3,7 +3,7 @@ import { useState, useContext } from "react";
 import callApi from "../api";
 import { UIContext, UserContext } from "../App";
 
-const useFriendAction = () => {
+const useFriendRequestAction = () => {
     const { uiDispatch } = useContext(UIContext);
     const { userDispatch } = useContext(UserContext);
 
@@ -37,15 +37,18 @@ const useFriendAction = () => {
         }
     };
 
-    const handleAcceptFriendRequest = async (requestId) => {
+    const handleAcceptFriendRequest = async (request) => {
         setLoading(true);
 
         try {
             const { message } = await callApi({
                 method: "PUT",
-                url: `/friend-request/${requestId}`,
+                url: `/friend-request/${request._id}`,
             });
             setLoading(false);
+
+            userDispatch({ type: "ADD_FRIEND", payload: request.sender });
+            userDispatch({ type: "ACCEPT_FRIEND_REQUEST", payload: request._id });
 
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
@@ -85,12 +88,38 @@ const useFriendAction = () => {
         }
     };
 
+    const handleDeclineFriendRequest = async (requestId) => {
+        setLoading(true);
+
+        try {
+            const { message } = await callApi({
+                method: "DELETE",
+                url: `/friend-request/${requestId}`,
+            });
+            setLoading(false);
+
+            userDispatch({ type: "DECLINE_FRIEND_REQUEST", payload: requestId });
+
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, text: message, color: "success" },
+            });
+        } catch (err) {
+            setLoading(false);
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, color: "error", text: err.message },
+            });
+        }
+    };
+
     return {
         loading,
         handleSendFriendRequest,
         handleAcceptFriendRequest,
         handleCancelFriendRequest,
+        handleDeclineFriendRequest,
     };
 };
 
-export default useFriendAction;
+export default useFriendRequestAction;

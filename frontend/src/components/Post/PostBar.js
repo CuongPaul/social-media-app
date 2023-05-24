@@ -38,10 +38,7 @@ const PostBar = () => {
                     >
                         What's in your mind, {currentUser?.name}?
                     </Typography>
-                    <PostDialog
-                        isOpen={isOpenPostDialog}
-                        setIsOpenPostDialog={setIsOpenPostDialog}
-                    />
+                    <PostDialog isOpen={isOpenPostDialog} setIsOpen={setIsOpenPostDialog} />
                 </div>
             </Paper>
         </Fragment>

@@ -30,7 +30,7 @@ const CreatePost = () => {
             >
                 <PostAdd />
             </IconButton>
-            <PostDialog isOpen={isOpenPostDialog} setIsOpenPostDialog={setIsOpenPostDialog} />
+            <PostDialog isOpen={isOpenPostDialog} setIsOpen={setIsOpenPostDialog} />
         </Fragment>
     );
 };

@@ -3,11 +3,19 @@ import { Close } from "@material-ui/icons";
 import { Avatar, CardMedia, IconButton } from "@material-ui/core";
 
 const PreviewFile = ({ filePreview, handleRemoveFile }) => {
-    const typeFile = filePreview.slice(0, 10);
+    const fileType = filePreview.slice(0, 10);
 
     let component = "video";
-    if (typeFile == "data:image") component = "img";
-    if (typeFile == "blob:http:") component = "blob";
+    if (fileType === "data:image") component = "img";
+    if (fileType === "blob:http:") component = "blob";
+
+    if (filePreview.includes("https://firebasestorage.googleapis.com")) {
+        const beforeString = filePreview.substring(0, filePreview.indexOf("?alt=media&token="));
+
+        const fileTypeUpload = beforeString.substring(beforeString.lastIndexOf(".") + 1);
+
+        if (fileTypeUpload !== "mp4") component = "img";
+    }
 
     return (
         <div style={{ position: "relative", margin: "20px 0px" }}>

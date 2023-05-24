@@ -65,7 +65,8 @@ function Friends() {
 
     const [userSelected, setUserSelected] = useState(null);
 
-    const { handleAcceptFriendRequest, handleDeclineOrCancelFriendRequest } = useFriendAction();
+    const { handleAcceptFriendRequest, handleCancelFriendRequest, handleDeclineFriendRequest } =
+        useFriendAction();
 
     useEffect(() => {
         uiDispatch({ type: "SET_NAV_MENU", payload: true });
@@ -89,7 +90,7 @@ function Friends() {
                                         <CardActions>
                                             <Button
                                                 onClick={() =>
-                                                    handleDeclineOrCancelFriendRequest(request._id)
+                                                    handleCancelFriendRequest(request._id)
                                                 }
                                                 variant="contained"
                                                 style={{
@@ -114,9 +115,7 @@ function Friends() {
                                     >
                                         <CardActions>
                                             <Button
-                                                onClick={() =>
-                                                    handleAcceptFriendRequest(request._id)
-                                                }
+                                                onClick={() => handleAcceptFriendRequest(request)}
                                                 variant="contained"
                                                 style={{
                                                     background: "seagreen",
@@ -132,7 +131,7 @@ function Friends() {
                                                     color: "white",
                                                 }}
                                                 onClick={() =>
-                                                    handleDeclineOrCancelFriendRequest(request._id)
+                                                    handleDeclineFriendRequest(request._id)
                                                 }
                                             >
                                                 Decline

@@ -51,7 +51,7 @@ const PostAction = ({ post }) => {
                 <PostDialog
                     postData={postData}
                     isOpen={isOpenPostDialog}
-                    setIsOpenPostDialog={setIsOpenPostDialog}
+                    setIsOpen={setIsOpenPostDialog}
                 />
             </div>
         )

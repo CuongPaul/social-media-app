@@ -30,9 +30,11 @@ import PostSubContent from "../PostSubContent";
 import DialogLoading from "../../UI/DialogLoading";
 import { UIContext, UserContext } from "../../../App";
 
-const PostFormDialog = ({ postData, isOpen, setIsOpenPostDialog }) => {
+const PostDialog = ({ isOpen, postData, setIsOpen }) => {
+    const {
+        userState: { currentUser },
+    } = useContext(UserContext);
     const { uiState } = useContext(UIContext);
-    const { userState } = useContext(UserContext);
 
     const [text, setText] = useState("");
     const [feelings, setFeelings] = useState("");
@@ -54,43 +56,44 @@ const PostFormDialog = ({ postData, isOpen, setIsOpenPostDialog }) => {
     };
 
     const { loading, handleUpdatePost, handleCreatePost } = useSubmitPost({
+        setIsOpen,
+        filesUpload,
+        filesPreview,
         postData: {
             text,
             privacy,
             body: { feelings, location, tag_friends: tagFriends.map((item) => item._id) },
         },
-        filesUpload,
     });
 
     useEffect(() => {
         if (postData) {
             setText(postData.text);
             setPrivacy(postData.privacy);
+            setFilesPreview(postData.images);
             setFeelings(postData.body.feelings);
             setLocation(postData.body.location);
+            setTagFriends(postData.body.tag_friends);
         }
     }, [postData]);
 
     return (
         <Fragment>
-            <Dialog fullWidth open={isOpen} onClose={() => setIsOpenPostDialog(false)}>
+            <Dialog fullWidth open={isOpen} onClose={() => setIsOpen(false)}>
                 <CardHeader
-                    avatar={
-                        <AvatarIcon
-                            text={userState?.currentUser?.name}
-                            imageUrl={userState?.currentUser?.avatar_image}
-                        />
+                    action={
+                        <IconButton onClick={() => setIsOpen(false)}>
+                            <Close />
+                        </IconButton>
                     }
                     title={
                         <PostSubContent
-                            username={userState?.currentUser?.name}
+                            username={currentUser?.name}
                             postBody={{ feelings, location, tag_friends: tagFriends }}
                         />
                     }
-                    action={
-                        <IconButton onClick={() => setIsOpenPostDialog(false)}>
-                            <Close />
-                        </IconButton>
+                    avatar={
+                        <AvatarIcon text={currentUser?.name} imageUrl={currentUser?.avatar_image} />
                     }
                 />
                 <DialogContent>
@@ -113,7 +116,7 @@ const PostFormDialog = ({ postData, isOpen, setIsOpenPostDialog }) => {
                             position: "relative",
                             background: uiState.darkMode ? null : "#fff",
                         }}
-                        placeholder={`What's in your mind, ${userState?.currentUser?.name}?`}
+                        placeholder={`What's in your mind, ${currentUser?.name}?`}
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment
@@ -126,21 +129,14 @@ const PostFormDialog = ({ postData, isOpen, setIsOpenPostDialog }) => {
                         }}
                     />
                     <Grid container alignItems="center" justifyContent="center">
-                        {!postData && (
-                            <>
-                                <FilesUpload
-                                    multipleUpload={true}
-                                    setFilesUpload={setFilesUpload}
-                                    setFilesPreview={setFilesPreview}
-                                />
-                                <Camera
-                                    setFilesUpload={setFilesUpload}
-                                    setFilesPreview={setFilesPreview}
-                                />
-                            </>
-                        )}
+                        <FilesUpload
+                            multipleUpload={true}
+                            setFilesUpload={setFilesUpload}
+                            setFilesPreview={setFilesPreview}
+                        />
+                        <Camera setFilesUpload={setFilesUpload} setFilesPreview={setFilesPreview} />
                         <Feelings feelings={feelings} setFeelings={setFeelings} />
-                        {privacy !== "ONLY_ME" && !postData && (
+                        {privacy !== "ONLY_ME" && (
                             <TagFriends tagFriends={tagFriends} setTagFriends={setTagFriends} />
                         )}
                         <Location location={location} setLocation={setLocation} />
@@ -186,4 +182,4 @@ const PostFormDialog = ({ postData, isOpen, setIsOpenPostDialog }) => {
     );
 };
 
-export default PostFormDialog;
+export default PostDialog;

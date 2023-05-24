@@ -50,19 +50,35 @@ const deletePostValidation = {
     }),
 };
 
-const updatePostValidation = {
-    body: Joi.object({
-        text: Joi.string().trim().required(),
-        privacy: Joi.string().valid("FRIEND", "PUBLIC", "ONLY_ME"),
-        body: Joi.object({
-            location: Joi.string().allow("", null).trim(),
-            feelings: Joi.string().allow("", null).trim(),
-        }).allow(null),
-    }),
-    params: Joi.object({
-        postId: Joi.string().trim().required(),
-    }),
-};
+const updatePostValidation = Joi.object({
+    images: Joi.any().strip(),
+    text: Joi.string().trim().required(),
+    folder: Joi.string().trim().allow(null),
+    old_images: Joi.string().trim().allow(null),
+    privacy: Joi.string().valid("FRIEND", "PUBLIC", "ONLY_ME"),
+    body: Joi.string()
+        .allow(null)
+        .custom((value, helpers) => {
+            try {
+                const parsedValue = JSON.parse(value);
+                return parsedValue;
+            } catch (error) {
+                return helpers.error("any.invalid");
+            }
+        }),
+}).custom((value, helpers) => {
+    const { error } = Joi.object({
+        location: Joi.string().allow("", null).trim(),
+        feelings: Joi.string().allow("", null).trim(),
+        tag_friends: Joi.array().items(Joi.string().trim()).allow(null),
+    }).validate(value.body);
+
+    if (error) {
+        return helpers.error("any.invalid");
+    }
+
+    return value;
+});
 
 const getAllPostsValidation = {
     query: Joi.object({

@@ -31,7 +31,14 @@ const sendFriendRequestController = async (req, res) => {
             const newFriendRequest = await new FriendRequest({
                 sender: userId,
                 receiver: receiver_id,
-            }).save();
+            })
+                .save()
+                .then((res) =>
+                    res
+                        .populate("sender", { _id: 1, name: 1, avatar_image: 1 })
+                        .populate("receiver", { _id: 1, name: 1, avatar_image: 1 })
+                        .execPopulate()
+                );
 
             const user = await User.findById(userId);
 
@@ -42,22 +49,9 @@ const sendFriendRequestController = async (req, res) => {
                 content: `${user.name} has send you friend request`,
             }).save();
 
-            const friendRequestSaved = await FriendRequest.findById(newFriendRequest)
-                .populate("receiver", {
-                    _id: 1,
-                    name: 1,
-                    email: 1,
-                    avatar_image: 1,
-                })
-                .populate("sender", {
-                    _id: 1,
-                    name: 1,
-                    email: 1,
-                    avatar_image: 1,
-                });
             return res
                 .status(200)
-                .json({ data: friendRequestSaved, message: "Friend request sent successfully" });
+                .json({ data: newFriendRequest, message: "Friend request sent successfully" });
         }
 
         return res.status(200).json({ message: "Friend request sent successfully" });
@@ -145,18 +139,8 @@ const getSendedFriendRequestsController = async (req, res) => {
             .limit(pageSize)
             .sort({ createdAt: -1 })
             .skip((page - 1) * pageSize)
-            .populate("receiver", {
-                _id: 1,
-                name: 1,
-                email: 1,
-                avatar_image: 1,
-            })
-            .populate("sender", {
-                _id: 1,
-                name: 1,
-                email: 1,
-                avatar_image: 1,
-            });
+            .populate("sender", { _id: 1, name: 1, avatar_image: 1 })
+            .populate("receiver", { _id: 1, name: 1, avatar_image: 1 });
 
         const count = await FriendRequest.countDocuments(query);
 
@@ -178,18 +162,8 @@ const getReceivedFriendRequestsController = async (req, res) => {
             .limit(pageSize)
             .sort({ createdAt: -1 })
             .skip((page - 1) * pageSize)
-            .populate("receiver", {
-                _id: 1,
-                name: 1,
-                email: 1,
-                avatar_image: 1,
-            })
-            .populate("sender", {
-                _id: 1,
-                name: 1,
-                email: 1,
-                avatar_image: 1,
-            });
+            .populate("sender", { _id: 1, name: 1, avatar_image: 1 })
+            .populate("receiver", { _id: 1, name: 1, avatar_image: 1 });
 
         const count = await FriendRequest.countDocuments(query);
 
