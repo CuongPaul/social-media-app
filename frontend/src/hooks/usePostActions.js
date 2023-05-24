@@ -1,17 +1,14 @@
 import { useState, useContext } from "react";
-import { useHistory } from "react-router-dom";
 
 import callApi from "../api";
 import { UIContext } from "../App";
 
-const useSubmitPost = ({ postData, setIsOpen, filesUpload, filesPreview }) => {
+const usePostActions = ({ postData, setIsOpen, filesUpload, filesPreview }) => {
     const { uiDispatch } = useContext(UIContext);
-
-    const history = useHistory();
 
     const [loading, setLoading] = useState(false);
 
-    const handleUpdatePost = async (postId) => {
+    const handleUpdatePost = async (postDataId) => {
         setLoading(true);
 
         try {
@@ -27,13 +24,45 @@ const useSubmitPost = ({ postData, setIsOpen, filesUpload, filesPreview }) => {
             formData.append("text", postData.text);
             formData.append("privacy", postData.privacy);
             formData.append("body", JSON.stringify(postData.body));
-            formData.append("old_images", JSON.stringify(filesPreview));
+            formData.append(
+                "old_images",
+                JSON.stringify(filesPreview.filter((item) => postData.images.includes(item)))
+            );
 
-            await callApi({ method: "PUT", data: formData, url: `/post/${postId}` });
+            const { data } = await callApi({
+                method: "PUT",
+                data: formData,
+                url: `/post/${postDataId}`,
+            });
             setLoading(false);
 
+            uiDispatch({ payload: data, type: "UPDATE_POST" });
+
             setIsOpen(false);
-            history.push("/home");
+        } catch (err) {
+            setLoading(false);
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { text: err.message, display: true, color: "error" },
+            });
+        }
+    };
+
+    const handleDeletePost = async (postId) => {
+        setLoading(true);
+
+        try {
+            const { message } = await callApi({ method: "DELETE", url: `/post/${postId}` });
+            setLoading(false);
+
+            uiDispatch({ payload: postId, type: "DELETE_POST" });
+
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { text: message, display: true, color: "success" },
+            });
+
+            setIsOpen(false);
         } catch (err) {
             setLoading(false);
             uiDispatch({
@@ -61,11 +90,12 @@ const useSubmitPost = ({ postData, setIsOpen, filesUpload, filesPreview }) => {
             formData.append("privacy", postData.privacy);
             formData.append("body", JSON.stringify(postData.body));
 
-            await callApi({ url: "/post", method: "POST", data: formData });
+            const { data } = await callApi({ url: "/post", method: "POST", data: formData });
             setLoading(false);
 
+            uiDispatch({ payload: data, type: "CREATE_POST" });
+
             setIsOpen(false);
-            history.push("/home");
         } catch (err) {
             setLoading(false);
             uiDispatch({
@@ -75,7 +105,7 @@ const useSubmitPost = ({ postData, setIsOpen, filesUpload, filesPreview }) => {
         }
     };
 
-    return { loading, handleCreatePost, handleUpdatePost };
+    return { loading, handleCreatePost, handleDeletePost, handleUpdatePost };
 };
 
-export default useSubmitPost;
+export default usePostActions;

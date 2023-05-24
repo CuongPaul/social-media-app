@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import React, { useState, Fragment, useEffect, useContext } from "react";
+import React, { Fragment, useEffect, useContext } from "react";
 import { List, Avatar, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 
 import callApi from "../api";
@@ -18,20 +18,19 @@ const leftSidebarItems = [
 
 const Home = () => {
     const {
-        uiDispatch,
-        uiState: { darkMode },
-    } = useContext(UIContext);
-    const {
         userState: { currentUser },
     } = useContext(UserContext);
-
-    const [posts, setPosts] = useState([]);
+    const {
+        uiDispatch,
+        uiState: { posts, darkMode },
+    } = useContext(UIContext);
 
     useEffect(() => {
         (async () => {
             try {
                 const { data } = await callApi({ url: "/post", method: "GET" });
-                setPosts(data.rows);
+
+                uiDispatch({ type: "SET_POSTS", payload: data.rows });
             } catch (err) {
                 uiDispatch({
                     type: "SET_ALERT_MESSAGE",

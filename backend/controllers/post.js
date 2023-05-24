@@ -106,7 +106,26 @@ const createPostController = async (req, res) => {
             user: userId,
             body: bodyInvalid,
             react: emptyReact._id,
-        }).save();
+        })
+            .save()
+            .then((res) =>
+                res
+                    .populate("user", { _id: 1, name: 1, avatar_image: 1 })
+                    .populate({
+                        path: "react",
+                        select: "_id wow sad like love haha angry",
+                        populate: [
+                            { path: "wow", select: "_id name avatar_image" },
+                            { path: "sad", select: "_id name avatar_image" },
+                            { path: "like", select: "_id name avatar_image" },
+                            { path: "love", select: "_id name avatar_image" },
+                            { path: "haha", select: "_id name avatar_image" },
+                            { path: "angry", select: "_id name avatar_image" },
+                        ],
+                    })
+                    .populate("body.tag_friends", { _id: 1, name: 1, avatar_image: 1 })
+                    .execPopulate()
+            );
 
         const user = await User.findById(userId);
         if (post && bodyInvalid?.tag_friends?.length && privacy != "ONLY_ME") {
@@ -124,7 +143,7 @@ const createPostController = async (req, res) => {
             }
         }
 
-        return res.status(200).json({ message: "success" });
+        return res.status(200).json({ data: post, message: "success" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -147,7 +166,7 @@ const deletePostController = async (req, res) => {
         await Comment.deleteMany({ post: postId });
         await Notification.deleteMany({ post: postId });
 
-        return res.status(200).json({ message: "success" });
+        return res.status(200).json({ message: "Post is deleted" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -197,9 +216,31 @@ const updatePostController = async (req, res) => {
             }
         }
 
-        await post.updateOne({ text, images, privacy, body: bodyInvalid });
+        post.text = text;
+        post.images = images;
+        post.privacy = privacy;
+        post.body = bodyInvalid;
 
-        return res.status(200).json({ message: "Update post successfully" });
+        const postUpdated = await post.save().then((res) =>
+            res
+                .populate("user", { _id: 1, name: 1, avatar_image: 1 })
+                .populate({
+                    path: "react",
+                    select: "_id wow sad like love haha angry",
+                    populate: [
+                        { path: "wow", select: "_id name avatar_image" },
+                        { path: "sad", select: "_id name avatar_image" },
+                        { path: "like", select: "_id name avatar_image" },
+                        { path: "love", select: "_id name avatar_image" },
+                        { path: "haha", select: "_id name avatar_image" },
+                        { path: "angry", select: "_id name avatar_image" },
+                    ],
+                })
+                .populate("body.tag_friends", { _id: 1, name: 1, avatar_image: 1 })
+                .execPopulate()
+        );
+
+        return res.status(200).json({ data: postUpdated, message: "Update post successfully" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }

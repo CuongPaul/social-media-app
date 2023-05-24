@@ -1,7 +1,7 @@
 const initialUIState = {
+    posts: [],
     darkMode: false,
     //
-    post: null,
     drawer: false,
     alert_message: null,
     loading: false,
@@ -15,9 +15,31 @@ const UIReducer = (state, action) => {
         case "SET_DARK_MODE":
             localStorage.setItem("dark_mode", action.payload);
             return { ...state, darkMode: action.payload };
+
+        case "SET_POSTS":
+            return { ...state, posts: action.payload };
+
+        case "UPDATE_POST":
+            const postsAfterUpdate = [...state.posts];
+
+            const postUpdatedIndex = postsAfterUpdate.findIndex(
+                (post) => post._id === action.payload._id
+            );
+            postsAfterUpdate[postUpdatedIndex] = action.payload;
+
+            return { ...state, posts: postsAfterUpdate };
+
+        case "CREATE_POST":
+            const postsAfterCreate = [...state.posts];
+            postsAfterCreate.unshift(action.payload);
+
+            return { ...state, posts: postsAfterCreate };
+
+        case "DELETE_POST":
+            const postsAfterDelete = state.posts.filter((post) => post._id !== action.payload);
+
+            return { ...state, posts: postsAfterDelete };
         //
-        case "EDIT_POST":
-            return { ...state, post: action.payload };
 
         case "SET_DRAWER":
             return { ...state, drawer: action.payload };

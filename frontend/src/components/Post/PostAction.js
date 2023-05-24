@@ -2,10 +2,22 @@ import { MoreHoriz } from "@material-ui/icons";
 import React, { useState, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { Menu, MenuItem, IconButton, Typography } from "@material-ui/core";
+import {
+    Menu,
+    Button,
+    Dialog,
+    MenuItem,
+    IconButton,
+    Typography,
+    DialogTitle,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+} from "@material-ui/core";
 
 import PostDialog from "./PostDialog";
 import { UserContext } from "../../App";
+import { usePostActions } from "../../hooks";
 
 const PostAction = ({ post }) => {
     const { userState } = useContext(UserContext);
@@ -13,6 +25,9 @@ const PostAction = ({ post }) => {
     const [postData, setPostData] = useState(null);
     const [isShowAction, setIsShowAction] = useState(null);
     const [isOpenPostDialog, setIsOpenPostDialog] = useState(false);
+    const [isOpenConfirmDialog, setIsOpenConfirmDialog] = useState(false);
+
+    const { loading, handleDeletePost } = usePostActions({ setIsOpen: setIsOpenConfirmDialog });
 
     return (
         post?.user?._id === userState?.currentUser?._id && (
@@ -42,6 +57,7 @@ const PostAction = ({ post }) => {
                     <MenuItem
                         onClick={() => {
                             setIsShowAction(null);
+                            setIsOpenConfirmDialog(true);
                         }}
                     >
                         <FontAwesomeIcon icon={faTrash} />
@@ -53,6 +69,30 @@ const PostAction = ({ post }) => {
                     isOpen={isOpenPostDialog}
                     setIsOpen={setIsOpenPostDialog}
                 />
+                <Dialog open={isOpenConfirmDialog} onClose={() => setIsOpenConfirmDialog(false)}>
+                    <DialogTitle>Delete post</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Do you really want to delete this post?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions style={{ marginBottom: "10px", paddingRight: "20px" }}>
+                        <Button
+                            disable={loading}
+                            variant="contained"
+                            onClick={() => handleDeletePost(post._id)}
+                        >
+                            Delete
+                        </Button>
+                        <Button
+                            color="primary"
+                            variant="contained"
+                            onClick={() => setIsOpenConfirmDialog(false)}
+                        >
+                            Cancel
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </div>
         )
     );

@@ -25,7 +25,7 @@ import TagFriends from "./TagFriends";
 import FilesUpload from "./FilesUpload";
 import PreviewFile from "./PreviewFile";
 import AvatarIcon from "../../UI/AvatarIcon";
-import { useSubmitPost } from "../../../hooks";
+import { usePostActions } from "../../../hooks";
 import PostSubContent from "../PostSubContent";
 import DialogLoading from "../../UI/DialogLoading";
 import { UIContext, UserContext } from "../../../App";
@@ -55,13 +55,14 @@ const PostDialog = ({ isOpen, postData, setIsOpen }) => {
         setFilesUpload(newFilesUpload);
     };
 
-    const { loading, handleUpdatePost, handleCreatePost } = useSubmitPost({
+    const { loading, handleUpdatePost, handleCreatePost } = usePostActions({
         setIsOpen,
         filesUpload,
         filesPreview,
         postData: {
             text,
             privacy,
+            images: postData?.images,
             body: { feelings, location, tag_friends: tagFriends.map((item) => item._id) },
         },
     });
