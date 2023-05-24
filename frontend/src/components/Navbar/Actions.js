@@ -3,31 +3,29 @@ import {
     List,
     Avatar,
     Switch,
-    useTheme,
     ListItem,
     IconButton,
     Typography,
     ListItemIcon,
     ListItemText,
-    useMediaQuery,
 } from "@material-ui/core";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Settings, ExitToApp } from "@material-ui/icons";
 import { faMoon } from "@fortawesome/free-regular-svg-icons";
 import React, { useState, Fragment, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 
-import callApi from "../../api";
 import AvatarIcon from "../UI/AvatarIcon";
+import { useUserActions } from "../../hooks";
 import { UIContext, UserContext } from "../../App";
 
 const ProfileItem = () => {
-    const { userState } = useContext(UserContext);
+    const {
+        userState: { currentUser },
+    } = useContext(UserContext);
 
-    const { currentUser } = userState;
-
-    return currentUser ? (
+    return (
         <ListItem button component={Link} to={`/profile/${currentUser._id}`}>
             <ListItemIcon>
                 <AvatarIcon text={currentUser.name} imageUrl={currentUser.avatar_image} />
@@ -38,7 +36,7 @@ const ProfileItem = () => {
                 </Typography>
             </ListItemText>
         </ListItem>
-    ) : null;
+    );
 };
 
 const SettingsItem = () => {
@@ -57,13 +55,13 @@ const SettingsItem = () => {
 };
 
 const DarkModeItem = () => {
-    const { uiState, uiDispatch } = useContext(UIContext);
+    const {
+        uiDispatch,
+        uiState: { darkMode },
+    } = useContext(UIContext);
 
-    const handleChangDarkMode = (is_dark_mode) => {
-        uiDispatch({
-            type: "SET_DARK_MODE",
-            payload: is_dark_mode,
-        });
+    const handleChangDarkMode = (isDarkMode) => {
+        uiDispatch({ payload: isDarkMode, type: "SET_DARK_MODE" });
     };
 
     return (
@@ -76,7 +74,7 @@ const DarkModeItem = () => {
             <ListItemText>
                 <Switch
                     color="primary"
-                    checked={uiState.darkMode}
+                    checked={darkMode}
                     onChange={(e) => handleChangDarkMode(e.target.checked)}
                 />
             </ListItemText>
@@ -85,25 +83,7 @@ const DarkModeItem = () => {
 };
 
 const SignoutItem = () => {
-    const { uiDispatch } = useContext(UIContext);
-    const { userDispatch } = useContext(UserContext);
-
-    const history = useHistory();
-
-    const handleSignout = async () => {
-        try {
-            await callApi({ method: "POST", url: "/auth/signout" });
-
-            userDispatch({ type: "SIGN_OUT" });
-
-            history.push("/");
-        } catch (err) {
-            uiDispatch({
-                type: "SET_ALERT_MESSAGE",
-                payload: { display: true, color: "error", text: err.message },
-            });
-        }
-    };
+    const { handleSignout } = useUserActions();
 
     return (
         <ListItem button onClick={handleSignout}>
@@ -124,18 +104,12 @@ const Actions = () => {
         uiState: { darkMode },
     } = useContext(UIContext);
 
-    const [isOpenMenu, setIsOpenMenu] = useState(false);
-    const [profileMenu, setProfileMenu] = useState(null);
-
-    const handleOpenMenu = (e) => {
-        setIsOpenMenu(!isOpenMenu);
-        setProfileMenu(e.currentTarget);
-    };
+    const [anchorEl, setAnchorEl] = useState(null);
 
     return (
         <Fragment>
             <IconButton
-                onClick={handleOpenMenu}
+                onClick={(e) => setAnchorEl(e.currentTarget)}
                 style={{
                     marginLeft: "16px",
                     color: darkMode ? "rgb(227,229,233)" : "rgb(5,5,5)",
@@ -145,10 +119,10 @@ const Actions = () => {
                 <FontAwesomeIcon icon={faChevronDown} />
             </IconButton>
             <Menu
-                open={isOpenMenu}
-                anchorEl={profileMenu}
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
                 style={{ marginTop: "50px" }}
-                onClose={() => setIsOpenMenu(false)}
+                onClose={() => setAnchorEl(null)}
             >
                 <List>
                     <ProfileItem />

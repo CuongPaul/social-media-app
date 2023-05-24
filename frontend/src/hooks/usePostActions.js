@@ -21,13 +21,12 @@ const usePostActions = ({ postData, setIsOpen, filesUpload, filesPreview }) => {
                 }
             }
 
+            const oldImages = filesPreview.filter((item) => postData.images.includes(item));
+
             formData.append("text", postData.text);
             formData.append("privacy", postData.privacy);
             formData.append("body", JSON.stringify(postData.body));
-            formData.append(
-                "old_images",
-                JSON.stringify(filesPreview.filter((item) => postData.images.includes(item)))
-            );
+            formData.append("old_images", JSON.stringify(oldImages));
 
             const { data } = await callApi({
                 method: "PUT",

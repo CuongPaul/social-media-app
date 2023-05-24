@@ -45,10 +45,9 @@ const uploadFiles = async (req, res, next) => {
             imagesUrl.push(url);
         }
 
+        req.body.images = imagesUrl;
         if (req.body.old_images) {
             req.body.images = [...JSON.parse(req.body.old_images), ...imagesUrl];
-        } else {
-            req.body.images = imagesUrl;
         }
 
         next();

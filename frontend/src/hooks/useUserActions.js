@@ -1,4 +1,5 @@
 import { useState, useContext } from "react";
+import { useHistory } from "react-router-dom";
 
 import callApi from "../api";
 import { UIContext, UserContext } from "../App";
@@ -7,7 +8,24 @@ const useUserActions = () => {
     const { uiDispatch } = useContext(UIContext);
     const { userDispatch } = useContext(UserContext);
 
+    const history = useHistory();
+
     const [loading, setLoading] = useState(false);
+
+    const handleSignout = async () => {
+        try {
+            await callApi({ method: "POST", url: "/auth/signout" });
+
+            userDispatch({ type: "SIGN_OUT" });
+
+            history.push("/");
+        } catch (err) {
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, color: "error", text: err.message },
+            });
+        }
+    };
 
     const handleUnfriend = async (friendId) => {
         setLoading(true);
@@ -77,6 +95,7 @@ const useUserActions = () => {
 
     return {
         loading,
+        handleSignout,
         handleUnfriend,
         handleBlockUser,
         handleUnblockUser,

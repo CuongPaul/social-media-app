@@ -88,6 +88,11 @@ const UserReducer = (state, action) => {
                     friends: [...state.currentUser.friends, action.payload],
                 },
             };
+
+        case "SIGN_OUT":
+            localStorage.removeItem("token");
+
+            return initialUserState;
         //
         case "SET_RECENT_ACCOUNTS":
             return { ...state, recentAccounts: action.payload };
@@ -100,14 +105,6 @@ const UserReducer = (state, action) => {
             localStorage.setItem("recent_accounts", JSON.stringify(recentAccountsAfterRemove));
 
             return { ...state, recentAccounts: recentAccountsAfterRemove };
-
-        case "SIGN_OUT":
-            localStorage.removeItem("token");
-
-            return {
-                ...state,
-                currentUser: null,
-            };
 
         case "SET_FRIENDS_ONLINE":
             return { ...state, friendsOnline: action.payload };

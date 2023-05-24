@@ -14,16 +14,16 @@ const Messenger = () => {
 
     const [textValue, setTextValue] = useState("");
 
-    useEffect(() => {
-        uiDispatch({ type: "SET_NAV_MENU", payload: true });
-        uiDispatch({ type: "SET_DRAWER", payload: false });
+    // useEffect(() => {
+    //     uiDispatch({ type: "SET_NAV_MENU", payload: true });
+    //     uiDispatch({ type: "SET_DRAWER", payload: false });
 
-        return () => {
-            uiDispatch({ type: "SET_NAV_MENU", payload: false });
-            uiDispatch({ type: "SET_DRAWER", payload: false });
-            chatDispatch({ type: "SET_SELECTED_FRIEND", payload: null });
-        };
-    }, [uiDispatch, chatDispatch]);
+    //     return () => {
+    //         uiDispatch({ type: "SET_NAV_MENU", payload: false });
+    //         uiDispatch({ type: "SET_DRAWER", payload: false });
+    //         chatDispatch({ type: "SET_SELECTED_FRIEND", payload: null });
+    //     };
+    // }, []);
 
     return (
         <div style={{ minHeight: "100vh", paddingTop: "100px", paddingBottom: "40px" }}>

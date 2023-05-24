@@ -28,15 +28,15 @@ const Settings = () => {
         uiDispatch({ type: "SET_DRAWER", payload: false });
     };
 
-    useEffect(() => {
-        uiDispatch({ type: "SET_NAV_MENU", payload: true });
-        uiDispatch({ type: "SET_DRAWER", payload: true });
+    // useEffect(() => {
+    //     uiDispatch({ type: "SET_NAV_MENU", payload: true });
+    //     uiDispatch({ type: "SET_DRAWER", payload: true });
 
-        return () => {
-            uiDispatch({ type: "SET_NAV_MENU", payload: false });
-            uiDispatch({ type: "SET_DRAWER", payload: false });
-        };
-    }, [uiDispatch]);
+    //     return () => {
+    //         uiDispatch({ type: "SET_NAV_MENU", payload: false });
+    //         uiDispatch({ type: "SET_DRAWER", payload: false });
+    //     };
+    // }, [uiDispatch]);
 
     const ListContents = (
         <>

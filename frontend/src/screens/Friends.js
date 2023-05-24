@@ -1,5 +1,5 @@
-import React, { Fragment, useEffect, useContext, useState } from "react";
-import { Grid, Avatar, Button, makeStyles, Typography, CardActions } from "@material-ui/core";
+import React, { useState, Fragment, useContext } from "react";
+import { List, Grid, Avatar, Button, makeStyles, Typography, CardActions } from "@material-ui/core";
 
 import Profile from "../screens/Profile";
 import Sidebar from "../components/Sidebar";
@@ -58,93 +58,84 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Friends() {
+const Friends = () => {
     const classes = useStyles();
-    const { userState } = useContext(UserContext);
-    const { uiState, uiDispatch } = useContext(UIContext);
+    const { uiState } = useContext(UIContext);
+    const {
+        userState: { sendedFriendRequests, incommingFriendRequests },
+    } = useContext(UserContext);
 
     const [userSelected, setUserSelected] = useState(null);
 
     const { handleAcceptFriendRequest, handleCancelFriendRequest, handleDeclineFriendRequest } =
         useFriendAction();
 
-    useEffect(() => {
-        uiDispatch({ type: "SET_NAV_MENU", payload: true });
-    }, []);
-
     return (
         <Fragment>
-            <Grid container spacing={0}>
+            <Grid container>
                 <Grid item md={3}>
                     <Sidebar>
-                        <div className={classes.sidebarContainer}>
-                            <Typography variant="h4">Friends</Typography>
-                            <>
-                                <Typography variant="h6">Sended Friend Request</Typography>
-                                {userState?.sendedFriendRequests?.map((request) => (
-                                    <Friend
-                                        user={request.receiver}
-                                        key={request._id}
-                                        setUserSelected={setUserSelected}
-                                    >
-                                        <CardActions>
-                                            <Button
-                                                onClick={() =>
-                                                    handleCancelFriendRequest(request._id)
-                                                }
-                                                variant="contained"
-                                                style={{
-                                                    background: "tomato",
-                                                    color: "white",
-                                                }}
-                                            >
-                                                Cancel
-                                            </Button>
-                                        </CardActions>
-                                    </Friend>
-                                ))}
-                            </>
-                            <>
-                                <Typography variant="h6">Incomming Friend Requests</Typography>
+                        <div>
+                            <Typography variant="h6">Sended friend request</Typography>
+                            {sendedFriendRequests.map((request) => (
+                                <Friend
+                                    key={request._id}
+                                    user={request.receiver}
+                                    setUserSelected={setUserSelected}
+                                >
+                                    <CardActions>
+                                        <Button
+                                            onClick={() => handleCancelFriendRequest(request._id)}
+                                            variant="contained"
+                                            style={{
+                                                background: "tomato",
+                                                color: "white",
+                                            }}
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </CardActions>
+                                </Friend>
+                            ))}
+                        </div>
+                        <div>
+                            <Typography variant="h6">Incomming Friend Requests</Typography>
 
-                                {userState?.incommingFriendRequests?.map((request) => (
-                                    <Friend
-                                        user={request.sender}
-                                        key={request._id}
-                                        setUserSelected={setUserSelected}
-                                    >
-                                        <CardActions>
-                                            <Button
-                                                onClick={() => handleAcceptFriendRequest(request)}
-                                                variant="contained"
-                                                style={{
-                                                    background: "seagreen",
-                                                    color: "white",
-                                                }}
-                                            >
-                                                Accept
-                                            </Button>
-                                            <Button
-                                                variant="contained"
-                                                style={{
-                                                    background: "tomato",
-                                                    color: "white",
-                                                }}
-                                                onClick={() =>
-                                                    handleDeclineFriendRequest(request._id)
-                                                }
-                                            >
-                                                Decline
-                                            </Button>
-                                        </CardActions>
-                                    </Friend>
-                                ))}
-                            </>
+                            {incommingFriendRequests?.map((request) => (
+                                <Friend
+                                    user={request.sender}
+                                    key={request._id}
+                                    setUserSelected={setUserSelected}
+                                >
+                                    <CardActions>
+                                        <Button
+                                            onClick={() => handleAcceptFriendRequest(request)}
+                                            variant="contained"
+                                            style={{
+                                                background: "seagreen",
+                                                color: "white",
+                                            }}
+                                        >
+                                            Accept
+                                        </Button>
+                                        <Button
+                                            variant="contained"
+                                            style={{
+                                                background: "tomato",
+                                                color: "white",
+                                            }}
+                                            onClick={() => handleDeclineFriendRequest(request._id)}
+                                        >
+                                            Decline
+                                        </Button>
+                                    </CardActions>
+                                </Friend>
+                            ))}
                         </div>
 
                         <UserLists
-                            friendRequest={userState?.sendedFriendRequests}
-                            friendIncomming={userState?.incommingFriendRequests}
+                            friendRequest={sendedFriendRequests}
+                            friendIncomming={incommingFriendRequests}
                         />
                     </Sidebar>
                 </Grid>
@@ -160,18 +151,18 @@ function Friends() {
                 >
                     <Avatar variant="square" className={classes.avatar}>
                         <img
-                            alt="avatar"
-                            src={require("../assets/select-friends.svg")}
+                            alt=""
                             className={classes.image}
+                            src={require("../assets/select-friends.svg")}
                         />
                     </Avatar>
                     <Typography className={classes.selectText}>
-                        Select people's names to preview their profile.
+                        Select the name of the person you want to preview the profile.
                     </Typography>
                 </div>
             )}
         </Fragment>
     );
-}
+};
 
 export default Friends;

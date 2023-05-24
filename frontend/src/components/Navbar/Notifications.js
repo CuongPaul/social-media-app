@@ -18,29 +18,16 @@ import { Label, Forum, PersonAdd, PlaylistAddCheck } from "@material-ui/icons";
 
 import callApi from "../../api";
 import { UIContext } from "../../App";
+import { useNotifications } from "../../hooks";
 
 const Subheader = () => {
-    const { uiState, uiDispatch } = useContext(UIContext);
+    const {
+        uiState: { darkMode, notifications },
+    } = useContext(UIContext);
 
-    const notificationsRead = uiState?.notifications?.filter((item) => item.is_read);
+    const notificationsRead = notifications.filter((item) => item.is_read);
 
-    const handleReadAllNotifications = async () => {
-        try {
-            await callApi({
-                method: "PUT",
-                url: "/notification/read-all",
-            });
-
-            uiDispatch({
-                type: "READ_ALL_NOTIFICATIONS",
-            });
-        } catch (err) {
-            uiDispatch({
-                type: "SET_ALERT_MESSAGE",
-                payload: { display: true, color: "error", text: err.message },
-            });
-        }
-    };
+    const { handleReadAllNotifications } = useNotifications();
 
     return (
         <ListSubheader
@@ -48,12 +35,13 @@ const Subheader = () => {
                 display: "flex",
                 minHeight: "48px",
                 alignItems: "center",
-                backgroundColor: "#ffffff",
                 justifyContent: "space-between",
+                color: darkMode ? "rgb(227,229,233)" : "rgb(5,5,5)",
+                backgroundColor: darkMode ? "rgb(66,66,66)" : "rgb(255,255,255)",
             }}
         >
             <Typography style={{ fontSize: "20px", fontWeight: "800" }}>Notifications</Typography>
-            {notificationsRead.length === uiState.notifications.length ? null : (
+            {notificationsRead.length < notifications.length && (
                 <IconButton onClick={handleReadAllNotifications}>
                     <PlaylistAddCheck />
                 </IconButton>
@@ -62,35 +50,22 @@ const Subheader = () => {
     );
 };
 
-const NotificationMenu = () => {
+const Notifications = () => {
     const {
-        uiState: { darkMode, notifications },
         uiDispatch,
+        uiState: { darkMode, notifications },
     } = useContext(UIContext);
 
     const [anchorEl, setAnchorEl] = useState(null);
 
-    const handleReadNotifications = async (notificationId) => {
-        try {
-            await callApi({ method: "PUT", url: `/notification/read/${notificationId}` });
-
-            uiDispatch({ type: "READ_NOTIFICATIONS", payload: notificationId });
-        } catch (err) {
-            uiDispatch({
-                type: "SET_ALERT_MESSAGE",
-                payload: { display: true, color: "error", text: err.message },
-            });
-        }
-    };
+    const { handleReadNotifications } = useNotifications();
 
     useEffect(() => {
         (async () => {
             try {
                 const { data } = await callApi({ method: "GET", url: "/notification" });
 
-                if (data) {
-                    uiDispatch({ type: "SET_NOTIFICATIONS", payload: data.rows });
-                }
+                uiDispatch({ type: "SET_NOTIFICATIONS", payload: data.rows });
             } catch (err) {
                 uiDispatch({
                     type: "SET_ALERT_MESSAGE",
@@ -171,4 +146,4 @@ const NotificationMenu = () => {
     );
 };
 
-export default NotificationMenu;
+export default Notifications;
