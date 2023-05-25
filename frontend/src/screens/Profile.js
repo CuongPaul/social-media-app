@@ -26,7 +26,7 @@ const Profile = ({ userId, conScreen }) => {
 
             setUser(data);
         })();
-    }, []);
+    }, [userId]);
 
     return (
         <div style={{ minHeight: "100vh" }}>

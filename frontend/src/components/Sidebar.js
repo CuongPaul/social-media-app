@@ -3,7 +3,7 @@ import { Drawer } from "@material-ui/core";
 
 import { UIContext } from "../App";
 
-const Sidebar = ({ children, anchor = "left" }) => {
+const Sidebar = ({ children, anchor = "left", width = "300px" }) => {
     const { uiState } = useContext(UIContext);
 
     return (
@@ -12,8 +12,8 @@ const Sidebar = ({ children, anchor = "left" }) => {
             variant="permanent"
             PaperProps={{
                 style: {
+                    width,
                     border: "none",
-                    width: "300px",
                     marginTop: "75px",
                     backgroundColor: uiState.darkMode ? "rgb(24,25,26)" : "rgb(244,245,246)",
                 },

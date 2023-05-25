@@ -323,7 +323,12 @@ const getRecommendUsersController = async (req, res) => {
         }
 
         const query = { _id: { $in: recommendUserIds } };
-        const recommendUsers = await User.find(query, { _id: 1, name: 1, avatar_image: 1 })
+        const recommendUsers = await User.find(query, {
+            _id: 1,
+            name: 1,
+            friends: 1,
+            avatar_image: 1,
+        })
             .limit(pageSize)
             .skip((page - 1) * pageSize);
         const count = await User.countDocuments(query);
