@@ -1,80 +1,150 @@
 import React, { useContext } from "react";
-import { Paper, Grid, Typography, Button, Avatar } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
+import { Grid, Paper, Button, Typography } from "@material-ui/core";
 
 import { UserContext } from "../../App";
 import AvatarIcon from "../UI/AvatarIcon";
-// import { unfriend } from "../../services/UserServices";
+import { useUserActions, useFriendRequest } from "../../hooks";
 
-const Friends = ({ user }) => {
-    const { userDispatch } = useContext(UserContext);
+const Friends = ({ friends }) => {
+    const {
+        userState: { currentUser, sendedFriendRequests },
+    } = useContext(UserContext);
+
+    const history = useHistory();
+
+    const { handleUnfriend, handleBlockUser, handleUnblockUser } = useUserActions();
+    const { handleSendFriendRequest, handleCancelFriendRequest } = useFriendRequest();
 
     return (
-        <Grid container spacing={2}>
-            {user.friends &&
-                user.friends.map((friend) => (
-                    <Grid item xs={12} sm={6} md={6} key={friend._id}>
+        <div style={{ display: "flex" }}>
+            {friends.map((friend) => {
+                const mutualFriends = currentUser?.friends.filter((item) =>
+                    friend.friends.includes(item._id)
+                );
+
+                return (
+                    <Grid
+                        item
+                        md={4}
+                        key={friend._id}
+                        style={{
+                            margin: "20px",
+                            borderRadius: "15px",
+                            backgroundColor: "rgb(255,255,255)",
+                        }}
+                    >
                         <Paper
                             style={{
-                                padding: "16px",
                                 display: "flex",
-                                flexDirection: "column",
+                                padding: "16px",
+                                boxShadow: "none",
+                                cursor: "pointer",
                                 alignItems: "center",
+                                borderRadius: "15px",
+                                flexDirection: "column",
                             }}
+                            onClick={() => history.push(`/profile/${friend._id}`)}
                         >
                             <AvatarIcon
-                                size="70px"
+                                size="100px"
+                                fontSize="50px"
                                 text={friend.name}
                                 imageUrl={friend.avatar_image}
                             />
-                            <Typography
-                                style={{ marginTop: "16px", flexGrow: 1 }}
-                                variant="h5"
-                                color="inherit"
-                            >
+                            <Typography style={{ marginTop: "16px" }} variant="h5">
                                 {friend.name}
                             </Typography>
-                            <Typography
-                                style={{ marginTop: "6px", flexGrow: 1 }}
-                                variant="h6"
-                                color="inherit"
-                            >
-                                {friend.email}
+                            <Typography style={{ marginTop: "6px" }} variant="body2">
+                                {mutualFriends.length} mutual friends
                             </Typography>
-                            <Button
-                                variant="contained"
-                                style={{
-                                    backgroundColor: "tomato",
-                                    color: "#fff",
-                                    marginTop: "16px",
-                                }}
-                                onClick={() => {
-                                    const userRequest = {
-                                        id: user.id,
-                                        friends: user.friends.map((item) => item.id),
-                                    };
-                                    const friendRequest = {
-                                        id: friend.id,
-                                        friends: friend.friends.map((item) => item.id),
-                                    };
-
-                                    const newPayload = user.friends.filter(
-                                        (item) => item.id !== friend.id
-                                    );
-
-                                    // unfriend({ userRequest, friendRequest }).then((res) => {
-                                    //     userDispatch({
-                                    //         type: "REMOVE_FRIEND",
-                                    //         payload: newPayload,
-                                    //     });
-                                    // });
-                                }}
-                            >
-                                Unfriend
-                            </Button>
                         </Paper>
+                        <div style={{ display: "flex", justifyContent: "center" }}>
+                            {currentUser?.friends.find((item) => item._id === friend._id) ? (
+                                <Button
+                                    variant="contained"
+                                    style={{
+                                        color: "white",
+                                        margin: "10px",
+                                        minWidth: "100px",
+                                        fontSize: "12px",
+                                        background: "rgb(108,117,125)",
+                                    }}
+                                    onClick={() => handleUnfriend(friend._id)}
+                                >
+                                    Unfriend
+                                </Button>
+                            ) : sendedFriendRequests?.find(
+                                  (item) => item.receiver._id === friend._id
+                              ) ? (
+                                <Button
+                                    variant="contained"
+                                    style={{
+                                        color: "white",
+                                        margin: "10px",
+                                        minWidth: "100px",
+                                        fontSize: "12px",
+                                        background: "rgb(255,193,7)",
+                                    }}
+                                    onClick={() =>
+                                        handleCancelFriendRequest(
+                                            sendedFriendRequests?.find(
+                                                (item) => item.receiver._id === friend._id
+                                            )._id
+                                        )
+                                    }
+                                >
+                                    Cancel
+                                </Button>
+                            ) : (
+                                <Button
+                                    variant="contained"
+                                    style={{
+                                        color: "white",
+                                        margin: "10px",
+                                        minWidth: "100px",
+                                        fontSize: "12px",
+                                        background: "rgb(0,123,255)",
+                                    }}
+                                    onClick={() => handleSendFriendRequest(friend._id)}
+                                >
+                                    Add
+                                </Button>
+                            )}
+                            {currentUser.block_users.includes(friend._id) ? (
+                                <Button
+                                    variant="contained"
+                                    style={{
+                                        color: "white",
+                                        margin: "10px",
+                                        minWidth: "100px",
+                                        fontSize: "12px",
+                                        background: "rgb(23,162,184)",
+                                    }}
+                                    onClick={() => handleUnblockUser(friend._id)}
+                                >
+                                    Unblock
+                                </Button>
+                            ) : (
+                                <Button
+                                    variant="contained"
+                                    style={{
+                                        color: "white",
+                                        margin: "10px",
+                                        minWidth: "100px",
+                                        fontSize: "12px",
+                                        background: "rgb(220,53,69)",
+                                    }}
+                                    onClick={() => handleBlockUser(friend._id)}
+                                >
+                                    Block
+                                </Button>
+                            )}
+                        </div>
                     </Grid>
-                ))}
-        </Grid>
+                );
+            })}
+        </div>
     );
 };
 

@@ -8,7 +8,7 @@ import {
     DialogActions,
     DialogContent,
 } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { CameraAlt as CameraIcon } from "@material-ui/icons";
 import React, { useContext, useRef, useState } from "react";
 
@@ -56,12 +56,13 @@ const UpdateProfileImage = ({ user }) => {
         setMenu(false);
     };
 
+    const params = useParams();
     return (
         <div>
             <Badge
                 overlap="rectangular"
                 badgeContent={
-                    userState.currentUser.id === user.id && (
+                    userState.currentUser._id === params.userId && (
                         <IconButton style={{ bottom: -140, left: -20 }} onClick={handleImageClick}>
                             <Avatar>
                                 <CameraIcon style={{ color: "black" }} />

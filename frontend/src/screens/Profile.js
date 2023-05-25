@@ -1,32 +1,30 @@
 import { useParams } from "react-router-dom";
-import React, { useState, useContext, useEffect } from "react";
-import { Paper, AppBar, Tabs, Tab, Box, Grid, Divider } from "@material-ui/core";
+import React, { useState, useEffect, useContext } from "react";
+import { Tab, Grid, Tabs, Paper, AppBar, Divider } from "@material-ui/core";
 
 import callApi from "../api";
-import Friends from "../components/Profile/Friends";
 import { UIContext } from "../App";
+import Friends from "../components/Profile/Friends";
+import TabPanel from "../components/Profile/TabPanel";
 import ProfileHeader from "../components/Profile/ProfileHeader";
 import ProfileTimeline from "../components/Profile/ProfileTimeline";
 
-const Profile = ({ userId, conScreen }) => {
+const Profile = ({ userData, conScreen }) => {
+    const { uiState } = useContext(UIContext);
+
     const params = useParams();
 
-    const { uiState } = useContext(UIContext);
-    const [value, setValue] = useState(0);
+    const [tab, setTab] = useState(0);
     const [user, setUser] = useState(null);
-
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-    };
 
     useEffect(() => {
         (async () => {
-            const abc = userId ? userId._id : params.userId;
+            const abc = userData ? userData._id : params.userId;
             const { data } = await callApi({ url: `/user/${abc}`, method: "GET" });
 
             setUser(data);
         })();
-    }, [userId]);
+    }, [userData, params.userId]);
 
     return (
         <div style={{ minHeight: "100vh" }}>
@@ -41,23 +39,16 @@ const Profile = ({ userId, conScreen }) => {
                     <Grid item xs={12} sm={12} md={6}>
                         <Divider />
                         <AppBar
+                            elevation={0}
                             position="static"
                             style={{
-                                background: uiState.darkMode ? "rgb(36,37,38)" : "#fff",
-                                color: uiState.darkMode ? "#fff" : "black",
                                 alignItems: "center",
+                                color: uiState.darkMode ? "rgb(255,255,255)" : "rgb(0,0,0)",
+                                background: uiState.darkMode ? "rgb(36,37,38)" : "rgb(255,255,255)",
                             }}
-                            elevation={0}
                         >
-                            <Tabs
-                                value={value}
-                                onChange={handleChange}
-                                variant="scrollable"
-                                scrollButtons="on"
-                                indicatorColor="primary"
-                            >
+                            <Tabs value={tab} onChange={(_e, newValue) => setTab(newValue)}>
                                 <Tab label="Timeline" />
-
                                 <Tab label="Friends" />
                             </Tabs>
                         </AppBar>
@@ -65,28 +56,17 @@ const Profile = ({ userId, conScreen }) => {
                 </Grid>
             </Paper>
             <Grid container justifyContent="center">
-                <Grid item xs={12} sm={12} md={conScreen ? 12 : 6}>
+                <Grid item xs={12} sm={12} md={conScreen ? 12 : 8}>
                     {user && (
-                        <TabPanel value={value} index={0}>
+                        <TabPanel id={0} index={tab}>
                             <ProfileTimeline user={user} />
                         </TabPanel>
                     )}
-
-                    <TabPanel value={value} index={1}>
-                        <Friends user={user} />
+                    <TabPanel id={1} index={tab}>
+                        <Friends friends={user?.friends} />
                     </TabPanel>
                 </Grid>
             </Grid>
-        </div>
-    );
-};
-
-const TabPanel = (props) => {
-    const { children, value, index, ...other } = props;
-
-    return (
-        <div hidden={value !== index} {...other}>
-            {value === index && <Box p={3}>{children}</Box>}
         </div>
     );
 };

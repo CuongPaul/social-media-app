@@ -1,4 +1,4 @@
-import React, { useMemo, useContext } from "react";
+import React, { useContext } from "react";
 import { Card, Typography, CardContent } from "@material-ui/core";
 
 import AvatarIcon from "../UI/AvatarIcon";
@@ -12,19 +12,17 @@ const User = ({ user, children, setSelectedUser }) => {
         userState: { currentUser },
     } = useContext(UserContext);
 
-    const mutualFriends = useMemo(
-        () => currentUser?.friends.filter((item) => user.friends.includes(item._id)),
-        [user.friends.length, currentUser?.friends.length]
-    );
+    const mutualFriends = currentUser?.friends.filter((item) => user.friends.includes(item._id));
 
     return (
         <Card
             style={{
-                padding: "8px 16px",
+                padding: "16px",
                 display: "flex",
                 cursor: "pointer",
+                minWidth: "300px",
                 borderRadius: "10px",
-                justifyContent: "space-beetwen",
+                justifyContent: "space-between",
                 backgroundColor: darkMode ? "rgb(36,37,38)" : "rgb(255,255,255)",
             }}
         >

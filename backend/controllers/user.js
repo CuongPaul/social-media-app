@@ -80,12 +80,7 @@ const getUserByIdController = async (req, res) => {
     try {
         const user = await User.findOne({ is_active: true, _id: userId }, { password: 0 }).populate(
             "friends",
-            {
-                _id: 1,
-                name: 1,
-                email: 1,
-                avatar_image: 1,
-            }
+            { _id: 1, name: 1, friends: 1, avatar_image: 1 }
         );
 
         if (!user) {
