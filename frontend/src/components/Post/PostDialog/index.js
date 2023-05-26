@@ -23,7 +23,7 @@ import Feelings from "./Feelings";
 import Location from "./Location";
 import TagFriends from "./TagFriends";
 import FilesUpload from "./FilesUpload";
-import PreviewFile from "./PreviewFile";
+import FilePreview from "./FilePreview";
 import AvatarIcon from "../../UI/AvatarIcon";
 import { usePostActions } from "../../../hooks";
 import PostSubContent from "../PostSubContent";
@@ -143,7 +143,7 @@ const PostDialog = ({ isOpen, postData, setIsOpen }) => {
                         <Location location={location} setLocation={setLocation} />
                     </Grid>
                     {filesPreview.map((item, index) => (
-                        <PreviewFile
+                        <FilePreview
                             key={index}
                             filePreview={item}
                             handleRemoveFile={() => handleRemoveFilePreview(index)}

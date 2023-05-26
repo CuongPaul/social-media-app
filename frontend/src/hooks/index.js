@@ -4,7 +4,7 @@ import useSignup from "./useSignup";
 import useFetchPost from "./useFetchPost";
 import usePostActions from "./usePostActions";
 import useSearchUsers from "./useSearchUsers";
-import useSendMessage from "./useSendMessage";
+import useSubmitMessage from "./useSubmitMessage";
 import useUserActions from "./useUserActions";
 import useSearchFriends from "./useSearchFriends";
 import useCreateComment from "./useCreateComment";
@@ -22,7 +22,7 @@ export {
     useFetchPost,
     usePostActions,
     useSearchUsers,
-    useSendMessage,
+    useSubmitMessage,
     useUserActions,
     useCreateComment,
     useFetchComments,

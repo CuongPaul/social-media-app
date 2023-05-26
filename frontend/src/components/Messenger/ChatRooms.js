@@ -20,8 +20,10 @@ import AvatarIcon from "../UI/AvatarIcon";
 import { useSearchUsers } from "../../hooks";
 import { UserContext, ChatContext, UIContext } from "../../App";
 
-const Friends = () => {
-    const { userState } = useContext(UserContext);
+const ChatRooms = () => {
+    const {
+        userState: { currentUser },
+    } = useContext(UserContext);
     const { chatDispatch } = useContext(ChatContext);
     const { uiState, uiDispatch } = useContext(UIContext);
 
@@ -75,7 +77,7 @@ const Friends = () => {
     return (
         <List
             style={{ backgroundColor: uiState.darkMode && "rgb(36,37,38)" }}
-            subheader={<ListSubheader component="div">Your Friends</ListSubheader>}
+            subheader={<ListSubheader component="div">Your ChatRooms</ListSubheader>}
         >
             <Button onClick={() => setIsOpenCreateGroup(true)}>Create group</Button>
             <Dialog
@@ -204,7 +206,18 @@ const Friends = () => {
             {chatRooms && chatRooms.length ? (
                 chatRooms.map((friend) => {
                     return (
-                        <ListItem key={friend?._id} button onClick={() => handleClickChat(friend)}>
+                        <ListItem
+                            key={friend?._id}
+                            button
+                            onClick={() => {
+                                if (friend?.members.length === 2) {
+                                    friend.name = friend?.members.find(
+                                        (item) => item._id !== currentUser._id
+                                    ).name;
+                                }
+                                handleClickChat(friend);
+                            }}
+                        >
                             <ListItemAvatar>
                                 <Badge
                                     max={9}
@@ -223,12 +236,12 @@ const Friends = () => {
                                         <AvatarIcon
                                             text={
                                                 friend?.members.find(
-                                                    (item) => item._id !== userState.currentUser._id
+                                                    (item) => item._id !== currentUser._id
                                                 ).name
                                             }
                                             imageUrl={
                                                 friend?.members.find(
-                                                    (item) => item._id !== userState.currentUser._id
+                                                    (item) => item._id !== currentUser._id
                                                 ).avatar_image
                                             }
                                         />
@@ -236,7 +249,7 @@ const Friends = () => {
                                         <AvatarIcon
                                             text={
                                                 friend?.members.find(
-                                                    (item) => item._id !== userState.currentUser._id
+                                                    (item) => item._id !== currentUser._id
                                                 ).name
                                             }
                                         />
@@ -247,7 +260,7 @@ const Friends = () => {
                                 primary={
                                     friend?.members.length === 2
                                         ? friend?.members.find(
-                                              (item) => item._id !== userState.currentUser._id
+                                              (item) => item._id !== currentUser._id
                                           ).name
                                         : friend?.name
                                 }
@@ -259,8 +272,8 @@ const Friends = () => {
                 <Typography>No chats</Typography>
             )}
             <hr />
-            {userState?.currentUser?.friends && userState?.currentUser?.friends?.length ? (
-                userState.currentUser.friends.map((friend) => {
+            {currentUser?.friends && currentUser?.friends?.length ? (
+                currentUser.friends.map((friend) => {
                     return (
                         <ListItem
                             key={friend?._id}
@@ -281,4 +294,4 @@ const Friends = () => {
     );
 };
 
-export default Friends;
+export default ChatRooms;

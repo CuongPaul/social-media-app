@@ -11,16 +11,17 @@ import {
 import React, { useState, useEffect, useContext } from "react";
 
 import callApi from "../api";
+import { UserContext } from "../App";
 import Profile from "../screens/Profile";
 import Sidebar from "../components/Sidebar";
 import User from "../components/Friends/User";
-import { UIContext, UserContext } from "../App";
 import useFriendAction from "../hooks/useFriendRequest";
 
 const Friends = () => {
     const {
         userState: { currentUser, sendedFriendRequests, incommingFriendRequests },
     } = useContext(UserContext);
+
     const [selectedUser, setSelectedUser] = useState(null);
     const [usersRecommend, setUsersRecommend] = useState([]);
 
@@ -140,31 +141,36 @@ const Friends = () => {
                     <div style={{ overflow: "auto", maxHeight: "250px", overflowX: "hidden" }}>
                         <List>
                             <ListSubheader>People you may know</ListSubheader>
-                            {usersRecommend?.map((user) => (
-                                <ListItem key={user._id}>
-                                    <User user={user} setSelectedUser={setSelectedUser}>
-                                        <CardActions
-                                            style={{
-                                                padding: "0px",
-                                                marginLeft: "16px",
-                                            }}
-                                        >
-                                            <Button
-                                                variant="contained"
-                                                style={{
-                                                    color: "white",
-                                                    minWidth: "80px",
-                                                    fontSize: "10px",
-                                                    background: "rgb(1,133,243)",
-                                                }}
-                                                onClick={() => handleSendFriendRequest(user._id)}
-                                            >
-                                                Add
-                                            </Button>
-                                        </CardActions>
-                                    </User>
-                                </ListItem>
-                            ))}
+                            {usersRecommend?.map(
+                                (user) =>
+                                    filterUser(user) && (
+                                        <ListItem key={user._id}>
+                                            <User user={user} setSelectedUser={setSelectedUser}>
+                                                <CardActions
+                                                    style={{
+                                                        padding: "0px",
+                                                        marginLeft: "16px",
+                                                    }}
+                                                >
+                                                    <Button
+                                                        variant="contained"
+                                                        style={{
+                                                            color: "white",
+                                                            minWidth: "80px",
+                                                            fontSize: "10px",
+                                                            background: "rgb(1,133,243)",
+                                                        }}
+                                                        onClick={() =>
+                                                            handleSendFriendRequest(user._id)
+                                                        }
+                                                    >
+                                                        Add
+                                                    </Button>
+                                                </CardActions>
+                                            </User>
+                                        </ListItem>
+                                    )
+                            )}
                         </List>
                     </div>
                 </Sidebar>

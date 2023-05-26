@@ -4,7 +4,6 @@ import { Avatar, Typography } from "@material-ui/core";
 import generateColor from "../../utils/generate-color";
 
 const AvatarIcon = ({ variant, imageUrl, text = "?", size = "40px", fontSize = "16px" }) => {
-    console.log({ text, imageUrl });
     return (
         <Avatar
             alt={text}

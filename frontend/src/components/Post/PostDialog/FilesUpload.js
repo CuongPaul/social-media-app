@@ -24,7 +24,7 @@ const FilesUpload = ({ multipleUpload, setFilesUpload, setFilesPreview }) => {
                 reader.onload = () => setFilesPreview((preValue) => [...preValue, reader.result]);
             }
         } else {
-            const file = file[0];
+            const file = files[0];
             const reader = new FileReader();
 
             setFilesUpload(file);

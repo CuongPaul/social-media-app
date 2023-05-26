@@ -28,7 +28,6 @@ const Emoji = ({ setText }) => {
                 style={{
                     fontSize: "30px",
                     cursor: "pointer",
-                    marginRight: "10px",
                 }}
             />
             <Popover

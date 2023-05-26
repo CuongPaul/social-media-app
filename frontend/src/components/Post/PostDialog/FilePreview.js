@@ -2,7 +2,7 @@ import React from "react";
 import { Close } from "@material-ui/icons";
 import { Avatar, CardMedia, IconButton } from "@material-ui/core";
 
-const PreviewFile = ({ filePreview, handleRemoveFile }) => {
+const FilePreview = ({ filePreview, size = "100%", handleRemoveFile }) => {
     const fileType = filePreview.slice(0, 10);
 
     let component = "video";
@@ -23,14 +23,14 @@ const PreviewFile = ({ filePreview, handleRemoveFile }) => {
                 <img
                     alt="File upload"
                     src={filePreview}
-                    style={{ width: "100%", height: "100%" }}
+                    style={{ width: size, height: size, borderRadius: "10px" }}
                 />
             ) : (
                 <CardMedia
                     controls
                     image={filePreview}
                     component={component}
-                    style={{ width: "100%", height: "240px" }}
+                    style={{ width: size, height: size, borderRadius: "10px" }}
                 />
             )}
             <div
@@ -50,4 +50,4 @@ const PreviewFile = ({ filePreview, handleRemoveFile }) => {
     );
 };
 
-export default PreviewFile;
+export default FilePreview;

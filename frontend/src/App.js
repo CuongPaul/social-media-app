@@ -163,10 +163,6 @@ const App = () => {
         }
     }, [userState?.currentUser?._id]);
 
-    // if (!userState.currentUser && token) {
-    //     return null;
-    // }
-
     return (
         <UIContext.Provider value={{ uiState, uiDispatch }}>
             <UserContext.Provider value={{ userState, userDispatch }}>

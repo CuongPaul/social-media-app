@@ -58,9 +58,6 @@ const Post = () => {
         })();
     }, []);
 
-    const isContent = () => {
-        return post?.body?.location || post?.body?.feelings || post?.body?.tag_friends?.length;
-    };
     const handleFetchComments = () => {
         fetchComments(postId);
     };
