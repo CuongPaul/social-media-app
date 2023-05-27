@@ -290,6 +290,19 @@ const getChatRoomsByUserController = async (req, res) => {
                     unseen_message = unseenMessages.length;
                 }
             }
+
+            if (
+                !chatRoom.name &&
+                !chatRoom.admin &&
+                !chatRoom.is_public &&
+                !chatRoom.avatar_image &&
+                chatRoom.members.length == 2
+            ) {
+                const friend = chatRoom.members.find((member) => member._id != userId);
+
+                chatRoom.name = friend.name;
+                chatRoom.avatar_image = friend.avatar_image;
+            }
             result.push({ ...chatRoom, unseen_message });
         }
 

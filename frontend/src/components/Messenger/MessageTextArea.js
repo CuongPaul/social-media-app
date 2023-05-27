@@ -9,7 +9,6 @@ import FilePreview from "../Post/PostDialog/FilePreview";
 import useSubmitMessage from "../../hooks/useSubmitMessage";
 
 const MessageTextArea = ({ textValue, messageId, chatRoomId }) => {
-    console.log({ textValue, messageId, chatRoomId });
     const { uiState } = useContext(UIContext);
 
     const [text, setText] = useState("");
@@ -75,7 +74,7 @@ const MessageTextArea = ({ textValue, messageId, chatRoomId }) => {
                         </InputAdornment>
                     ),
                 }}
-                onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+                onKeyPress={(e) => e.key === "Enter" && handleSendMessage(e)}
                 style={{
                     width: "100%",
                     paddingLeft: "16px",
