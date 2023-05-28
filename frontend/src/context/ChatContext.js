@@ -1,5 +1,4 @@
 export const initialChatState = {
-    selectedFriend: null,
     messages: [],
     chatRooms: [],
 };
@@ -19,12 +18,6 @@ export const ChatReducer = (state, action) => {
             return {
                 ...state,
                 messages: [...state.messages, action.payload],
-            };
-
-        case "SET_SELECTED_FRIEND":
-            return {
-                ...state,
-                selectedFriend: action.payload,
             };
 
         default:
