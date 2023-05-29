@@ -5,13 +5,13 @@ import callApi from "../../api";
 import AvatarIcon from "../UI/AvatarIcon";
 import { ChatContext, UIContext } from "../../App";
 
-const ChatRoom = ({ chatRoom, setChatRoomSelected }) => {
+const ChatRoom = ({ chatRoom }) => {
     const { chatDispatch } = useContext(ChatContext);
     const { uiDispatch } = useContext(UIContext);
 
     const handleClickChat = async (chat) => {
         uiDispatch({ type: "SET_DRAWER", payload: false });
-        setChatRoomSelected(chat);
+        chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: chat });
         const { data } = await callApi({ url: `/message/chat-room/${chat._id}`, method: "GET" });
         chatDispatch({ type: "SET_MESSAGES", payload: data.rows });
     };

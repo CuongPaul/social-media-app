@@ -261,6 +261,7 @@ const getChatRoomsByUserController = async (req, res) => {
         const chatRooms = await ChatRoom.find(query, {
             _id: 1,
             name: 1,
+            admin: 1,
             members: 1,
             avatar_image: 1,
         })

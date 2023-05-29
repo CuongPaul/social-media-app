@@ -6,6 +6,7 @@ import { ChatContext, UIContext } from "../App";
 import AvatarIcon from "../components/UI/AvatarIcon";
 import Message from "../components/Messenger/Message";
 import ChatRoom from "../components/Messenger/ChatRoom";
+import GroupMembers from "../components/Messenger/GroupMembers";
 import SearchGroups from "../components/Messenger/SearchGroups";
 import SearchFriends from "../components/Messenger/SearchFriends";
 import GroupChatCreate from "../components/Messenger/GroupChatCreate";
@@ -18,7 +19,7 @@ const Messenger = () => {
     const scrollDiv = useRef(null);
     const [textValue, setTextValue] = useState("");
     const [messageId, setMessageId] = useState("");
-    const [chatRoomSelected, setChatRoomSelected] = useState(null);
+    const [isOpenGroupMembers, setIsOpenGroupMembers] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -49,15 +50,11 @@ const Messenger = () => {
                 <SearchGroups />
                 <List>
                     {chatState.chatRooms?.map((chatRoom) => (
-                        <ChatRoom
-                            key={chatRoom._id}
-                            chatRoom={chatRoom}
-                            setChatRoomSelected={setChatRoomSelected}
-                        />
+                        <ChatRoom key={chatRoom._id} chatRoom={chatRoom} />
                     ))}
                 </List>
             </Grid>
-            {chatRoomSelected ? (
+            {chatState.chatRoomSelected ? (
                 <Grid
                     item
                     md={9}
@@ -70,25 +67,30 @@ const Messenger = () => {
                 >
                     <Paper
                         elevation={0}
+                        onClick={() => setIsOpenGroupMembers(true)}
                         style={{
                             top: "0px",
                             width: "100%",
                             display: "flex",
                             padding: "16px",
+                            cursor: "pointer",
                             position: "sticky",
                             alignItems: "center",
                             backgroundColor: uiState.darkMode && "rgb(36,37,38)",
                         }}
                     >
                         <AvatarIcon
-                            text={chatRoomSelected.name}
-                            imageUrl={chatRoomSelected.avatar_image}
+                            text={chatState.chatRoomSelected.name}
+                            imageUrl={chatState.chatRoomSelected.avatar_image}
                         />
                         <Typography style={{ marginLeft: "16px" }}>
-                            {chatRoomSelected.name}
+                            {chatState.chatRoomSelected.name}
                         </Typography>
+                        <GroupMembers
+                            isOpen={isOpenGroupMembers}
+                            setIsOpen={setIsOpenGroupMembers}
+                        />
                     </Paper>
-
                     <Paper
                         style={{
                             width: "100%",
@@ -115,7 +117,7 @@ const Messenger = () => {
                     <MessageTextArea
                         textValue={textValue}
                         messageId={messageId}
-                        chatRoomId={chatRoomSelected._id}
+                        chatRoomId={chatState.chatRoomSelected._id}
                     />
                 </Grid>
             ) : (
