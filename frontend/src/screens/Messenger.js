@@ -6,6 +6,7 @@ import { ChatContext, UIContext } from "../App";
 import AvatarIcon from "../components/UI/AvatarIcon";
 import Message from "../components/Messenger/Message";
 import ChatRoom from "../components/Messenger/ChatRoom";
+import AddMembers from "../components/Messenger/AddMembers";
 import GroupMembers from "../components/Messenger/GroupMembers";
 import SearchGroups from "../components/Messenger/SearchGroups";
 import SearchFriends from "../components/Messenger/SearchFriends";
@@ -86,11 +87,9 @@ const Messenger = () => {
                         <Typography style={{ marginLeft: "16px" }}>
                             {chatState.chatRoomSelected.name}
                         </Typography>
-                        <GroupMembers
-                            isOpen={isOpenGroupMembers}
-                            setIsOpen={setIsOpenGroupMembers}
-                        />
                     </Paper>
+                    <GroupMembers isOpen={isOpenGroupMembers} setIsOpen={setIsOpenGroupMembers} />
+                    <AddMembers />
                     <Paper
                         style={{
                             width: "100%",

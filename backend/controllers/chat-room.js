@@ -226,8 +226,8 @@ const addMemberChatRoomController = async (req, res) => {
 
         const users = await User.find({ _id: { $in: members } });
         const newMembers = users.reduce((acc, cur) => {
-            if (!cur.block_users.includes(userId)) {
-                return acc.concat(cur);
+            if (!cur.block_users.includes(userId) && cur.friends.includes(userId)) {
+                return acc.concat(cur._id);
             } else {
                 return acc;
             }
@@ -236,14 +236,19 @@ const addMemberChatRoomController = async (req, res) => {
         await chatRoom.updateOne({
             $push: { members: [...new Set(newMembers.map((item) => item._id))] },
         });
+        console.log([...new Set(newMembers.map((item) => item._id))]);
+        // { $push: { scores: { $each: [ 90, 92, 85 ] } } }
 
-        for (const newMember of newMembers) {
+        const usersValid = await User.find({
+            _id: { $in: [...new Set(newMembers.map((item) => item._id))] },
+        });
+        for (const newMember of usersValid) {
             await newMember.updateOne({ $push: { chat_rooms: { _id: chatRoom._id } } });
         }
 
         return res
             .status(200)
-            .json({ message: `${membersValid.length} members have been added to the group` });
+            .json({ message: `${usersValid.length} members have been added to the group` });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -386,17 +391,18 @@ const removeMemberChatRoomController = async (req, res) => {
 
         const removeMembers = await User.find({ _id: { $in: members } });
 
+        const membersRemovedValid = [...new Set(removeMembers.map((item) => item._id))];
         await chatRoom.updateOne({
-            $pull: { members: [...new Set(removeMembers.map((item) => item._id))] },
+            $pull: { members: { $in: membersRemovedValid } },
         });
 
         for (const removeMember of removeMembers) {
             await removeMember.updateOne({ $pull: { chat_rooms: { _id: chatRoom._id } } });
         }
 
-        return res
-            .status(200)
-            .json({ message: `${membersValid.length} members have been remove from the group` });
+        return res.status(200).json({
+            message: `${membersRemovedValid.length} members have been remove from the group`,
+        });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }

@@ -1,11 +1,12 @@
 import useTheme from "./useTheme";
 import useSignin from "./useSignin";
 import useSignup from "./useSignup";
+import useChatRoom from "./useChatRoom";
 import useFetchPost from "./useFetchPost";
 import usePostActions from "./usePostActions";
+import useUserActions from "./useUserActions";
 import useSearchUsers from "./useSearchUsers";
 import useSubmitMessage from "./useSubmitMessage";
-import useUserActions from "./useUserActions";
 import useSearchFriends from "./useSearchFriends";
 import useCreateComment from "./useCreateComment";
 import useFetchComments from "./useFetchComments";
@@ -19,11 +20,12 @@ export {
     useTheme,
     useSignin,
     useSignup,
+    useChatRoom,
     useFetchPost,
+    useUserActions,
     usePostActions,
     useSearchUsers,
     useSubmitMessage,
-    useUserActions,
     useCreateComment,
     useFetchComments,
     useFriendRequest,

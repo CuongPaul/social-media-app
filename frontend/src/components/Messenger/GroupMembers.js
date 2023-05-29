@@ -13,10 +13,11 @@ import {
     DialogContent,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
-import { Close, ArrowForward } from "@material-ui/icons";
 import React, { useState, useContext } from "react";
+import { Close, ArrowForward } from "@material-ui/icons";
 
 import AvatarIcon from "../UI/AvatarIcon";
+import { useChatRoom } from "../../hooks";
 import { UIContext, ChatContext, UserContext } from "../../App";
 
 const GroupMembers = ({ isOpen, setIsOpen }) => {
@@ -41,9 +42,7 @@ const GroupMembers = ({ isOpen, setIsOpen }) => {
         }
     };
 
-    const handleRemoveMembers = (memberSelected) => {
-        console.log(memberSelected);
-    };
+    const { loading, handleRemoveMembers } = useChatRoom();
 
     return (
         <Dialog
@@ -79,7 +78,14 @@ const GroupMembers = ({ isOpen, setIsOpen }) => {
                         />
                     ))}
                 </div>
-                <Button onClick={() => handleRemoveMembers(memberSelected.map((item) => item._id))}>
+                <Button
+                    onClick={() =>
+                        handleRemoveMembers(
+                            chatRoomSelected._id,
+                            memberSelected.map((item) => item._id)
+                        )
+                    }
+                >
                     Remove
                 </Button>
                 <List>
