@@ -13,17 +13,8 @@ const unfriendController = async (req, res) => {
             return res.status(400).json({ message: "Friend doesn't exist" });
         }
 
-        const indexUserId = friend.friends.indexOf(userId);
-        const indexFriendId = user.friends.indexOf(friendId);
-
-        if (indexUserId !== -1) {
-            friend.friends.splice(indexUserId, 1);
-            await friend.save();
-        }
-        if (indexFriendId !== -1) {
-            user.friends.splice(indexFriendId, 1);
-            await user.save();
-        }
+        await user.updateOne({ $pull: { friends: friendId } });
+        await friend.updateOne({ $pull: { friends: userId } });
 
         return res.status(200).json({ message: "Unfriended successfully" });
     } catch (err) {
@@ -51,34 +42,11 @@ const blockUserController = async (req, res) => {
     }
 };
 
-const friendListController = async (req, res) => {
-    const pageSize = 5;
-    const userId = req.user_id;
-    const page = parseInt(req.query.page) || 1;
-
-    try {
-        const user = await User.findById(userId).populate("friends", {
-            _id: 1,
-            name: 1,
-            avatar_image: 1,
-        });
-
-        const count = user.friends.length;
-        const start = (page - 1) * pageSize;
-        const end = (page - 1) * pageSize + pageSize;
-        const friends = user.friends.slice(start, end);
-
-        return res.status(200).json({ message: "success", data: { count, rows: friends } });
-    } catch (err) {
-        return res.status(500).json({ error: err.message });
-    }
-};
-
 const getUserByIdController = async (req, res) => {
     const { userId } = req.params;
 
     try {
-        const user = await User.findOne({ is_active: true, _id: userId }, { password: 0 }).populate(
+        const user = await User.findById(userId, { password: 0, chat_rooms: 0 }).populate(
             "friends",
             { _id: 1, name: 1, friends: 1, avatar_image: 1 }
         );
@@ -94,7 +62,7 @@ const getUserByIdController = async (req, res) => {
 };
 
 const searchUsersController = async (req, res) => {
-    const pageSize = 5;
+    const pageSize = 10;
     const userId = req.user_id;
     const { name } = req.query;
     const page = parseInt(req.query.page) || 1;
@@ -106,11 +74,7 @@ const searchUsersController = async (req, res) => {
             name: { $regex: name, $options: "i" },
         };
 
-        const users = await User.find(query, {
-            _id: 1,
-            name: 1,
-            avatar_image: 1,
-        })
+        const users = await User.find(query, { _id: 1, name: 1, avatar_image: 1 })
             .limit(pageSize)
             .skip((page - 1) * pageSize);
 
@@ -144,24 +108,6 @@ const unblockUserController = async (req, res) => {
     }
 };
 
-const deleteAccountController = async (req, res) => {
-    const userId = req.user_id;
-
-    try {
-        const user = await User.findById(userId);
-
-        if (!user) {
-            return res.status(400).json({ message: "User doesn't exist" });
-        }
-
-        await user.remove();
-
-        return res.status(200).json({ message: "success" });
-    } catch (err) {
-        return res.status(500).json({ error: err.message });
-    }
-};
-
 const updateProfileController = async (req, res) => {
     const userId = req.user_id;
     const { name, gender, hometown, education } = req.body;
@@ -181,7 +127,7 @@ const updateProfileController = async (req, res) => {
 };
 
 const searchFriendsController = async (req, res) => {
-    const pageSize = 5;
+    const pageSize = 10;
     const userId = req.user_id;
     const { name } = req.query;
     const page = parseInt(req.query.page) || 1;
@@ -239,12 +185,10 @@ const getCurrentUserController = async (req, res) => {
     const userId = req.user_id;
 
     try {
-        const user = await User.findById(userId, { password: 0 }).populate("friends", {
-            _id: 1,
-            name: 1,
-            is_active: 1,
-            avatar_image: 1,
-        });
+        const user = await User.findById(userId, { password: 0, chat_rooms: 0 }).populate(
+            "friends",
+            { _id: 1, name: 1, avatar_image: 1 }
+        );
 
         if (!user) {
             return res.status(400).json({ message: "User doesn't exist" });
@@ -256,7 +200,7 @@ const getCurrentUserController = async (req, res) => {
     }
 };
 
-const getOnlineUsersController = async (req, res) => {
+const getOnlineFriendsController = async (req, res) => {
     const userId = req.user_id;
 
     try {
@@ -301,7 +245,7 @@ const updateCoverImageController = async (req, res) => {
 };
 
 const getRecommendUsersController = async (req, res) => {
-    const pageSize = 5;
+    const pageSize = 10;
     const userId = req.user_id;
     const page = parseInt(req.query.page) || 1;
 
@@ -313,7 +257,7 @@ const getRecommendUsersController = async (req, res) => {
         ];
 
         const userIndex = recommendUserIds.find((item) => item == userId);
-        if (userIndex !== -1) {
+        if (userIndex != -1) {
             recommendUserIds.splice(userIndex, 1);
         }
 
@@ -356,16 +300,14 @@ const updateAvatarImageController = async (req, res) => {
 export {
     unfriendController,
     blockUserController,
-    friendListController,
     getUserByIdController,
     searchUsersController,
     unblockUserController,
-    deleteAccountController,
     updateProfileController,
     searchFriendsController,
     updatePasswordController,
     getCurrentUserController,
-    getOnlineUsersController,
+    getOnlineFriendsController,
     updateCoverImageController,
     getRecommendUsersController,
     updateAvatarImageController,

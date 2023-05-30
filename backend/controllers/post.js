@@ -1,4 +1,4 @@
-import { Post, User, React, Comment, Notification } from "../models";
+import { Post, User, React, Notification } from "../models";
 
 const getPostController = async (req, res) => {
     const userId = req.user_id;
@@ -6,7 +6,7 @@ const getPostController = async (req, res) => {
 
     try {
         const post = await Post.findById(postId)
-            .populate("user", { _id: 1, name: 1, avatar_image: 1 })
+            .populate("user", { _id: 1, name: 1, friends: 1, avatar_image: 1 })
             .populate({
                 path: "react",
                 select: "_id wow sad like love haha angry",
@@ -24,12 +24,8 @@ const getPostController = async (req, res) => {
         if (post.privacy == "ONLY_ME" && post.user != userId) {
             return res.status(404).json({ message: "Post doesn't exist" });
         }
-        if (post.privacy == "FRIEND") {
-            const user = await User.findOne({ _id: userId, friends: { $in: [userId] } });
-
-            if (!user) {
-                return res.status(404).json({ message: "Post doesn't exist" });
-            }
+        if (post.privacy == "FRIEND" && !post.user.friends.includes(userId)) {
+            return res.status(404).json({ message: "Post doesn't exist" });
         }
 
         return res.status(200).json({ message: "success", data: post });
@@ -60,12 +56,12 @@ const reactPostController = async (req, res) => {
         }
 
         const react = await React.findById(post.react);
-        const indexUser = react[reactKey].indexOf(userId);
+        const userIndex = react[reactKey].indexOf(userId);
 
-        if (indexUser == -1) {
+        if (userIndex == -1) {
             react[reactKey].push(userId);
         } else {
-            react[reactKey].splice(indexUser, 1);
+            react[reactKey].splice(userIndex, 1);
         }
 
         await react.save();
@@ -88,7 +84,7 @@ const createPostController = async (req, res) => {
         if (bodyInvalid?.tag_friends?.length) {
             const users = await User.find({ _id: { $in: bodyInvalid.tag_friends } });
 
-            const newTagFriends = users.reduce((acc, cur) => {
+            const tagFriends = users.reduce((acc, cur) => {
                 if (!cur.block_users.includes(userId) && cur.friends.includes(userId)) {
                     return acc.concat(cur._id);
                 } else {
@@ -96,7 +92,7 @@ const createPostController = async (req, res) => {
                 }
             }, []);
 
-            bodyInvalid.tag_friends = newTagFriends;
+            bodyInvalid.tag_friends = [...new Set(tagFriends)];
         }
 
         const post = await new Post({
@@ -130,16 +126,12 @@ const createPostController = async (req, res) => {
         const user = await User.findById(userId);
         if (post && bodyInvalid?.tag_friends?.length && privacy != "ONLY_ME") {
             for (const friendId of bodyInvalid.tag_friends) {
-                const friend = await User.findById(friendId);
-
-                if (!friend.block_users.includes(userId)) {
-                    await new Notification({
-                        user: friendId,
-                        post: post._id,
-                        type: "POST-TAG_FRIEND",
-                        content: `${user.name} has tag you in new post`,
-                    }).save();
-                }
+                await new Notification({
+                    user: friendId,
+                    post: post._id,
+                    type: "POST-TAG_FRIEND",
+                    content: `${user.name} has tag you in new post`,
+                }).save();
             }
         }
 
@@ -155,16 +147,11 @@ const deletePostController = async (req, res) => {
 
     try {
         const post = await Post.findOne({ user: userId, _id: postId });
-
         if (!post) {
             return res.status(404).json({ message: "Post does not exist" });
         }
 
         await post.remove();
-
-        await React.findByIdAndDelete(post.react);
-        await Comment.deleteMany({ post: postId });
-        await Notification.deleteMany({ post: postId });
 
         return res.status(200).json({ message: "Post is deleted" });
     } catch (err) {
@@ -175,51 +162,54 @@ const deletePostController = async (req, res) => {
 const updatePostController = async (req, res) => {
     const userId = req.user_id;
     const { postId } = req.params;
+    let { old_images } = req.body;
     const { body, text, images, privacy } = req.body;
 
     const bodyInvalid = typeof body == "string" ? JSON.parse(body) : body;
+    if (old_images) {
+        old_images = typeof old_images == "string" ? JSON.parse(old_images) : old_images;
+    }
 
     try {
-        const post = await Post.findOne({ user: userId, _id: postId }).populate("user");
-
+        const post = await Post.findOne({ user: userId, _id: postId });
         if (!post) {
             return res.status(404).json({ message: "Post does not exist" });
         }
 
         if (bodyInvalid?.tag_friends.length) {
             const users = await User.find({ _id: { $in: bodyInvalid.tag_friends } });
-            const newTagFriends = users.reduce((acc, cur) => {
+
+            const tagFriends = users.reduce((acc, cur) => {
                 if (!cur.block_users.includes(userId) && cur.friends.includes(userId)) {
                     return acc.concat(cur._id);
                 } else {
                     return acc;
                 }
             }, []);
-            bodyInvalid.tag_friends = newTagFriends;
+            const tagFriendsInvalid = [...new Set(tagFriends)];
 
-            const newFriendsTaged = newTagFriends.filter(
+            bodyInvalid.tag_friends = tagFriendsInvalid;
+
+            const newFriendsTaged = tagFriendsInvalid.filter(
                 (item) => !post.body.tag_friends.includes(item)
             );
+
             if (newFriendsTaged.length && privacy != "ONLY_ME") {
                 for (const friendId of newFriendsTaged) {
-                    const friend = await User.findById(friendId);
-
-                    if (!friend.block_users.includes(userId)) {
-                        await new Notification({
-                            user: friendId,
-                            post: post._id,
-                            type: "POST-TAG_FRIEND",
-                            content: `${post.user.name} has tag you in new post`,
-                        }).save();
-                    }
+                    await new Notification({
+                        user: friendId,
+                        post: post._id,
+                        type: "POST-TAG_FRIEND",
+                        content: `${post.user.name} has tag you in new post`,
+                    }).save();
                 }
             }
         }
 
         post.text = text;
-        post.images = images;
         post.privacy = privacy;
         post.body = bodyInvalid;
+        post.images = [...images, ...old_images];
 
         const postUpdated = await post.save().then((res) =>
             res
@@ -247,7 +237,7 @@ const updatePostController = async (req, res) => {
 };
 
 const getAllPostsController = async (req, res) => {
-    const pageSize = 5;
+    const pageSize = 10;
     const page = parseInt(req.query.page) || 1;
 
     try {
@@ -281,16 +271,16 @@ const getAllPostsController = async (req, res) => {
 };
 
 const getPostsByUserController = async (req, res) => {
-    const pageSize = 5;
+    const pageSize = 10;
     const userId = req.user_id;
     const ownerId = req.params.userId;
     const page = parseInt(req.query.page) || 1;
 
     try {
-        const ownerPost = await User.findById(ownerId);
+        const owner = await User.findById(ownerId);
 
         const query = { user: ownerId, privacy: "PUBLIC" };
-        if (ownerPost.friends.includes(userId)) {
+        if (owner.friends.includes(userId)) {
             query.privacy = { $in: ["FRIEND", "PUBLIC"] };
         }
         if (ownerId == userId) {

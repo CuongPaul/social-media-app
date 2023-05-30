@@ -20,7 +20,7 @@ const readNotificationController = async (req, res) => {
 };
 
 const getNotificationsController = async (req, res) => {
-    const pageSize = 5;
+    const pageSize = 10;
     const userId = req.user_id;
     const page = parseInt(req.query.page) || 1;
 
@@ -34,10 +34,7 @@ const getNotificationsController = async (req, res) => {
 
         const count = await Notification.countDocuments(query);
 
-        return res.status(200).json({
-            message: "success",
-            data: { count, rows: notifications },
-        });
+        return res.status(200).json({ message: "success", data: { count, rows: notifications } });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }

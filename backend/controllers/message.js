@@ -1,7 +1,7 @@
 import { User, React, Message, ChatRoom } from "../models";
 
 const getMessagesController = async (req, res) => {
-    const pageSize = 50;
+    const pageSize = 10;
     const userId = req.user_id;
     const chatRoomId = req.params.chatRoomId;
     const page = parseInt(req.query.page) || 1;
@@ -16,7 +16,6 @@ const getMessagesController = async (req, res) => {
         const query = { chat_room: chatRoomId };
 
         const messages = await Message.find(query, { chat_room: 0, updatedAt: 0 })
-            .sort()
             .limit(pageSize)
             .skip((page - 1) * pageSize)
             .populate("sender", { _id: 1, name: 1, avatar_image: 1 })
@@ -64,12 +63,12 @@ const reactMessageController = async (req, res) => {
         }
 
         const react = await React.findById(message.react);
-        const indexUser = react[reactKey].indexOf(userId);
+        const userIndex = react[reactKey].indexOf(userId);
 
-        if (indexUser == -1) {
+        if (userIndex == -1) {
             react[reactKey].push(userId);
         } else {
-            react[reactKey].splice(indexUser, 1);
+            react[reactKey].splice(userIndex, 1);
         }
 
         await react.save();
@@ -96,7 +95,7 @@ const createMessageController = async (req, res) => {
             text,
             image,
             sender: userId,
-            react: emptyReact.id,
+            react: emptyReact._id,
             chat_room: chat_room_id,
         }).save();
 
