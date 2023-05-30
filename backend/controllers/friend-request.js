@@ -115,7 +115,6 @@ const declineOrCancelRequestController = async (req, res) => {
         }
 
         await friendRequest.remove();
-        await Notification.findOneAndDelete({ friend_request: friendRequestId });
 
         return res.status(200).json({
             message: `Friend request has been ${
@@ -128,7 +127,7 @@ const declineOrCancelRequestController = async (req, res) => {
 };
 
 const getSendedFriendRequestsController = async (req, res) => {
-    const pageSize = 5;
+    const pageSize = 10;
     const userId = req.user_id;
     const page = parseInt(req.query.page) || 1;
 
@@ -151,7 +150,7 @@ const getSendedFriendRequestsController = async (req, res) => {
 };
 
 const getReceivedFriendRequestsController = async (req, res) => {
-    const pageSize = 5;
+    const pageSize = 10;
     const userId = req.user_id;
     const page = parseInt(req.query.page) || 1;
 
