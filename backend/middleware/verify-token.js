@@ -16,6 +16,7 @@ const verifyToken = async (req, res, next) => {
         if (isBlackList) {
             return res.status(401).json({ message: "Token is invalid" });
         }
+
         if (req.route.path == "/signout") {
             req.exp_token = exp;
         }

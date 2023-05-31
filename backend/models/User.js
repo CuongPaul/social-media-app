@@ -19,7 +19,6 @@ const userSchema = new Schema(
         password: RequiredStringType,
         cover_image: DefaultStringType,
         avatar_image: DefaultStringType,
-        is_active: { default: true, type: Boolean },
         email: { unique: true, ...RequiredStringType },
         chat_rooms: [
             {

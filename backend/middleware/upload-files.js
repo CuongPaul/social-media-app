@@ -6,18 +6,18 @@ import { createPostValidation, updatePostValidation } from "../validator/post";
 
 const uploadFiles = async (req, res, next) => {
     try {
-        let validater = null;
-
-        if (req.method == "POST" && req.baseUrl == "/post") {
-            validater = createPostValidation.validate(req.body);
+        if (req.method == "POST" && req.baseUrl == "/post" && req.route.path == "/") {
+            const { error } = createPostValidation.validate(req.body);
+            if (error) {
+                return res.status(400).json({ message: error.details[0].message });
+            }
         }
 
-        if (req.method == "PUT" && req.baseUrl == "/post") {
-            validater = updatePostValidation.validate(req.body);
-        }
-
-        if (validater?.error) {
-            return res.status(400).json({ message: validater.error.details[0].message });
+        if (req.method == "PUT" && req.baseUrl == "/post" && req.route.path == "/:postId") {
+            const { error } = updatePostValidation.validate(req.body);
+            if (error) {
+                return res.status(400).json({ message: error.details[0].message });
+            }
         }
     } catch (err) {
         return res.status(500).json({ error: err.message });
@@ -46,9 +46,6 @@ const uploadFiles = async (req, res, next) => {
         }
 
         req.body.images = imagesUrl;
-        if (req.body.old_images) {
-            req.body.images = [...JSON.parse(req.body.old_images), ...imagesUrl];
-        }
 
         next();
     } catch (err) {

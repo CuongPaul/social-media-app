@@ -18,7 +18,7 @@ const reactPostValidation = {
 const createPostValidation = Joi.object({
     images: Joi.any().strip(),
     text: Joi.string().trim().required(),
-    folder: Joi.string().trim().allow(null),
+    folder: Joi.string().trim().required(),
     privacy: Joi.string().valid("FRIEND", "PUBLIC", "ONLY_ME"),
     body: Joi.string()
         .allow(null)
@@ -54,7 +54,16 @@ const updatePostValidation = Joi.object({
     images: Joi.any().strip(),
     text: Joi.string().trim().required(),
     folder: Joi.string().trim().allow(null),
-    old_images: Joi.string().trim().allow(null),
+    old_images: Joi.string()
+        .allow(null)
+        .custom((value, helpers) => {
+            try {
+                const parsedValue = JSON.parse(value);
+                return parsedValue;
+            } catch (error) {
+                return helpers.error("any.invalid");
+            }
+        }),
     privacy: Joi.string().valid("FRIEND", "PUBLIC", "ONLY_ME"),
     body: Joi.string()
         .allow(null)
@@ -67,13 +76,17 @@ const updatePostValidation = Joi.object({
             }
         }),
 }).custom((value, helpers) => {
-    const { error } = Joi.object({
+    const { error: errorOldImages } = Joi.array()
+        .items(Joi.string().trim())
+        .validate(value.old_images);
+
+    const { error: errorBody } = Joi.object({
         location: Joi.string().allow("", null).trim(),
         feelings: Joi.string().allow("", null).trim(),
         tag_friends: Joi.array().items(Joi.string().trim()).allow(null),
     }).validate(value.body);
 
-    if (error) {
+    if (errorBody || errorOldImages) {
         return helpers.error("any.invalid");
     }
 
