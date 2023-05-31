@@ -30,7 +30,6 @@ const Messenger = () => {
     }, []);
 
     useEffect(() => {
-        console.log(scrollDiv.current);
         if (scrollDiv.current) {
             scrollDiv.current.scrollIntoView({ behavior: "smooth" });
         }
@@ -46,9 +45,18 @@ const Messenger = () => {
             }}
         >
             <Grid item md={3} style={{ overflow: "hidden scroll" }}>
-                <GroupChatCreate />
-                <SearchFriends />
-                <SearchGroups />
+                <div
+                    style={{
+                        display: "flex",
+                        padding: "20px 0px",
+                        justifyContent: "space-evenly",
+                        borderBottom: "2px solid rgb(101,103,107)",
+                    }}
+                >
+                    <GroupChatCreate />
+                    <SearchFriends />
+                    <SearchGroups />
+                </div>
                 <List>
                     {chatState.chatRooms?.map((chatRoom) => (
                         <ChatRoom key={chatRoom._id} chatRoom={chatRoom} />

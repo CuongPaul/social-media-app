@@ -20,7 +20,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import callApi from "../../api";
 import AvatarIcon from "../UI/AvatarIcon";
-import { useSearchFriends } from "../../hooks";
+import { useSearchUsers } from "../../hooks";
 import { ChatContext, UIContext } from "../../App";
 
 const SearchFriends = () => {
@@ -33,7 +33,7 @@ const SearchFriends = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
 
-    const { friends, isLoading, setFriends, handleSearchFriends } = useSearchFriends();
+    const { users, isLoading, setUsers, handleSearchUsers } = useSearchUsers();
 
     const handleClickFriend = async (friend) => {
         uiDispatch({ type: "SET_DRAWER", payload: false });
@@ -55,8 +55,13 @@ const SearchFriends = () => {
 
     return (
         <Fragment>
-            <Button color="primary" variant="contained" onClick={() => setIsOpen(true)}>
-                Search friends
+            <Button
+                color="primary"
+                variant="contained"
+                onClick={() => setIsOpen(true)}
+                style={{ fontSize: "10px", borderRadius: "8px", padding: "10px 5px" }}
+            >
+                Search users
             </Button>
             <Dialog
                 fullWidth
@@ -72,7 +77,7 @@ const SearchFriends = () => {
                     }
                     subheader={
                         <Typography style={{ fontWeight: 800, fontSize: "20px" }}>
-                            Search friends
+                            Search users
                         </Typography>
                     }
                 />
@@ -86,16 +91,14 @@ const SearchFriends = () => {
                             placeholder="Enter name"
                             onChange={(e) => setSearchValue(e.target.value)}
                             style={{ flex: 4, width: "100%", marginRight: "16px" }}
-                            onKeyPress={(e) =>
-                                e.key === "Enter" && handleSearchFriends(searchValue)
-                            }
+                            onKeyPress={(e) => e.key === "Enter" && handleSearchUsers(searchValue)}
                             InputProps={{
                                 endAdornment: searchValue && (
                                     <InputAdornment position="end">
                                         <FontAwesomeIcon
                                             icon={faTimes}
                                             onClick={() => {
-                                                setFriends([]);
+                                                setUsers([]);
                                                 setSearchValue("");
                                             }}
                                             style={{ marginRight: "10px", cursor: "pointer" }}
@@ -108,7 +111,7 @@ const SearchFriends = () => {
                             color="primary"
                             variant="contained"
                             disabled={isLoading}
-                            onClick={() => handleSearchFriends(searchValue)}
+                            onClick={() => handleSearchUsers(searchValue)}
                             style={{ flex: 1, width: "100%", borderRadius: "5px" }}
                         >
                             {isLoading ? (
@@ -123,7 +126,7 @@ const SearchFriends = () => {
                         </Button>
                     </div>
                     <List>
-                        {friends.map((friend) => (
+                        {users.map((friend) => (
                             <ListItem
                                 key={friend._id}
                                 style={{

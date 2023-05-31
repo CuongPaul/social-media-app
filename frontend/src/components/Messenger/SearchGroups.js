@@ -61,8 +61,13 @@ const SearchGroups = () => {
 
     return (
         <Fragment>
-            <Button color="primary" variant="contained" onClick={() => setIsOpen(true)}>
-                Search groups chat
+            <Button
+                color="primary"
+                variant="contained"
+                onClick={() => setIsOpen(true)}
+                style={{ fontSize: "10px", borderRadius: "8px", padding: "10px 5px" }}
+            >
+                Search groups
             </Button>
             <Dialog
                 fullWidth

@@ -59,8 +59,13 @@ const GroupChatCreate = () => {
 
     return (
         <Fragment>
-            <Button color="primary" variant="contained" onClick={() => setIsOpen(true)}>
-                Create chat room
+            <Button
+                color="primary"
+                variant="contained"
+                onClick={() => setIsOpen(true)}
+                style={{ fontSize: "10px", borderRadius: "8px", padding: "10px 5px" }}
+            >
+                Create group
             </Button>
             <Dialog
                 fullWidth
