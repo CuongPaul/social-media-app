@@ -1,6 +1,7 @@
 import {
     Chip,
     List,
+    Paper,
     Button,
     Dialog,
     Checkbox,
@@ -16,8 +17,8 @@ import {
     CircularProgress,
 } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
-import React, { useState, Fragment, useContext } from "react";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import React, { useState, Fragment, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { ChatContext } from "../../App";
@@ -31,6 +32,7 @@ const AddMembers = () => {
     const [searchValue, setSearchValue] = useState("");
     const [friendsSelected, setFriendsSelected] = useState([]);
 
+    const { handleAddMembers } = useChatRoom();
     const { friends, isLoading, setFriends, handleSearchFriends } = useSearchFriends();
 
     const handleClickFriend = async (friend) => {
@@ -41,8 +43,6 @@ const AddMembers = () => {
             setFriendsSelected(friendsSelected.filter((item) => item._id !== friend._id));
         }
     };
-
-    const { loading, handleAddMembers } = useChatRoom();
 
     return (
         <Fragment>
@@ -68,30 +68,53 @@ const AddMembers = () => {
                     }
                 />
                 <DialogContent>
-                    <div style={{ marginBottom: "20px" }}>
-                        {friendsSelected.map((friend) => (
-                            <Chip
-                                key={friend._id}
-                                label={friend.name}
-                                style={{ marginRight: "10px" }}
-                                onDelete={() =>
-                                    setFriendsSelected(
-                                        friendsSelected.filter((item) => item._id !== friend._id)
+                    {friendsSelected.length ? (
+                        <div
+                            style={{
+                                display: "flex",
+                                marginBottom: "32px",
+                                alignItems: "center",
+                            }}
+                        >
+                            <Paper
+                                style={{
+                                    flex: 4,
+                                    width: "100%",
+                                    overflowX: "auto",
+                                    maxHeight: "104px",
+                                    marginRight: "16px",
+                                }}
+                            >
+                                {friendsSelected.map((friend) => (
+                                    <Chip
+                                        key={friend._id}
+                                        label={friend.name}
+                                        style={{ margin: "10px" }}
+                                        onDelete={() =>
+                                            setFriendsSelected(
+                                                friendsSelected.filter(
+                                                    (item) => item._id !== friend._id
+                                                )
+                                            )
+                                        }
+                                    />
+                                ))}
+                            </Paper>
+                            <Button
+                                color="primary"
+                                variant="contained"
+                                onClick={() =>
+                                    handleAddMembers(
+                                        chatState.chatRoomSelected._id,
+                                        friendsSelected.map((item) => item._id)
                                     )
                                 }
-                            />
-                        ))}
-                    </div>
-                    <Button
-                        onClick={() =>
-                            handleAddMembers(
-                                chatState.chatRoomSelected._id,
-                                friendsSelected.map((item) => item._id)
-                            )
-                        }
-                    >
-                        Add
-                    </Button>
+                                style={{ flex: 1, width: "100%", borderRadius: "5px" }}
+                            >
+                                Add
+                            </Button>
+                        </div>
+                    ) : null}
                     <div style={{ display: "flex", marginBottom: "32px" }}>
                         <TextField
                             autoFocus

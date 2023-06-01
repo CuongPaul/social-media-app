@@ -37,18 +37,18 @@ const Messenger = () => {
 
     return (
         <Grid
-            container
             style={{
+                display: "flex",
                 minHeight: "100vh",
                 paddingTop: "64px",
                 backgroundColor: uiState.darkMode && "rgb(36,37,38)",
             }}
         >
-            <Grid item md={3} style={{ overflow: "hidden scroll" }}>
+            <Grid item md={3}>
                 <div
                     style={{
                         display: "flex",
-                        padding: "20px 0px",
+                        padding: "16px 0px",
                         justifyContent: "space-evenly",
                         borderBottom: "2px solid rgb(101,103,107)",
                     }}
@@ -57,7 +57,7 @@ const Messenger = () => {
                     <SearchFriends />
                     <SearchGroups />
                 </div>
-                <List>
+                <List style={{ maxHeight: "77vh", overflowX: "auto" }}>
                     {chatState.chatRooms?.map((chatRoom) => (
                         <ChatRoom key={chatRoom._id} chatRoom={chatRoom} />
                     ))}
