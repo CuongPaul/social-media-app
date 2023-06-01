@@ -13,7 +13,7 @@ export const ChatReducer = (state, action) => {
             return { ...state, messages: action.payload };
 
         case "ADD_MESSAGE":
-            return { ...state, messages: [...state.messages, action.payload] };
+            return { ...state, messages: [action.payload, ...state.messages] };
 
         case "SET_CHATROOM_SELECTED":
             return { ...state, chatRoomSelected: action.payload };

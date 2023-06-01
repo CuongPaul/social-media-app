@@ -1,7 +1,7 @@
 import { User, React, Message, ChatRoom } from "../models";
 
 const getMessagesController = async (req, res) => {
-    const pageSize = 10;
+    const pageSize = 50;
     const userId = req.user_id;
     const chatRoomId = req.params.chatRoomId;
     const page = parseInt(req.query.page) || 1;
@@ -17,6 +17,7 @@ const getMessagesController = async (req, res) => {
 
         const messages = await Message.find(query, { chat_room: 0, updatedAt: 0 })
             .limit(pageSize)
+            .sort({ createdAt: -1 })
             .skip((page - 1) * pageSize)
             .populate("sender", { _id: 1, name: 1, avatar_image: 1 })
             .populate({
@@ -97,7 +98,25 @@ const createMessageController = async (req, res) => {
             sender: userId,
             react: emptyReact._id,
             chat_room: chat_room_id,
-        }).save();
+        })
+            .save()
+            .then((res) =>
+                res
+                    .populate("sender", { _id: 1, name: 1, avatar_image: 1 })
+                    .populate({
+                        path: "react",
+                        select: "_id wow sad like love haha angry",
+                        populate: [
+                            { path: "wow", select: "_id name avatar_image" },
+                            { path: "sad", select: "_id name avatar_image" },
+                            { path: "like", select: "_id name avatar_image" },
+                            { path: "love", select: "_id name avatar_image" },
+                            { path: "haha", select: "_id name avatar_image" },
+                            { path: "angry", select: "_id name avatar_image" },
+                        ],
+                    })
+                    .execPopulate()
+            );
 
         const members = await User.find({ _id: { $in: chatRoom.members } });
         for (const member of members) {
@@ -112,7 +131,7 @@ const createMessageController = async (req, res) => {
             }
         }
 
-        res.status(200).json({ message: "success" });
+        res.status(200).json({ data: newMessage, message: "success" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }

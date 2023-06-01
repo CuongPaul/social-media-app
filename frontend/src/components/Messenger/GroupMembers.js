@@ -16,9 +16,9 @@ import {
     InputAdornment,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
-import React, { useState, useContext } from "react";
 import { Close, ArrowForward } from "@material-ui/icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import React, { useState, useEffect, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import AvatarIcon from "../UI/AvatarIcon";
@@ -36,9 +36,9 @@ const GroupMembers = ({ isOpen, setIsOpen }) => {
         chatState: { chatRoomSelected },
     } = useContext(ChatContext);
 
+    const [members, setMembers] = useState([]);
     const [searchValue, setSearchValue] = useState("");
     const [memberSelected, setMemberSelected] = useState([]);
-    const [members, setMembers] = useState(chatRoomSelected.members);
 
     const { handleRemoveMembers } = useChatRoom();
 
@@ -55,6 +55,12 @@ const GroupMembers = ({ isOpen, setIsOpen }) => {
             setMemberSelected(memberSelected.filter((item) => item._id !== friend._id));
         }
     };
+
+    useEffect(() => {
+        setSearchValue("");
+        setMemberSelected([]);
+        setMembers(chatRoomSelected.members);
+    }, [chatRoomSelected]);
 
     return (
         <Dialog
@@ -97,7 +103,7 @@ const GroupMembers = ({ isOpen, setIsOpen }) => {
                                 <Chip
                                     key={friend._id}
                                     label={friend.name}
-                                    style={{ margin: "10px" }}
+                                    style={{ margin: "12px" }}
                                     onDelete={() =>
                                         setMemberSelected(
                                             memberSelected.filter((item) => item._id !== friend._id)
@@ -109,13 +115,18 @@ const GroupMembers = ({ isOpen, setIsOpen }) => {
                         <Button
                             color="primary"
                             variant="contained"
+                            style={{
+                                flex: 1,
+                                width: "100%",
+                                minHeight: "56px",
+                                borderRadius: "5px",
+                            }}
                             onClick={() =>
                                 handleRemoveMembers(
                                     chatRoomSelected._id,
                                     memberSelected.map((item) => item._id)
                                 )
                             }
-                            style={{ flex: 1, width: "100%", borderRadius: "5px" }}
                         >
                             Remove
                         </Button>

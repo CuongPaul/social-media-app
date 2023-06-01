@@ -18,15 +18,17 @@ import {
 } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import React, { useState, Fragment, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useState, Fragment, useEffect, useContext } from "react";
 
 import { ChatContext } from "../../App";
 import AvatarIcon from "../UI/AvatarIcon";
 import { useChatRoom, useSearchFriends } from "../../hooks";
 
 const AddMembers = () => {
-    const { chatState } = useContext(ChatContext);
+    const {
+        chatState: { chatRoomSelected },
+    } = useContext(ChatContext);
 
     const [isOpen, setIsOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
@@ -44,9 +46,25 @@ const AddMembers = () => {
         }
     };
 
+    useEffect(() => {
+        setFriends([]);
+        setSearchValue("");
+        setFriendsSelected([]);
+    }, [chatRoomSelected]);
+
     return (
         <Fragment>
-            <Button color="primary" variant="contained" onClick={() => setIsOpen(true)}>
+            <Button
+                color="primary"
+                variant="contained"
+                style={{
+                    fontSize: "10px",
+                    minWidth: "110px",
+                    marginRight: "20px",
+                    borderRadius: "10px",
+                }}
+                onClick={() => setIsOpen(true)}
+            >
                 Add members
             </Button>
             <Dialog
@@ -103,13 +121,18 @@ const AddMembers = () => {
                             <Button
                                 color="primary"
                                 variant="contained"
+                                style={{
+                                    flex: 1,
+                                    width: "100%",
+                                    minHeight: "56px",
+                                    borderRadius: "5px",
+                                }}
                                 onClick={() =>
                                     handleAddMembers(
-                                        chatState.chatRoomSelected._id,
+                                        chatRoomSelected._id,
                                         friendsSelected.map((item) => item._id)
                                     )
                                 }
-                                style={{ flex: 1, width: "100%", borderRadius: "5px" }}
                             >
                                 Add
                             </Button>
@@ -162,7 +185,7 @@ const AddMembers = () => {
                     </div>
                     <List>
                         {friends.map((friend) =>
-                            chatState.chatRoomSelected.members.some(
+                            chatRoomSelected.members.some(
                                 (item) => item._id === friend._id
                             ) ? null : (
                                 <ListItem

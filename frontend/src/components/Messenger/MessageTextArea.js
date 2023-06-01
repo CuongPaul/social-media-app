@@ -36,6 +36,7 @@ const MessageTextArea = ({ textValue, messageId, chatRoomId }) => {
         <Paper
             elevation={0}
             style={{
+                flex: 1,
                 width: "100%",
                 padding: "16px",
                 display: "flex",

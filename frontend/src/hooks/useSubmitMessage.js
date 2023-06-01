@@ -12,17 +12,14 @@ const useSubmitMessage = ({ text, setText, chatRoomId, fileUpload, handleRemoveF
     const sendMessage = async (uri = "") => {
         setLoading(true);
         try {
-            const { message } = await callApi({
+            const { data } = await callApi({
                 url: "/message",
                 method: "POST",
                 data: { text: text, image: uri ? uri : null, chat_room_id: chatRoomId },
             });
-            if (message) {
+            if (data) {
                 setText("");
-                chatDispatch({
-                    type: "ADD_MESSAGE",
-                    payload: { text: text, image: uri ? uri : null },
-                });
+                chatDispatch({ payload: data, type: "ADD_MESSAGE" });
             }
             setLoading(false);
         } catch (err) {
