@@ -53,14 +53,20 @@ const signupController = async (req, res) => {
 
 const signoutController = async (req, res) => {
     const userId = req.user_id;
+    const { socket_id } = req.body;
     const expireTime = req.exp_token;
     const token = req.headers.authorization;
 
     try {
         const ttl = expireTime - (Date.now() / 1000).toFixed();
-
         if (ttl > 0) {
             await redisClient.SETEX(`black-list-token:${token}`, ttl, userId);
+        }
+
+        await redisClient.LREM(`socket-io:${userId}`, 0, socket_id);
+        const sockets = await redisClient.LRANGE(`socket-io:${userId}`, 0, -1);
+        if (!sockets.length) {
+            req.io.sockets.emit("user-offline", userId);
         }
 
         return res.status(200).json({ message: "Signout successfully" });

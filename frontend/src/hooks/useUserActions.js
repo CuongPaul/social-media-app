@@ -5,8 +5,8 @@ import callApi from "../api";
 import { UIContext, UserContext } from "../App";
 
 const useUserActions = () => {
-    const { uiDispatch } = useContext(UIContext);
     const { userDispatch } = useContext(UserContext);
+    const { socketIO, uiDispatch } = useContext(UIContext);
 
     const history = useHistory();
 
@@ -14,7 +14,11 @@ const useUserActions = () => {
 
     const handleSignout = async () => {
         try {
-            await callApi({ method: "POST", url: "/auth/signout" });
+            await callApi({
+                method: "POST",
+                url: "/auth/signout",
+                data: { socket_id: socketIO.current.id },
+            });
 
             userDispatch({ type: "SIGN_OUT" });
 

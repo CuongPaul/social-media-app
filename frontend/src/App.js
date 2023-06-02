@@ -68,54 +68,41 @@ const App = () => {
     }, []);
 
     useEffect(() => {
-        const getOnlineUsers = async () => {
+        const getData = async () => {
             try {
-                const { data } = await callApi({ url: "/user/friends-online", method: "GET" });
-
-                if (data) {
-                    userDispatch({ type: "SET_FRIENDS_ONLINE", payload: data.rows });
-                }
-            } catch (err) {
-                uiDispatch({
-                    type: "SET_ALERT_MESSAGE",
-                    payload: { text: err.message, display: true, color: "error" },
+                const { data: friendsOnlineData } = await callApi({
+                    url: "/user/friends-online",
+                    method: "GET",
                 });
-            }
-        };
-        const getCurrentUserInfo = async () => {
-            try {
-                const { data } = await callApi({ url: "/user", method: "GET" });
-
-                if (data) {
-                    userDispatch({ type: "SET_CURRENT_USER", payload: data });
+                if (friendsOnlineData) {
+                    userDispatch({ type: "SET_FRIENDS_ONLINE", payload: friendsOnlineData.rows });
                 }
-            } catch (err) {
-                uiDispatch({
-                    type: "SET_ALERT_MESSAGE",
-                    payload: { text: err.message, display: true, color: "error" },
-                });
-            }
-        };
-        const getSendedFriendRequest = async () => {
-            try {
-                const { data } = await callApi({ url: "/friend-request/sended", method: "GET" });
 
-                if (data) {
-                    userDispatch({ type: "SET_SENDED_FRIEND_REQUEST", payload: data.rows });
+                const { data: currentUserData } = await callApi({ url: "/user", method: "GET" });
+                if (currentUserData) {
+                    userDispatch({ type: "SET_CURRENT_USER", payload: currentUserData });
                 }
-            } catch (err) {
-                uiDispatch({
-                    type: "SET_ALERT_MESSAGE",
-                    payload: { text: err.message, display: true, color: "error" },
-                });
-            }
-        };
-        const getIncommingFriendRequest = async () => {
-            try {
-                const { data } = await callApi({ url: "/friend-request/received", method: "GET" });
 
-                if (data) {
-                    userDispatch({ type: "SET_INCOMMING_FRIEND_REQUEST", payload: data.rows });
+                const { data: sendedFriendRequestsData } = await callApi({
+                    url: "/friend-request/sended",
+                    method: "GET",
+                });
+                if (sendedFriendRequestsData) {
+                    userDispatch({
+                        type: "SET_SENDED_FRIEND_REQUEST",
+                        payload: sendedFriendRequestsData.rows,
+                    });
+                }
+
+                const { data: incommingFriendRequestsData } = await callApi({
+                    url: "/friend-request/received",
+                    method: "GET",
+                });
+                if (incommingFriendRequestsData) {
+                    userDispatch({
+                        type: "SET_INCOMMING_FRIEND_REQUEST",
+                        payload: incommingFriendRequestsData.rows,
+                    });
                 }
             } catch (err) {
                 uiDispatch({
@@ -126,10 +113,7 @@ const App = () => {
         };
 
         if (token) {
-            getOnlineUsers();
-            getCurrentUserInfo();
-            getSendedFriendRequest();
-            getIncommingFriendRequest();
+            getData();
         }
     }, []);
 
@@ -158,13 +142,15 @@ const App = () => {
             });
 
             socketIO.current.on("user-offline", (user_id) => {
-                userDispatch({ type: "REMOVE_FRIENDS_ONLINE", payload: user_id });
+                if (user_id !== userState.currentUser._id) {
+                    userDispatch({ type: "REMOVE_FRIENDS_ONLINE", payload: user_id });
+                }
             });
         }
     }, [userState?.currentUser?._id]);
 
     return (
-        <UIContext.Provider value={{ uiState, uiDispatch }}>
+        <UIContext.Provider value={{ uiState, socketIO, uiDispatch }}>
             <UserContext.Provider value={{ userState, userDispatch }}>
                 <PostContext.Provider value={{ postState, postDispatch }}>
                     <ChatContext.Provider value={{ chatState, chatDispatch }}>

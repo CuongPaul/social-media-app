@@ -17,8 +17,8 @@ const StyledBadge = ({ max, border, children, isActive, badgeContent }) => {
         <BadgeWithStyles
             max={max}
             overlap="rectangular"
-            badgeContent={badgeContent ? badgeContent : ""}
             color={isActive ? "secondary" : "error"}
+            badgeContent={badgeContent ? badgeContent : ""}
             style={{ border, padding: "4px", borderRadius: "100%" }}
         >
             {children}
