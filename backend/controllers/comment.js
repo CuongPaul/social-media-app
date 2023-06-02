@@ -12,12 +12,12 @@ const reactCommentController = async (req, res) => {
         }
 
         const react = await React.findById(comment.react);
-        const indexUser = react[reactKey].indexOf(userId);
+        const userIndex = react[reactKey].indexOf(userId);
 
-        if (indexUser == -1) {
+        if (userIndex == -1) {
             react[reactKey].push(userId);
         } else {
-            react[reactKey].splice(indexUser, 1);
+            react[reactKey].splice(userIndex, 1);
         }
 
         await react.save();
@@ -38,14 +38,14 @@ const createCommentController = async (req, res) => {
             return res.status(400).json({ message: "Post doesn't exist" });
         }
 
-        const saveEmptyReact = await new React().save();
+        const emptyReact = await new React().save();
 
         await new Comment({
             text,
             image,
             user: userId,
             post: post_id,
-            react: saveEmptyReact._id,
+            react: emptyReact._id,
         }).save();
 
         return res.status(200).json({ message: "success" });
@@ -59,16 +59,15 @@ const deleteCommentController = async (req, res) => {
     const { commentId } = req.params;
 
     try {
-        const comment = await Comment.findOne({ user: userId, _id: commentId });
+        const comment = await Comment.findById(commentId).populate("post");
 
-        if (!comment) {
-            return res.status(400).json({ message: "You don't allow delete this comment" });
+        if (comment.user == userId || comment.post.user == userId) {
+            await comment.remove();
+
+            return res.status(200).json({ message: "success" });
         }
 
-        await comment.remove();
-        await React.findByIdAndDelete(comment.react);
-
-        return res.status(200).json({ message: "success" });
+        return res.status(400).json({ message: "You don't allow delete this comment" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -85,12 +84,7 @@ const updateCommentController = async (req, res) => {
             return res.status(400).json({ message: "You don't allow edit this comment" });
         }
 
-        const post = await Post.findById(comment.post);
-        if (!post) {
-            return res.status(400).json({ message: "This post is deleted" });
-        }
-
-        await comment.update({ text, image });
+        await comment.updateOne({ text, image });
 
         return res.status(200).json({ message: "success" });
     } catch (err) {
@@ -99,7 +93,7 @@ const updateCommentController = async (req, res) => {
 };
 
 const getCommentsByPostController = async (req, res) => {
-    const pageSize = 5;
+    const pageSize = 10;
     const { post_id } = req.query;
     const page = parseInt(req.query.page) || 1;
 

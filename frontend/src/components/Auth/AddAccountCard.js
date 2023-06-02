@@ -3,26 +3,21 @@ import {
     Avatar,
     Dialog,
     CardMedia,
-    CardHeader,
-    IconButton,
     Typography,
     CardContent,
     CardActionArea,
 } from "@material-ui/core";
-import { Add, Close } from "@material-ui/icons";
-import React, { useState, Fragment, useContext } from "react";
+import { Add } from "@material-ui/icons";
+import React, { useState, Fragment } from "react";
 
 import SigninForm from "./SigninForm";
-import { UIContext } from "../../App";
 
 const AddAccountCard = () => {
-    const { uiState } = useContext(UIContext);
-
     const [isShowAddAccountForm, setIsShowAddAccountForm] = useState(false);
 
     return (
         <Fragment>
-            <Card>
+            <Card style={{ borderRadius: "8px" }}>
                 <CardActionArea onClick={() => setIsShowAddAccountForm(true)}>
                     <CardMedia
                         style={{
@@ -30,7 +25,7 @@ const AddAccountCard = () => {
                             height: "150px",
                             alignItems: "center",
                             justifyContent: "center",
-                            background: uiState.darkMode && "rgb(245,246,247)",
+                            background: "rgb(245,246,247)",
                         }}
                     >
                         <Avatar
@@ -51,34 +46,17 @@ const AddAccountCard = () => {
                     </CardContent>
                 </CardActionArea>
             </Card>
-            {isShowAddAccountForm && (
-                <Dialog
-                    style={{ width: "100%" }}
-                    open={isShowAddAccountForm}
-                    onClose={() => setIsShowAddAccountForm(false)}
-                >
-                    <Card style={{ width: "100%" }}>
-                        <CardHeader
-                            action={
-                                <IconButton
-                                    color="primary"
-                                    onClick={() => setIsShowAddAccountForm(false)}
-                                >
-                                    <Close />
-                                </IconButton>
-                            }
-                            subheader={
-                                <Typography style={{ fontWeight: "700", fontSize: "20px" }}>
-                                    Add account
-                                </Typography>
-                            }
-                        />
-                        <CardContent>
-                            <SigninForm />
-                        </CardContent>
-                    </Card>
-                </Dialog>
-            )}
+            <Dialog
+                style={{ width: "100%" }}
+                open={isShowAddAccountForm}
+                onClose={() => setIsShowAddAccountForm(false)}
+            >
+                <Card style={{ width: "100%" }}>
+                    <CardContent style={{ padding: "32px" }}>
+                        <SigninForm />
+                    </CardContent>
+                </Card>
+            </Dialog>
         </Fragment>
     );
 };

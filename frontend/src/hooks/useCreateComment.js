@@ -1,7 +1,6 @@
 import { useContext, useState } from "react";
 import axios from "axios";
 import { PostContext, UIContext } from "../App";
-import { storage } from "../firebase/firebase";
 import callApi from "../api";
 const url = process.env.REACT_APP_BASE_API_URL;
 
@@ -34,7 +33,7 @@ const useCreateComment = ({
                 payload: { text: commentText, image: uri, post_id: post_id },
             });
             uiDispatch({
-                type: "SET_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: {
                     color: "success",
                     display: true,
@@ -45,7 +44,7 @@ const useCreateComment = ({
             setLoading(false);
 
             uiDispatch({
-                type: "SET_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: { text: err.message, display: true, color: "error" },
             });
         }

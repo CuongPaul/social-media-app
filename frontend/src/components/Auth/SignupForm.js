@@ -1,9 +1,19 @@
-import React from "react";
-import { Button, TextField, FormControl, CircularProgress } from "@material-ui/core";
+import {
+    Button,
+    TextField,
+    IconButton,
+    FormControl,
+    InputAdornment,
+    CircularProgress,
+} from "@material-ui/core";
+import React, { useState } from "react";
+import { Visibility, VisibilityOff } from "@material-ui/icons";
 
 import { useSignup } from "../../hooks";
 
 const SignupForm = () => {
+    const [isShowPassword, setIsShowPassword] = useState(false);
+
     const { loading, handleSignup, handleChangeName, handleChangeEmail, handleChangePassword } =
         useSignup();
 
@@ -13,7 +23,6 @@ const SignupForm = () => {
                 <TextField
                     label="Name"
                     variant="outlined"
-                    style={{ marginTop: "16px" }}
                     onChange={(e) => handleChangeName(e.target.value)}
                 />
             </FormControl>
@@ -27,11 +36,20 @@ const SignupForm = () => {
             </FormControl>
             <FormControl style={{ width: "100%" }}>
                 <TextField
-                    type="password"
                     label="Password"
                     variant="outlined"
                     style={{ marginTop: "16px" }}
+                    type={isShowPassword ? "text" : "password"}
                     onChange={(e) => handleChangePassword(e.target.value)}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton onClick={() => setIsShowPassword(!isShowPassword)}>
+                                    {isShowPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
                 />
             </FormControl>
             <Button
@@ -41,7 +59,7 @@ const SignupForm = () => {
                 style={{
                     width: "100%",
                     color: "#fff",
-                    marginTop: "16px",
+                    marginTop: "32px",
                     background: "rgb(24,119,242)",
                 }}
             >

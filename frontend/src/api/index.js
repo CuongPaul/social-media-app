@@ -17,10 +17,16 @@ const callApi = async ({ url, data, query, method }) => {
 
     const res = await axios(options).catch((err) => {
         if (err.response) {
+            if (err.response.status === 401) {
+                localStorage.removeItem("token");
+            }
+            if (err.response.status === 500) {
+                throw new Error("Internal server error");
+            }
             throw new Error(err.response.data.message);
         } else {
             if (err.request) {
-                throw new Error("The connection has time out");
+                throw new Error("Can't send request to server");
             } else {
                 throw new Error(err.message);
             }

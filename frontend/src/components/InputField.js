@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: "#F0F2F5",
     },
     searchIcon: {
-        right: 0,
+        right: "0px",
         height: "100%",
         display: "flex",
         color: "#606770;",

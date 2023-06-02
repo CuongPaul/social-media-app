@@ -2,7 +2,7 @@ import { Joi } from "express-validation";
 
 const changeAdminValidation = {
     body: Joi.object({
-        member: Joi.string().trim().required(),
+        new_admin: Joi.string().trim().required(),
     }),
     params: Joi.object({
         chatRoomId: Joi.string().trim().required(),
@@ -43,15 +43,6 @@ const searchChatRoomsValidation = {
     }),
 };
 
-const addMemberChatRoomValidation = {
-    params: Joi.object({
-        chatRoomId: Joi.string().trim().required(),
-    }),
-    body: Joi.object({
-        members: Joi.array().items(Joi.string().trim().required()).min(1).required(),
-    }),
-};
-
 const updateNameChatRoomValidation = {
     body: Joi.object({
         name: Joi.string().trim().required(),
@@ -61,7 +52,7 @@ const updateNameChatRoomValidation = {
     }),
 };
 
-const removeMemberChatRoomValidation = {
+const addMembersToChatRoomValidation = {
     params: Joi.object({
         chatRoomId: Joi.string().trim().required(),
     }),
@@ -88,6 +79,15 @@ const updatePrivacyChatRoomValidation = {
     }),
 };
 
+const removeMembersFromChatRoomValidation = {
+    params: Joi.object({
+        chatRoomId: Joi.string().trim().required(),
+    }),
+    body: Joi.object({
+        members: Joi.array().items(Joi.string().trim().required()).min(1).required(),
+    }),
+};
+
 const createChatRoomForTwoPeopleValidation = {
     body: Joi.object({
         reciver: Joi.string().trim().required(),
@@ -101,10 +101,10 @@ export {
     createChatRoomValidation,
     deleteChatRoomValidation,
     searchChatRoomsValidation,
-    addMemberChatRoomValidation,
     updateNameChatRoomValidation,
-    removeMemberChatRoomValidation,
+    addMembersToChatRoomValidation,
     updateAvatarChatRoomValidation,
     updatePrivacyChatRoomValidation,
+    removeMembersFromChatRoomValidation,
     createChatRoomForTwoPeopleValidation,
 };

@@ -12,13 +12,13 @@ const blockUserValidation = {
     }),
 };
 
-const friendListValidation = {
-    query: Joi.object({
-        page: Joi.number().integer().allow(null),
+const getUserByIdValidation = {
+    params: Joi.object({
+        userId: Joi.string().required().trim(),
     }),
 };
 
-const getUserByIdValidation = {
+const unblockUserValidation = {
     params: Joi.object({
         userId: Joi.string().required().trim(),
     }),
@@ -43,6 +43,13 @@ const updateProfileValidation = {
         gender: Joi.string().allow(null).trim(),
         hometown: Joi.string().allow(null).trim(),
         education: Joi.string().allow(null).trim(),
+    }),
+};
+
+const searchFriendsValidation = {
+    query: Joi.object({
+        name: Joi.string().required().trim(),
+        page: Joi.number().integer().allow(null),
     }),
 };
 
@@ -74,11 +81,12 @@ const updateAvatarImageValidation = {
 export {
     unfriendValidation,
     blockUserValidation,
-    friendListValidation,
     getUserByIdValidation,
+    unblockUserValidation,
     searchUsersValidation,
     deleteAccountValidation,
     updateProfileValidation,
+    searchFriendsValidation,
     updatePasswordValidation,
     updateCoverImageValidation,
     getRecommendUsersValidation,

@@ -1,29 +1,40 @@
 import { Grid } from "@material-ui/core";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 
-import Posts from "../Post/Posts";
-import { UserContext } from "../../App";
-import WritePostCard from "../Post/PostForm/WritePostCard";
 import callApi from "../../api";
+import Posts from "../Post/Posts";
+import PostBar from "../Post/PostBar";
+import { UIContext, UserContext } from "../../App";
 
 const ProfileTimeline = ({ user }) => {
-    const { userState } = useContext(UserContext);
-
-    const [postUser, setPostUser] = useState(null);
+    const {
+        uiDispatch,
+        uiState: { posts },
+    } = useContext(UIContext);
+    const {
+        userState: { currentUser },
+    } = useContext(UserContext);
 
     useEffect(() => {
         (async () => {
-            const { data } = await callApi({ url: `/post/user/${user._id}`, method: "GET" });
+            try {
+                const { data } = await callApi({ method: "GET", url: `/post/user/${user._id}` });
 
-            setPostUser(data.rows);
+                uiDispatch({ type: "SET_POSTS", payload: data.rows });
+            } catch (err) {
+                uiDispatch({
+                    type: "SET_ALERT_MESSAGE",
+                    payload: { display: true, color: "error", text: err.message },
+                });
+            }
         })();
     }, []);
 
-    return postUser ? (
+    return posts ? (
         <Grid container justifyContent="center" style={{ marginTop: "25px" }} spacing={2}>
             <Grid item xs={12} sm={12} md={8}>
-                {userState.currentUser._id === user._id && <WritePostCard />}
-                <Posts postUser={postUser} />
+                {currentUser._id === user._id && <PostBar />}
+                <Posts posts={posts} />
             </Grid>
         </Grid>
     ) : null;

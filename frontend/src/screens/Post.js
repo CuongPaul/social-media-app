@@ -2,32 +2,33 @@ import {
     Card,
     Grid,
     Paper,
-    Avatar,
     Button,
+    Divider,
     Container,
     CardHeader,
     Typography,
     CardContent,
-    Divider,
 } from "@material-ui/core";
 import moment from "moment";
 import { useParams } from "react-router-dom";
-import React, { useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 
-import SlideImage from "../components/Post/SlideImage";
-
-import PostFooter from "../components/Post/PostFooter";
 import callApi from "../api";
-import { PostContext, UIContext } from "../App";
+import { UIContext } from "../App";
 import useFetchPost from "../hooks/useFetchPost";
 import Comment from "../components/Comment/Comment";
-import AvartarText from "../components/UI/AvartarText";
+import AvatarIcon from "../components/UI/AvatarIcon";
+import PostAction from "../components/Post/PostAction";
+import PostFooter from "../components/Post/PostFooter";
+import SlideImage from "../components/Post/SlideImage";
 import PostSubContent from "../components/Post/PostSubContent";
 import CommentTextArea from "../components/Comment/CommentTextArea";
 
 const Post = () => {
     const { uiState, uiDispatch } = useContext(UIContext);
-    const { postState, postDispatch } = useContext(PostContext);
+
+    const [post, setPost] = useState(null);
+    const [comments, setComments] = useState(null);
 
     const { postId } = useParams();
 
@@ -36,42 +37,32 @@ const Post = () => {
     useEffect(() => {
         (async () => {
             try {
-                const { data } = await callApi({ url: "/post", method: "GET" });
-                postDispatch({ type: "SET_POSTS", payload: data.rows });
-
-                const { data: abc } = await callApi({
-                    url: "/comment",
+                const { data } = await callApi({
                     method: "GET",
+                    url: "/comment",
                     query: { post_id: postId },
                 });
-                postDispatch({ type: "SET_POST_COMMENTS", payload: abc.rows });
+                setComments(data.rows);
+
+                const { data: postData } = await callApi({
+                    method: "GET",
+                    url: `/post/${postId}`,
+                });
+                setPost(postData);
             } catch (err) {
                 uiDispatch({
-                    type: "SET_NOTIFICATION",
+                    type: "SET_ALERT_MESSAGE",
                     payload: { display: true, color: "error", text: err.message },
                 });
             }
         })();
     }, []);
 
-    useEffect(() => {
-        const post = postState.posts.find((post) => post._id === postId);
-        postDispatch({ type: "SET_CURRENT_POST", payload: post });
-        fetchComments(postId);
-    }, [postId, postDispatch, postState.posts]);
-
-    const isContent = () => {
-        return (
-            postState.post.body.location ||
-            postState.post.body.feelings ||
-            postState.post.body.tag_friends.length
-        );
-    };
     const handleFetchComments = () => {
         fetchComments(postId);
     };
 
-    return postState.post ? (
+    return post ? (
         <div style={{ minHeight: "100vh", paddingTop: "100px" }}>
             <Container>
                 <Grid spacing={3} container>
@@ -85,50 +76,22 @@ const Post = () => {
                                 backgroundColor: uiState.darkMode && "rgb(36,37,38)",
                             }}
                         >
-                            {postState.post.user && (
-                                <CardHeader
-                                    avatar={
-                                        postState.post.user.avatar_image ? (
-                                            <Avatar>
-                                                <img
-                                                    alt=""
-                                                    src={postState.post.user.avatar_image}
-                                                    style={{ width: "100%", height: "100%" }}
-                                                />
-                                            </Avatar>
-                                        ) : (
-                                            <AvartarText
-                                                text={postState?.post?.user?.name}
-                                                backgroundColor={
-                                                    postState?.post.user?.active
-                                                        ? "seagreen"
-                                                        : "tomato"
-                                                }
-                                            />
-                                        )
-                                    }
-                                    title={
-                                        postState.post && (
-                                            <Typography style={{ fontWeight: "800" }}>
-                                                {postState.post.user.name}
-                                            </Typography>
-                                        )
-                                    }
-                                    subheader={moment(postState.post.createdAt).fromNow()}
-                                />
-                            )}
-                            {postState.post.body && isContent() && (
-                                <CardContent
-                                    style={{
-                                        marginBottom: "16px",
-                                        background: uiState.darkMode ? null : "rgb(240,242,245)",
-                                        padding: "16px",
-                                    }}
-                                >
-                                    <PostSubContent post={postState.post} />
-                                </CardContent>
-                            )}
-
+                            <CardHeader
+                                action={<PostAction post={post} />}
+                                subheader={moment(post.createdAt).fromNow()}
+                                title={
+                                    <PostSubContent
+                                        postBody={post.body}
+                                        username={post.user.name}
+                                    />
+                                }
+                                avatar={
+                                    <AvatarIcon
+                                        text={post.user.name}
+                                        imageUrl={post.user.avatar_image}
+                                    />
+                                }
+                            />
                             <CardContent>
                                 <Typography
                                     style={{
@@ -137,17 +100,14 @@ const Post = () => {
                                         fontFamily: "fantasy",
                                     }}
                                 >
-                                    {postState.post.text && postState.post.text}
+                                    {post.text}
                                 </Typography>
                             </CardContent>
-
-                            {postState.post.images && <SlideImage images={postState.post.images} />}
-
+                            {post.images && <SlideImage images={post.images} />}
                             <Divider />
-                            <PostFooter post={postState.post} />
+                            <PostFooter post={post} />
                         </Card>
                     </Grid>
-
                     <Grid item md={5} sm={12} xs={12} style={{ marginBottom: "0px" }}>
                         <Paper
                             style={{
@@ -155,11 +115,11 @@ const Post = () => {
                                 backgroundColor: uiState.darkMode && "rgb(36,37,38)",
                             }}
                         >
-                            <CommentTextArea post={postState.post} />
+                            <CommentTextArea post={post} />
                         </Paper>
-                        {postState.post.comments && postState.post.comments.length ? (
+                        {comments && comments.length ? (
                             <>
-                                {postState.post.comments.map((comment) => (
+                                {comments.map((comment) => (
                                     <div key={comment.id}>
                                         <Comment comment={comment} />
                                     </div>
@@ -170,20 +130,13 @@ const Post = () => {
                                         justifyContent: "center",
                                     }}
                                 >
-                                    {postState.post.commentPagination.totalPage ===
-                                    postState.post.commentPagination.currentPage ? (
-                                        <Typography variant="h6" color="primary">
-                                            No more comments
-                                        </Typography>
-                                    ) : (
-                                        <Button
-                                            variant="contained"
-                                            color="primary"
-                                            onClick={handleFetchComments}
-                                        >
-                                            More Comments
-                                        </Button>
-                                    )}
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={handleFetchComments}
+                                    >
+                                        More Comments
+                                    </Button>
                                 </div>
                             </>
                         ) : null}

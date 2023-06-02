@@ -10,7 +10,7 @@ import {
     CardContent,
 } from "@material-ui/core";
 
-import AvartarText from "./UI/AvartarText";
+import AvatarIcon from "./UI/AvatarIcon";
 import { MoreHoriz as MoreHorizIcon } from "@material-ui/icons";
 
 const PeopleYouMayKnow = ({ users }) => {
@@ -56,21 +56,11 @@ const PeopleYouMayKnow = ({ users }) => {
                                 {user.friends && user.friends.length
                                     ? user.friends.map((friend) => (
                                           <div style={{ display: "flex" }} key={friend.id}>
-                                              {friend.avatar_image ? (
-                                                  <Avatar
-                                                      style={{ width: "20px", height: "20px" }}
-                                                      alt="Remy Sharp"
-                                                      src={friend.avatar_image}
-                                                  />
-                                              ) : (
-                                                  <AvartarText
-                                                      backgroundColor={
-                                                          user.active ? "seagreen" : "tomato"
-                                                      }
-                                                      text={friend?.name}
-                                                      size="20px"
-                                                  />
-                                              )}
+                                              <AvatarIcon
+                                                  text={friend.name}
+                                                  size="20px"
+                                                  imageUrl={friend.avatar_image}
+                                              />
 
                                               <Typography
                                                   style={{

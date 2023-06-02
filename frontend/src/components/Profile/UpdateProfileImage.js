@@ -8,12 +8,12 @@ import {
     DialogActions,
     DialogContent,
 } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { CameraAlt as CameraIcon } from "@material-ui/icons";
 import React, { useContext, useRef, useState } from "react";
 
 import { UserContext } from "../../App";
-import AvartarText from "../UI/AvartarText";
+import AvatarIcon from "../UI/AvatarIcon";
 import DialogLoading from "../UI/DialogLoading";
 import useUpdateProfilePic from "../../hooks/useUpdateProfilePic";
 
@@ -56,12 +56,13 @@ const UpdateProfileImage = ({ user }) => {
         setMenu(false);
     };
 
+    const params = useParams();
     return (
         <div>
             <Badge
                 overlap="rectangular"
                 badgeContent={
-                    userState.currentUser.id === user.id && (
+                    userState.currentUser._id === params.userId && (
                         <IconButton style={{ bottom: -140, left: -20 }} onClick={handleImageClick}>
                             <Avatar>
                                 <CameraIcon style={{ color: "black" }} />
@@ -78,23 +79,12 @@ const UpdateProfileImage = ({ user }) => {
                     left: "40%",
                 }}
             >
-                {user.avatar_image ? (
-                    <Avatar
-                        style={{
-                            width: "170px",
-                            height: "170px",
-                        }}
-                    >
-                        <img src={user.avatar_image} width="100%" height="100%" alt={user.name} />
-                    </Avatar>
-                ) : (
-                    <AvartarText
-                        text={user?.name}
-                        backgroundColor={user?.active ? "seagreen" : "tomato"}
-                        fontSize="40px"
-                        size="170px"
-                    />
-                )}
+                <AvatarIcon
+                    size="170px"
+                    fontSize="40px"
+                    text={user.name}
+                    imageUrl={user.avatar_image}
+                />
             </Badge>
             <input
                 style={{ display: "none" }}

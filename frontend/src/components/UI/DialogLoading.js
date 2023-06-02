@@ -1,40 +1,27 @@
-import React, { useState } from "react";
-import { Dialog, LinearProgress, Paper, Typography } from "@material-ui/core";
+import React from "react";
+import { Paper, Dialog, Typography, LinearProgress } from "@material-ui/core";
 
-const DialogLoading = ({ loading, text }) => {
-    const [open, setOpen] = useState(loading);
+const DialogLoading = ({ text, loading }) => {
     return (
-        <Dialog
-            disableEscapeKeyDown
-            fullWidth
-            scroll="body"
-            maxWidth="sm"
-            open={open}
-            onClose={() => setOpen(false)}
-            style={{ width: "100%" }}
-        >
+        <Dialog fullWidth open={loading} style={{ width: "100%" }}>
             <Paper
                 style={{
-                    width: "100%",
-                    height: "100%",
-                    padding: "32px",
                     display: "flex",
+                    padding: "32px 0px",
                     alignItems: "center",
-                    justifyContent: "center",
                     flexDirection: "column",
                 }}
-                elevation={15}
             >
                 <Typography
                     style={{
+                        fontWeight: 800,
                         fontSize: "20px",
-                        fontWeight: "800",
                         marginBottom: "16px",
                     }}
                 >
                     {text}
                 </Typography>
-                <LinearProgress color="secondary" style={{ width: "50%" }} />
+                <LinearProgress color="secondary" style={{ width: "75%" }} />
             </Paper>
         </Dialog>
     );

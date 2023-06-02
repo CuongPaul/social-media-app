@@ -1,7 +1,5 @@
-import React from "react";
 import {
     Card,
-    Avatar,
     Button,
     Dialog,
     TextField,
@@ -11,22 +9,23 @@ import {
     Typography,
     CardContent,
     FormControl,
+    InputAdornment,
     CircularProgress,
 } from "@material-ui/core";
-import { Close } from "@material-ui/icons";
+import React, { useState } from "react";
+import { Close, Visibility, VisibilityOff } from "@material-ui/icons";
 
 import { useSignin } from "../../hooks";
-import AvartarText from "../UI/AvartarText";
+import AvatarIcon from "../UI/AvatarIcon";
 
 const RecentAccountSigninForm = ({ account, isShowSigninForm, setIsShowSigninForm }) => {
+    const [isShowPassword, setIsShowPassword] = useState(false);
+
     const { loading, handleClickSignin, handleChangePassword } = useSignin(account);
 
     return (
         <Dialog
             fullWidth
-            maxWidth="sm"
-            scroll="body"
-            disableEscapeKeyDown
             open={isShowSigninForm}
             style={{ width: "100%" }}
             onClose={() => setIsShowSigninForm(false)}
@@ -39,66 +38,57 @@ const RecentAccountSigninForm = ({ account, isShowSigninForm, setIsShowSigninFor
                         </IconButton>
                     }
                 />
-                {account?.avatar_image ? (
-                    <CardMedia
-                        style={{
-                            width: "100%",
-                            display: "flex",
-                            height: "150px",
-                            alignItems: "center",
-                            justifyContent: "center",
-                        }}
-                    >
-                        <Avatar
-                            src={account.avatar_image}
-                            style={{ height: "200px", width: "200px" }}
-                        />
-                    </CardMedia>
-                ) : (
-                    <CardMedia
-                        style={{
-                            height: "150px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                        }}
-                    >
-                        <AvartarText
-                            size="100px"
-                            fontSize="35px"
-                            text={account.name}
-                            backgroundColor="teal"
-                        />
-                    </CardMedia>
-                )}
+                <CardMedia
+                    style={{
+                        width: "100%",
+                        display: "flex",
+                        height: "150px",
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}
+                >
+                    <AvatarIcon
+                        size="200px"
+                        fontSize="150px"
+                        text={account.name}
+                        imageUrl={account.avatar_image}
+                    />
+                </CardMedia>
                 <CardContent>
-                    <div
+                    <Typography
                         style={{
-                            display: "flex",
-                            marginTop: "20px",
-                            alignItems: "center",
-                            flexDirection: "column",
-                            justifyContent: "center",
+                            fontWeight: 800,
+                            fontSize: "20px",
+                            marginTop: "40px",
+                            textAlign: "center",
                         }}
                     >
-                        <Typography
-                            style={{
-                                fontSize: "20px",
-                                marginTop: "8px",
-                                fontWeight: "800",
-                            }}
-                        >
-                            {account.name}
-                        </Typography>
-                    </div>
-                    <form onSubmit={handleClickSignin}>
+                        {account.name}
+                    </Typography>
+                    <form onSubmit={handleClickSignin} style={{ padding: "20px 32px" }}>
                         <FormControl style={{ width: "100%" }}>
                             <TextField
-                                type="password"
+                                autoFocus
                                 label="Password"
                                 variant="outlined"
                                 style={{ marginTop: "16px" }}
+                                type={isShowPassword ? "text" : "password"}
                                 onChange={(e) => handleChangePassword(e.target.value)}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={() => setIsShowPassword(!isShowPassword)}
+                                            >
+                                                {isShowPassword ? (
+                                                    <VisibilityOff />
+                                                ) : (
+                                                    <Visibility />
+                                                )}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
                             />
                         </FormControl>
                         <Button

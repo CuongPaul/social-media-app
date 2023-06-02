@@ -3,7 +3,7 @@ import { useState, useEffect, useContext } from "react";
 import callApi from "../api";
 import { UIContext } from "../App";
 
-const useSignin = (formData = null) => {
+const useSignin = (formData) => {
     const { uiDispatch } = useContext(UIContext);
 
     const [loading, setLoading] = useState(false);
@@ -32,13 +32,13 @@ const useSignin = (formData = null) => {
             localStorage.setItem("token", data.token);
 
             uiDispatch({
-                type: "SET_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: { display: true, text: message, color: "success" },
             });
         } catch (err) {
             setLoading(false);
             uiDispatch({
-                type: "SET_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
             });
         }
@@ -46,7 +46,7 @@ const useSignin = (formData = null) => {
 
     useEffect(() => {
         if (formData?.email) {
-            setFormValue((formValue) => ({ ...formValue, email: formData.email }));
+            setFormValue({ ...formValue, email: formData.email });
         }
     }, [formData]);
 

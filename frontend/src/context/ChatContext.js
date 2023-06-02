@@ -1,25 +1,58 @@
 export const initialChatState = {
-    selectedFriend: null,
     messages: [],
+    chatRooms: [],
+    chatRoomSelected: null,
 };
 
 export const ChatReducer = (state, action) => {
     switch (action.type) {
+        case "SET_CHATROOMS":
+            return { ...state, chatRooms: action.payload };
+
         case "SET_MESSAGES":
-            return {
-                ...state,
-                messages: action.payload,
-            };
+            return { ...state, messages: action.payload };
+
         case "ADD_MESSAGE":
+            return { ...state, messages: [action.payload, ...state.messages] };
+
+        case "SET_CHATROOM_SELECTED":
+            return { ...state, chatRoomSelected: action.payload };
+
+        case "REMOVE_MEMBERS":
+            const membersAfterRemoveMembers = state.chatRoomSelected.members.filter(
+                (item) => !action.payload.members.includes(item._id)
+            );
+
+            const chatRoomsAfterRemoveMembers = [...state.chatRooms];
+            const indexOfChatRoomSelectedRemoveMembers = chatRoomsAfterRemoveMembers.findIndex(
+                (item) => item._id === state.chatRoomSelected._id
+            );
+            chatRoomsAfterRemoveMembers[indexOfChatRoomSelectedRemoveMembers].members =
+                membersAfterRemoveMembers;
+
             return {
                 ...state,
-                messages: [...state.messages, action.payload],
+                chatRooms: chatRoomsAfterRemoveMembers,
+                chatRoomSelected: { ...state.chatRoomSelected, members: membersAfterRemoveMembers },
             };
 
-        case "SET_SELECTED_FRIEND":
+        case "ADD_MEMBERS":
+            const chatRoomsAfterAddMembers = [...state.chatRooms];
+            const indexOfChatRoomSelectedAddMembers = chatRoomsAfterAddMembers.findIndex(
+                (item) => item._id === state.chatRoomSelected._id
+            );
+            chatRoomsAfterAddMembers[indexOfChatRoomSelectedAddMembers].members = [
+                ...state.chatRoomSelected.members,
+                action.payload,
+            ];
+
             return {
                 ...state,
-                selectedFriend: action.payload,
+                chatRooms: chatRoomsAfterAddMembers,
+                chatRoomSelected: {
+                    ...state.chatRoomSelected,
+                    members: [...state.chatRoomSelected.members, action.payload],
+                },
             };
 
         default:

@@ -1,153 +1,200 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Avatar, Container, Grid, Paper, Typography } from "@material-ui/core";
-import { ChatContext, UIContext } from "../App";
-import Messages from "../components/Chat/Messages";
+import { useHistory } from "react-router-dom";
+import React, { useRef, useState, useEffect, useContext } from "react";
+import { Grid, List, Paper, Avatar, Typography } from "@material-ui/core";
 
-import Friends from "../components/Chat/Friends";
-import InputTextArea from "../components/Chat/InputTextArea";
-import EmptyMessageArea from "../components/Chat/EmptyMessageArea";
-import AvartarText from "../components/UI/AvartarText";
+import callApi from "../api";
+import AvatarIcon from "../components/UI/AvatarIcon";
+import Message from "../components/Messenger/Message";
+import ChatRoom from "../components/Messenger/ChatRoom";
+import AddMembers from "../components/Messenger/AddMembers";
+import { UIContext, ChatContext, UserContext } from "../App";
+import GroupMembers from "../components/Messenger/GroupMembers";
+import SearchGroups from "../components/Messenger/SearchGroups";
+import SearchFriends from "../components/Messenger/SearchFriends";
+import GroupChatCreate from "../components/Messenger/GroupChatCreate";
+import MessageTextArea from "../components/Messenger/MessageTextArea";
 
-function Messenger() {
-    const { uiDispatch, uiState } = useContext(UIContext);
-    const { chatState, chatDispatch } = useContext(ChatContext);
+const Messenger = () => {
+    const {
+        uiState: { darkMode },
+    } = useContext(UIContext);
+    const {
+        userState: { currentUser },
+    } = useContext(UserContext);
+    const {
+        chatDispatch,
+        chatState: { messages, chatRooms, chatRoomSelected },
+    } = useContext(ChatContext);
+
+    const history = useHistory();
+    const scrollDiv = useRef(null);
     const [textValue, setTextValue] = useState("");
-    useEffect(() => {
-        uiDispatch({ type: "SET_NAV_MENU", payload: true });
-        uiDispatch({ type: "SET_DRAWER", payload: false });
+    const [messageId, setMessageId] = useState("");
+    const [isOpenGroupMembers, setIsOpenGroupMembers] = useState(false);
 
-        return () => {
-            uiDispatch({ type: "SET_NAV_MENU", payload: false });
-            uiDispatch({ type: "SET_DRAWER", payload: false });
-            chatDispatch({ type: "SET_SELECTED_FRIEND", payload: null });
-        };
-    }, [uiDispatch, chatDispatch]);
+    useEffect(() => {
+        (async () => {
+            const { data } = await callApi({ url: "/chat-room", method: "GET" });
+            chatDispatch({ type: "SET_CHATROOMS", payload: data.rows });
+        })();
+    }, []);
+
+    useEffect(() => {
+        if (scrollDiv?.current) {
+            scrollDiv.current.scrollTo(0, 0);
+        }
+    }, [chatRoomSelected]);
+
+    const handleScroll = (event) => {
+        if (event.currentTarget.scrollTop < -450) {
+            console.log("Call API get more messages");
+        } else {
+            console.log(event.currentTarget.scrollTop);
+        }
+    };
 
     return (
-        <div
+        <Grid
             style={{
-                paddingTop: "100px",
-                paddingBottom: "40px",
+                display: "flex",
                 minHeight: "100vh",
+                paddingTop: "64px",
+                backgroundColor: darkMode && "rgb(36,37,38)",
             }}
         >
-            <Container>
-                <Paper style={{ backgroundColor: uiState.darkMode && "rgb(36,37,38)" }}>
-                    <Grid
-                        container
-                        justifyContent="center"
-                        alignItems="flex-start"
-                        spacing={2}
-                        style={{ padding: "16px" }}
+            <Grid item md={3}>
+                <div
+                    style={{
+                        display: "flex",
+                        padding: "18.5px 0px",
+                        justifyContent: "space-evenly",
+                        borderBottom: "2px solid rgb(101,103,107)",
+                    }}
+                >
+                    <GroupChatCreate />
+                    <SearchFriends />
+                    <SearchGroups />
+                </div>
+                <List style={{ maxHeight: "77vh", overflowX: "auto" }}>
+                    {chatRooms?.map((chatRoom) => (
+                        <ChatRoom key={chatRoom._id} chatRoom={chatRoom} />
+                    ))}
+                </List>
+            </Grid>
+            {chatRoomSelected ? (
+                <Grid
+                    item
+                    md={9}
+                    style={{
+                        height: "92vh",
+                        display: "flex",
+                        flexDirection: "column",
+                    }}
+                >
+                    <div
+                        style={{
+                            flex: 1,
+                            width: "100%",
+                            display: "flex",
+                            alignItems: "center",
+                            backgroundColor: "rgb(255,255,255)",
+                        }}
                     >
-                        <Grid
-                            item
-                            md={4}
-                            xs={12}
-                            sm={12}
+                        <Paper
+                            elevation={0}
+                            onClick={() => {
+                                if (chatRoomSelected.members.length === 2) {
+                                    const friend = chatRoomSelected.members.find(
+                                        (item) => item._id !== currentUser._id
+                                    );
+                                    history.push(`/profile/${friend._id}`);
+                                } else {
+                                    setIsOpenGroupMembers(true);
+                                }
+                            }}
                             style={{
-                                height: "80vh",
-                                overflowY: "scroll",
-                                overflowX: "hidden",
-                                scrollbarColor: uiState.darkMode
-                                    ? " rgb(36,37,38) rgb(24,25,26)"
-                                    : "#fff rgb(240,242,245)",
+                                top: "0px",
+                                width: "100%",
+                                display: "flex",
+                                padding: "16px",
+                                cursor: "pointer",
+                                position: "sticky",
+                                alignItems: "center",
+                                backgroundColor: darkMode && "rgb(36,37,38)",
                             }}
                         >
-                            <Paper elevation={0}>
-                                <Friends />
-                            </Paper>
-                        </Grid>
-                        {chatState.selectedFriend ? (
-                            <Grid
-                                item
-                                md={8}
-                                xs={12}
-                                sm={12}
-                                style={{
-                                    height: "80vh",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    margin: "auto",
-                                }}
-                            >
-                                <Paper
-                                    elevation={0}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        padding: "16px",
-                                        width: "100%",
-                                        position: "sticky",
-                                        top: 0,
-                                        backgroundColor: uiState.darkMode && "rgb(36,37,38)",
-                                    }}
-                                >
-                                    {chatState.selectedFriend.avatar_image ? (
-                                        <Avatar>
-                                            <img
-                                                alt="avatar"
-                                                src={chatState.selectedFriend.avatar_image}
-                                                style={{ width: "100%", height: "100%" }}
-                                            />
-                                        </Avatar>
-                                    ) : (
-                                        <AvartarText
-                                            text={chatState?.selectedFriend?.name}
-                                            backgroundColor={
-                                                chatState?.selectedFriend?.active
-                                                    ? "seagreen"
-                                                    : "tomato"
-                                            }
-                                        />
-                                    )}
-                                    <Typography style={{ marginLeft: "16px" }}>
-                                        {chatState.selectedFriend.name}
-                                    </Typography>
-                                </Paper>
+                            <AvatarIcon
+                                text={chatRoomSelected.name}
+                                imageUrl={chatRoomSelected.avatar_image}
+                            />
+                            <Typography style={{ marginLeft: "16px" }}>
+                                {chatRoomSelected.name}
+                            </Typography>
+                        </Paper>
+                        {chatRoomSelected.members.length > 2 &&
+                            currentUser._id === chatRoomSelected.admin && <AddMembers />}
+                    </div>
+                    <GroupMembers isOpen={isOpenGroupMembers} setIsOpen={setIsOpenGroupMembers} />
+                    <Paper
+                        ref={scrollDiv}
+                        onScroll={handleScroll}
+                        style={{
+                            flex: 10,
+                            width: "100%",
+                            display: "flex",
+                            overflow: "hidden scroll",
+                            padding: "0px 30px 16px 30px",
+                            flexDirection: "column-reverse",
+                            scrollbarColor: !darkMode
+                                ? "#fff #fff"
+                                : " rgb(36,37,38) rgb(36,37,38)",
 
-                                <Paper
-                                    elevation={0}
-                                    style={{
-                                        padding: "16px",
-                                        width: "100%",
-                                        height: "60vh",
-                                        overflowY: "scroll",
-                                        overflowX: "hidden",
-                                        scrollbarColor: !uiState.darkMode
-                                            ? "#fff #fff"
-                                            : " rgb(36,37,38) rgb(36,37,38)",
-
-                                        backgroundColor: uiState.darkMode && "rgb(36,37,38)",
-                                    }}
-                                >
-                                    <Messages setTextValue={setTextValue} />
-                                </Paper>
-
-                                <div
-                                    style={{
-                                        position: "sticky",
-                                        bottom: 0,
-                                        left: 0,
-                                        width: "100%",
-                                    }}
-                                >
-                                    <InputTextArea
-                                        textValue={textValue}
-                                        chatRoomId={chatState.selectedFriend._id}
-                                    />
-                                </div>
-                            </Grid>
-                        ) : (
-                            <EmptyMessageArea />
-                        )}
-                    </Grid>
-                </Paper>
-            </Container>
-        </div>
+                            backgroundColor: darkMode && "rgb(36,37,38)",
+                        }}
+                    >
+                        {messages?.map((message) => (
+                            <Message
+                                key={message._id}
+                                message={message}
+                                setTextId={setMessageId}
+                                setTextValue={setTextValue}
+                            />
+                        ))}
+                    </Paper>
+                    <MessageTextArea
+                        textValue={textValue}
+                        messageId={messageId}
+                        chatRoomId={chatRoomSelected._id}
+                    />
+                </Grid>
+            ) : (
+                <Grid
+                    item
+                    md={8}
+                    style={{
+                        margin: "auto",
+                        display: "flex",
+                        alignItems: "center",
+                        flexDirection: "column",
+                    }}
+                >
+                    <Avatar
+                        variant="square"
+                        style={{
+                            width: "120px",
+                            height: "120px",
+                            background: "transparent",
+                        }}
+                    >
+                        <img alt="" src={require("../assets/select-friends.svg")} />
+                    </Avatar>
+                    <Typography style={{ fontWeight: 800, marginTop: "16px" }}>
+                        Select friends from friend lists to start chat
+                    </Typography>
+                </Grid>
+            )}
+        </Grid>
     );
-}
+};
 
 export default Messenger;

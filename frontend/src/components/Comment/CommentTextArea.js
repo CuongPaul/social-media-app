@@ -5,12 +5,12 @@ import React, { useContext, useState, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Grid, Paper, Avatar, TextField, IconButton, LinearProgress } from "@material-ui/core";
 
-import AvartarText from "../UI/AvartarText";
+import AvatarIcon from "../UI/AvatarIcon";
 import StyledBadge from "../UI/StyledBadge";
 import { UIContext, UserContext } from "../../App";
 import useCreateComment from "../../hooks/useCreateComment";
-import PreviewFile from "../Post/PostForm/PostDialog/PreviewFile";
-import FilesField from "../Post/PostForm/PostDialog/FilesField";
+import FilePreview from "../Post/PostDialog/FilePreview";
+import FilesUpload from "../Post/PostDialog/FilesUpload";
 
 const CommentTextArea = ({ post }) => {
     const { uiState } = useContext(UIContext);
@@ -75,26 +75,16 @@ const CommentTextArea = ({ post }) => {
             >
                 <Grid item>
                     <StyledBadge isActive={userState.currentUser.is_active}>
-                        {userState.currentUser.avatar_image ? (
-                            <Avatar>
-                                <img
-                                    alt={userState.currentUser.name}
-                                    src={userState.currentUser.avatar_image}
-                                    style={{ width: "100%", height: "100%" }}
-                                />
-                            </Avatar>
-                        ) : (
-                            <AvartarText
-                                text={userState?.currentUser?.name}
-                                backgroundColor="tomato"
-                            />
-                        )}
+                        <AvatarIcon
+                            text={userState.currentUser.name}
+                            imageUrl={userState.currentUser.avatar_image}
+                        />
                     </StyledBadge>
                 </Grid>
                 <Grid item md={8} sm={8} xs={8}>
                     <TextField
                         multiline
-                        rowsMax={4}
+                        maxRows={4}
                         helperText={error}
                         value={commentText}
                         error={error ? true : false}
@@ -108,8 +98,8 @@ const CommentTextArea = ({ post }) => {
                             background: uiState.darkMode ? "rgb(24,25,26)" : "rgb(240,242,245)",
                         }}
                     />
-                    {/* <FilesField fileRef={fileRef} /> */}
-                    <FilesField
+                    {/* <FilesUpload fileRef={fileRef} /> */}
+                    <FilesUpload
                         multipleUpload={false}
                         setFilesUpload={setCommentImage}
                         setFilesPreview={setPreviewImage}
@@ -153,7 +143,7 @@ const CommentTextArea = ({ post }) => {
 
             {previewImage && (
                 <>
-                    <PreviewFile filePreview={previewImage} handleRemoveFile={removeFileImage} />
+                    <FilePreview filePreview={previewImage} handleRemoveFile={removeFileImage} />
                 </>
             )}
         </>

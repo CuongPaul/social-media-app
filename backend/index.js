@@ -33,7 +33,6 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 app.use((req, _res, next) => {
-    io.req = req;
     req.io = io;
     next();
 });

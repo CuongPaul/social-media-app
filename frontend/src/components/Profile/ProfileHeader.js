@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Paper, Typography, makeStyles, Grid } from "@material-ui/core";
+import { Grid, Paper, Typography, makeStyles } from "@material-ui/core";
 
 import { UserContext } from "../../App";
 import UpdateProfileImage from "./UpdateProfileImage";
@@ -16,7 +16,7 @@ const useStyles = makeStyles(() => ({
         backgroundRepeat: "no-repeat",
     },
     overlay: {
-        top: 0,
+        top: "0px",
         width: "100%",
         height: "40vh",
         position: "absolute",
@@ -43,11 +43,7 @@ const ProfileHeader = ({ user }) => {
                         }}
                     >
                         <UpdateProfileImage user={user} type="profile" />
-                        {userState.currentUser.id === user.id && (
-                            <>
-                                <UpdateCoverImage />
-                            </>
-                        )}
+                        <UpdateCoverImage user={user} type="profile" />
                         <div className={classes.overlay}></div>
                     </Paper>
                 </Grid>

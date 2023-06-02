@@ -19,7 +19,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThumbsUp } from "@fortawesome/free-regular-svg-icons";
 import { faThumbsUp as filledLike } from "@fortawesome/free-solid-svg-icons";
 
-import AvartarText from "../UI/AvartarText";
+import AvatarIcon from "../UI/AvatarIcon";
 import { PostContext, UserContext, UIContext } from "../../App";
 // import { reactComment, updateComment, deleteComment } from "../../services/CommentService";
 
@@ -38,7 +38,7 @@ const Comment = ({ comment }) => {
         //     if (res.data) {
         //         postDispatch({ type: "LIKE_UNLIKE_COMMENT", payload: res.data.comment });
         //         uiDispatch({
-        //             type: "SET_NOTIFICATION",
+        //             type: "SET_ALERT_MESSAGE",
         //             payload: { color: "success", text: res.data.message, display: true },
         //         });
         //     }
@@ -57,20 +57,7 @@ const Comment = ({ comment }) => {
     const listItems = (
         <ListItem alignItems="flex-start">
             <ListItemAvatar>
-                {comment.user.avatar_image ? (
-                    <Avatar>
-                        <img
-                            src={comment.user.avatar_image}
-                            style={{ width: "100%", height: "100%" }}
-                            alt={comment.user.name}
-                        />
-                    </Avatar>
-                ) : (
-                    <AvartarText
-                        text={comment?.user?.name}
-                        backgroundColor={comment.user.is_active ? "seagreen" : "tomato"}
-                    />
-                )}
+                <AvatarIcon text={comment.user.name} imageUrl={comment.user.avatar_image} />
             </ListItemAvatar>
             <ListItemText
                 primary={
@@ -88,7 +75,7 @@ const Comment = ({ comment }) => {
                                     value={commentText}
                                     onChange={handleEditComment}
                                     multiline
-                                    rowsMax={4}
+                                    maxRows={4}
                                     style={{
                                         width: "100%",
                                         borderRadius: "20px",

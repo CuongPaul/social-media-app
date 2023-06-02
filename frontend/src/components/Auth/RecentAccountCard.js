@@ -1,17 +1,16 @@
 import {
     Card,
-    Badge,
     CardMedia,
     CardHeader,
     IconButton,
     Typography,
     CardActionArea,
 } from "@material-ui/core";
-import { Close, Notifications } from "@material-ui/icons";
+import { Close } from "@material-ui/icons";
 import React, { useState, Fragment, useContext } from "react";
 
 import { UserContext } from "../../App";
-import AvartarText from "../UI/AvartarText";
+import AvatarIcon from "../UI/AvatarIcon";
 import RecentAccountSigninForm from "./RecentAccountSigninForm";
 
 const RecentAccountCard = ({ account }) => {
@@ -25,11 +24,9 @@ const RecentAccountCard = ({ account }) => {
 
     return (
         <Fragment>
-            <Card style={{ position: "relative" }}>
-                <CardActionArea onClick={() => setIsShowSigninForm(true)}>
-                    {account?.avatar_image ? (
-                        <CardMedia style={{ height: "150px" }} image={account.avatar_image} />
-                    ) : (
+            <div style={{ position: "relative" }}>
+                <Card style={{ borderRadius: "8px" }}>
+                    <CardActionArea onClick={() => setIsShowSigninForm(true)}>
                         <CardMedia
                             style={{
                                 display: "flex",
@@ -39,30 +36,28 @@ const RecentAccountCard = ({ account }) => {
                                 background: "rgb(245,246,247)",
                             }}
                         >
-                            <AvartarText
-                                backgroundColor="teal"
-                                size="60px"
-                                fontSize="25px"
-                                text={account?.name}
+                            <AvatarIcon
+                                size="80px"
+                                fontSize="40px"
+                                variant="square"
+                                text={account.name}
+                                imageUrl={account.avatar_image}
                             />
                         </CardMedia>
-                    )}
-                    <CardHeader
-                        avatar={
-                            <Badge badgeContent={5} color={"primary"} overlap="rectangular">
-                                <Notifications style={{ color: "GrayText" }} />
-                            </Badge>
-                        }
-                        subheader={
-                            <Typography style={{ fontWeight: "800" }}>{account.name}</Typography>
-                        }
-                    />
-                </CardActionArea>
+                        <CardHeader
+                            subheader={
+                                <Typography style={{ fontWeight: 800, textAlign: "center" }}>
+                                    {account.name}
+                                </Typography>
+                            }
+                        />
+                    </CardActionArea>
+                </Card>
                 <IconButton
                     size="small"
                     style={{
-                        top: 0,
-                        right: 0,
+                        top: "-8px",
+                        right: "-8px",
                         color: "#fff",
                         background: "tomato",
                         position: "absolute",
@@ -71,14 +66,12 @@ const RecentAccountCard = ({ account }) => {
                 >
                     <Close />
                 </IconButton>
-            </Card>
-            {isShowSigninForm && (
-                <RecentAccountSigninForm
-                    account={account}
-                    isShowSigninForm={isShowSigninForm}
-                    setIsShowSigninForm={setIsShowSigninForm}
-                />
-            )}
+            </div>
+            <RecentAccountSigninForm
+                account={account}
+                isShowSigninForm={isShowSigninForm}
+                setIsShowSigninForm={setIsShowSigninForm}
+            />
         </Fragment>
     );
 };

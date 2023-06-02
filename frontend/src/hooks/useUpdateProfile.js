@@ -29,7 +29,7 @@ const useUpdateProfile = () => {
                 payload: { label: "name", value: name },
             });
             uiDispatch({
-                type: "SET_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: { display: true, text: data.message, color: "success" },
             });
         } catch (err) {
@@ -57,7 +57,7 @@ const useUpdateProfile = () => {
                 payload: { label: "email", value: email },
             });
             uiDispatch({
-                type: "SET_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: { display: true, text: data.message, color: "success" },
             });
         } catch (err) {
@@ -85,7 +85,7 @@ const useUpdateProfile = () => {
                 payload: { label: "bio", value: bio },
             });
             uiDispatch({
-                type: "SET_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: { display: true, text: data.message, color: "success" },
             });
         } catch (err) {
@@ -114,7 +114,7 @@ const useUpdateProfile = () => {
             });
 
             uiDispatch({
-                type: "SET_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: { display: true, text: data.message, color: "success" },
             });
         } catch (err) {
@@ -141,7 +141,7 @@ const useUpdateProfile = () => {
                 payload: { label: "education", value: education },
             });
             uiDispatch({
-                type: "SET_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: { display: true, text: data.message, color: "success" },
             });
         } catch (err) {
@@ -164,7 +164,7 @@ const useUpdateProfile = () => {
             );
             setLoading(false);
             uiDispatch({
-                type: "SET_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: { display: true, text: data.message, color: "success" },
             });
         } catch (err) {
@@ -172,7 +172,7 @@ const useUpdateProfile = () => {
 
             if (err && err.response) {
                 uiDispatch({
-                    type: "SET_NOTIFICATION",
+                    type: "SET_ALERT_MESSAGE",
                     payload: {
                         display: true,
                         text: err.response.data.error,
@@ -192,7 +192,7 @@ const useUpdateProfile = () => {
             });
             setLoading(false);
             uiDispatch({
-                type: "SET_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: { display: true, text: data.message, color: "success" },
             });
 
@@ -202,7 +202,7 @@ const useUpdateProfile = () => {
 
             if (err && err.response) {
                 uiDispatch({
-                    type: "SET_NOTIFICATION",
+                    type: "SET_ALERT_MESSAGE",
                     payload: {
                         display: true,
                         text: err.response.data.error,

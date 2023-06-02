@@ -7,14 +7,19 @@ import {
     DialogActions,
     DialogContent,
 } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
-import React, { useState, useRef } from "react";
+import { useParams, useHistory } from "react-router-dom";
+import React, { useContext, useState, useRef } from "react";
 import { CameraAlt as CameraIcon } from "@material-ui/icons";
 
 import DialogLoading from "../UI/DialogLoading";
 import useUpdateProfilePic from "../../hooks/useUpdateProfilePic";
+import { UserContext } from "../../App";
 
 const UpdateCoverImage = () => {
+    const { userState } = useContext(UserContext);
+
+    const params = useParams();
+
     const history = useHistory();
     const inputFileRef = useRef(null);
     const [menu, setMenu] = useState(false);
@@ -53,14 +58,16 @@ const UpdateCoverImage = () => {
 
     return (
         <div>
-            <IconButton
-                onClick={handleImageClick}
-                style={{ position: "absolute", bottom: 30, left: 20, zIndex: 2 }}
-            >
-                <Avatar>
-                    <CameraIcon style={{ color: "blue" }} />
-                </Avatar>
-            </IconButton>
+            {userState.currentUser._id === params.userId && (
+                <IconButton
+                    onClick={handleImageClick}
+                    style={{ position: "absolute", bottom: 30, left: 20, zIndex: 2 }}
+                >
+                    <Avatar>
+                        <CameraIcon style={{ color: "blue" }} />
+                    </Avatar>
+                </IconButton>
+            )}
 
             {loading && <DialogLoading loading={loading} text="Uploading Cover  Pic..." />}
 

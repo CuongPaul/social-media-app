@@ -1,35 +1,129 @@
-import uniqueArray from "../utils/unique-array";
-
 const initialUserState = {
     currentUser: null,
+    sendedFriendRequests: [],
+    incommingFriendRequests: [],
+    //
+    friendsOnline: [],
     recentAccounts: [],
 };
 
 const UserReducer = (state, action) => {
     switch (action.type) {
-        case "SET_RECENT_ACCOUNTS":
-            return { ...state, recentAccounts: action.payload };
-
-        case "SIGN_OUT":
-            const newRecentAccounts = uniqueArray([...state.recentAccounts, state.currentUser]);
-
-            localStorage.removeItem("token");
-            localStorage.setItem("accounts", JSON.stringify(newRecentAccounts));
+        case "UNFRIEND":
+            const friendsAfterUnfriend = [...state.currentUser.friends].filter(
+                (friend) => friend._id !== action.payload
+            );
 
             return {
                 ...state,
-                currentUser: null,
-                recentAccounts: newRecentAccounts,
+                currentUser: {
+                    ...state.currentUser,
+                    friends: friendsAfterUnfriend,
+                },
             };
 
+        case "BLOCK_USER":
+            return {
+                ...state,
+                currentUser: {
+                    ...state.currentUser,
+                    block_users: [...state.currentUser.block_users, action.payload],
+                },
+            };
+
+        case "UNBLOCK_USER":
+            const blockUsersAfterUnblock = [...state.currentUser.block_users].filter(
+                (item) => item !== action.payload
+            );
+
+            return {
+                ...state,
+                currentUser: {
+                    ...state.currentUser,
+                    block_users: blockUsersAfterUnblock,
+                },
+            };
+
+        case "SEND_FRIEND_REQUEST":
+            return {
+                ...state,
+                sendedFriendRequests: [...state.sendedFriendRequests, action.payload],
+            };
+
+        case "CANCEL_FRIEND_REQUEST":
+            const sendedFriendRequestsAfterCancel = [...state.sendedFriendRequests].filter(
+                (friendRequest) => friendRequest._id !== action.payload
+            );
+
+            return {
+                ...state,
+                sendedFriendRequests: sendedFriendRequestsAfterCancel,
+            };
+
+        case "DECLINE_FRIEND_REQUEST":
+            const incommingFriendRequestsAfterDecline = [...state.incommingFriendRequests].filter(
+                (friendRequest) => friendRequest._id !== action.payload
+            );
+
+            return {
+                ...state,
+                incommingFriendRequests: incommingFriendRequestsAfterDecline,
+            };
+
+        case "ACCEPT_FRIEND_REQUEST":
+            const incommingFriendRequestsAfterAccept = [...state.incommingFriendRequests].filter(
+                (friendRequest) => friendRequest._id !== action.payload
+            );
+
+            return {
+                ...state,
+                incommingFriendRequests: incommingFriendRequestsAfterAccept,
+            };
+
+        case "ADD_FRIEND":
+            return {
+                ...state,
+                currentUser: {
+                    ...state.currentUser,
+                    friends: [...state.currentUser.friends, action.payload],
+                },
+            };
+
+        case "SIGN_OUT":
+            localStorage.removeItem("token");
+
+            return initialUserState;
+        //
+        case "SET_RECENT_ACCOUNTS":
+            return { ...state, recentAccounts: action.payload };
+
         case "REMOVE_RECENT_ACCOUNT":
-            const accountArray = state.recentAccounts.filter(
+            const recentAccountsAfterRemove = state.recentAccounts.filter(
                 (account) => account._id !== action.payload
             );
 
-            localStorage.setItem("accounts", JSON.stringify(accountArray));
+            localStorage.setItem("recent_accounts", JSON.stringify(recentAccountsAfterRemove));
 
-            return { ...state, recentAccounts: accountArray };
+            return { ...state, recentAccounts: recentAccountsAfterRemove };
+
+        case "SET_FRIENDS_ONLINE":
+            return { ...state, friendsOnline: action.payload };
+
+        case "SET_SENDED_FRIEND_REQUEST":
+            return { ...state, sendedFriendRequests: action.payload };
+
+        case "SET_INCOMMING_FRIEND_REQUEST":
+            return { ...state, incommingFriendRequests: action.payload };
+
+        case "ADD_FRIENDS_ONLINE":
+            return { ...state, friendsOnline: [...state.friendsOnline, action.payload] };
+
+        case "REMOVE_FRIENDS_ONLINE":
+            const friendsOnlineAfterRemove = state.friendsOnline.filter(
+                (friend) => friend._id !== action.payload
+            );
+
+            return { ...state, friendsOnline: friendsOnlineAfterRemove };
 
         case "UPDATE_PROFILE":
             return {
@@ -38,7 +132,25 @@ const UserReducer = (state, action) => {
             };
 
         case "SET_CURRENT_USER":
-            return { ...state, currentUser: action.payload };
+            const recentAccountStored = JSON.parse(localStorage.getItem("recent_accounts")) || [];
+            const isStored = recentAccountStored.find((item) => item._id === action.payload._id);
+
+            if (!isStored) {
+                recentAccountStored.push({
+                    _id: action.payload._id,
+                    name: action.payload.name,
+                    email: action.payload.email,
+                    avatar_image: action.payload.avatar_image,
+                });
+
+                localStorage.setItem("recent_accounts", JSON.stringify(recentAccountStored));
+            }
+
+            return {
+                ...state,
+                currentUser: action.payload,
+                recentAccounts: recentAccountStored,
+            };
 
         case "FRIEND_OFFLINE":
             const friends_1 = [...state.currentUser.friends];
@@ -61,24 +173,6 @@ const UserReducer = (state, action) => {
             }
 
             return { ...state, currentUser: { ...state.currentUser, friends: [...friends_2] } };
-
-        case "ADD_FRIEND":
-            return {
-                ...state,
-                currentUser: {
-                    ...state.currentUser,
-                    friends: [action.payload, ...state.currentUser.friend],
-                },
-            };
-
-        case "REMOVE_FRIEND":
-            return {
-                ...state,
-                currentUser: {
-                    ...state.currentUser,
-                    friends: [...action.payload],
-                },
-            };
 
         default:
             throw new Error(`Action type ${action.type} is undefined`);

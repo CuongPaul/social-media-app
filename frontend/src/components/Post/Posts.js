@@ -1,32 +1,54 @@
+import moment from "moment";
 import React, { Fragment, useContext } from "react";
-import { Button, Typography } from "@material-ui/core";
+import { Card, Button, Divider, CardHeader, Typography, CardContent } from "@material-ui/core";
 
-import Post from "./Post";
-import { PostContext } from "../../App";
+import PostAction from "./PostAction";
+import PostFooter from "./PostFooter";
+import SlideImage from "./SlideImage";
+import { UIContext } from "../../App";
+import AvatarIcon from "../UI/AvatarIcon";
+import PostSubContent from "./PostSubContent";
 import useFetchPost from "../../hooks/useFetchPost";
 
-const Posts = ({ postUser }) => {
-    const { postState } = useContext(PostContext);
-    const { postDispatch } = useContext(PostContext);
-    const posts = postUser ? postUser : postState.posts;
+const Posts = ({ posts }) => {
+    const { uiState } = useContext(UIContext);
 
     const { fetchPosts } = useFetchPost();
 
     const handleFetchPosts = () => {
         fetchPosts();
     };
-    const handleDeletePost = (postId) => {
-        const newPosts = posts.filter((post) => post.id !== postId);
-
-        postDispatch({ type: "DELETE_POST", payload: newPosts });
-    };
 
     return (
         <Fragment>
             {posts.map((post) => (
-                <div key={post._id}>
-                    <Post post={post} handleDeletePost={handleDeletePost} />
-                </div>
+                <Card
+                    key={post._id}
+                    style={{
+                        marginTop: "20px",
+                        borderRadius: "15px",
+                        backgroundColor: uiState.darkMode && "rgb(36,37,38)",
+                    }}
+                >
+                    <CardHeader
+                        action={<PostAction post={post} />}
+                        subheader={moment(post.createdAt).fromNow()}
+                        title={<PostSubContent postBody={post.body} username={post.user.name} />}
+                        avatar={
+                            <AvatarIcon text={post.user.name} imageUrl={post.user.avatar_image} />
+                        }
+                    />
+                    <CardContent>
+                        <Typography
+                            style={{ fontWeight: "400", fontSize: "16px", fontFamily: "fantasy" }}
+                        >
+                            {post.text}
+                        </Typography>
+                    </CardContent>
+                    {post?.images && <SlideImage images={post.images} />}
+                    <Divider />
+                    <PostFooter post={post} />
+                </Card>
             ))}
             <div
                 style={{
@@ -35,15 +57,9 @@ const Posts = ({ postUser }) => {
                     justifyContent: "center",
                 }}
             >
-                {postState.postPagination.totalPage <= postState.postPagination.currentPage ? (
-                    <Typography style={{ color: "teal" }} variant="body2">
-                        No more posts
-                    </Typography>
-                ) : (
-                    <Button variant="contained" color="primary" onClick={handleFetchPosts}>
-                        More Posts
-                    </Button>
-                )}
+                <Button variant="contained" color="primary" onClick={handleFetchPosts}>
+                    More Posts
+                </Button>
             </div>
         </Fragment>
     );

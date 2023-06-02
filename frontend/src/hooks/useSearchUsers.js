@@ -14,19 +14,19 @@ const useSearchUsers = () => {
 
         try {
             const { data } = await callApi({ method: "GET", query: { name }, url: "/user/search" });
-
             setIsLoading(false);
+
             setUsers(data.rows);
         } catch (err) {
             setIsLoading(false);
             uiDispatch({
-                type: "SET_NOTIFICATION",
+                type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
             });
         }
     };
 
-    return { users, isLoading, handleSearchUsers };
+    return { users, setUsers, isLoading, handleSearchUsers };
 };
 
 export default useSearchUsers;

@@ -1,7 +1,6 @@
 import { useContext, useState } from "react";
 import axios from "axios";
 import { UserContext, UIContext } from "../App";
-import { storage } from "../firebase/firebase";
 const url = process.env.REACT_APP_BASE_API_URL;
 
 const useUpdateProfilePic = ({ avatar_image, cover_pic, history }) => {
@@ -14,48 +13,48 @@ const useUpdateProfilePic = ({ avatar_image, cover_pic, history }) => {
         let filename = `avatar_image/${userState.currentUser.name}-${Date.now()}-${
             avatar_image.name
         }`;
-        const uploadTask = storage.ref(`images/${filename}`).put(avatar_image);
-        uploadTask.on(
-            "state_changed",
-            () => {
-                setLoading(true);
-            },
-            (err) => {
-                setLoading(false);
-            },
-            () => {
-                storage
-                    .ref("images")
-                    .child(filename)
-                    .getDownloadURL()
-                    .then((uri) => {
-                        saveProfilePic(uri);
-                    });
-            }
-        );
+        // const uploadTask = storage.ref(`images/${filename}`).put(avatar_image);
+        // uploadTask.on(
+        //     "state_changed",
+        //     () => {
+        //         setLoading(true);
+        //     },
+        //     (err) => {
+        //         setLoading(false);
+        //     },
+        //     () => {
+        //         storage
+        //             .ref("images")
+        //             .child(filename)
+        //             .getDownloadURL()
+        //             .then((uri) => {
+        //                 saveProfilePic(uri);
+        //             });
+        //     }
+        // );
     };
 
     const updateCoverPic = () => {
         let filename = `cover_pic/${userState.currentUser.name}-${Date.now()}-${cover_pic.name}`;
-        const uploadTask = storage.ref(`images/${filename}`).put(cover_pic);
-        uploadTask.on(
-            "state_changed",
-            () => {
-                setLoading(true);
-            },
-            (err) => {
-                setLoading(false);
-            },
-            () => {
-                storage
-                    .ref("images")
-                    .child(filename)
-                    .getDownloadURL()
-                    .then((uri) => {
-                        saveCoverImage(uri);
-                    });
-            }
-        );
+        // const uploadTask = storage.ref(`images/${filename}`).put(cover_pic);
+        // uploadTask.on(
+        //     "state_changed",
+        //     () => {
+        //         setLoading(true);
+        //     },
+        //     (err) => {
+        //         setLoading(false);
+        //     },
+        //     () => {
+        //         storage
+        //             .ref("images")
+        //             .child(filename)
+        //             .getDownloadURL()
+        //             .then((uri) => {
+        //                 saveCoverImage(uri);
+        //             });
+        //     }
+        // );
     };
 
     const saveProfilePic = async (profile_url) => {
@@ -73,7 +72,7 @@ const useUpdateProfilePic = ({ avatar_image, cover_pic, history }) => {
             );
             if (response.data) {
                 uiDispatch({
-                    type: "SET_NOTIFICATION",
+                    type: "SET_ALERT_MESSAGE",
                     payload: {
                         text: response.data.message,
                         color: "success",
@@ -105,7 +104,7 @@ const useUpdateProfilePic = ({ avatar_image, cover_pic, history }) => {
             );
             if (response.data) {
                 uiDispatch({
-                    type: "SET_NOTIFICATION",
+                    type: "SET_ALERT_MESSAGE",
                     payload: {
                         text: response.data.message,
                         color: "success",
