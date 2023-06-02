@@ -8,8 +8,7 @@ import Posts from "../components/Post/Posts";
 import { UIContext, UserContext } from "../App";
 import PostBar from "../components/Post/PostBar";
 import AvatarIcon from "../components/UI/AvatarIcon";
-import FriendList from "../components/Friends/FriendList";
-import ChatRoomList from "../components/Friends/ChatRoomList";
+import FriendsOnlineList from "../components/Friends/FriendsOnlineList";
 
 const leftSidebarItems = [
     { id: "friends", title: "Friends", path: "/friends", icon: "friends.png" },
@@ -91,8 +90,7 @@ const Home = () => {
                 boxShadow={false}
                 backgroundColor={darkMode ? "rgb(24,25,26)" : "rgb(240,242,245)"}
             >
-                <FriendList />
-                <ChatRoomList />
+                <FriendsOnlineList />
             </Sidebar>
         </Fragment>
     );

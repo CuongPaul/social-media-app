@@ -1,13 +1,17 @@
 import React, { useContext } from "react";
-import { Badge, ListItem, ListItemText, ListItemAvatar } from "@material-ui/core";
+import { ListItem, ListItemText, ListItemAvatar } from "@material-ui/core";
 
 import callApi from "../../api";
 import AvatarIcon from "../UI/AvatarIcon";
-import { ChatContext, UIContext } from "../../App";
+import StyledBadge from "../UI/StyledBadge";
+import { UIContext, ChatContext, UserContext } from "../../App";
 
 const ChatRoom = ({ chatRoom }) => {
-    const { chatDispatch } = useContext(ChatContext);
+    const {
+        userState: { friendsOnline },
+    } = useContext(UserContext);
     const { uiDispatch } = useContext(UIContext);
+    const { chatDispatch } = useContext(ChatContext);
 
     const handleClickChat = async (chat) => {
         uiDispatch({ type: "SET_DRAWER", payload: false });
@@ -19,14 +23,15 @@ const ChatRoom = ({ chatRoom }) => {
     return (
         <ListItem button onClick={() => handleClickChat(chatRoom)}>
             <ListItemAvatar>
-                <Badge
+                <StyledBadge
                     max={9}
-                    color="error"
-                    overlap="rectangular"
+                    isActive={friendsOnline.some((item) =>
+                        chatRoom.members.some((element) => element._id === item._id)
+                    )}
                     badgeContent={chatRoom?.unseen_message && chatRoom?.unseen_message}
                 >
                     <AvatarIcon text={chatRoom?.name} imageUrl={chatRoom?.avatar_image} />
-                </Badge>
+                </StyledBadge>
             </ListItemAvatar>
             <ListItemText primary={chatRoom?.name} />
         </ListItem>

@@ -12,11 +12,12 @@ const BadgeWithStyles = withStyles((theme) => ({
     },
 }))(Badge);
 
-const StyledBadge = ({ border, children, isActive }) => {
+const StyledBadge = ({ max, border, children, isActive, badgeContent }) => {
     return (
         <BadgeWithStyles
-            variant="dot"
+            max={max}
             overlap="rectangular"
+            badgeContent={badgeContent ? badgeContent : ""}
             color={isActive ? "secondary" : "error"}
             style={{ border, padding: "4px", borderRadius: "100%" }}
         >
