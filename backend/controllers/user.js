@@ -80,8 +80,6 @@ const searchUsersController = async (req, res) => {
 
         const count = await User.countDocuments(query);
 
-        req.io.sockets.emit("test-event", "Hello, World!");
-
         return res.status(200).json({ message: "success", data: { count, rows: users } });
     } catch (err) {
         return res.status(500).json({ error: err.message });

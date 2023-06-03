@@ -115,15 +115,37 @@ const UserReducer = (state, action) => {
         case "SET_INCOMMING_FRIEND_REQUEST":
             return { ...state, incommingFriendRequests: action.payload };
 
-        case "ADD_FRIENDS_ONLINE":
-            return { ...state, friendsOnline: [...state.friendsOnline, action.payload] };
+        case "ADD_FRIEND_ONLINE":
+            const friendsOnlineAfterAddFriendsOnline = [...state.friendsOnline];
 
-        case "REMOVE_FRIENDS_ONLINE":
+            const indexOfFriendOnlineAdded = friendsOnlineAfterAddFriendsOnline.findIndex(
+                (item) => item._id === action.payload._id
+            );
+            if (indexOfFriendOnlineAdded === -1) {
+                friendsOnlineAfterAddFriendsOnline.push(action.payload);
+            } else {
+                friendsOnlineAfterAddFriendsOnline[indexOfFriendOnlineAdded] = action.payload;
+            }
+
+            return { ...state, friendsOnline: friendsOnlineAfterAddFriendsOnline };
+
+        case "REMOVE_FRIEND_ONLINE":
             const friendsOnlineAfterRemove = state.friendsOnline.filter(
                 (friend) => friend._id !== action.payload
             );
 
             return { ...state, friendsOnline: friendsOnlineAfterRemove };
+
+        case "ADD_SOCKET_FOR_FRIEND_ONLINE":
+            const friendsOnlineAfterAddSocket = [...state.friendsOnline];
+            const indexOfFriendOnlineAddedSocket = friendsOnlineAfterAddSocket.findIndex(
+                (item) => item._id === action.payload._id
+            );
+            friendsOnlineAfterAddSocket[indexOfFriendOnlineAddedSocket].sockets.push(
+                action.payload.socket
+            );
+
+            return { ...state, friendsOnline: friendsOnlineAfterAddSocket };
 
         case "UPDATE_PROFILE":
             return {

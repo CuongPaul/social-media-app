@@ -1,14 +1,11 @@
 import { useState, useContext } from "react";
-import { useHistory } from "react-router-dom";
 
 import callApi from "../api";
 import { UIContext, UserContext } from "../App";
 
 const useUserActions = () => {
-    const { userDispatch } = useContext(UserContext);
     const { socketIO, uiDispatch } = useContext(UIContext);
-
-    const history = useHistory();
+    const { userState, userDispatch } = useContext(UserContext);
 
     const [loading, setLoading] = useState(false);
 
@@ -17,12 +14,10 @@ const useUserActions = () => {
             await callApi({
                 method: "POST",
                 url: "/auth/signout",
-                data: { socket_id: socketIO.current.id },
+                data: { socket_id: socketIO.current.id, friends_online: userState.friendsOnline },
             });
 
             userDispatch({ type: "SIGN_OUT" });
-
-            history.push("/");
         } catch (err) {
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",

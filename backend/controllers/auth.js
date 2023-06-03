@@ -8,12 +8,18 @@ const signinController = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }, { chat_rooms: 0 }).lean().populate("friends", {
+            _id: 1,
+            name: 1,
+            avatar_image: 1,
+        });
         if (!user) {
             return res.status(400).json({ message: "Email doesn't exist" });
         }
 
-        const isMatchPassword = await bcrypt.compare(password, user.password);
+        const { password: userPassword, ...userData } = user;
+
+        const isMatchPassword = await bcrypt.compare(password, userPassword);
         if (!isMatchPassword) {
             return res.status(400).json({ message: "Incorrect password" });
         }
@@ -22,7 +28,20 @@ const signinController = async (req, res) => {
             expiresIn: process.env.JWT_EXPIRE,
         });
 
-        return res.status(200).json({ data: { token }, message: "Signin successfully" });
+        const friendsOnline = [];
+        for (const item of user.friends) {
+            const sockets = await redisClient.LRANGE(`socket-io:${item._id}`, 0, -1);
+
+            if (sockets.length) {
+                const { _id, name, avatar_image } = item;
+                friendsOnline.push({ _id, name, sockets, avatar_image });
+            }
+        }
+
+        return res.status(200).json({
+            message: "Signin successfully",
+            data: { token, user: userData, friends_online: friendsOnline },
+        });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -45,7 +64,11 @@ const signupController = async (req, res) => {
             expiresIn: process.env.JWT_EXPIRE,
         });
 
-        return res.status(200).json({ data: { token }, message: "Account successfully created" });
+        const { password: passwordSaved, ...userData } = newUser._doc;
+
+        return res
+            .status(200)
+            .json({ data: { token, user: userData }, message: "Account successfully created" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -53,9 +76,9 @@ const signupController = async (req, res) => {
 
 const signoutController = async (req, res) => {
     const userId = req.user_id;
-    const { socket_id } = req.body;
     const expireTime = req.exp_token;
     const token = req.headers.authorization;
+    const { socket_id, friends_online } = req.body;
 
     try {
         const ttl = expireTime - (Date.now() / 1000).toFixed();
@@ -64,9 +87,16 @@ const signoutController = async (req, res) => {
         }
 
         await redisClient.LREM(`socket-io:${userId}`, 0, socket_id);
-        const sockets = await redisClient.LRANGE(`socket-io:${userId}`, 0, -1);
-        if (!sockets.length) {
-            req.io.sockets.emit("user-offline", userId);
+        if (friends_online.length) {
+            const sockets = await redisClient.LRANGE(`socket-io:${userId}`, 0, -1);
+
+            if (!sockets.length) {
+                for (const friend of friends_online) {
+                    for (const item of friend.sockets) {
+                        req.io.sockets.to(item).emit("user-offline", userId);
+                    }
+                }
+            }
         }
 
         return res.status(200).json({ message: "Signout successfully" });

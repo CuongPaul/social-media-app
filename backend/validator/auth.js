@@ -15,4 +15,20 @@ const signupValidation = {
     }),
 };
 
-export { signinValidation, signupValidation };
+const signoutValidation = {
+    body: Joi.object({
+        socket_id: Joi.string().trim().required(),
+        friends_online: Joi.array()
+            .items(
+                Joi.object({
+                    _id: Joi.string().trim().required(),
+                    name: Joi.string().trim().required(),
+                    avatar_image: Joi.string().allow("", null),
+                    sockets: Joi.array().items(Joi.string().trim().required()).required(),
+                })
+            )
+            .required(),
+    }),
+};
+
+export { signinValidation, signupValidation, signoutValidation };

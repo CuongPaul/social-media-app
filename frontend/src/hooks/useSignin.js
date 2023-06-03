@@ -1,10 +1,11 @@
 import { useState, useEffect, useContext } from "react";
 
 import callApi from "../api";
-import { UIContext } from "../App";
+import { UIContext, UserContext } from "../App";
 
 const useSignin = (formData) => {
     const { uiDispatch } = useContext(UIContext);
+    const { userDispatch } = useContext(UserContext);
 
     const [loading, setLoading] = useState(false);
     const [formValue, setFormValue] = useState({ email: "", password: "" });
@@ -22,7 +23,7 @@ const useSignin = (formData) => {
         setLoading(true);
 
         try {
-            const { data, message } = await callApi({
+            const { data } = await callApi({
                 method: "POST",
                 data: formValue,
                 url: "/auth/signin",
@@ -31,10 +32,8 @@ const useSignin = (formData) => {
 
             localStorage.setItem("token", data.token);
 
-            uiDispatch({
-                type: "SET_ALERT_MESSAGE",
-                payload: { display: true, text: message, color: "success" },
-            });
+            userDispatch({ type: "SET_FRIENDS_ONLINE", payload: data.friends_online });
+            userDispatch({ type: "SET_CURRENT_USER", payload: data.user });
         } catch (err) {
             setLoading(false);
             uiDispatch({
