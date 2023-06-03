@@ -23,7 +23,6 @@ const uploadFiles = async (req, res, next) => {
         return res.status(500).json({ error: err.message });
     }
 
-    const { folder } = req.body;
     const { files, user_id } = req;
 
     try {
@@ -38,7 +37,7 @@ const uploadFiles = async (req, res, next) => {
             const { buffer, mimetype, originalname } = file;
             const metatype = { name: originalname, contentType: mimetype };
 
-            const imageRef = ref(storage, `${folder}/${originalname}`);
+            const imageRef = ref(storage, `${req.baseUrl.substring(1)}/${originalname}`);
             await uploadBytes(imageRef, buffer, metatype);
 
             const url = await getDownloadURL(imageRef);

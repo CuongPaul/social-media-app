@@ -105,7 +105,9 @@ const Notifications = () => {
                         <ListItem
                             button
                             key={notification._id}
-                            onClick={() => handleReadNotifications(notification._id)}
+                            onClick={() =>
+                                !notification.is_read && handleReadNotifications(notification._id)
+                            }
                             style={{
                                 width: "auto",
                                 margin: "5px 15px",

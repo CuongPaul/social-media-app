@@ -15,12 +15,12 @@ import {
     DialogContent,
     InputAdornment,
 } from "@material-ui/core";
-import { Link } from "react-router-dom";
 import { Close, ArrowForward } from "@material-ui/icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import React, { useState, useEffect, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import callApi from "../../api";
 import AvatarIcon from "../UI/AvatarIcon";
 import { useChatRoom } from "../../hooks";
 import { UIContext, ChatContext, UserContext } from "../../App";
@@ -33,7 +33,8 @@ const GroupMembers = ({ isOpen, setIsOpen }) => {
         userState: { currentUser },
     } = useContext(UserContext);
     const {
-        chatState: { chatRoomSelected },
+        chatDispatch,
+        chatState: { chatRooms, chatRoomSelected },
     } = useContext(ChatContext);
 
     const [members, setMembers] = useState([]);
@@ -47,13 +48,48 @@ const GroupMembers = ({ isOpen, setIsOpen }) => {
         setMembers(chatRoomSelected.members.filter((item) => regex.test(item.name)));
     };
 
-    const handleClickMember = (friend) => {
-        const isSelected = memberSelected.findIndex((item) => item._id === friend._id);
-        if (isSelected === -1) {
-            setMemberSelected([...memberSelected, friend]);
+    const handleClickMember = (member) => {
+        if (currentUser._id === chatRoomSelected.admin) {
+            if (currentUser._id !== member._id) {
+                const isSelected = memberSelected.findIndex((item) => item._id === member._id);
+                if (isSelected === -1) {
+                    setMemberSelected([...memberSelected, member]);
+                } else {
+                    setMemberSelected(memberSelected.filter((item) => item._id !== member._id));
+                }
+            }
         } else {
-            setMemberSelected(memberSelected.filter((item) => item._id !== friend._id));
+            if (member._id !== currentUser._id) {
+                const chatRoom = chatRooms.find(
+                    (chatRoom) =>
+                        chatRoom.members.length === 2 &&
+                        chatRoom.members.some((item) => item._id === member._id)
+                );
+
+                if (chatRoom) {
+                    handleClickChat(chatRoom);
+                } else {
+                    handleClickFriend(member);
+                }
+            }
+
+            setIsOpen(false);
         }
+    };
+
+    const handleClickChat = async (chat) => {
+        chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: chat });
+        const { data } = await callApi({ url: `/message/chat-room/${chat._id}`, method: "GET" });
+        chatDispatch({ type: "SET_MESSAGES", payload: data.rows });
+    };
+
+    const handleClickFriend = async (friend) => {
+        const { data } = await callApi({
+            method: "POST",
+            url: `/chat-room/two-people`,
+            data: { reciver: friend._id },
+        });
+        chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: data });
     };
 
     useEffect(() => {
@@ -183,23 +219,7 @@ const GroupMembers = ({ isOpen, setIsOpen }) => {
                                 background: darkMode ? "rgb(58,59,60)" : "rgb(240,242,245)",
                             }}
                         >
-                            <ListItem
-                                component={currentUser._id === chatRoomSelected.admin ? null : Link}
-                                to={
-                                    currentUser._id === chatRoomSelected.admin
-                                        ? null
-                                        : `/profile/${member._id}`
-                                }
-                                onClick={() => {
-                                    if (currentUser._id === chatRoomSelected.admin) {
-                                        if (currentUser._id !== member._id) {
-                                            handleClickMember(member);
-                                        }
-                                    } else {
-                                        setIsOpen(false);
-                                    }
-                                }}
-                            >
+                            <ListItem onClick={() => handleClickMember(member)}>
                                 <ListItemIcon>
                                     <AvatarIcon text={member.name} imageUrl={member.avatar_image} />
                                 </ListItemIcon>

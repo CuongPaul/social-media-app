@@ -18,7 +18,6 @@ const reactPostValidation = {
 const createPostValidation = Joi.object({
     images: Joi.any().strip(),
     text: Joi.string().trim().required(),
-    folder: Joi.string().trim().required(),
     privacy: Joi.string().valid("FRIEND", "PUBLIC", "ONLY_ME"),
     body: Joi.string()
         .allow(null)
@@ -53,7 +52,6 @@ const deletePostValidation = {
 const updatePostValidation = Joi.object({
     images: Joi.any().strip(),
     text: Joi.string().trim().required(),
-    folder: Joi.string().trim().allow(null),
     old_images: Joi.string()
         .allow(null)
         .custom((value, helpers) => {

@@ -36,7 +36,6 @@ const SearchFriends = () => {
     const { users, isLoading, setUsers, handleSearchUsers } = useSearchUsers();
 
     const handleClickFriend = async (friend) => {
-        uiDispatch({ type: "SET_DRAWER", payload: false });
         const { data } = await callApi({
             method: "POST",
             url: `/chat-room/two-people`,

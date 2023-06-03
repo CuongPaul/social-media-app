@@ -16,16 +16,19 @@ const SlideImage = ({ images }) => {
                 infinite={isMultipleImage}
             >
                 {images.map((item, index) => (
-                    <CardMedia
-                        controls
-                        key={index}
-                        image={item}
-                        autopause="true"
-                        style={{ width: "100%", maxHeight: "500px", objectFit: "fill" }}
-                        component={
-                            item.split(".").pop().substring(0, 3) === "mp4" ? "video" : "img"
-                        }
-                    />
+                    <div style={{ height: "100%", display: "flex", alignItems: "center" }}>
+                        <CardMedia
+                            controls
+                            key={index}
+                            image={item}
+                            autopause="true"
+                            // style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                            style={{ width: "100%", maxHeight: "500px", objectFit: "fill" }}
+                            component={
+                                item.split(".").pop().substring(0, 3) === "mp4" ? "video" : "img"
+                            }
+                        />
+                    </div>
                 ))}
             </Slide>
         </Fragment>

@@ -15,7 +15,7 @@ import { UserContext } from "../App";
 import Profile from "../screens/Profile";
 import Sidebar from "../components/Sidebar";
 import User from "../components/Friends/User";
-import useFriendAction from "../hooks/useFriendRequest";
+import { useUserActions, useFriendRequestAction } from "../hooks";
 
 const Friends = () => {
     const {
@@ -30,20 +30,15 @@ const Friends = () => {
         handleAcceptFriendRequest,
         handleCancelFriendRequest,
         handleDeclineFriendRequest,
-    } = useFriendAction();
+    } = useFriendRequestAction();
+    const { handleBlockUser, handleUnblockUser } = useUserActions();
 
-    const filterUser = (user) => {
-        let s_index = sendedFriendRequests?.findIndex((request) => request.sender._id === user._id);
-        let r_index = incommingFriendRequests?.findIndex(
-            (request) => request.receiver._id === user._id
-        );
-        let already_friend = currentUser.friends.findIndex((friend) => friend._id === user._id);
-        let abc = currentUser._id === user._id;
+    const isFriendRequest = (user) => {
+        let s_index = sendedFriendRequests.find((request) => request.receiver._id == user._id);
 
-        if (s_index === -1 && r_index === -1 && already_friend === -1 && !abc) {
-            return true;
-        }
-        return false;
+        let r_index = incommingFriendRequests.find((request) => request.sender._id == user._id);
+
+        return s_index || r_index ? false : true;
     };
 
     useEffect(() => {
@@ -124,7 +119,7 @@ const Friends = () => {
                                                     minWidth: "80px",
                                                     fontSize: "10px",
                                                     marginLeft: "0px",
-                                                    background: "rgb(255,99,71)",
+                                                    background: "rgb(108,117,125)",
                                                 }}
                                                 onClick={() =>
                                                     handleDeclineFriendRequest(request._id)
@@ -143,13 +138,15 @@ const Friends = () => {
                             <ListSubheader>People you may know</ListSubheader>
                             {usersRecommend?.map(
                                 (user) =>
-                                    filterUser(user) && (
+                                    isFriendRequest(user) && (
                                         <ListItem key={user._id}>
                                             <User user={user} setSelectedUser={setSelectedUser}>
                                                 <CardActions
                                                     style={{
                                                         padding: "0px",
+                                                        display: "flex",
                                                         marginLeft: "16px",
+                                                        flexDirection: "column",
                                                     }}
                                                 >
                                                     <Button
@@ -166,6 +163,41 @@ const Friends = () => {
                                                     >
                                                         Add
                                                     </Button>
+                                                    {currentUser?.block_users.includes(user._id) ? (
+                                                        <Button
+                                                            variant="contained"
+                                                            style={{
+                                                                color: "white",
+                                                                marginTop: "5px",
+                                                                minWidth: "80px",
+                                                                fontSize: "10px",
+                                                                marginLeft: "0px",
+                                                                background: "rgb(23,162,184)",
+                                                            }}
+                                                            onClick={() =>
+                                                                handleUnblockUser(user._id)
+                                                            }
+                                                        >
+                                                            Unblock
+                                                        </Button>
+                                                    ) : (
+                                                        <Button
+                                                            variant="contained"
+                                                            style={{
+                                                                color: "white",
+                                                                marginTop: "5px",
+                                                                minWidth: "80px",
+                                                                fontSize: "10px",
+                                                                marginLeft: "0px",
+                                                                background: "rgb(220,53,69)",
+                                                            }}
+                                                            onClick={() =>
+                                                                handleBlockUser(user._id)
+                                                            }
+                                                        >
+                                                            Block
+                                                        </Button>
+                                                    )}
                                                 </CardActions>
                                             </User>
                                         </ListItem>

@@ -15,7 +15,6 @@ const usePostActions = ({ postData, setIsOpen, filesUpload, filesPreview }) => {
             const formData = new FormData();
 
             if (filesUpload.length) {
-                formData.append("folder", "post");
                 for (let i = 0; i < filesUpload.length; i++) {
                     formData.append("images", filesUpload[i]);
                 }
@@ -79,7 +78,6 @@ const usePostActions = ({ postData, setIsOpen, filesUpload, filesPreview }) => {
             const formData = new FormData();
 
             if (filesUpload.length) {
-                formData.append("folder", "post");
                 for (let i = 0; i < filesUpload.length; i++) {
                     formData.append("images", filesUpload[i]);
                 }

@@ -14,6 +14,7 @@ import useFriendRequest from "./useFriendRequest";
 import useNotifications from "./useNotifications";
 import useUpdateProfile from "./useUpdateProfile";
 import useLocationService from "./useLocationService";
+import useFriendRequestAction from "./useFriendRequest";
 import useUpdateProfilePic from "./useUpdateProfilePic";
 
 export {
@@ -34,4 +35,5 @@ export {
     useSearchFriends,
     useLocationService,
     useUpdateProfilePic,
+    useFriendRequestAction,
 };

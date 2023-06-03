@@ -251,15 +251,25 @@ const getRecommendUsersController = async (req, res) => {
         const user = await User.findById(userId).populate("friends");
 
         const recommendUserIds = [
-            ...new Set(user.friends.reduce((acc, cur) => acc.concat(cur.friends), [])),
+            ...new Set(
+                user.friends
+                    .reduce((acc, cur) => acc.concat(cur.friends), [])
+                    .map((item) => String(item))
+            ),
         ];
 
-        const userIndex = recommendUserIds.find((item) => item == userId);
+        const userIndex = recommendUserIds.findIndex((item) => item == userId);
         if (userIndex != -1) {
             recommendUserIds.splice(userIndex, 1);
         }
 
-        const query = { _id: { $in: recommendUserIds } };
+        const query = {
+            _id: {
+                $in: recommendUserIds.filter(
+                    (item) => !user.friends.some((element) => String(item) == String(element._id))
+                ),
+            },
+        };
         const recommendUsers = await User.find(query, {
             _id: 1,
             name: 1,
