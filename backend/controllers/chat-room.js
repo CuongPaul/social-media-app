@@ -490,7 +490,15 @@ const createChatRoomForTwoPeopleController = async (req, res) => {
         await sender.updateOne({ $push: { chat_rooms: { _id: chatRoom._id } } });
         await reciver.updateOne({ $push: { chat_rooms: { _id: chatRoom._id } } });
 
-        res.status(200).json({ message: "success" });
+        const responseData = {
+            _id: chatRoom._id,
+            unseen_message: 0,
+            name: reciver.name,
+            members: chatRoom.members,
+            avatar_image: reciver.avatar_image,
+        };
+
+        res.status(200).json({ message: "success", data: responseData });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }

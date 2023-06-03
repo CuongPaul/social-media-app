@@ -53,7 +53,7 @@ const SearchGroups = () => {
     };
 
     const handleClickChat = async (chat) => {
-        chatDispatch({ type: "SET_SELECTED_FRIEND", payload: chat });
+        chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: chat });
         const { data } = await callApi({ url: `/message/chat-room/${chat._id}`, method: "GET" });
         chatDispatch({ type: "SET_MESSAGES", payload: data.rows });
         setIsOpen(false);
