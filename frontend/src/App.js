@@ -104,6 +104,11 @@ const App = () => {
                         payload: incommingFriendRequestsData.rows,
                     });
                 }
+
+                const { data: chatRoomsData } = await callApi({ method: "GET", url: "/chat-room" });
+                if (chatRoomsData) {
+                    chatDispatch({ type: "SET_CHATROOMS", payload: chatRoomsData.rows });
+                }
             } catch (err) {
                 uiDispatch({
                     type: "SET_ALERT_MESSAGE",

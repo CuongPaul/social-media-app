@@ -30,6 +30,9 @@ export const ChatReducer = (state, action) => {
         case "ADD_MESSAGE":
             return { ...state, messages: [action.payload, ...state.messages] };
 
+        case "ADD_MESSAGES":
+            return { ...state, messages: [...state.messages, ...action.payload] };
+
         case "ADD_CHATROOM":
             return { ...state, chatRooms: [action.payload, ...state.chatRooms] };
 

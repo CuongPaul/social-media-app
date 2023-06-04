@@ -34,7 +34,7 @@ const getMessagesController = async (req, res) => {
                 ],
             });
 
-        const count = await Message.countDocuments(query);
+        // const count = await Message.countDocuments(query);
 
         const index = user.chat_rooms.findIndex((item) => String(item._id) == String(chatRoom._id));
         if (index != -1 && user.chat_rooms[index].furthest_unseen_message) {
@@ -42,7 +42,7 @@ const getMessagesController = async (req, res) => {
             await user.save();
         }
 
-        res.status(200).json({ message: "success", data: { count, rows: messages } });
+        res.status(200).json({ message: "success", data: { count: "&#8734;", rows: messages } });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }

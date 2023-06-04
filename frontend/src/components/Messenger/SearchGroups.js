@@ -141,10 +141,10 @@ const SearchGroups = () => {
                     <div style={{ display: "flex", marginBottom: "32px" }}>
                         <TextField
                             autoFocus
-                            label="Name"
+                            label="Group name"
                             variant="outlined"
                             value={searchValue}
-                            placeholder="Enter name"
+                            placeholder="Enter group name"
                             onChange={(e) => setSearchValue(e.target.value)}
                             style={{ flex: 4, width: "100%", marginRight: "16px" }}
                             onKeyPress={(e) =>

@@ -141,10 +141,10 @@ const AddMembers = () => {
                     <div style={{ display: "flex", marginBottom: "32px" }}>
                         <TextField
                             autoFocus
-                            label="Name"
                             variant="outlined"
+                            label="Friend name"
                             value={searchValue}
-                            placeholder="Enter name"
+                            placeholder="Enter friend name"
                             onChange={(e) => setSearchValue(e.target.value)}
                             style={{ flex: 4, width: "100%", marginRight: "16px" }}
                             onKeyPress={(e) =>

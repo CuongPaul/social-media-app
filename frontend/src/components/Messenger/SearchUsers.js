@@ -113,10 +113,10 @@ const SearchUsers = () => {
                     <div style={{ display: "flex", marginBottom: "32px" }}>
                         <TextField
                             autoFocus
-                            label="Name"
+                            label="User name"
                             variant="outlined"
                             value={searchValue}
-                            placeholder="Enter name"
+                            placeholder="Enter user name"
                             onChange={(e) => setSearchValue(e.target.value)}
                             style={{ flex: 4, width: "100%", marginRight: "16px" }}
                             onKeyPress={(e) => e.key === "Enter" && handleSearchUsers(searchValue)}

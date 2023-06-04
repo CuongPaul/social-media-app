@@ -16,6 +16,7 @@ import MessageTextArea from "../components/Messenger/MessageTextArea";
 
 const Messenger = () => {
     const {
+        uiDispatch,
         uiState: { darkMode },
     } = useContext(UIContext);
     const {
@@ -28,15 +29,31 @@ const Messenger = () => {
 
     const history = useHistory();
     const scrollDiv = useRef(null);
+    const [page, setPage] = useState(1);
     const [messageId, setMessageId] = useState("");
     const [textValue, setTextValue] = useState("");
     const [isOpenGroupMembers, setIsOpenGroupMembers] = useState(false);
 
-    const handleScroll = (event) => {
-        if (event.currentTarget.scrollTop < -430) {
-            console.log("Call API get more messages");
-        } else {
-            console.log(event.currentTarget.scrollTop);
+    const handleScroll = async (event) => {
+        if (event.target.scrollHeight + event.target.scrollTop === event.target.clientHeight + 1) {
+            setPage(page + 1);
+
+            try {
+                const nextPage = page + 1;
+
+                const { data } = await callApi({
+                    method: "GET",
+                    query: { page: nextPage },
+                    url: `/message/chat-room/${chatRoomSelected._id}`,
+                });
+
+                chatDispatch({ payload: data.rows, type: "ADD_MESSAGES" });
+            } catch (err) {
+                uiDispatch({
+                    type: "SET_ALERT_MESSAGE",
+                    payload: { display: true, color: "error", text: err.message },
+                });
+            }
         }
     };
 
@@ -44,14 +61,13 @@ const Messenger = () => {
         if (scrollDiv.current) {
             scrollDiv.current.scrollTo(0, 0);
         }
-    }, [messages?.length, chatRoomSelected]);
+    }, [chatRoomSelected?._id]);
 
     useEffect(() => {
-        (async () => {
-            const { data } = await callApi({ method: "GET", url: "/chat-room" });
-            chatDispatch({ type: "SET_CHATROOMS", payload: data.rows });
-        })();
-    }, []);
+        if (page === 1 && scrollDiv.current) {
+            scrollDiv.current.scrollTo(0, 0);
+        }
+    }, [messages?.length]);
 
     return (
         <Grid
@@ -63,11 +79,7 @@ const Messenger = () => {
                 backgroundColor: darkMode && "rgb(36,37,38)",
             }}
         >
-            <Grid
-                item
-                md={3}
-                style={{ margin: "20px", height: "90vh", display: "flex", flexDirection: "column" }}
-            >
+            <Grid item md={3} style={{ margin: "20px", display: "flex", flexDirection: "column" }}>
                 <div
                     style={{
                         display: "flex",
@@ -99,12 +111,7 @@ const Messenger = () => {
                 <Grid
                     item
                     md={9}
-                    style={{
-                        margin: "20px",
-                        height: "90vh",
-                        display: "flex",
-                        flexDirection: "column",
-                    }}
+                    style={{ margin: "20px", display: "flex", flexDirection: "column" }}
                 >
                     <Paper
                         elevation={0}
