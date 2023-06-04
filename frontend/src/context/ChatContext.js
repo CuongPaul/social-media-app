@@ -1,3 +1,5 @@
+import callApi from "../api";
+
 export const initialChatState = {
     messages: [],
     chatRooms: [],
@@ -56,7 +58,46 @@ export const ChatReducer = (state, action) => {
             };
 
         case "SET_CHATROOM_SELECTED":
-            return { ...state, chatRoomSelected: action.payload };
+            const chatRoomsAfterSelectChatRoom = [...state.chatRooms];
+
+            const indexOfChatRoomsSelected = chatRoomsAfterSelectChatRoom.findIndex(
+                (item) => item._id === action.payload._id
+            );
+            chatRoomsAfterSelectChatRoom[indexOfChatRoomsSelected].unseen_message = 0;
+
+            return {
+                ...state,
+                chatRooms: chatRoomsAfterSelectChatRoom,
+                chatRoomSelected: { ...action.payload, unseen_message: 0 },
+            };
+
+        case "INCREASE_UNSEND_MESSAGE":
+            const messagesAfterIncreaseUnsendMessage = [...state.messages];
+            const chatRoomsAfterIncreaseUnsendMessage = [...state.chatRooms];
+
+            if (action.payload.chatRoomId === state.chatRoomSelected?._id) {
+                messagesAfterIncreaseUnsendMessage.unshift(action.payload.message);
+
+                const indexOfChatRoomsSelected = chatRoomsAfterIncreaseUnsendMessage.findIndex(
+                    (item) => item._id === action.payload.chatRoomId
+                );
+                chatRoomsAfterIncreaseUnsendMessage[indexOfChatRoomsSelected].unseen_message = 0;
+
+                callApi({ method: "GET", url: `/message/chat-room/${action.payload.chatRoomId}` });
+            } else {
+                const indexOfChatRoomsIncreaseUnsendMessage =
+                    chatRoomsAfterIncreaseUnsendMessage.findIndex(
+                        (item) => item._id === action.payload.chatRoomId
+                    );
+                chatRoomsAfterIncreaseUnsendMessage[indexOfChatRoomsIncreaseUnsendMessage]
+                    .unseen_message++;
+            }
+
+            return {
+                ...state,
+                messages: messagesAfterIncreaseUnsendMessage,
+                chatRooms: chatRoomsAfterIncreaseUnsendMessage,
+            };
 
         default:
             throw new Error(`Action type ${action.type} is undefined`);

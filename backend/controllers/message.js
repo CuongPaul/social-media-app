@@ -1,3 +1,4 @@
+import redisClient from "../config/redis";
 import { User, React, Message, ChatRoom } from "../models";
 
 const getMessagesController = async (req, res) => {
@@ -127,6 +128,18 @@ const createMessageController = async (req, res) => {
                 if (index != -1 && !member.chat_rooms[index].furthest_unseen_message) {
                     member.chat_rooms[index].furthest_unseen_message = newMessage._id;
                     await member.save();
+                }
+            }
+        }
+
+        for (const member of members) {
+            if (member._id != userId) {
+                const sockets = await redisClient.LRANGE(`socket-io:${member._id}`, 0, -1);
+
+                if (sockets.length) {
+                    sockets.forEach((socketId) => {
+                        req.io.sockets.to(socketId).emit("new-message", newMessage);
+                    });
                 }
             }
         }

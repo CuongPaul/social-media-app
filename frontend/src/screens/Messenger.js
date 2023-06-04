@@ -8,9 +8,9 @@ import Message from "../components/Messenger/Message";
 import ChatRoom from "../components/Messenger/ChatRoom";
 import AddMembers from "../components/Messenger/AddMembers";
 import { UIContext, ChatContext, UserContext } from "../App";
+import SearchUsers from "../components/Messenger/SearchUsers";
 import GroupMembers from "../components/Messenger/GroupMembers";
 import SearchGroups from "../components/Messenger/SearchGroups";
-import SearchUsers from "../components/Messenger/SearchUsers";
 import GroupChatCreate from "../components/Messenger/GroupChatCreate";
 import MessageTextArea from "../components/Messenger/MessageTextArea";
 
@@ -44,7 +44,7 @@ const Messenger = () => {
         if (scrollDiv.current) {
             scrollDiv.current.scrollTo(0, 0);
         }
-    }, [chatRoomSelected]);
+    }, [messages?.length, chatRoomSelected]);
 
     useEffect(() => {
         (async () => {
@@ -90,7 +90,7 @@ const Messenger = () => {
                         backgroundColor: "rgb(255,255,255)",
                     }}
                 >
-                    {chatRooms.map((chatRoom) => (
+                    {chatRooms?.map((chatRoom) => (
                         <ChatRoom key={chatRoom._id} chatRoom={chatRoom} />
                     ))}
                 </List>

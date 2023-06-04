@@ -149,6 +149,15 @@ const App = () => {
             socketIO.current.on("user-offline", (_id) => {
                 userDispatch({ type: "REMOVE_FRIEND_ONLINE", payload: _id });
             });
+
+            socketIO.current.on("new-message", async (data) => {
+                const { chat_room, updatedAt, ...rest } = data;
+
+                chatDispatch({
+                    type: "INCREASE_UNSEND_MESSAGE",
+                    payload: { message: rest, chatRoomId: chat_room },
+                });
+            });
         }
     }, [userState.currentUser?._id]);
 
