@@ -1,51 +1,60 @@
 import {
     Chip,
     List,
+    Badge,
+    Avatar,
     Button,
     Dialog,
+    Switch,
     Checkbox,
     ListItem,
+    CardMedia,
     TextField,
     CardHeader,
     IconButton,
     Typography,
+    CardContent,
     ListItemIcon,
     ListItemText,
-    DialogContent,
     InputAdornment,
 } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
+import { CameraAlt } from "@material-ui/icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import React, { useState, Fragment, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useRef, useState, Fragment, useContext } from "react";
 
 import callApi from "../../api";
-import { UIContext } from "../../App";
 import AvatarIcon from "../UI/AvatarIcon";
 import { useSearchFriends } from "../../hooks";
+import { UIContext, ChatContext } from "../../App";
 
 const GroupChatCreate = () => {
     const { uiDispatch } = useContext(UIContext);
+    const { chatDispatch } = useContext(ChatContext);
 
+    const inputRef = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
+    const [isPublic, setIsPublic] = useState(true);
     const [friendName, setFriendName] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const [chatRoomName, setChatRoomName] = useState("");
+    const [imagePreview, setImagePreview] = useState("");
+    const [imageUpload, setImageUpload] = useState(null);
     const [chatRoomMembers, setChatRoomMembers] = useState([]);
 
-    const handleCreateGroup = async () => {
-        try {
-            await callApi({
-                method: "POST",
-                url: "/chat-room",
-                data: { name: chatRoomName, members: chatRoomMembers.map((item) => item._id) },
-            });
-        } catch (err) {
-            uiDispatch({
-                type: "SET_ALERT_MESSAGE",
-                payload: { display: true, color: "error", text: err.message },
-            });
-        }
+    const { friends, setFriends, handleSearchFriends } = useSearchFriends();
+
+    const handleChangeImage = (e) => {
+        setImageUpload(e.target.files[0]);
+
+        const reader = new FileReader();
+        reader.readAsDataURL(e.target.files[0]);
+        reader.onload = () => {
+            setImagePreview(reader.result);
+        };
     };
+
     const handleClickFriend = (friend) => {
         const isSelected = chatRoomMembers.findIndex((item) => item._id === friend._id);
         if (isSelected === -1) {
@@ -55,7 +64,48 @@ const GroupChatCreate = () => {
         }
     };
 
-    const { friends, setFriends, handleSearchFriends } = useSearchFriends();
+    const handleCreateGroup = async ({ isPublic, imageUpload, chatRoomName, chatRoomMembers }) => {
+        setIsLoading(true);
+
+        try {
+            let imageUrl = "";
+            if (imageUpload) {
+                const formData = new FormData();
+                formData.append("files", imageUpload);
+                formData.append("folder", "chat-room-avatar");
+
+                const { data } = await callApi({
+                    method: "POST",
+                    data: formData,
+                    url: "/upload/files",
+                });
+
+                imageUrl = data.images[0];
+            }
+
+            const { data } = await callApi({
+                method: "POST",
+                url: "/chat-room",
+                data: {
+                    name: chatRoomName,
+                    is_public: isPublic,
+                    avatar_image: imageUrl,
+                    members: chatRoomMembers,
+                },
+            });
+            chatDispatch({ type: "ADD_CHATROOM", payload: data });
+            chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: data });
+
+            setIsOpen(false);
+            setIsLoading(false);
+        } catch (err) {
+            setIsLoading(true);
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, color: "error", text: err.message },
+            });
+        }
+    };
 
     return (
         <Fragment>
@@ -65,14 +115,9 @@ const GroupChatCreate = () => {
                 onClick={() => setIsOpen(true)}
                 style={{ fontSize: "10px", borderRadius: "8px", padding: "10px 5px" }}
             >
-                Create group
+                New group
             </Button>
-            <Dialog
-                fullWidth
-                open={isOpen}
-                style={{ marginTop: "50px" }}
-                onClose={() => setIsOpen(false)}
-            >
+            <Dialog fullWidth open={isOpen} onClose={() => setIsOpen(false)}>
                 <CardHeader
                     action={
                         <IconButton onClick={() => setIsOpen(false)}>
@@ -81,31 +126,81 @@ const GroupChatCreate = () => {
                     }
                     subheader={
                         <Typography style={{ fontWeight: 800, fontSize: "20px" }}>
-                            Create chat room
+                            Create new group
                         </Typography>
                     }
                 />
-                <DialogContent>
-                    <div style={{ display: "flex", marginBottom: "32px" }}>
+                <CardMedia
+                    style={{
+                        width: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: "20px",
+                        justifyContent: "center",
+                    }}
+                >
+                    <Badge
+                        overlap="rectangular"
+                        badgeContent={
+                            <IconButton
+                                style={{ top: "160px", right: "25px" }}
+                                onClick={() => inputRef.current.click()}
+                            >
+                                <Avatar>
+                                    <CameraAlt style={{ color: "black" }} />
+                                </Avatar>
+                            </IconButton>
+                        }
+                    >
+                        <AvatarIcon
+                            size="200px"
+                            fontSize="150px"
+                            text={chatRoomName || "?"}
+                            imageUrl={imagePreview}
+                        />
+                        <input
+                            type="file"
+                            ref={inputRef}
+                            accept="image/*"
+                            style={{ display: "none" }}
+                            onChange={handleChangeImage}
+                        />
+                    </Badge>
+                </CardMedia>
+                <div style={{ textAlign: "center" }}>
+                    <Switch checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />
+                </div>
+                <Typography style={{ fontWeight: 800, fontSize: "20px", textAlign: "center" }}>
+                    {chatRoomName}
+                </Typography>
+                <CardContent>
+                    <div style={{ display: "flex" }}>
                         <TextField
-                            autoFocus
+                            label="Group name"
                             variant="outlined"
                             value={chatRoomName}
-                            label="Chat room name"
-                            placeholder="Enter chat room name"
+                            placeholder="Enter group name"
+                            style={{ flex: 4, marginRight: "16px" }}
                             onChange={(e) => setChatRoomName(e.target.value)}
-                            style={{ flex: 4, width: "100%", marginRight: "16px" }}
                         />
                         <Button
                             color="primary"
                             variant="contained"
-                            onClick={() => handleCreateGroup()}
-                            style={{ flex: 1, width: "100%", borderRadius: "5px" }}
+                            disabled={isLoading}
+                            style={{ flex: 1, borderRadius: "5px" }}
+                            onClick={() =>
+                                handleCreateGroup({
+                                    isPublic,
+                                    imageUpload,
+                                    chatRoomName,
+                                    chatRoomMembers: chatRoomMembers.map((item) => item._id),
+                                })
+                            }
                         >
                             Create
                         </Button>
                     </div>
-                    <div style={{ marginBottom: "20px" }}>
+                    <div style={{ marginTop: "32px" }}>
                         {chatRoomMembers.map((friend) => (
                             <Chip
                                 key={friend._id}
@@ -119,15 +214,14 @@ const GroupChatCreate = () => {
                             />
                         ))}
                     </div>
-                    <div style={{ display: "flex", marginBottom: "32px" }}>
+                    <div style={{ display: "flex", marginTop: "20px" }}>
                         <TextField
                             value={friendName}
-                            label="User name"
+                            label="Friend name"
                             variant="outlined"
-                            placeholder="Enter user name"
+                            placeholder="Enter friend name"
+                            style={{ flex: 4, marginRight: "16px" }}
                             onChange={(e) => setFriendName(e.target.value)}
-                            style={{ flex: 4, width: "100%", marginRight: "16px" }}
-                            onKeyPress={(e) => e.key === "Enter" && handleSearchFriends(friendName)}
                             InputProps={{
                                 endAdornment: friendName && (
                                     <InputAdornment position="end">
@@ -142,17 +236,18 @@ const GroupChatCreate = () => {
                                     </InputAdornment>
                                 ),
                             }}
+                            onKeyPress={(e) => e.key === "Enter" && handleSearchFriends(friendName)}
                         />
                         <Button
                             color="primary"
                             variant="contained"
+                            style={{ flex: 1, borderRadius: "5px" }}
                             onClick={() => handleSearchFriends(friendName)}
-                            style={{ flex: 1, width: "100%", borderRadius: "5px" }}
                         >
                             Search
                         </Button>
                     </div>
-                    <List>
+                    <List style={{ marginTop: friends.length && "15px" }}>
                         {friends.map((friend) => (
                             <ListItem
                                 key={friend._id}
@@ -172,7 +267,7 @@ const GroupChatCreate = () => {
                                     />
                                 </ListItemIcon>
                                 <ListItemText style={{ marginLeft: "32px" }}>
-                                    <Typography style={{ fontSize: "17px", fontWeight: "700" }}>
+                                    <Typography style={{ fontWeight: 700, fontSize: "17px" }}>
                                         {friend.name}
                                     </Typography>
                                 </ListItemText>
@@ -186,7 +281,7 @@ const GroupChatCreate = () => {
                             </ListItem>
                         ))}
                     </List>
-                </DialogContent>
+                </CardContent>
             </Dialog>
         </Fragment>
     );

@@ -8,10 +8,13 @@ import { UIContext, ChatContext, UserContext } from "../../App";
 
 const ChatRoom = ({ chatRoom }) => {
     const {
+        chatDispatch,
+        chatState: { chatRoomSelected },
+    } = useContext(ChatContext);
+    const {
         userState: { friendsOnline },
     } = useContext(UserContext);
     const { uiDispatch } = useContext(UIContext);
-    const { chatDispatch } = useContext(ChatContext);
 
     const handleClickChat = async (chat) => {
         uiDispatch({ type: "SET_DRAWER", payload: false });
@@ -21,7 +24,14 @@ const ChatRoom = ({ chatRoom }) => {
     };
 
     return (
-        <ListItem button onClick={() => handleClickChat(chatRoom)}>
+        <ListItem
+            button
+            onClick={() => handleClickChat(chatRoom)}
+            style={{
+                borderRadius: "10px",
+                backgroundColor: chatRoomSelected?._id === chatRoom._id && "rgb(245,245,245)",
+            }}
+        >
             <ListItemAvatar>
                 <StyledBadge
                     max={9}

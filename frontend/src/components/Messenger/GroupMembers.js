@@ -236,13 +236,15 @@ const GroupMembers = ({ isOpen, setIsOpen }) => {
                                 </ListItemText>
                                 <ListItemIcon>
                                     {chatRoomSelected.admin === member._id ? (
-                                        "Boss"
+                                        "Admin"
                                     ) : currentUser._id === chatRoomSelected.admin ? (
                                         <Checkbox
                                             checked={memberSelected.some(
                                                 (item) => item._id === member._id
                                             )}
                                         />
+                                    ) : member._id === currentUser._id ? (
+                                        "You"
                                     ) : (
                                         <ArrowForward />
                                     )}

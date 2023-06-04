@@ -53,7 +53,10 @@ const joinChatRoomController = async (req, res) => {
     const { chatRoomId } = req.params;
 
     try {
-        const chatRoom = await ChatRoom.findOne({ _id: chatRoomId, is_public: true });
+        const chatRoom = await ChatRoom.findOne({ _id: chatRoomId, is_public: true }).populate(
+            "members",
+            { _id: 1, name: 1, avatar_image: 1 }
+        );
 
         if (!chatRoom) {
             return res.status(400).json({ message: "Group doesn't exist" });
@@ -65,7 +68,16 @@ const joinChatRoomController = async (req, res) => {
         await chatRoom.updateOne({ $push: { members: userId } });
         await User.findByIdAndUpdate(userId, { $push: { chat_rooms: { _id: chatRoom._id } } });
 
-        return res.status(200).json({ message: `You have joined the group ${chatRoom.name}` });
+        return res.status(200).json({
+            data: {
+                _id: chatRoom._id,
+                unseen_message: 0,
+                name: chatRoom.name,
+                members: chatRoom.members,
+                avatar_image: chatRoom.avatar_image,
+            },
+            message: `You have joined the group ${chatRoom.name}`,
+        });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -113,7 +125,11 @@ const createChatRoomController = async (req, res) => {
             avatar_image,
             admin: userId,
             members: membersValid,
-        }).save();
+        })
+            .save()
+            .then((res) =>
+                res.populate("members", { _id: 1, name: 1, avatar_image: 1 }).execPopulate()
+            );
 
         for (const memberId of membersValid) {
             if (memberId != userId) {
@@ -131,6 +147,13 @@ const createChatRoomController = async (req, res) => {
         }
 
         res.status(200).json({
+            data: {
+                _id: chatRoom._id,
+                unseen_message: 0,
+                name: chatRoom.name,
+                members: chatRoom.members,
+                avatar_image: chatRoom.avatar_image,
+            },
             message: `Group ${name} is created with ${membersValid.length} members`,
         });
     } catch (err) {
@@ -179,19 +202,56 @@ const deleteChatRoomController = async (req, res) => {
 const searchChatRoomsController = async (req, res) => {
     const pageSize = 10;
     const { name } = req.query;
+    const userId = req.user_id;
     const page = parseInt(req.query.page) || 1;
 
     try {
-        const query = { is_public: true, name: { $regex: name, $options: "i" } };
+        const query = {
+            $or: [
+                { name: { $regex: name, $options: "i" }, is_public: true },
+                { name: { $regex: name, $options: "i" }, is_public: false, members: userId },
+            ],
+        };
 
-        const chatRooms = await ChatRoom.find(query, { _id: 1, name: 1, avatar_image: 1 })
+        const chatRooms = await ChatRoom.find(query, {
+            _id: 1,
+            name: 1,
+            members: 1,
+            avatar_image: 1,
+        })
             .limit(pageSize)
             .sort({ createdAt: -1 })
             .skip((page - 1) * pageSize);
 
         const count = await ChatRoom.countDocuments(query);
 
-        return res.status(200).json({ message: "success", data: { count, rows: chatRooms } });
+        const chatRoomsData = chatRooms.map((item) => {
+            if (
+                !item.name &&
+                !item.admin &&
+                !item.is_public &&
+                !item.avatar_image &&
+                item.members.length == 2
+            ) {
+                const reciver = item.members.find((member) => member != userId);
+
+                return {
+                    _id: item._id,
+                    name: reciver.name,
+                    members: item.members,
+                    avatar_image: reciver.avatar_image,
+                };
+            }
+
+            return {
+                _id: item._id,
+                name: item.name,
+                members: item.members,
+                avatar_image: item.avatar_image,
+            };
+        });
+
+        return res.status(200).json({ message: "success", data: { count, rows: chatRoomsData } });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }

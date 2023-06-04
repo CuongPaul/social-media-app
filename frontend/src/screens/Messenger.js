@@ -10,7 +10,7 @@ import AddMembers from "../components/Messenger/AddMembers";
 import { UIContext, ChatContext, UserContext } from "../App";
 import GroupMembers from "../components/Messenger/GroupMembers";
 import SearchGroups from "../components/Messenger/SearchGroups";
-import SearchFriends from "../components/Messenger/SearchFriends";
+import SearchUsers from "../components/Messenger/SearchUsers";
 import GroupChatCreate from "../components/Messenger/GroupChatCreate";
 import MessageTextArea from "../components/Messenger/MessageTextArea";
 
@@ -28,55 +28,69 @@ const Messenger = () => {
 
     const history = useHistory();
     const scrollDiv = useRef(null);
-    const [textValue, setTextValue] = useState("");
     const [messageId, setMessageId] = useState("");
+    const [textValue, setTextValue] = useState("");
     const [isOpenGroupMembers, setIsOpenGroupMembers] = useState(false);
 
-    useEffect(() => {
-        (async () => {
-            const { data } = await callApi({ url: "/chat-room", method: "GET" });
-            chatDispatch({ type: "SET_CHATROOMS", payload: data.rows });
-        })();
-    }, []);
-
-    useEffect(() => {
-        if (scrollDiv?.current) {
-            scrollDiv.current.scrollTo(0, 0);
-        }
-    }, [chatRoomSelected]);
-
     const handleScroll = (event) => {
-        if (event.currentTarget.scrollTop < -450) {
+        if (event.currentTarget.scrollTop < -430) {
             console.log("Call API get more messages");
         } else {
             console.log(event.currentTarget.scrollTop);
         }
     };
 
+    useEffect(() => {
+        if (scrollDiv.current) {
+            scrollDiv.current.scrollTo(0, 0);
+        }
+    }, [chatRoomSelected]);
+
+    useEffect(() => {
+        (async () => {
+            const { data } = await callApi({ method: "GET", url: "/chat-room" });
+            chatDispatch({ type: "SET_CHATROOMS", payload: data.rows });
+        })();
+    }, []);
+
     return (
         <Grid
             style={{
                 display: "flex",
-                minHeight: "100vh",
+                height: "100vh",
                 paddingTop: "64px",
+                justifyContent: "space-evenly",
                 backgroundColor: darkMode && "rgb(36,37,38)",
             }}
         >
-            <Grid item md={3}>
+            <Grid
+                item
+                md={3}
+                style={{ margin: "20px", height: "90vh", display: "flex", flexDirection: "column" }}
+            >
                 <div
                     style={{
                         display: "flex",
-                        padding: "18.5px 0px",
+                        padding: "20px 0px",
+                        borderRadius: "10px",
                         justifyContent: "space-evenly",
-                        borderBottom: "2px solid rgb(101,103,107)",
+                        backgroundColor: "rgb(255,255,255)",
                     }}
                 >
                     <GroupChatCreate />
-                    <SearchFriends />
                     <SearchGroups />
+                    <SearchUsers />
                 </div>
-                <List style={{ maxHeight: "77vh", overflowX: "auto" }}>
-                    {chatRooms?.map((chatRoom) => (
+                <List
+                    style={{
+                        padding: "10px",
+                        marginTop: "10px",
+                        overflowX: "auto",
+                        borderRadius: "10px",
+                        backgroundColor: "rgb(255,255,255)",
+                    }}
+                >
+                    {chatRooms.map((chatRoom) => (
                         <ChatRoom key={chatRoom._id} chatRoom={chatRoom} />
                     ))}
                 </List>
@@ -86,22 +100,24 @@ const Messenger = () => {
                     item
                     md={9}
                     style={{
-                        height: "92vh",
+                        margin: "20px",
+                        height: "90vh",
                         display: "flex",
                         flexDirection: "column",
                     }}
                 >
-                    <div
+                    <Paper
+                        elevation={0}
                         style={{
-                            flex: 1,
-                            width: "100%",
                             display: "flex",
+                            padding: "16px",
                             alignItems: "center",
-                            backgroundColor: "rgb(255,255,255)",
+                            borderRadius: "10px",
+                            justifyContent: "space-between",
+                            backgroundColor: darkMode && "rgb(36,37,38)",
                         }}
                     >
-                        <Paper
-                            elevation={0}
+                        <div
                             onClick={() => {
                                 if (chatRoomSelected.members.length === 2) {
                                     const friend = chatRoomSelected.members.find(
@@ -112,16 +128,7 @@ const Messenger = () => {
                                     setIsOpenGroupMembers(true);
                                 }
                             }}
-                            style={{
-                                top: "0px",
-                                width: "100%",
-                                display: "flex",
-                                padding: "16px",
-                                cursor: "pointer",
-                                position: "sticky",
-                                alignItems: "center",
-                                backgroundColor: darkMode && "rgb(36,37,38)",
-                            }}
+                            style={{ display: "flex", cursor: "pointer", alignItems: "center" }}
                         >
                             <AvatarIcon
                                 text={chatRoomSelected.name}
@@ -130,20 +137,21 @@ const Messenger = () => {
                             <Typography style={{ marginLeft: "16px" }}>
                                 {chatRoomSelected.name}
                             </Typography>
-                        </Paper>
+                        </div>
                         {chatRoomSelected.members.length > 2 &&
                             currentUser._id === chatRoomSelected.admin && <AddMembers />}
-                    </div>
+                    </Paper>
                     <GroupMembers isOpen={isOpenGroupMembers} setIsOpen={setIsOpenGroupMembers} />
                     <Paper
                         ref={scrollDiv}
                         onScroll={handleScroll}
                         style={{
-                            flex: 10,
-                            width: "100%",
+                            flex: 1,
                             display: "flex",
+                            margin: "10px 0px",
+                            borderRadius: "10px",
+                            padding: "20px 30px ",
                             overflow: "hidden scroll",
-                            padding: "0px 30px 16px 30px",
                             flexDirection: "column-reverse",
                             scrollbarColor: !darkMode
                                 ? "#fff #fff"
@@ -172,10 +180,13 @@ const Messenger = () => {
                     item
                     md={8}
                     style={{
-                        margin: "auto",
+                        margin: "20px",
                         display: "flex",
                         alignItems: "center",
+                        borderRadius: "10px",
                         flexDirection: "column",
+                        justifyContent: "center",
+                        backgroundColor: "rgb(255,255,255)",
                     }}
                 >
                     <Avatar

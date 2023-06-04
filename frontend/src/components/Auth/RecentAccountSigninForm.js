@@ -1,5 +1,4 @@
 import {
-    Card,
     Button,
     Dialog,
     TextField,
@@ -24,97 +23,86 @@ const RecentAccountSigninForm = ({ account, isShowSigninForm, setIsShowSigninFor
     const { loading, handleClickSignin, handleChangePassword } = useSignin(account);
 
     return (
-        <Dialog
-            fullWidth
-            open={isShowSigninForm}
-            style={{ width: "100%" }}
-            onClose={() => setIsShowSigninForm(false)}
-        >
-            <Card style={{ width: "100%" }}>
-                <CardHeader
-                    action={
-                        <IconButton color="primary" onClick={() => setIsShowSigninForm(false)}>
-                            <Close />
-                        </IconButton>
-                    }
+        <Dialog fullWidth open={isShowSigninForm} onClose={() => setIsShowSigninForm(false)}>
+            <CardHeader
+                action={
+                    <IconButton color="primary" onClick={() => setIsShowSigninForm(false)}>
+                        <Close />
+                    </IconButton>
+                }
+            />
+            <CardMedia
+                style={{
+                    width: "100%",
+                    display: "flex",
+                    height: "150px",
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}
+            >
+                <AvatarIcon
+                    size="200px"
+                    fontSize="150px"
+                    text={account.name}
+                    imageUrl={account.avatar_image}
                 />
-                <CardMedia
+            </CardMedia>
+            <CardContent>
+                <Typography
                     style={{
-                        width: "100%",
-                        display: "flex",
-                        height: "150px",
-                        alignItems: "center",
-                        justifyContent: "center",
+                        fontWeight: 800,
+                        fontSize: "20px",
+                        marginTop: "40px",
+                        textAlign: "center",
                     }}
                 >
-                    <AvatarIcon
-                        size="200px"
-                        fontSize="150px"
-                        text={account.name}
-                        imageUrl={account.avatar_image}
-                    />
-                </CardMedia>
-                <CardContent>
-                    <Typography
+                    {account.name}
+                </Typography>
+                <form onSubmit={handleClickSignin} style={{ padding: "20px 32px" }}>
+                    <FormControl style={{ width: "100%" }}>
+                        <TextField
+                            autoFocus
+                            label="Password"
+                            variant="outlined"
+                            style={{ marginTop: "16px" }}
+                            type={isShowPassword ? "text" : "password"}
+                            onChange={(e) => handleChangePassword(e.target.value)}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            onClick={() => setIsShowPassword(!isShowPassword)}
+                                        >
+                                            {isShowPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                    </FormControl>
+                    <Button
+                        type="submit"
+                        disabled={loading}
+                        variant="contained"
                         style={{
-                            fontWeight: 800,
-                            fontSize: "20px",
-                            marginTop: "40px",
-                            textAlign: "center",
+                            color: "#fff",
+                            width: "100%",
+                            marginTop: "16px",
+                            background: "rgb(24,119,242)",
                         }}
                     >
-                        {account.name}
-                    </Typography>
-                    <form onSubmit={handleClickSignin} style={{ padding: "20px 32px" }}>
-                        <FormControl style={{ width: "100%" }}>
-                            <TextField
-                                autoFocus
-                                label="Password"
-                                variant="outlined"
-                                style={{ marginTop: "16px" }}
-                                type={isShowPassword ? "text" : "password"}
-                                onChange={(e) => handleChangePassword(e.target.value)}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                onClick={() => setIsShowPassword(!isShowPassword)}
-                                            >
-                                                {isShowPassword ? (
-                                                    <VisibilityOff />
-                                                ) : (
-                                                    <Visibility />
-                                                )}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
+                        {loading ? (
+                            <CircularProgress
+                                size={25}
+                                variant="indeterminate"
+                                style={{ color: "#fff" }}
                             />
-                        </FormControl>
-                        <Button
-                            type="submit"
-                            disabled={loading}
-                            variant="contained"
-                            style={{
-                                color: "#fff",
-                                width: "100%",
-                                marginTop: "16px",
-                                background: "rgb(24,119,242)",
-                            }}
-                        >
-                            {loading ? (
-                                <CircularProgress
-                                    size={25}
-                                    variant="indeterminate"
-                                    style={{ color: "#fff" }}
-                                />
-                            ) : (
-                                "Sign in"
-                            )}
-                        </Button>
-                    </form>
-                </CardContent>
-            </Card>
+                        ) : (
+                            "Sign in"
+                        )}
+                    </Button>
+                </form>
+            </CardContent>
         </Dialog>
     );
 };

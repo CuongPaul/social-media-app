@@ -11,7 +11,6 @@ import {
     ListItemText,
     DialogContent,
     InputAdornment,
-    CircularProgress,
 } from "@material-ui/core";
 import { Close, ArrowForward } from "@material-ui/icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -20,16 +19,79 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import callApi from "../../api";
 import AvatarIcon from "../UI/AvatarIcon";
-import { UIContext, ChatContext } from "../../App";
+import { UserContext, UIContext, ChatContext } from "../../App";
 
 const SearchGroups = () => {
+    const {
+        userState: { currentUser },
+    } = useContext(UserContext);
     const { uiDispatch } = useContext(UIContext);
     const { chatDispatch } = useContext(ChatContext);
 
     const [isOpen, setIsOpen] = useState(false);
-    const [groupsChat, setGroupsChat] = useState([]);
+    const [chatRooms, setChatRooms] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [searchValue, setSearchValue] = useState("");
+
+    const handleClickChatItem = async (chat) => {
+        const isMemberOfChat = chat.members.find((item) => item === currentUser._id);
+
+        if (isMemberOfChat) {
+            handleSelectChat(chat);
+        } else {
+            handleJoinChat(chat);
+        }
+    };
+
+    const handleSelectChat = async (chat) => {
+        setIsLoading(true);
+
+        try {
+            const { data } = await callApi({
+                method: "GET",
+                url: `/message/chat-room/${chat._id}`,
+            });
+            chatDispatch({ type: "SET_MESSAGES", payload: data.rows });
+            chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: chat });
+
+            setIsOpen(false);
+            setIsLoading(false);
+        } catch (err) {
+            setIsLoading(false);
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, color: "error", text: err.message },
+            });
+        }
+    };
+
+    const handleJoinChat = async (chat) => {
+        setIsLoading(true);
+
+        try {
+            const { data: chatRoomData } = await callApi({
+                method: "PUT",
+                url: `/chat-room/join-chat/${chat._id}`,
+            });
+            chatDispatch({ type: "ADD_CHATROOM", payload: chatRoomData });
+            chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: chat });
+
+            const { data: messagesData } = await callApi({
+                method: "GET",
+                url: `/message/chat-room/${chat._id}`,
+            });
+            chatDispatch({ type: "SET_MESSAGES", payload: messagesData.rows });
+
+            setIsOpen(false);
+            setIsLoading(false);
+        } catch (err) {
+            setIsLoading(false);
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, color: "error", text: err.message },
+            });
+        }
+    };
 
     const handleSearchGroupsChat = async (name) => {
         setIsLoading(true);
@@ -42,7 +104,7 @@ const SearchGroups = () => {
             });
 
             setIsLoading(false);
-            setGroupsChat(data.rows);
+            setChatRooms(data.rows);
         } catch (err) {
             setIsLoading(false);
             uiDispatch({
@@ -50,13 +112,6 @@ const SearchGroups = () => {
                 payload: { display: true, color: "error", text: err.message },
             });
         }
-    };
-
-    const handleClickChat = async (chat) => {
-        chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: chat });
-        const { data } = await callApi({ url: `/message/chat-room/${chat._id}`, method: "GET" });
-        chatDispatch({ type: "SET_MESSAGES", payload: data.rows });
-        setIsOpen(false);
     };
 
     return (
@@ -69,12 +124,7 @@ const SearchGroups = () => {
             >
                 Search groups
             </Button>
-            <Dialog
-                fullWidth
-                open={isOpen}
-                style={{ marginTop: "50px" }}
-                onClose={() => setIsOpen(false)}
-            >
+            <Dialog fullWidth open={isOpen} onClose={() => setIsOpen(false)}>
                 <CardHeader
                     action={
                         <IconButton onClick={() => setIsOpen(false)}>
@@ -83,7 +133,7 @@ const SearchGroups = () => {
                     }
                     subheader={
                         <Typography style={{ fontWeight: 800, fontSize: "20px" }}>
-                            Search groups chat
+                            Search groups
                         </Typography>
                     }
                 />
@@ -106,7 +156,7 @@ const SearchGroups = () => {
                                         <FontAwesomeIcon
                                             icon={faTimes}
                                             onClick={() => {
-                                                setGroupsChat([]);
+                                                setChatRooms([]);
                                                 setSearchValue("");
                                             }}
                                             style={{ marginRight: "10px", cursor: "pointer" }}
@@ -122,19 +172,11 @@ const SearchGroups = () => {
                             onClick={() => handleSearchGroupsChat(searchValue)}
                             style={{ flex: 1, width: "100%", borderRadius: "5px" }}
                         >
-                            {isLoading ? (
-                                <CircularProgress
-                                    size={25}
-                                    variant="indeterminate"
-                                    style={{ color: "#fff" }}
-                                />
-                            ) : (
-                                "Search"
-                            )}
+                            Search
                         </Button>
                     </div>
                     <List>
-                        {groupsChat.map((chatRoom) => (
+                        {chatRooms.map((chatRoom) => (
                             <ListItem
                                 key={chatRoom._id}
                                 style={{
@@ -143,7 +185,7 @@ const SearchGroups = () => {
                                     marginBottom: "10px",
                                     background: "rgb(244,245,246)",
                                 }}
-                                onClick={() => handleClickChat(chatRoom)}
+                                onClick={() => handleClickChatItem(chatRoom)}
                             >
                                 <ListItemIcon>
                                     <AvatarIcon

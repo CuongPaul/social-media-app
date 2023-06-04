@@ -36,11 +36,10 @@ const MessageTextArea = ({ textValue, messageId, chatRoomId }) => {
         <Paper
             elevation={0}
             style={{
-                flex: 1,
-                width: "100%",
                 padding: "16px",
                 display: "flex",
                 alignItems: "center",
+                borderRadius: "10px",
                 backgroundColor: uiState.darkMode && "rgb(36,37,38)",
             }}
         >
@@ -53,7 +52,7 @@ const MessageTextArea = ({ textValue, messageId, chatRoomId }) => {
                     startAdornment: (
                         <InputAdornment
                             position="start"
-                            style={{ top: "-55px", position: "absolute" }}
+                            style={{ top: "-45px", position: "absolute" }}
                         >
                             {filePreview && (
                                 <FilePreview
@@ -81,7 +80,7 @@ const MessageTextArea = ({ textValue, messageId, chatRoomId }) => {
                     paddingLeft: "16px",
                     borderRadius: "20px",
                     paddingRight: "16px",
-                    height: filePreview ? "150px" : "50px",
+                    height: filePreview ? "145px" : "50px",
                     paddingTop: filePreview ? "100px" : "10px",
                     backgroundColor: uiState.darkMode ? "rgb(24,25,26)" : "whitesmoke",
                 }}

@@ -21,9 +21,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import callApi from "../../api";
 import AvatarIcon from "../UI/AvatarIcon";
 import { useSearchUsers } from "../../hooks";
-import { ChatContext, UIContext } from "../../App";
+import { UIContext, ChatContext } from "../../App";
 
-const SearchFriends = () => {
+const SearchUsers = () => {
     const {
         chatDispatch,
         chatState: { chatRooms },
@@ -35,21 +35,55 @@ const SearchFriends = () => {
 
     const { users, isLoading, setUsers, handleSearchUsers } = useSearchUsers();
 
-    const handleClickFriend = async (friend) => {
-        const { data } = await callApi({
-            method: "POST",
-            url: `/chat-room/two-people`,
-            data: { reciver: friend._id },
-        });
-        chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: data });
-        setIsOpen(false);
+    const handleClickUserItem = async (user) => {
+        const chatRoomExisted = chatRooms.find(
+            (chatRoom) =>
+                chatRoom.members.length === 2 &&
+                chatRoom.members.some((member) => member._id === user._id)
+        );
+
+        if (chatRoomExisted) {
+            handleSelectChat(chatRoomExisted);
+        } else {
+            handleCreateChat(user);
+        }
     };
 
-    const handleClickChat = async (chat) => {
-        chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: chat });
-        const { data } = await callApi({ url: `/message/chat-room/${chat._id}`, method: "GET" });
-        chatDispatch({ type: "SET_MESSAGES", payload: data.rows });
-        setIsOpen(false);
+    const handleSelectChat = async (chat) => {
+        try {
+            const { data } = await callApi({
+                method: "GET",
+                url: `/message/chat-room/${chat._id}`,
+            });
+            chatDispatch({ type: "SET_MESSAGES", payload: data.rows });
+            chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: chat });
+
+            setIsOpen(false);
+        } catch (err) {
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, color: "error", text: err.message },
+            });
+        }
+    };
+
+    const handleCreateChat = async (reciver) => {
+        try {
+            const { data } = await callApi({
+                method: "POST",
+                data: { reciver: reciver._id },
+                url: `/chat-room/two-people`,
+            });
+            chatDispatch({ type: "ADD_CHATROOM", payload: data });
+            chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: data });
+
+            setIsOpen(false);
+        } catch (err) {
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, color: "error", text: err.message },
+            });
+        }
     };
 
     return (
@@ -62,12 +96,7 @@ const SearchFriends = () => {
             >
                 Search users
             </Button>
-            <Dialog
-                fullWidth
-                open={isOpen}
-                style={{ marginTop: "50px" }}
-                onClose={() => setIsOpen(false)}
-            >
+            <Dialog fullWidth open={isOpen} onClose={() => setIsOpen(false)}>
                 <CardHeader
                     action={
                         <IconButton onClick={() => setIsOpen(false)}>
@@ -125,41 +154,27 @@ const SearchFriends = () => {
                         </Button>
                     </div>
                     <List>
-                        {users.map((friend) => (
+                        {users.map((user) => (
                             <ListItem
-                                key={friend._id}
+                                key={user._id}
                                 style={{
                                     cursor: "pointer",
                                     borderRadius: "10px",
                                     marginBottom: "10px",
                                     background: "rgb(244,245,246)",
                                 }}
-                                onClick={() => {
-                                    const chatRoom = chatRooms.find(
-                                        (chatRoom) =>
-                                            chatRoom.members.length === 2 &&
-                                            chatRoom.members.some(
-                                                (member) => member._id === friend._id
-                                            )
-                                    );
-
-                                    if (chatRoom) {
-                                        handleClickChat(chatRoom);
-                                    } else {
-                                        handleClickFriend(friend);
-                                    }
-                                }}
+                                onClick={() => handleClickUserItem(user)}
                             >
                                 <ListItemIcon>
                                     <AvatarIcon
                                         size="60px"
-                                        text={friend.name}
-                                        imageUrl={friend.avatar_image}
+                                        text={user.name}
+                                        imageUrl={user.avatar_image}
                                     />
                                 </ListItemIcon>
                                 <ListItemText style={{ marginLeft: "32px" }}>
                                     <Typography style={{ fontSize: "17px", fontWeight: "700" }}>
-                                        {friend.name}
+                                        {user.name}
                                     </Typography>
                                 </ListItemText>
                                 <ListItemIcon>
@@ -174,4 +189,4 @@ const SearchFriends = () => {
     );
 };
 
-export default SearchFriends;
+export default SearchUsers;

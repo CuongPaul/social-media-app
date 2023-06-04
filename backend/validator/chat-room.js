@@ -25,7 +25,7 @@ const createChatRoomValidation = {
     body: Joi.object({
         is_public: Joi.boolean().allow(null),
         name: Joi.string().trim().required(),
-        avatar_image: Joi.string().trim().allow(null),
+        avatar_image: Joi.string().trim().allow("", null),
         members: Joi.array().items(Joi.string().trim().required()).min(2).required(),
     }),
 };
