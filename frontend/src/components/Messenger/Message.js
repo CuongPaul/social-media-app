@@ -53,12 +53,8 @@ const Message = ({ message, setTextValue, setTextId }) => {
 
     return (
         <Grid
-            onMouseEnter={() => {
-                setIsShowActions(true);
-            }}
-            onMouseLeave={() => {
-                setIsShowActions(false);
-            }}
+            onMouseEnter={() => setIsShowActions(true)}
+            onMouseLeave={() => setIsShowActions(false)}
             style={{
                 marginTop: "16px",
                 alignItems: "center",
