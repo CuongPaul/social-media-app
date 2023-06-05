@@ -184,7 +184,20 @@ const updateMessagesController = async (req, res) => {
             sender: userId,
             _id: meassageId,
             chat_room: chat_room_id,
-        });
+        })
+            .populate("sender", { _id: 1, name: 1, avatar_image: 1 })
+            .populate({
+                path: "react",
+                select: "_id wow sad like love haha angry",
+                populate: [
+                    { path: "wow", select: "_id name avatar_image" },
+                    { path: "sad", select: "_id name avatar_image" },
+                    { path: "like", select: "_id name avatar_image" },
+                    { path: "love", select: "_id name avatar_image" },
+                    { path: "haha", select: "_id name avatar_image" },
+                    { path: "angry", select: "_id name avatar_image" },
+                ],
+            });
 
         if (!message) {
             return res.status(400).json({ message: "You don't allow edit this message" });
@@ -192,7 +205,17 @@ const updateMessagesController = async (req, res) => {
 
         await message.updateOne({ text, image });
 
-        res.status(200).json({ message: "success" });
+        res.status(200).json({
+            message: "success",
+            data: {
+                text,
+                image,
+                _id: message._id,
+                react: message.react,
+                sender: message.sender,
+                createdAt: message.createdAt,
+            },
+        });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }

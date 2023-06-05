@@ -3,6 +3,7 @@ import callApi from "../api";
 export const initialChatState = {
     messages: [],
     chatRooms: [],
+    messageSelected: null,
     chatRoomSelected: null,
 };
 
@@ -38,6 +39,9 @@ export const ChatReducer = (state, action) => {
 
         case "SET_MESSAGES":
             return { ...state, messages: action.payload };
+
+        case "ADD_CHATROOMS":
+            return { ...state, chatRooms: [...state.chatRooms, ...action.payload] };
 
         case "SET_CHATROOMS":
             return { ...state, chatRooms: action.payload };
@@ -84,14 +88,31 @@ export const ChatReducer = (state, action) => {
 
             return { ...state, chatRooms: chatRoomsAfterRemoveChatRoom };
 
+        case "UPDATE_CHATROOM":
+            const chatRoomsAfterUpdateChatRoom = [...state.chatRooms];
+
+            const indexOfChatRoomUpdaed = chatRoomsAfterUpdateChatRoom.findIndex(
+                (item) => item._id === action.payload._id
+            );
+            chatRoomsAfterUpdateChatRoom[indexOfChatRoomUpdaed] = action.payload;
+
+            return {
+                ...state,
+                chatRoomSelected: action.payload,
+                chatRooms: chatRoomsAfterUpdateChatRoom,
+            };
+
+        case "SET_MESSAGE_SELECTED":
+            return { ...state, messageSelected: action.payload };
+
         case "SET_CHATROOM_SELECTED":
             if (action.payload) {
                 const chatRoomsAfterSelectChatRoom = [...state.chatRooms];
 
-                const indexOfChatRoomsSelected = chatRoomsAfterSelectChatRoom.findIndex(
+                const indexOfChatRoomSelected = chatRoomsAfterSelectChatRoom.findIndex(
                     (item) => item._id === action.payload._id
                 );
-                chatRoomsAfterSelectChatRoom[indexOfChatRoomsSelected].unseen_message = 0;
+                chatRoomsAfterSelectChatRoom[indexOfChatRoomSelected].unseen_message = 0;
 
                 return {
                     ...state,
@@ -128,6 +149,20 @@ export const ChatReducer = (state, action) => {
                 ...state,
                 messages: messagesAfterIncreaseUnsendMessage,
                 chatRooms: chatRoomsAfterIncreaseUnsendMessage,
+            };
+
+        case "UPDATE_MESSAGE_SELECTED":
+            const messagesAfterUpdateMessageSelected = [...state.messages];
+
+            const indexOfMessageSelected = messagesAfterUpdateMessageSelected.findIndex(
+                (item) => item._id === action.payload._id
+            );
+            messagesAfterUpdateMessageSelected[indexOfMessageSelected] = action.payload;
+
+            return {
+                ...state,
+                messageSelected: null,
+                messages: messagesAfterUpdateMessageSelected,
             };
 
         default:

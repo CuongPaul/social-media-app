@@ -31,6 +31,7 @@ const ChangeAdmin = ({ isOpen, setIsOpen }) => {
         userState: { currentUser },
     } = useContext(UserContext);
     const {
+        chatDispatch,
         chatState: { chatRoomSelected },
     } = useContext(ChatContext);
 

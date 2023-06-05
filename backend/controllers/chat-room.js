@@ -155,6 +155,7 @@ const createChatRoomController = async (req, res) => {
                 unseen_message: 0,
                 name: chatRoom.name,
                 members: chatRoom.members,
+                is_public: chatRoom.is_public,
                 avatar_image: chatRoom.avatar_image,
             },
             message: `Group ${name} is created with ${membersId.length} members`,
@@ -269,13 +270,7 @@ const getChatRoomsByUserController = async (req, res) => {
         const query = { members: userId };
 
         const user = await User.findById(userId);
-        const chatRooms = await ChatRoom.find(query, {
-            _id: 1,
-            name: 1,
-            admin: 1,
-            members: 1,
-            avatar_image: 1,
-        })
+        const chatRooms = await ChatRoom.find(query, { createdAt: 0, updatedAt: 0 })
             .lean()
             .limit(pageSize)
             .sort({ createdAt: -1 })
@@ -327,48 +322,68 @@ const getChatRoomsByUserController = async (req, res) => {
     }
 };
 
-const updateNameChatRoomController = async (req, res) => {
-    const { name } = req.body;
+const updateInfoChatRoomController = async (req, res) => {
     const userId = req.user_id;
     const { chatRoomId } = req.params;
+    const { name, is_public, avatar_image } = req.body;
 
     try {
-        const chatRoom = await ChatRoom.findById(chatRoomId);
+        const chatRoom = await ChatRoom.findById(chatRoomId).populate("members", {
+            _id: 1,
+            name: 1,
+            avatar_image: 1,
+        });
         if (!chatRoom) {
             return res.status(400).json({ message: "Group doesn't exist" });
         }
 
-        const { admin, members, avatar_image, is_public, name: chatRoomName } = chatRoom;
+        const {
+            admin,
+            members,
+            name: chatRoomName,
+            is_public: chatRoomPrivacy,
+            avatar_image: chatRoomAvatarImage,
+        } = chatRoom;
 
         const isTwoPeopleChatRoom =
-            !is_public &&
+            name == "" &&
             admin == null &&
-            avatar_image == "" &&
-            chatRoomName == "" &&
-            members.length == 2;
+            !chatRoomPrivacy &&
+            members.length == 2 &&
+            chatRoomAvatarImage == "";
 
         if (admin != userId && !isTwoPeopleChatRoom) {
             return res.status(403).json({ message: "You don't have permission" });
         }
-        if (!chatRoom.members.includes(userId)) {
+        if (!chatRoom.members.some((item) => userId == item._id)) {
             return res.status(403).json({ message: "You aren't in group" });
         }
 
-        await chatRoom.updateOne({ name });
+        await chatRoom.updateOne({ name, is_public, avatar_image });
 
-        for (const memberId of members) {
-            if (memberId != userId) {
-                await new Notification({
-                    user: memberId,
-                    type: "CHATROOM-UPDATE_NAME",
-                    content: `The name of ${chatRoomName} group has been changed to ${name}`,
-                }).save();
+        if (name != chatRoomName) {
+            for (const memberId of members) {
+                if (memberId != userId) {
+                    await new Notification({
+                        user: memberId,
+                        type: "CHATROOM-UPDATE_NAME",
+                        content: `The name of ${chatRoomName} group has been changed to ${name}`,
+                    }).save();
+                }
             }
         }
 
-        return res
-            .status(200)
-            .json({ message: `The name of ${chatRoomName} group has been changed to ${name}` });
+        return res.status(200).json({
+            data: {
+                name,
+                is_public,
+                avatar_image,
+                _id: chatRoom._id,
+                admin: chatRoom.admin,
+                members: chatRoom.members,
+            },
+            message: `The name of ${chatRoomName} group has been changed to ${name}`,
+        });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -419,77 +434,9 @@ const addMembersToChatRoomController = async (req, res) => {
                 avatar_image: element.avatar_image,
             }));
 
-        return res
-            .status(200)
-            .json({
-                data: usersData,
-                message: `${nModified} members have been added to the group`,
-            });
-    } catch (err) {
-        return res.status(500).json({ error: err.message });
-    }
-};
-
-const updateAvatarChatRoomController = async (req, res) => {
-    const userId = req.user_id;
-    const { avatar_image } = req.body;
-    const { chatRoomId } = req.params;
-
-    try {
-        const chatRoom = await ChatRoom.findById(chatRoomId);
-        if (!chatRoom) {
-            return res.status(400).json({ message: "Group doesn't exist" });
-        }
-
-        const { name, admin, members, is_public, avatar_image: avatarImageChatRoom } = chatRoom;
-
-        const isTwoPeopleChatRoom =
-            !is_public &&
-            name == "" &&
-            admin == null &&
-            members.length == 2 &&
-            avatarImageChatRoom == "";
-
-        if (admin != userId || isTwoPeopleChatRoom) {
-            return res.status(403).json({ message: "You don't have permission" });
-        }
-
-        await chatRoom.updateOne({ avatar_image });
-
-        return res.status(200).json({ message: "Update group avatar successfully" });
-    } catch (err) {
-        return res.status(500).json({ error: err.message });
-    }
-};
-
-const updatePrivacyChatRoomController = async (req, res) => {
-    const userId = req.user_id;
-    const { is_public } = req.body;
-    const { chatRoomId } = req.params;
-
-    try {
-        const chatRoom = await ChatRoom.findById(chatRoomId);
-        if (!chatRoom) {
-            return res.status(400).json({ message: "Group doesn't exist" });
-        }
-
-        const { name, admin, members, avatar_image, is_public: privacyChatRoom } = chatRoom;
-
-        const isTwoPeopleChatRoom =
-            name == "" &&
-            admin == null &&
-            !privacyChatRoom &&
-            avatar_image == "" &&
-            members.length == 2;
-
-        if (admin != userId || isTwoPeopleChatRoom) {
-            return res.status(403).json({ message: "You don't have permission" });
-        }
-
-        await chatRoom.updateOne({ is_public });
-
         return res.status(200).json({
-            message: `Group privacy has been changed to ${is_public ? "public" : "private"}`,
+            data: usersData,
+            message: `${nModified} members have been added to the group`,
         });
     } catch (err) {
         return res.status(500).json({ error: err.message });
@@ -558,7 +505,13 @@ const createChatRoomForTwoPeopleController = async (req, res) => {
         const chatRoom = await new ChatRoom({
             is_public: false,
             members: [userId, reciverId],
-        }).save();
+        })
+            .save()
+            .then((res) =>
+                res
+                    .populate("members", { _id: 1, name: 1, friends: 1, avatar_image: 1 })
+                    .execPopulate()
+            );
 
         await sender.updateOne({ $push: { chat_rooms: { _id: chatRoom._id } } });
         await reciver.updateOne({ $push: { chat_rooms: { _id: chatRoom._id } } });
@@ -585,10 +538,8 @@ export {
     deleteChatRoomController,
     searchChatRoomsController,
     getChatRoomsByUserController,
-    updateNameChatRoomController,
+    updateInfoChatRoomController,
     addMembersToChatRoomController,
-    updateAvatarChatRoomController,
-    updatePrivacyChatRoomController,
     removeMembersFromChatRoomController,
     createChatRoomForTwoPeopleController,
 };

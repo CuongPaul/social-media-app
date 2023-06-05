@@ -21,8 +21,8 @@ const reactMessageValidatetion = {
 
 const createMessageValidatetion = {
     body: Joi.object({
-        text: Joi.string().allow(null).trim(),
-        image: Joi.string().allow(null).trim(),
+        text: Joi.string().allow("", null).trim(),
+        image: Joi.string().allow("", null).trim(),
         chat_room_id: Joi.string().required().trim(),
     }),
 };
@@ -38,8 +38,8 @@ const createMessageValidatetion = {
 
 const updateMessagesValidatetion = {
     body: Joi.object({
-        text: Joi.string().allow(null).trim(),
-        image: Joi.string().allow(null).trim(),
+        text: Joi.string().allow("", null).trim(),
+        image: Joi.string().allow("", null).trim(),
         chat_room_id: Joi.string().required().trim(),
     }),
     params: Joi.object({

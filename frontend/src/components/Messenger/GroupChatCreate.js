@@ -155,8 +155,8 @@ const GroupChatCreate = () => {
                         <AvatarIcon
                             size="200px"
                             fontSize="150px"
-                            text={chatRoomName || "?"}
                             imageUrl={imagePreview}
+                            text={chatRoomName || "?"}
                         />
                         <input
                             type="file"

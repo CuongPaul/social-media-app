@@ -17,6 +17,7 @@ import ChangeAdmin from "./ChangeAdmin";
 import AvatarIcon from "../UI/AvatarIcon";
 import GroupMembers from "./GroupMembers";
 import StyledBadge from "../UI/StyledBadge";
+import ChatRoomUpdate from "./ChatRoomUpdate";
 import { UIContext, ChatContext, UserContext } from "../../App";
 
 const ChatRoom = ({ chatRoom }) => {
@@ -35,6 +36,7 @@ const ChatRoom = ({ chatRoom }) => {
     const [isOpenAddMembers, setIsOpenAddMembers] = useState(false);
     const [isOpenChangeAdmin, setIsOpenChangeAdmin] = useState(false);
     const [isOpenGroupMembers, setIsOpenGroupMembers] = useState(false);
+    const [isOpenUpdateChatRoom, setIsOpenUpdateChatRoom] = useState(false);
 
     const handleClickChat = async (chat) => {
         try {
@@ -157,13 +159,14 @@ const ChatRoom = ({ chatRoom }) => {
                                 <MenuItem onClick={() => handleLeaveChat(chatRoom._id)}>
                                     <Typography>Leave</Typography>
                                 </MenuItem>
-                                <MenuItem onClick={() => setIsOpenGroupMembers(true)}>
+                                <MenuItem
+                                    onClick={() => {
+                                        setAnchorEl(null);
+                                        setIsOpenGroupMembers(true);
+                                    }}
+                                >
                                     <Typography>Members</Typography>
                                 </MenuItem>
-                                <GroupMembers
-                                    isOpen={isOpenGroupMembers}
-                                    setIsOpen={setIsOpenGroupMembers}
-                                />
                             </div>
                         )}
                         {chatRoom.admin === currentUser?._id && chatRoom.members.length > 2 && (
@@ -171,25 +174,43 @@ const ChatRoom = ({ chatRoom }) => {
                                 <MenuItem onClick={() => handleDeleteChat(chatRoom._id)}>
                                     <Typography>Delete</Typography>
                                 </MenuItem>
-                                <MenuItem onClick={() => setIsOpenAddMembers(true)}>
+                                <MenuItem
+                                    onClick={() => {
+                                        setAnchorEl(null);
+                                        setIsOpenAddMembers(true);
+                                    }}
+                                >
                                     <Typography>Add members</Typography>
                                 </MenuItem>
-                                <AddMembers
-                                    isOpen={isOpenAddMembers}
-                                    setIsOpen={setIsOpenAddMembers}
-                                />
-                                <MenuItem onClick={() => setIsOpenChangeAdmin(true)}>
+                                <MenuItem
+                                    onClick={() => {
+                                        setAnchorEl(null);
+                                        setIsOpenChangeAdmin(true);
+                                    }}
+                                >
                                     <Typography>Change admin</Typography>
                                 </MenuItem>
-                                <ChangeAdmin
-                                    isOpen={isOpenChangeAdmin}
-                                    setIsOpen={setIsOpenChangeAdmin}
-                                />
+                                <MenuItem
+                                    onClick={() => {
+                                        setAnchorEl(null);
+                                        setIsOpenUpdateChatRoom(true);
+                                    }}
+                                >
+                                    <Typography>Update chat room</Typography>
+                                </MenuItem>
                             </div>
                         )}
                     </Menu>
                 </div>
             )}
+            <ChatRoomUpdate
+                chatRoom={chatRoom}
+                isOpen={isOpenUpdateChatRoom}
+                setIsOpen={setIsOpenUpdateChatRoom}
+            />
+            <AddMembers isOpen={isOpenAddMembers} setIsOpen={setIsOpenAddMembers} />
+            <ChangeAdmin isOpen={isOpenChangeAdmin} setIsOpen={setIsOpenChangeAdmin} />
+            <GroupMembers isOpen={isOpenGroupMembers} setIsOpen={setIsOpenGroupMembers} />
         </div>
     );
 };

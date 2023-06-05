@@ -10,20 +10,20 @@ import {
 } from "@material-ui/core";
 import moment from "moment";
 import { MoreHoriz } from "@material-ui/icons";
-import React, { useState, Fragment, useContext } from "react";
+import React, { useState, useContext } from "react";
 
-import { UIContext, UserContext } from "../../App";
+import { UIContext, ChatContext, UserContext } from "../../App";
 
 const useStyles = makeStyles(() => ({
-    me: {
-        float: "right",
+    reciver: {
+        float: "left",
         maxWidth: "50%",
         minWidth: "20%",
         padding: "8px 12px",
     },
 
-    partner: {
-        float: "left",
+    sender: {
+        float: "right",
         maxWidth: "50%",
         minWidth: "20%",
         padding: "8px 12px",
@@ -37,19 +37,26 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const Message = ({ message, setTextValue, setTextId }) => {
+const Message = ({ message }) => {
     const {
         uiState: { darkMode },
     } = useContext(UIContext);
+    const { chatDispatch } = useContext(ChatContext);
     const {
         userState: { currentUser },
     } = useContext(UserContext);
 
     const classes = useStyles();
-    const [isOpen, setIsOpen] = useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
     const [isShowActions, setIsShowActions] = useState(false);
 
     const isSender = currentUser._id === message?.sender?._id;
+
+    const handleClickMessage = () => {
+        setAnchorEl(null);
+
+        chatDispatch({ payload: message, type: "SET_MESSAGE_SELECTED" });
+    };
 
     return (
         <Grid
@@ -57,14 +64,13 @@ const Message = ({ message, setTextValue, setTextId }) => {
             onMouseLeave={() => setIsShowActions(false)}
             style={{
                 marginTop: "16px",
-                alignItems: "center",
                 display: isSender && "flex",
+                alignItems: isSender && "center",
                 flexDirection: isSender && "row-reverse",
             }}
         >
             <Paper
                 style={{
-                    height: "fit-content",
                     color: darkMode && "#fff",
                     backgroundColor: isSender
                         ? darkMode
@@ -74,20 +80,17 @@ const Message = ({ message, setTextValue, setTextId }) => {
                         ? "rgb(46,139,87)"
                         : "rgb(240,242,245)",
                 }}
-                className={isSender ? classes.me : classes.partner}
+                className={isSender ? classes.sender : classes.reciver}
             >
                 {message?.text && (
-                    <Typography style={{ wordWrap: "break-word" }}>{message.text}</Typography>
+                    <Typography style={{ marginBottom: "10px", wordWrap: "break-word" }}>
+                        {message.text}
+                    </Typography>
                 )}
                 {message?.image && (
                     <CardMedia
                         controls
                         image={message.image}
-                        style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "contain",
-                        }}
                         component={
                             message?.image.split(".").pop().substring(0, 3) === "mp4"
                                 ? "video"
@@ -100,35 +103,18 @@ const Message = ({ message, setTextValue, setTextId }) => {
                 </Typography>
             </Paper>
             {isSender && isShowActions && (
-                <Fragment>
-                    <IconButton onClick={(e) => setIsOpen(e.currentTarget)}>
+                <div>
+                    <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
                         <MoreHoriz />
                     </IconButton>
-
                     <Menu
-                        id="message-action-menu"
-                        anchorEl={isOpen}
-                        open={Boolean(isOpen)}
-                        onClose={() => setIsOpen(null)}
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={() => setAnchorEl(null)}
                     >
-                        <MenuItem
-                            onClick={() => {
-                                setIsOpen(null);
-                                setTextValue(message?.text);
-                                setTextId(message._id);
-                            }}
-                        >
-                            Edit {message?.text && message?.text}
-                        </MenuItem>
-                        <MenuItem
-                            onClick={() => {
-                                console.log({ _id: message._id, text: message.text });
-                            }}
-                        >
-                            Delete
-                        </MenuItem>
+                        <MenuItem onClick={() => handleClickMessage()}>Edit</MenuItem>
                     </Menu>
-                </Fragment>
+                </div>
             )}
         </Grid>
     );

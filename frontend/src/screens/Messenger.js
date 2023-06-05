@@ -27,16 +27,44 @@ const Messenger = () => {
     } = useContext(ChatContext);
 
     const history = useHistory();
-    const scrollDiv = useRef(null);
-    const [page, setPage] = useState(1);
-    const [messageId, setMessageId] = useState("");
-    const [textValue, setTextValue] = useState("");
+    const scrollMessage = useRef(null);
+    const scrollChatRoom = useRef(null);
+    const [messagePage, setMessagePage] = useState(1);
+    const [chatRoomPage, setChatRoomPage] = useState(1);
     const [isOpenGroupMembers, setIsOpenGroupMembers] = useState(false);
 
-    const handleScroll = async (event) => {
-        if (event.target.scrollHeight + event.target.scrollTop === event.target.clientHeight + 1) {
+    const handleScrollChatRoom = async (event) => {
+        const bottom =
+            event.target.scrollHeight - event.target.scrollTop === event.target.clientHeight + 0.5;
+
+        if (bottom) {
             try {
-                const nextPage = page + 1;
+                const nextPage = chatRoomPage + 1;
+
+                const { data } = await callApi({
+                    method: "GET",
+                    url: `/chat-room`,
+                    query: { page: nextPage },
+                });
+
+                setChatRoomPage(chatRoomPage + 1);
+                chatDispatch({ payload: data.rows, type: "ADD_CHATROOMS" });
+            } catch (err) {
+                uiDispatch({
+                    type: "SET_ALERT_MESSAGE",
+                    payload: { display: true, color: "error", text: err.message },
+                });
+            }
+        }
+    };
+
+    const handleScrollMessage = async (event) => {
+        const top =
+            event.target.scrollHeight + event.target.scrollTop === event.target.clientHeight + 1;
+
+        if (top) {
+            try {
+                const nextPage = messagePage + 1;
 
                 const { data } = await callApi({
                     method: "GET",
@@ -44,7 +72,7 @@ const Messenger = () => {
                     url: `/message/chat-room/${chatRoomSelected._id}`,
                 });
 
-                setPage(page + 1);
+                setMessagePage(messagePage + 1);
                 chatDispatch({ payload: data.rows, type: "ADD_MESSAGES" });
             } catch (err) {
                 uiDispatch({
@@ -56,14 +84,14 @@ const Messenger = () => {
     };
 
     useEffect(() => {
-        if (scrollDiv.current) {
-            scrollDiv.current.scrollTo(0, 0);
+        if (scrollMessage.current) {
+            scrollMessage.current.scrollTo(0, 0);
         }
     }, [chatRoomSelected?._id]);
 
     useEffect(() => {
-        if (page === 1 && scrollDiv.current) {
-            scrollDiv.current.scrollTo(0, 0);
+        if (messagePage === 1 && scrollMessage.current) {
+            scrollMessage.current.scrollTo(0, 0);
         }
     }, [messages?.length]);
 
@@ -92,11 +120,13 @@ const Messenger = () => {
                     <SearchUsers />
                 </div>
                 <List
+                    ref={scrollChatRoom}
+                    onScroll={handleScrollChatRoom}
                     style={{
                         padding: "10px",
                         marginTop: "10px",
-                        overflowX: "auto",
                         borderRadius: "10px",
+                        overflow: "hidden scroll",
                         backgroundColor: "rgb(255,255,255)",
                     }}
                 >
@@ -146,8 +176,8 @@ const Messenger = () => {
                     </Paper>
                     <GroupMembers isOpen={isOpenGroupMembers} setIsOpen={setIsOpenGroupMembers} />
                     <Paper
-                        ref={scrollDiv}
-                        onScroll={handleScroll}
+                        ref={scrollMessage}
+                        onScroll={handleScrollMessage}
                         style={{
                             flex: 1,
                             display: "flex",
@@ -164,19 +194,10 @@ const Messenger = () => {
                         }}
                     >
                         {messages?.map((message) => (
-                            <Message
-                                key={message._id}
-                                message={message}
-                                setTextId={setMessageId}
-                                setTextValue={setTextValue}
-                            />
+                            <Message key={message._id} message={message} />
                         ))}
                     </Paper>
-                    <MessageTextArea
-                        textValue={textValue}
-                        messageId={messageId}
-                        chatRoomId={chatRoomSelected._id}
-                    />
+                    <MessageTextArea chatRoomId={chatRoomSelected._id} />
                 </Grid>
             ) : (
                 <Grid

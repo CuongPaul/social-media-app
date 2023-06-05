@@ -1,86 +1,106 @@
 import { useContext, useState } from "react";
 
 import callApi from "../api";
-import { ChatContext, UIContext } from "../App";
+import { UIContext, ChatContext } from "../App";
 
-const useSubmitMessage = ({ text, setText, chatRoomId, fileUpload, handleRemoveFile }) => {
+const useSubmitMessage = () => {
     const { uiDispatch } = useContext(UIContext);
     const { chatDispatch } = useContext(ChatContext);
 
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const sendMessage = async (uri = "") => {
-        setLoading(true);
+    const handleSendMessage = async ({
+        text,
+        setText,
+        chatRoomId,
+        fileUpload,
+        handleRemoveFile,
+    }) => {
+        setIsLoading(true);
+
         try {
+            let imageUrl = "";
+            if (fileUpload) {
+                const formData = new FormData();
+                formData.append("files", fileUpload);
+                formData.append("folder", "message");
+
+                const { data } = await callApi({
+                    data: formData,
+                    method: "POST",
+                    url: "/upload/files",
+                });
+
+                imageUrl = data.images[0];
+            }
+
             const { data } = await callApi({
+                method: "POST",
                 url: "/message",
-                method: "POST",
-                data: { text: text, image: uri ? uri : null, chat_room_id: chatRoomId },
+                data: { text, image: imageUrl, chat_room_id: chatRoomId },
             });
-            if (data) {
-                setText("");
-                chatDispatch({ payload: data, type: "ADD_MESSAGE" });
-            }
-            setLoading(false);
+            chatDispatch({ payload: data, type: "ADD_MESSAGE" });
+
+            setText("");
+            handleRemoveFile();
+            setIsLoading(false);
         } catch (err) {
-            setLoading(false);
-            console.log(err);
-            if (err && err.response) {
-                if (err.response.status === 422) {
-                    uiDispatch({
-                        type: "SET_ALERT_MESSAGE",
-                        payload: {
-                            display: true,
-                            text: err.response.data.error,
-                            color: "error",
-                        },
-                    });
-                }
+            setIsLoading(true);
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, color: "error", text: err.message },
+            });
+        }
+    };
+
+    const handleUpdateMessage = async ({
+        text,
+        setText,
+        messageId,
+        chatRoomId,
+        fileUpload,
+        currentImage,
+        handleRemoveFile,
+    }) => {
+        setIsLoading(true);
+
+        try {
+            let imageUrl = "";
+            if (fileUpload) {
+                const formData = new FormData();
+                formData.append("files", fileUpload);
+                formData.append("folder", "message");
+
+                const { data } = await callApi({
+                    method: "POST",
+                    data: formData,
+                    url: "/upload/files",
+                });
+
+                imageUrl = data.images[0];
             }
-        }
-    };
-
-    const handleSendMessage = async (e) => {
-        e.preventDefault();
-        if (fileUpload) {
-            const formData = new FormData();
-            formData.append("files", fileUpload);
-            formData.append("folder", "message");
 
             const { data } = await callApi({
-                url: "/upload/files",
-                method: "POST",
-                data: formData,
+                method: "PUT",
+                url: `/message/${messageId}`,
+                data: { text, chat_room_id: chatRoomId, image: imageUrl || currentImage },
             });
+            chatDispatch({ payload: data, type: "UPDATE_MESSAGE_SELECTED" });
 
-            sendMessage(data.images[0]);
-        } else {
-            sendMessage();
-        }
-        handleRemoveFile();
-    };
-
-    const handleUpdateMessage = async (messageId) => {
-        if (fileUpload) {
-            const formData = new FormData();
-            formData.append("files", fileUpload);
-            formData.append("folder", "message");
-
-            const { data } = await callApi({
-                url: "/upload/files",
-                method: "POST",
-                data: formData,
+            setText("");
+            handleRemoveFile();
+            setIsLoading(false);
+        } catch (err) {
+            setIsLoading(true);
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, color: "error", text: err.message },
             });
-
-            sendMessage(data.images[0]);
-        } else {
-            sendMessage();
         }
-        handleRemoveFile();
     };
 
     return {
-        loading,
+        isLoading,
         handleSendMessage,
         handleUpdateMessage,
     };

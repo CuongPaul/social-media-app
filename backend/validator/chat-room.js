@@ -43,9 +43,11 @@ const searchChatRoomsValidation = {
     }),
 };
 
-const updateNameChatRoomValidation = {
+const updateInfoChatRoomValidation = {
     body: Joi.object({
+        is_public: Joi.boolean().required(),
         name: Joi.string().trim().required(),
+        avatar_image: Joi.string().trim().allow("", null),
     }),
     params: Joi.object({
         chatRoomId: Joi.string().trim().required(),
@@ -58,24 +60,6 @@ const addMembersToChatRoomValidation = {
     }),
     body: Joi.object({
         members: Joi.array().items(Joi.string().trim().required()).min(1).required(),
-    }),
-};
-
-const updateAvatarChatRoomValidation = {
-    params: Joi.object({
-        chatRoomId: Joi.string().trim().required(),
-    }),
-    body: Joi.object({
-        avatar_image: Joi.string().trim().required(),
-    }),
-};
-
-const updatePrivacyChatRoomValidation = {
-    body: Joi.object({
-        is_public: Joi.string().trim().required(),
-    }),
-    params: Joi.object({
-        chatRoomId: Joi.string().trim().required(),
     }),
 };
 
@@ -101,10 +85,8 @@ export {
     createChatRoomValidation,
     deleteChatRoomValidation,
     searchChatRoomsValidation,
-    updateNameChatRoomValidation,
+    updateInfoChatRoomValidation,
     addMembersToChatRoomValidation,
-    updateAvatarChatRoomValidation,
-    updatePrivacyChatRoomValidation,
     removeMembersFromChatRoomValidation,
     createChatRoomForTwoPeopleValidation,
 };

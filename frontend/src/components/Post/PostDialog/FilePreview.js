@@ -1,8 +1,8 @@
-import React from "react";
-import { Close } from "@material-ui/icons";
-import { Avatar, CardMedia, IconButton } from "@material-ui/core";
+import React, { useState } from "react";
+import { Close, ZoomIn } from "@material-ui/icons";
+import { Box, Modal, Avatar, CardMedia, IconButton } from "@material-ui/core";
 
-const FilePreview = ({ filePreview, size = "100%", handleRemoveFile }) => {
+const FilePreview = ({ filePreview, size = "100%", zoomOutVideo, handleRemoveFile }) => {
     const fileType = filePreview.slice(0, 10);
 
     let component = "video";
@@ -17,6 +17,8 @@ const FilePreview = ({ filePreview, size = "100%", handleRemoveFile }) => {
         if (fileTypeUpload !== "mp4") component = "img";
     }
 
+    const [isOpen, setIsOpen] = useState(false);
+
     return (
         <div style={{ position: "relative", margin: "20px 0px" }}>
             {component == "blob" ? (
@@ -25,6 +27,21 @@ const FilePreview = ({ filePreview, size = "100%", handleRemoveFile }) => {
                     src={filePreview}
                     style={{ width: size, height: size, borderRadius: "10px" }}
                 />
+            ) : zoomOutVideo && component === "video" ? (
+                <div
+                    style={{
+                        width: size,
+                        height: size,
+                        display: "flex",
+                        cursor: "pointer",
+                        alignItems: "center",
+                        borderRadius: "10px",
+                        justifyContent: "center",
+                        backgroundColor: "rgb(238,178,59,0.8)",
+                    }}
+                >
+                    <ZoomIn fontSize="large" onClick={() => setIsOpen(true)} />
+                </div>
             ) : (
                 <CardMedia
                     controls
@@ -35,17 +52,53 @@ const FilePreview = ({ filePreview, size = "100%", handleRemoveFile }) => {
             )}
             <div
                 style={{
-                    top: "-24px",
-                    right: "-24px",
+                    top: "-20px",
+                    right: "-20px",
                     position: "absolute",
                 }}
             >
                 <IconButton size="medium" onClick={handleRemoveFile}>
-                    <Avatar style={{ background: "tomato", color: "white" }}>
+                    <Avatar
+                        style={{
+                            width: "25px",
+                            color: "white",
+                            height: "25px",
+                            background: "tomato",
+                        }}
+                    >
                         <Close />
                     </Avatar>
                 </IconButton>
             </div>
+            {isOpen && (
+                <Modal open={isOpen} style={{ display: "flex" }} onClose={() => setIsOpen(false)}>
+                    <Box
+                        style={{
+                            width: "75vw",
+                            height: "75vh",
+                            margin: "auto",
+                            display: "flex",
+                            alignItems: "center",
+                            borderRadius: "20px",
+                            justifyContent: "center",
+                            backgroundColor: "rgba(255,255,255)",
+                        }}
+                    >
+                        <CardMedia
+                            controls
+                            image={filePreview}
+                            component={component}
+                            style={{
+                                width: "auto",
+                                height: "auto",
+                                maxWidth: "100%",
+                                maxHeight: "100%",
+                                objectFit: "contain",
+                            }}
+                        />
+                    </Box>
+                </Modal>
+            )}
         </div>
     );
 };
