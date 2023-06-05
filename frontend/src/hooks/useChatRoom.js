@@ -13,17 +13,14 @@ const useChatRoom = () => {
         setLoading(true);
 
         try {
-            const { message } = await callApi({
+            const { data, message } = await callApi({
                 method: "PUT",
                 data: { members },
                 url: `/chat-room/add-member/${chatRoomId}`,
             });
             setLoading(false);
 
-            chatDispatch({
-                payload: { members },
-                type: "ADD_MEMBERS",
-            });
+            chatDispatch({ type: "ADD_MEMBERS", payload: data });
 
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",

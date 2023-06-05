@@ -1,7 +1,5 @@
 import {
-    Chip,
     List,
-    Paper,
     Button,
     Dialog,
     Checkbox,
@@ -15,87 +13,63 @@ import {
     DialogContent,
     InputAdornment,
 } from "@material-ui/core";
-import { Close, ArrowForward } from "@material-ui/icons";
+import { Close } from "@material-ui/icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import React, { useState, useEffect, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import callApi from "../../api";
 import AvatarIcon from "../UI/AvatarIcon";
-import { useChatRoom } from "../../hooks";
 import { UIContext, ChatContext, UserContext } from "../../App";
 
-const GroupMembers = ({ isOpen, setIsOpen }) => {
+const ChangeAdmin = ({ isOpen, setIsOpen }) => {
     const {
+        uiDispatch,
         uiState: { darkMode },
     } = useContext(UIContext);
     const {
         userState: { currentUser },
     } = useContext(UserContext);
     const {
-        chatDispatch,
-        chatState: { chatRooms, chatRoomSelected },
+        chatState: { chatRoomSelected },
     } = useContext(ChatContext);
 
     const [members, setMembers] = useState([]);
     const [searchValue, setSearchValue] = useState("");
-    const [membersSelected, setMembersSelected] = useState([]);
-
-    const { handleRemoveMembers } = useChatRoom();
+    const [memberSelected, setMemberSelected] = useState(null);
 
     const handleSearchMembers = (searchValue) => {
         const regex = new RegExp(searchValue, "i");
         setMembers(chatRoomSelected?.members.filter((item) => regex.test(item.name)));
     };
 
-    const handleClickMemberItem = (member) => {
-        if (currentUser._id === chatRoomSelected?.admin) {
-            if (currentUser._id !== member._id) {
-                const isSelected = membersSelected.findIndex((item) => item._id === member._id);
+    const handleChangeAdmin = async (memberId) => {
+        try {
+            const { message } = await callApi({
+                method: "PUT",
+                data: { new_admin: memberId },
+                url: `/chat-room/change-admin/${chatRoomSelected._id}`,
+            });
 
-                if (isSelected === -1) {
-                    setMembersSelected([...membersSelected, member]);
-                } else {
-                    setMembersSelected(membersSelected.filter((item) => item._id !== member._id));
-                }
-            }
-        } else {
-            if (member._id !== currentUser._id) {
-                const chatRoom = chatRooms.find(
-                    (chatRoom) =>
-                        chatRoom.members.length === 2 &&
-                        chatRoom.members.some((item) => item._id === member._id)
-                );
-
-                if (chatRoom) {
-                    handleClickChat(chatRoom);
-                } else {
-                    handleClickFriend(member);
-                }
-            }
-
-            setIsOpen(false);
+            chatDispatch({
+                type: "SET_NEW_ADMIN",
+                payload: { memberId, chatRoomId: chatRoomSelected._id },
+            });
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, text: message, color: "success" },
+            });
+        } catch (err) {
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, color: "error", text: err.message },
+            });
         }
-    };
-
-    const handleClickChat = async (chat) => {
-        chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: chat });
-        const { data } = await callApi({ url: `/message/chat-room/${chat._id}`, method: "GET" });
-        chatDispatch({ type: "SET_MESSAGES", payload: data.rows });
-    };
-
-    const handleClickFriend = async (friend) => {
-        const { data } = await callApi({
-            method: "POST",
-            url: `/chat-room/two-people`,
-            data: { reciver: friend._id },
-        });
-        chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: data });
     };
 
     useEffect(() => {
         setSearchValue("");
-        setMembersSelected([]);
+        setMemberSelected(null);
         setMembers(chatRoomSelected?.members);
     }, [chatRoomSelected]);
 
@@ -119,58 +93,6 @@ const GroupMembers = ({ isOpen, setIsOpen }) => {
                 }
             />
             <DialogContent>
-                {membersSelected.length ? (
-                    <div
-                        style={{
-                            display: "flex",
-                            marginBottom: "32px",
-                            alignItems: "center",
-                        }}
-                    >
-                        <Paper
-                            style={{
-                                flex: 4,
-                                width: "100%",
-                                overflowX: "auto",
-                                maxHeight: "104px",
-                                marginRight: "16px",
-                            }}
-                        >
-                            {membersSelected.map((friend) => (
-                                <Chip
-                                    key={friend._id}
-                                    label={friend.name}
-                                    style={{ margin: "12px" }}
-                                    onDelete={() =>
-                                        setMembersSelected(
-                                            membersSelected.filter(
-                                                (item) => item._id !== friend._id
-                                            )
-                                        )
-                                    }
-                                />
-                            ))}
-                        </Paper>
-                        <Button
-                            color="primary"
-                            variant="contained"
-                            style={{
-                                flex: 1,
-                                width: "100%",
-                                minHeight: "56px",
-                                borderRadius: "5px",
-                            }}
-                            onClick={() =>
-                                handleRemoveMembers(
-                                    chatRoomSelected?._id,
-                                    membersSelected.map((item) => item._id)
-                                )
-                            }
-                        >
-                            Remove
-                        </Button>
-                    </div>
-                ) : null}
                 <div style={{ display: "flex", marginBottom: "32px" }}>
                     <TextField
                         autoFocus
@@ -222,7 +144,11 @@ const GroupMembers = ({ isOpen, setIsOpen }) => {
                                 background: darkMode ? "rgb(58,59,60)" : "rgb(240,242,245)",
                             }}
                         >
-                            <ListItem onClick={() => handleClickMemberItem(member)}>
+                            <ListItem
+                                onClick={() =>
+                                    member._id !== currentUser._id && setMemberSelected(member)
+                                }
+                            >
                                 <ListItemIcon>
                                     <AvatarIcon text={member.name} imageUrl={member.avatar_image} />
                                 </ListItemIcon>
@@ -240,25 +166,26 @@ const GroupMembers = ({ isOpen, setIsOpen }) => {
                                 <ListItemIcon>
                                     {chatRoomSelected?.admin === member._id ? (
                                         "Admin"
-                                    ) : currentUser._id === chatRoomSelected?.admin ? (
-                                        <Checkbox
-                                            checked={membersSelected.some(
-                                                (item) => item._id === member._id
-                                            )}
-                                        />
-                                    ) : member._id === currentUser._id ? (
-                                        "You"
                                     ) : (
-                                        <ArrowForward />
+                                        <Checkbox checked={member._id === memberSelected?._id} />
                                     )}
                                 </ListItemIcon>
                             </ListItem>
                         </div>
                     ))}
                 </List>
+                <Button
+                    color="primary"
+                    variant="contained"
+                    disabled={!Boolean(memberSelected)}
+                    onClick={() => handleChangeAdmin(memberSelected._id)}
+                    style={{ width: "100%", borderRadius: "5px", marginBottom: "10px" }}
+                >
+                    Confirm
+                </Button>
             </DialogContent>
         </Dialog>
     );
 };
 
-export default GroupMembers;
+export default ChangeAdmin;

@@ -6,7 +6,6 @@ import callApi from "../api";
 import AvatarIcon from "../components/UI/AvatarIcon";
 import Message from "../components/Messenger/Message";
 import ChatRoom from "../components/Messenger/ChatRoom";
-import AddMembers from "../components/Messenger/AddMembers";
 import { UIContext, ChatContext, UserContext } from "../App";
 import SearchUsers from "../components/Messenger/SearchUsers";
 import GroupMembers from "../components/Messenger/GroupMembers";
@@ -36,8 +35,6 @@ const Messenger = () => {
 
     const handleScroll = async (event) => {
         if (event.target.scrollHeight + event.target.scrollTop === event.target.clientHeight + 1) {
-            setPage(page + 1);
-
             try {
                 const nextPage = page + 1;
 
@@ -47,6 +44,7 @@ const Messenger = () => {
                     url: `/message/chat-room/${chatRoomSelected._id}`,
                 });
 
+                setPage(page + 1);
                 chatDispatch({ payload: data.rows, type: "ADD_MESSAGES" });
             } catch (err) {
                 uiDispatch({
@@ -145,8 +143,6 @@ const Messenger = () => {
                                 {chatRoomSelected.name}
                             </Typography>
                         </div>
-                        {chatRoomSelected.members.length > 2 &&
-                            currentUser._id === chatRoomSelected.admin && <AddMembers />}
                     </Paper>
                     <GroupMembers isOpen={isOpenGroupMembers} setIsOpen={setIsOpenGroupMembers} />
                     <Paper

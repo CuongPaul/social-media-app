@@ -66,15 +66,18 @@ const joinChatRoomController = async (req, res) => {
         }
 
         await chatRoom.updateOne({ $push: { members: userId } });
-        await User.findByIdAndUpdate(userId, { $push: { chat_rooms: { _id: chatRoom._id } } });
+
+        const user = await User.findById(userId, { _id: 1, name: 1, avatar_image: 1 });
+        await user.updateOne({ $push: { chat_rooms: { _id: chatRoom._id } } });
 
         return res.status(200).json({
             data: {
                 _id: chatRoom._id,
                 unseen_message: 0,
                 name: chatRoom.name,
-                members: chatRoom.members,
+                admin: chatRoom.admin,
                 avatar_image: chatRoom.avatar_image,
+                members: [...chatRoom.members, user],
             },
             message: `You have joined the group ${chatRoom.name}`,
         });
@@ -117,21 +120,20 @@ const createChatRoomController = async (req, res) => {
             (acc, cur) => (cur.block_users.includes(userId) ? acc : acc.concat(cur._id)),
             []
         );
-        const membersValid = [...new Set(membersId.concat(userId))];
 
         const chatRoom = await new ChatRoom({
             name,
             is_public,
             avatar_image,
             admin: userId,
-            members: membersValid,
+            members: [userId, ...membersId],
         })
             .save()
             .then((res) =>
                 res.populate("members", { _id: 1, name: 1, avatar_image: 1 }).execPopulate()
             );
 
-        for (const memberId of membersValid) {
+        for (const memberId of membersId) {
             if (memberId != userId) {
                 await new Notification({
                     user: memberId,
@@ -148,13 +150,14 @@ const createChatRoomController = async (req, res) => {
 
         res.status(200).json({
             data: {
+                admin: userId,
                 _id: chatRoom._id,
                 unseen_message: 0,
                 name: chatRoom.name,
                 members: chatRoom.members,
                 avatar_image: chatRoom.avatar_image,
             },
-            message: `Group ${name} is created with ${membersValid.length} members`,
+            message: `Group ${name} is created with ${membersId.length} members`,
         });
     } catch (err) {
         return res.status(500).json({ error: err.message });
@@ -400,18 +403,28 @@ const addMembersToChatRoomController = async (req, res) => {
             (acc, cur) => (cur.block_users.includes(userId) ? acc : acc.concat(cur._id)),
             []
         );
-        const membersValid = [...new Set(membersId)];
 
-        await chatRoom.updateOne({ $push: { members: membersValid } });
+        await chatRoom.updateOne({ $push: { members: membersId } });
 
         const { nModified } = await User.updateMany(
-            { _id: { $in: membersValid } },
+            { _id: { $in: membersId } },
             { $push: { chat_rooms: { _id: chatRoom._id } } }
         );
 
+        const usersData = users
+            .filter((item) => membersId.includes(item._id))
+            .map((element) => ({
+                _id: element._id,
+                name: element.name,
+                avatar_image: element.avatar_image,
+            }));
+
         return res
             .status(200)
-            .json({ message: `${nModified} members have been added to the group` });
+            .json({
+                data: usersData,
+                message: `${nModified} members have been added to the group`,
+            });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }

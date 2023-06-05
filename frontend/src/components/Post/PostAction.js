@@ -78,7 +78,7 @@ const PostAction = ({ post }) => {
                     </DialogContent>
                     <DialogActions style={{ marginBottom: "10px", paddingRight: "20px" }}>
                         <Button
-                            disable={loading}
+                            disabled={loading}
                             variant="contained"
                             onClick={() => handleDeletePost(post._id)}
                         >

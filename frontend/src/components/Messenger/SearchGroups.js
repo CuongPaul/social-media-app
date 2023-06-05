@@ -74,7 +74,7 @@ const SearchGroups = () => {
                 url: `/chat-room/join-chat/${chat._id}`,
             });
             chatDispatch({ type: "ADD_CHATROOM", payload: chatRoomData });
-            chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: chat });
+            chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: chatRoomData });
 
             const { data: messagesData } = await callApi({
                 method: "GET",

@@ -15,7 +15,7 @@ export const ChatReducer = (state, action) => {
             );
             chatRoomsAfterAddMembers[indexOfChatRoomSelectedAddMembers].members = [
                 ...state.chatRoomSelected.members,
-                action.payload,
+                ...action.payload,
             ];
 
             return {
@@ -23,7 +23,7 @@ export const ChatReducer = (state, action) => {
                 chatRooms: chatRoomsAfterAddMembers,
                 chatRoomSelected: {
                     ...state.chatRoomSelected,
-                    members: [...state.chatRoomSelected.members, action.payload],
+                    members: [...state.chatRoomSelected.members, ...action.payload],
                 },
             };
 
@@ -41,6 +41,23 @@ export const ChatReducer = (state, action) => {
 
         case "SET_CHATROOMS":
             return { ...state, chatRooms: action.payload };
+
+        case "SET_NEW_ADMIN":
+            const chatRoomsAfterSetNewAdmin = [...state.chatRooms];
+
+            const indexOfChatRoomSetNewAdmin = chatRoomsAfterSetNewAdmin.findIndex(
+                (item) => item._id === action.payload.chatRoomId
+            );
+            chatRoomsAfterSetNewAdmin[indexOfChatRoomSetNewAdmin].admin = action.payload.memberId;
+
+            const chatRoomSelectedAfterSetNewAdmin = { ...state.chatRoomSelected };
+            chatRoomSelectedAfterSetNewAdmin.admin = action.payload.memberId;
+
+            return {
+                ...state,
+                chatRooms: chatRoomsAfterSetNewAdmin,
+                chatRoomSelected: chatRoomSelectedAfterSetNewAdmin,
+            };
 
         case "REMOVE_MEMBERS":
             const membersAfterRemoveMembers = state.chatRoomSelected.members.filter(
@@ -60,19 +77,30 @@ export const ChatReducer = (state, action) => {
                 chatRoomSelected: { ...state.chatRoomSelected, members: membersAfterRemoveMembers },
             };
 
-        case "SET_CHATROOM_SELECTED":
-            const chatRoomsAfterSelectChatRoom = [...state.chatRooms];
-
-            const indexOfChatRoomsSelected = chatRoomsAfterSelectChatRoom.findIndex(
-                (item) => item._id === action.payload._id
+        case "REMOVE_CHATROOM":
+            const chatRoomsAfterRemoveChatRoom = [...state.chatRooms].filter(
+                (item) => item._id !== action.payload
             );
-            chatRoomsAfterSelectChatRoom[indexOfChatRoomsSelected].unseen_message = 0;
 
-            return {
-                ...state,
-                chatRooms: chatRoomsAfterSelectChatRoom,
-                chatRoomSelected: { ...action.payload, unseen_message: 0 },
-            };
+            return { ...state, chatRooms: chatRoomsAfterRemoveChatRoom };
+
+        case "SET_CHATROOM_SELECTED":
+            if (action.payload) {
+                const chatRoomsAfterSelectChatRoom = [...state.chatRooms];
+
+                const indexOfChatRoomsSelected = chatRoomsAfterSelectChatRoom.findIndex(
+                    (item) => item._id === action.payload._id
+                );
+                chatRoomsAfterSelectChatRoom[indexOfChatRoomsSelected].unseen_message = 0;
+
+                return {
+                    ...state,
+                    chatRooms: chatRoomsAfterSelectChatRoom,
+                    chatRoomSelected: { ...action.payload, unseen_message: 0 },
+                };
+            }
+
+            return { ...state, chatRoomSelected: action.payload };
 
         case "INCREASE_UNSEND_MESSAGE":
             const messagesAfterIncreaseUnsendMessage = [...state.messages];
