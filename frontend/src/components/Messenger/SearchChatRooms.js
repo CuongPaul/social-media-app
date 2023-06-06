@@ -17,101 +17,32 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import React, { useState, Fragment, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import callApi from "../../api";
+import { UserContext } from "../../App";
 import AvatarIcon from "../UI/AvatarIcon";
-import { UserContext, UIContext, ChatContext } from "../../App";
+import { useChatRoom } from "../../hooks";
 
-const SearchGroups = () => {
+const SearchChatRooms = () => {
     const {
         userState: { currentUser },
     } = useContext(UserContext);
-    const { uiDispatch } = useContext(UIContext);
-    const { chatDispatch } = useContext(ChatContext);
 
     const [isOpen, setIsOpen] = useState(false);
     const [chatRooms, setChatRooms] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
     const [searchValue, setSearchValue] = useState("");
+
+    const { isLoading, handleJoinChatRoom, handleSelectChatRoom, handleSearchChatRooms } =
+        useChatRoom();
 
     const handleClickChatItem = async (chat) => {
         const isMemberOfChat = chat.members.find((item) => item === currentUser._id);
 
         if (isMemberOfChat) {
-            handleSelectChat(chat);
+            handleSelectChatRoom(chat);
         } else {
-            handleJoinChat(chat);
+            handleJoinChatRoom(chat);
         }
-    };
 
-    const handleSelectChat = async (chat) => {
-        setIsLoading(true);
-
-        try {
-            const { data } = await callApi({
-                method: "GET",
-                url: `/message/chat-room/${chat._id}`,
-            });
-            chatDispatch({ type: "SET_MESSAGES", payload: data.rows });
-            chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: chat });
-
-            setIsOpen(false);
-            setIsLoading(false);
-        } catch (err) {
-            setIsLoading(false);
-            uiDispatch({
-                type: "SET_ALERT_MESSAGE",
-                payload: { display: true, color: "error", text: err.message },
-            });
-        }
-    };
-
-    const handleJoinChat = async (chat) => {
-        setIsLoading(true);
-
-        try {
-            const { data: chatRoomData } = await callApi({
-                method: "PUT",
-                url: `/chat-room/join-chat/${chat._id}`,
-            });
-            chatDispatch({ type: "ADD_CHATROOM", payload: chatRoomData });
-            chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: chatRoomData });
-
-            const { data: messagesData } = await callApi({
-                method: "GET",
-                url: `/message/chat-room/${chat._id}`,
-            });
-            chatDispatch({ type: "SET_MESSAGES", payload: messagesData.rows });
-
-            setIsOpen(false);
-            setIsLoading(false);
-        } catch (err) {
-            setIsLoading(false);
-            uiDispatch({
-                type: "SET_ALERT_MESSAGE",
-                payload: { display: true, color: "error", text: err.message },
-            });
-        }
-    };
-
-    const handleSearchGroupsChat = async (name) => {
-        setIsLoading(true);
-
-        try {
-            const { data } = await callApi({
-                method: "GET",
-                query: { name },
-                url: "/chat-room/search",
-            });
-
-            setIsLoading(false);
-            setChatRooms(data.rows);
-        } catch (err) {
-            setIsLoading(false);
-            uiDispatch({
-                type: "SET_ALERT_MESSAGE",
-                payload: { display: true, color: "error", text: err.message },
-            });
-        }
+        setIsOpen(false);
     };
 
     return (
@@ -148,7 +79,8 @@ const SearchGroups = () => {
                             onChange={(e) => setSearchValue(e.target.value)}
                             style={{ flex: 4, width: "100%", marginRight: "16px" }}
                             onKeyPress={(e) =>
-                                e.key === "Enter" && handleSearchGroupsChat(searchValue)
+                                e.key === "Enter" &&
+                                handleSearchChatRooms({ setChatRooms, name: searchValue })
                             }
                             InputProps={{
                                 endAdornment: searchValue && (
@@ -169,8 +101,10 @@ const SearchGroups = () => {
                             color="primary"
                             variant="contained"
                             disabled={isLoading}
-                            onClick={() => handleSearchGroupsChat(searchValue)}
                             style={{ flex: 1, width: "100%", borderRadius: "5px" }}
+                            onClick={() =>
+                                handleSearchChatRooms({ setChatRooms, name: searchValue })
+                            }
                         >
                             Search
                         </Button>
@@ -211,4 +145,4 @@ const SearchGroups = () => {
     );
 };
 
-export default SearchGroups;
+export default SearchChatRooms;

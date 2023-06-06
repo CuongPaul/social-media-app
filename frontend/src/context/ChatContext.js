@@ -86,7 +86,7 @@ export const ChatReducer = (state, action) => {
                 (item) => item._id !== action.payload
             );
 
-            return { ...state, chatRooms: chatRoomsAfterRemoveChatRoom };
+            return { ...state, chatRoomSelected: null, chatRooms: chatRoomsAfterRemoveChatRoom };
 
         case "UPDATE_CHATROOM":
             const chatRoomsAfterUpdateChatRoom = [...state.chatRooms];
@@ -98,8 +98,11 @@ export const ChatReducer = (state, action) => {
 
             return {
                 ...state,
-                chatRoomSelected: action.payload,
                 chatRooms: chatRoomsAfterUpdateChatRoom,
+                chatRoomSelected:
+                    action.payload._id === state.chatRoomSelected?._id
+                        ? action.payload
+                        : state.chatRoomSelected,
             };
 
         case "SET_MESSAGE_SELECTED":

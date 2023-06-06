@@ -32,10 +32,11 @@ const SearchUsers = () => {
         userState: { currentUser, sendedFriendRequests },
     } = useContext(UserContext);
 
+    const [users, setUsers] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
 
-    const { users, setUsers, isLoading, handleSearchUsers } = useSearchUsers();
+    const { isLoading, handleSearchUsers } = useSearchUsers();
     const { handleUnfriend, handleBlockUser, handleUnblockUser } = useUserActions();
     const { handleSendFriendRequest, handleCancelFriendRequest } = useFriendRequest();
 
@@ -99,7 +100,10 @@ const SearchUsers = () => {
                                     </InputAdornment>
                                 ),
                             }}
-                            onKeyPress={(e) => e.key === "Enter" && handleSearchUsers(searchValue)}
+                            onKeyPress={(e) =>
+                                e.key === "Enter" &&
+                                handleSearchUsers({ setUsers, name: searchValue })
+                            }
                         />
                         <Button
                             color="primary"
@@ -111,7 +115,7 @@ const SearchUsers = () => {
                                 marginLeft: "16px",
                                 borderRadius: "10px",
                             }}
-                            onClick={() => handleSearchUsers(searchValue)}
+                            onClick={() => handleSearchUsers({ setUsers, name: searchValue })}
                         >
                             {isLoading ? (
                                 <CircularProgress

@@ -6,10 +6,9 @@ import { UIContext } from "../App";
 const useSearchUsers = () => {
     const { uiDispatch } = useContext(UIContext);
 
-    const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleSearchUsers = async (name) => {
+    const handleSearchUsers = async ({ name, setUsers }) => {
         setIsLoading(true);
 
         try {
@@ -26,7 +25,7 @@ const useSearchUsers = () => {
         }
     };
 
-    return { users, setUsers, isLoading, handleSearchUsers };
+    return { isLoading, handleSearchUsers };
 };
 
 export default useSearchUsers;

@@ -25,10 +25,11 @@ import AvatarIcon from "../../UI/AvatarIcon";
 import { useSearchFriends } from "../../../hooks";
 
 const TagFriends = ({ tagFriends, setTagFriends }) => {
+    const [friends, setFriends] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
 
-    const { friends, isLoading, setFriends, handleSearchFriends } = useSearchFriends();
+    const { isLoading, handleSearchFriends } = useSearchFriends();
 
     const handleClickFriend = (friend) => {
         const isSelected = tagFriends.findIndex((item) => item._id === friend._id);
@@ -46,12 +47,7 @@ const TagFriends = ({ tagFriends, setTagFriends }) => {
                     <FontAwesomeIcon icon={faUserTag} color="rgb(24,119,242)" />
                 </IconButton>
             </Tooltip>
-            <Dialog
-                fullWidth
-                open={isOpen}
-                style={{ marginTop: "50px" }}
-                onClose={() => setIsOpen(false)}
-            >
+            <Dialog fullWidth open={isOpen} onClose={() => setIsOpen(false)}>
                 <CardHeader
                     avatar={
                         <IconButton onClick={() => setIsOpen(false)}>
@@ -89,7 +85,8 @@ const TagFriends = ({ tagFriends, setTagFriends }) => {
                             onChange={(e) => setSearchValue(e.target.value)}
                             style={{ flex: 4, width: "100%", marginRight: "16px" }}
                             onKeyPress={(e) =>
-                                e.key === "Enter" && handleSearchFriends(searchValue)
+                                e.key === "Enter" &&
+                                handleSearchFriends({ setFriends, name: searchValue })
                             }
                             InputProps={{
                                 endAdornment: searchValue && (
@@ -110,7 +107,7 @@ const TagFriends = ({ tagFriends, setTagFriends }) => {
                             color="primary"
                             variant="contained"
                             disabled={isLoading}
-                            onClick={() => handleSearchFriends(searchValue)}
+                            onClick={() => handleSearchFriends({ setFriends, name: searchValue })}
                             style={{ flex: 1, width: "100%", borderRadius: "5px" }}
                         >
                             {isLoading ? (

@@ -26,12 +26,7 @@ const Feelings = ({ feelings, setFeelings }) => {
                     <FontAwesomeIcon icon={faSmile} color="rgb(14,143,37)" />
                 </IconButton>
             </Tooltip>
-            <Dialog
-                fullWidth
-                open={isOpen}
-                style={{ marginTop: "50px" }}
-                onClose={() => setIsOpen(false)}
-            >
+            <Dialog fullWidth open={isOpen} onClose={() => setIsOpen(false)}>
                 <CardHeader
                     avatar={
                         <IconButton onClick={() => setIsOpen(false)}>

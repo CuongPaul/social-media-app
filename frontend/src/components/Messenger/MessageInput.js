@@ -10,7 +10,7 @@ import FilesUpload from "../Post/PostDialog/FilesUpload";
 import FilePreview from "../Post/PostDialog/FilePreview";
 import useSubmitMessage from "../../hooks/useSubmitMessage";
 
-const MessageTextArea = ({ chatRoomId }) => {
+const MessageInput = ({ chatRoomId }) => {
     const {
         uiState: { darkMode },
     } = useContext(UIContext);
@@ -102,24 +102,22 @@ const MessageTextArea = ({ chatRoomId }) => {
                 }}
                 onKeyPress={(e) => {
                     if (e.key === "Enter") {
+                        const argument = {
+                            text,
+                            setText,
+                            chatRoomId,
+                            fileUpload,
+                            handleRemoveFile,
+                        };
+
                         if (messageSelected) {
                             handleUpdateMessage({
-                                text,
-                                setText,
-                                chatRoomId,
-                                fileUpload,
-                                handleRemoveFile,
+                                ...argument,
                                 currentImage: filePreview,
                                 messageId: messageSelected._id,
                             });
                         } else {
-                            handleSendMessage({
-                                text,
-                                setText,
-                                chatRoomId,
-                                fileUpload,
-                                handleRemoveFile,
-                            });
+                            handleSendMessage(argument);
                         }
                     }
                 }}
@@ -134,25 +132,25 @@ const MessageTextArea = ({ chatRoomId }) => {
                 }}
             />
             <IconButton
-                onClick={() =>
-                    messageSelected
-                        ? handleUpdateMessage({
-                              text,
-                              setText,
-                              chatRoomId,
-                              fileUpload,
-                              handleRemoveFile,
-                              currentImage: filePreview,
-                              messageId: messageSelected._id,
-                          })
-                        : handleSendMessage({
-                              text,
-                              setText,
-                              chatRoomId,
-                              fileUpload,
-                              handleRemoveFile,
-                          })
-                }
+                onClick={() => {
+                    const argument = {
+                        text,
+                        setText,
+                        chatRoomId,
+                        fileUpload,
+                        handleRemoveFile,
+                    };
+
+                    if (messageSelected) {
+                        handleUpdateMessage({
+                            ...argument,
+                            currentImage: filePreview,
+                            messageId: messageSelected._id,
+                        });
+                    } else {
+                        handleSendMessage(argument);
+                    }
+                }}
                 style={{
                     marginLeft: "16px",
                     color: "rgb(255,255,255)",
@@ -165,4 +163,4 @@ const MessageTextArea = ({ chatRoomId }) => {
     );
 };
 
-export default MessageTextArea;
+export default MessageInput;

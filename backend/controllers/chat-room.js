@@ -1,3 +1,4 @@
+import redisClient from "../config/redis";
 import { User, ChatRoom, Message, Notification } from "../models";
 
 const changeAdminController = async (req, res) => {
@@ -28,17 +29,27 @@ const changeAdminController = async (req, res) => {
         for (const memberId of members) {
             if (memberId != userId) {
                 let content = `The admin of ${name} group has been updated`;
-
                 if (memberId == new_admin) {
                     content = `You are admin of ${name} group now`;
                 }
 
-                await new Notification({
+                const notification = await new Notification({
                     content,
                     user: memberId,
                     chat_room: chatRoomId,
                     type: "CHATROOM-CHANGE_ADMIN",
                 }).save();
+
+                const sockets = await redisClient.LRANGE(`socket-io:${memberId}`, 0, -1);
+                if (sockets.length) {
+                    sockets.forEach((socketId) => {
+                        req.io.sockets.to(socketId).emit("change-admin-chatroom", {
+                            new_admin,
+                            notification,
+                            chat_room_id: chatRoomId,
+                        });
+                    });
+                }
             }
         }
 
@@ -133,14 +144,33 @@ const createChatRoomController = async (req, res) => {
                 res.populate("members", { _id: 1, name: 1, avatar_image: 1 }).execPopulate()
             );
 
+        const chatRoomData = {
+            admin: userId,
+            _id: chatRoom._id,
+            unseen_message: 0,
+            name: chatRoom.name,
+            members: chatRoom.members,
+            is_public: chatRoom.is_public,
+            avatar_image: chatRoom.avatar_image,
+        };
+
         for (const memberId of membersId) {
             if (memberId != userId) {
-                await new Notification({
+                const notification = await new Notification({
                     user: memberId,
                     chat_room: chatRoom._id,
                     type: "CHATROOM-CREATE",
                     content: `You have been added to the group ${name}`,
                 }).save();
+
+                const sockets = await redisClient.LRANGE(`socket-io:${memberId}`, 0, -1);
+                if (sockets.length) {
+                    sockets.forEach((socketId) => {
+                        req.io.sockets
+                            .to(socketId)
+                            .emit("new-chatroom", { notification, chat_room: chatRoomData });
+                    });
+                }
             }
 
             await User.findByIdAndUpdate(memberId, {
@@ -148,16 +178,8 @@ const createChatRoomController = async (req, res) => {
             });
         }
 
-        res.status(200).json({
-            data: {
-                admin: userId,
-                _id: chatRoom._id,
-                unseen_message: 0,
-                name: chatRoom.name,
-                members: chatRoom.members,
-                is_public: chatRoom.is_public,
-                avatar_image: chatRoom.avatar_image,
-            },
+        return res.status(200).json({
+            data: chatRoomData,
             message: `Group ${name} is created with ${membersId.length} members`,
         });
     } catch (err) {
@@ -185,11 +207,20 @@ const deleteChatRoomController = async (req, res) => {
 
         for (const memberId of members) {
             if (memberId != userId) {
-                await new Notification({
+                const notification = await new Notification({
                     user: memberId,
                     type: "CHATROOM-DELETE",
                     content: `Group ${name} has been deleted`,
                 }).save();
+
+                const sockets = await redisClient.LRANGE(`socket-io:${memberId}`, 0, -1);
+                if (sockets.length) {
+                    sockets.forEach((socketId) => {
+                        req.io.sockets
+                            .to(socketId)
+                            .emit("delete-chatroom", { notification, chat_room_id: chatRoomId });
+                    });
+                }
             }
 
             await User.findByIdAndUpdate(memberId, {
@@ -262,7 +293,7 @@ const searchChatRoomsController = async (req, res) => {
 };
 
 const getChatRoomsByUserController = async (req, res) => {
-    const pageSize = 10;
+    const pageSize = 20;
     const userId = req.user_id;
     const page = parseInt(req.query.page) || 1;
 
@@ -361,27 +392,39 @@ const updateInfoChatRoomController = async (req, res) => {
 
         await chatRoom.updateOne({ name, is_public, avatar_image });
 
+        const chatRoomData = {
+            name,
+            is_public,
+            avatar_image,
+            _id: chatRoom._id,
+            unseen_message: 0,
+            admin: chatRoom.admin,
+            members: chatRoom.members,
+        };
+
         if (name != chatRoomName) {
-            for (const memberId of members) {
+            for (const memberId of members.map((item) => item._id)) {
                 if (memberId != userId) {
-                    await new Notification({
+                    const notification = await new Notification({
                         user: memberId,
                         type: "CHATROOM-UPDATE_NAME",
                         content: `The name of ${chatRoomName} group has been changed to ${name}`,
                     }).save();
+
+                    const sockets = await redisClient.LRANGE(`socket-io:${memberId}`, 0, -1);
+                    if (sockets.length) {
+                        sockets.forEach((socketId) => {
+                            req.io.sockets
+                                .to(socketId)
+                                .emit("update-chatroom", { notification, chat_room: chatRoomData });
+                        });
+                    }
                 }
             }
         }
 
         return res.status(200).json({
-            data: {
-                name,
-                is_public,
-                avatar_image,
-                _id: chatRoom._id,
-                admin: chatRoom.admin,
-                members: chatRoom.members,
-            },
+            data: chatRoomData,
             message: `The name of ${chatRoomName} group has been changed to ${name}`,
         });
     } catch (err) {
@@ -523,6 +566,22 @@ const createChatRoomForTwoPeopleController = async (req, res) => {
             members: chatRoom.members,
             avatar_image: reciver.avatar_image,
         };
+
+        const notification = await new Notification({
+            user: reciver._id,
+            chat_room: chatRoom._id,
+            type: "CHATROOM-CREATE",
+            content: `${reciver.name} have been connected to you in messenger`,
+        }).save();
+
+        const sockets = await redisClient.LRANGE(`socket-io:${reciver._id}`, 0, -1);
+        if (sockets.length) {
+            sockets.forEach((socketId) => {
+                req.io.sockets
+                    .to(socketId)
+                    .emit("new-chatroom", { notification, chat_room: responseData });
+            });
+        }
 
         res.status(200).json({ message: "success", data: responseData });
     } catch (err) {

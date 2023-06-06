@@ -20,90 +20,43 @@ import {
 } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 import { CameraAlt } from "@material-ui/icons";
+import React, { useRef, useState, Fragment } from "react";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useRef, useState, Fragment, useContext } from "react";
 
-import callApi from "../../api";
+import LoadingIcon from "../UI/Loading";
 import AvatarIcon from "../UI/AvatarIcon";
-import { useSearchFriends } from "../../hooks";
-import { UIContext, ChatContext } from "../../App";
+import { useChatRoom, useSearchFriends } from "../../hooks";
 
-const GroupChatCreate = () => {
-    const { uiDispatch } = useContext(UIContext);
-    const { chatDispatch } = useContext(ChatContext);
-
+const ChatRoomCreate = () => {
     const inputRef = useRef(null);
+    const [friends, setFriends] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [isPublic, setIsPublic] = useState(true);
-    const [friendName, setFriendName] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+    const [searchValue, setSearchValue] = useState("");
     const [chatRoomName, setChatRoomName] = useState("");
     const [imagePreview, setImagePreview] = useState("");
     const [imageUpload, setImageUpload] = useState(null);
     const [chatRoomMembers, setChatRoomMembers] = useState([]);
 
-    const { friends, setFriends, handleSearchFriends } = useSearchFriends();
+    const { handleCreateChatRoom, isLoading: isLoadingChatRoom } = useChatRoom();
+    const { handleSearchFriends, isLoading: isLoadingSearchFriend } = useSearchFriends();
 
     const handleChangeImage = (e) => {
         setImageUpload(e.target.files[0]);
 
         const reader = new FileReader();
         reader.readAsDataURL(e.target.files[0]);
-        reader.onload = () => {
-            setImagePreview(reader.result);
-        };
+        reader.onload = () => setImagePreview(reader.result);
     };
 
-    const handleClickFriend = (friend) => {
+    const handleSelectFriend = (friend) => {
         const isSelected = chatRoomMembers.findIndex((item) => item._id === friend._id);
+
         if (isSelected === -1) {
             setChatRoomMembers([...chatRoomMembers, friend]);
         } else {
             setChatRoomMembers(chatRoomMembers.filter((item) => item._id !== friend._id));
-        }
-    };
-
-    const handleCreateGroup = async ({ isPublic, imageUpload, chatRoomName, chatRoomMembers }) => {
-        setIsLoading(true);
-
-        try {
-            let imageUrl = "";
-            if (imageUpload) {
-                const formData = new FormData();
-                formData.append("files", imageUpload);
-                formData.append("folder", "chat-room-avatar");
-
-                const { data } = await callApi({
-                    method: "POST",
-                    data: formData,
-                    url: "/upload/files",
-                });
-
-                imageUrl = data.images[0];
-            }
-
-            const { data } = await callApi({
-                method: "POST",
-                url: "/chat-room",
-                data: {
-                    name: chatRoomName,
-                    is_public: isPublic,
-                    avatar_image: imageUrl,
-                    members: chatRoomMembers,
-                },
-            });
-            chatDispatch({ type: "ADD_CHATROOM", payload: data });
-            chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: data });
-
-            setIsOpen(false);
-            setIsLoading(false);
-        } catch (err) {
-            setIsLoading(true);
-            uiDispatch({
-                type: "SET_ALERT_MESSAGE",
-                payload: { display: true, color: "error", text: err.message },
-            });
         }
     };
 
@@ -132,9 +85,7 @@ const GroupChatCreate = () => {
                 />
                 <CardMedia
                     style={{
-                        width: "100%",
                         display: "flex",
-                        alignItems: "center",
                         marginBottom: "20px",
                         justifyContent: "center",
                     }}
@@ -186,18 +137,20 @@ const GroupChatCreate = () => {
                         <Button
                             color="primary"
                             variant="contained"
-                            disabled={isLoading}
+                            disabled={isLoadingChatRoom}
                             style={{ flex: 1, borderRadius: "5px" }}
-                            onClick={() =>
-                                handleCreateGroup({
+                            onClick={() => {
+                                handleCreateChatRoom({
                                     isPublic,
                                     imageUpload,
                                     chatRoomName,
                                     chatRoomMembers: chatRoomMembers.map((item) => item._id),
-                                })
-                            }
+                                });
+
+                                setIsOpen(false);
+                            }}
                         >
-                            Create
+                            <LoadingIcon text={"Create"} isLoading={isLoadingChatRoom} />
                         </Button>
                     </div>
                     <div style={{ marginTop: "32px" }}>
@@ -205,7 +158,7 @@ const GroupChatCreate = () => {
                             <Chip
                                 key={friend._id}
                                 label={friend.name}
-                                style={{ marginRight: "10px" }}
+                                style={{ margin: "5px" }}
                                 onDelete={() =>
                                     setChatRoomMembers(
                                         chatRoomMembers.filter((item) => item._id !== friend._id)
@@ -216,35 +169,38 @@ const GroupChatCreate = () => {
                     </div>
                     <div style={{ display: "flex", marginTop: "20px" }}>
                         <TextField
-                            value={friendName}
-                            label="Friend name"
                             variant="outlined"
+                            label="Friend name"
+                            value={searchValue}
                             placeholder="Enter friend name"
                             style={{ flex: 4, marginRight: "16px" }}
-                            onChange={(e) => setFriendName(e.target.value)}
+                            onChange={(e) => setSearchValue(e.target.value)}
                             InputProps={{
-                                endAdornment: friendName && (
+                                endAdornment: searchValue && (
                                     <InputAdornment position="end">
                                         <FontAwesomeIcon
                                             icon={faTimes}
                                             onClick={() => {
                                                 setFriends([]);
-                                                setFriendName("");
+                                                setSearchValue("");
                                             }}
                                             style={{ marginRight: "10px", cursor: "pointer" }}
                                         />
                                     </InputAdornment>
                                 ),
                             }}
-                            onKeyPress={(e) => e.key === "Enter" && handleSearchFriends(friendName)}
+                            onKeyPress={(e) =>
+                                e.key === "Enter" &&
+                                handleSearchFriends({ setFriends, name: searchValue })
+                            }
                         />
                         <Button
                             color="primary"
                             variant="contained"
                             style={{ flex: 1, borderRadius: "5px" }}
-                            onClick={() => handleSearchFriends(friendName)}
+                            onClick={() => handleSearchFriends({ setFriends, name: searchValue })}
                         >
-                            Search
+                            <LoadingIcon text={"Search"} isLoading={isLoadingSearchFriend} />
                         </Button>
                     </div>
                     <List style={{ marginTop: friends.length && "15px" }}>
@@ -257,7 +213,7 @@ const GroupChatCreate = () => {
                                     marginBottom: "10px",
                                     background: "rgb(244,245,246)",
                                 }}
-                                onClick={() => handleClickFriend(friend)}
+                                onClick={() => handleSelectFriend(friend)}
                             >
                                 <ListItemIcon>
                                     <AvatarIcon
@@ -287,4 +243,4 @@ const GroupChatCreate = () => {
     );
 };
 
-export default GroupChatCreate;
+export default ChatRoomCreate;

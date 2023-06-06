@@ -20,12 +20,11 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import React, { useState, useEffect, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import callApi from "../../api";
 import AvatarIcon from "../UI/AvatarIcon";
 import { useChatRoom } from "../../hooks";
 import { UIContext, ChatContext, UserContext } from "../../App";
 
-const GroupMembers = ({ isOpen, setIsOpen }) => {
+const ChatRoomMembers = ({ isOpen, setIsOpen }) => {
     const {
         uiState: { darkMode },
     } = useContext(UIContext);
@@ -33,7 +32,6 @@ const GroupMembers = ({ isOpen, setIsOpen }) => {
         userState: { currentUser },
     } = useContext(UserContext);
     const {
-        chatDispatch,
         chatState: { chatRooms, chatRoomSelected },
     } = useContext(ChatContext);
 
@@ -41,7 +39,8 @@ const GroupMembers = ({ isOpen, setIsOpen }) => {
     const [searchValue, setSearchValue] = useState("");
     const [membersSelected, setMembersSelected] = useState([]);
 
-    const { handleRemoveMembers } = useChatRoom();
+    const { handleRemoveMembers, handleSelectChatRoom, handleCreateChatRoomForTwoPeople } =
+        useChatRoom();
 
     const handleSearchMembers = (searchValue) => {
         const regex = new RegExp(searchValue, "i");
@@ -68,29 +67,14 @@ const GroupMembers = ({ isOpen, setIsOpen }) => {
                 );
 
                 if (chatRoom) {
-                    handleClickChat(chatRoom);
+                    handleSelectChatRoom(chatRoom);
                 } else {
-                    handleClickFriend(member);
+                    handleCreateChatRoomForTwoPeople(member._id);
                 }
             }
 
             setIsOpen(false);
         }
-    };
-
-    const handleClickChat = async (chat) => {
-        chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: chat });
-        const { data } = await callApi({ url: `/message/chat-room/${chat._id}`, method: "GET" });
-        chatDispatch({ type: "SET_MESSAGES", payload: data.rows });
-    };
-
-    const handleClickFriend = async (friend) => {
-        const { data } = await callApi({
-            method: "POST",
-            url: `/chat-room/two-people`,
-            data: { reciver: friend._id },
-        });
-        chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: data });
     };
 
     useEffect(() => {
@@ -100,12 +84,7 @@ const GroupMembers = ({ isOpen, setIsOpen }) => {
     }, [chatRoomSelected]);
 
     return (
-        <Dialog
-            fullWidth
-            open={isOpen}
-            style={{ marginTop: "50px" }}
-            onClose={() => setIsOpen(false)}
-        >
+        <Dialog fullWidth open={isOpen} onClose={() => setIsOpen(false)}>
             <CardHeader
                 action={
                     <IconButton onClick={() => setIsOpen(false)}>
@@ -161,10 +140,10 @@ const GroupMembers = ({ isOpen, setIsOpen }) => {
                                 borderRadius: "5px",
                             }}
                             onClick={() =>
-                                handleRemoveMembers(
-                                    chatRoomSelected?._id,
-                                    membersSelected.map((item) => item._id)
-                                )
+                                handleRemoveMembers({
+                                    chatRoomId: chatRoomSelected?._id,
+                                    members: membersSelected.map((item) => item._id),
+                                })
                             }
                         >
                             Remove
@@ -261,4 +240,4 @@ const GroupMembers = ({ isOpen, setIsOpen }) => {
     );
 };
 
-export default GroupMembers;
+export default ChatRoomMembers;

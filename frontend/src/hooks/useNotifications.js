@@ -6,19 +6,44 @@ import { UIContext } from "../App";
 const useNotifications = () => {
     const { uiDispatch } = useContext(UIContext);
 
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleGetNotifications = async (page) => {
+        setIsLoading(true);
+
+        try {
+            const { data } = await callApi({
+                method: "GET",
+                url: "/notification",
+                query: { page: page || 1 },
+            });
+            if (page) {
+                uiDispatch({ type: "ADD_NOTIFICATIONS", payload: data.rows });
+            } else {
+                uiDispatch({ type: "SET_NOTIFICATIONS", payload: data.rows });
+            }
+
+            setIsLoading(false);
+        } catch (err) {
+            setIsLoading(false);
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, color: "error", text: err.message },
+            });
+        }
+    };
 
     const handleReadNotifications = async (notificationId) => {
-        setLoading(true);
+        setIsLoading(true);
 
         try {
             await callApi({ method: "PUT", url: `/notification/read/${notificationId}` });
 
             uiDispatch({ payload: notificationId, type: "READ_NOTIFICATIONS" });
 
-            setLoading(false);
+            setIsLoading(false);
         } catch (err) {
-            setLoading(false);
+            setIsLoading(false);
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -27,16 +52,16 @@ const useNotifications = () => {
     };
 
     const handleReadAllNotifications = async () => {
-        setLoading(true);
+        setIsLoading(true);
 
         try {
             await callApi({ method: "PUT", url: "/notification/read-all" });
 
             uiDispatch({ type: "READ_ALL_NOTIFICATIONS" });
 
-            setLoading(false);
+            setIsLoading(false);
         } catch (err) {
-            setLoading(false);
+            setIsLoading(false);
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -44,7 +69,12 @@ const useNotifications = () => {
         }
     };
 
-    return { loading, handleReadNotifications, handleReadAllNotifications };
+    return {
+        isLoading,
+        handleGetNotifications,
+        handleReadNotifications,
+        handleReadAllNotifications,
+    };
 };
 
 export default useNotifications;

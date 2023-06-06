@@ -1,21 +1,12 @@
 const initialUIState = {
     posts: [],
     darkMode: false,
-    //
-    drawer: false,
-    alert_message: null,
-    loading: false,
-    postModel: false,
     notifications: [],
+    alert_message: null,
 };
 
 const UIReducer = (state, action) => {
     switch (action.type) {
-        case "SET_DARK_MODE":
-            localStorage.setItem("dark_mode", action.payload);
-
-            return { ...state, darkMode: action.payload };
-
         case "SET_POSTS":
             return { ...state, posts: action.payload };
 
@@ -40,6 +31,23 @@ const UIReducer = (state, action) => {
 
             return { ...state, posts: postsAfterDelete };
 
+        case "SET_DARK_MODE":
+            localStorage.setItem("dark_mode", action.payload);
+
+            return { ...state, darkMode: action.payload };
+
+        case "ADD_NOTIFICATION":
+            return { ...state, notifications: [action.payload, ...state.notifications] };
+
+        case "SET_NOTIFICATIONS":
+            return { ...state, notifications: action.payload };
+
+        case "SET_ALERT_MESSAGE":
+            return { ...state, alert_message: action.payload };
+
+        case "ADD_NOTIFICATIONS":
+            return { ...state, notifications: [...state.notifications, ...action.payload] };
+
         case "READ_NOTIFICATIONS":
             const notificationReadIndex = state.notifications.findIndex(
                 (item) => item._id === action.payload
@@ -55,25 +63,6 @@ const UIReducer = (state, action) => {
             notificationsAfterReadAll.forEach((item) => (item.is_read = true));
 
             return { ...state, notifications: notificationsAfterReadAll };
-
-        case "SET_NOTIFICATIONS":
-            return { ...state, notifications: action.payload };
-        //
-
-        case "SET_DRAWER":
-            return { ...state, drawer: action.payload };
-
-        case "SET_ALERT_MESSAGE":
-            return { ...state, alert_message: action.payload };
-
-        case "DISPLAY_POST_DIALOG":
-            return { ...state, postModel: action.payload };
-
-        case "ADD_NOTIFICATION":
-            return { ...state, notifications: [action.payload, ...state.notifications] };
-
-        case "SET_LOADING":
-            return { ...state, loading: action.payload };
 
         default:
             throw new Error(`Action type ${action.type} is undefined`);

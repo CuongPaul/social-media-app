@@ -9,16 +9,12 @@ const useSubmitMessage = () => {
 
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleSendMessage = async ({
-        text,
-        setText,
-        chatRoomId,
-        fileUpload,
-        handleRemoveFile,
-    }) => {
+    const handleSendMessage = async (messageData) => {
         setIsLoading(true);
 
         try {
+            const { text, setText, chatRoomId, fileUpload, handleRemoveFile } = messageData;
+
             let imageUrl = "";
             if (fileUpload) {
                 const formData = new FormData();
@@ -53,18 +49,20 @@ const useSubmitMessage = () => {
         }
     };
 
-    const handleUpdateMessage = async ({
-        text,
-        setText,
-        messageId,
-        chatRoomId,
-        fileUpload,
-        currentImage,
-        handleRemoveFile,
-    }) => {
+    const handleUpdateMessage = async (messageData) => {
         setIsLoading(true);
 
         try {
+            const {
+                text,
+                setText,
+                messageId,
+                chatRoomId,
+                fileUpload,
+                currentImage,
+                handleRemoveFile,
+            } = messageData;
+
             let imageUrl = "";
             if (fileUpload) {
                 const formData = new FormData();

@@ -18,20 +18,19 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import React, { useState, useEffect, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import callApi from "../../api";
+import LoadingIcon from "../UI/Loading";
 import AvatarIcon from "../UI/AvatarIcon";
+import { useChatRoom } from "../../hooks";
 import { UIContext, ChatContext, UserContext } from "../../App";
 
 const ChangeAdmin = ({ isOpen, setIsOpen }) => {
     const {
-        uiDispatch,
         uiState: { darkMode },
     } = useContext(UIContext);
     const {
         userState: { currentUser },
     } = useContext(UserContext);
     const {
-        chatDispatch,
         chatState: { chatRoomSelected },
     } = useContext(ChatContext);
 
@@ -39,33 +38,11 @@ const ChangeAdmin = ({ isOpen, setIsOpen }) => {
     const [searchValue, setSearchValue] = useState("");
     const [memberSelected, setMemberSelected] = useState(null);
 
+    const { isLoading, handleChangeAdmin } = useChatRoom();
+
     const handleSearchMembers = (searchValue) => {
         const regex = new RegExp(searchValue, "i");
         setMembers(chatRoomSelected?.members.filter((item) => regex.test(item.name)));
-    };
-
-    const handleChangeAdmin = async (memberId) => {
-        try {
-            const { message } = await callApi({
-                method: "PUT",
-                data: { new_admin: memberId },
-                url: `/chat-room/change-admin/${chatRoomSelected._id}`,
-            });
-
-            chatDispatch({
-                type: "SET_NEW_ADMIN",
-                payload: { memberId, chatRoomId: chatRoomSelected._id },
-            });
-            uiDispatch({
-                type: "SET_ALERT_MESSAGE",
-                payload: { display: true, text: message, color: "success" },
-            });
-        } catch (err) {
-            uiDispatch({
-                type: "SET_ALERT_MESSAGE",
-                payload: { display: true, color: "error", text: err.message },
-            });
-        }
     };
 
     useEffect(() => {
@@ -75,12 +52,7 @@ const ChangeAdmin = ({ isOpen, setIsOpen }) => {
     }, [chatRoomSelected]);
 
     return (
-        <Dialog
-            fullWidth
-            open={isOpen}
-            style={{ marginTop: "50px" }}
-            onClose={() => setIsOpen(false)}
-        >
+        <Dialog fullWidth open={isOpen} onClose={() => setIsOpen(false)}>
             <CardHeader
                 action={
                     <IconButton onClick={() => setIsOpen(false)}>
@@ -108,7 +80,6 @@ const ChangeAdmin = ({ isOpen, setIsOpen }) => {
                             }
                         }}
                         style={{ flex: 4, width: "100%", marginRight: "16px" }}
-                        onKeyPress={(e) => e.key === "Enter" && handleSearchMembers(searchValue)}
                         InputProps={{
                             endAdornment: searchValue && (
                                 <InputAdornment position="end">
@@ -123,6 +94,7 @@ const ChangeAdmin = ({ isOpen, setIsOpen }) => {
                                 </InputAdornment>
                             ),
                         }}
+                        onKeyPress={(e) => e.key === "Enter" && handleSearchMembers(searchValue)}
                     />
                     <Button
                         color="primary"
@@ -179,10 +151,17 @@ const ChangeAdmin = ({ isOpen, setIsOpen }) => {
                     color="primary"
                     variant="contained"
                     disabled={!Boolean(memberSelected)}
-                    onClick={() => handleChangeAdmin(memberSelected._id)}
+                    onClick={() => {
+                        handleChangeAdmin({
+                            memberId: memberSelected._id,
+                            chatRoomId: chatRoomSelected?._id,
+                        });
+
+                        setIsOpen(false);
+                    }}
                     style={{ width: "100%", borderRadius: "5px", marginBottom: "10px" }}
                 >
-                    Confirm
+                    <LoadingIcon text={"Confirm"} isLoading={isLoading} />
                 </Button>
             </DialogContent>
         </Dialog>

@@ -153,6 +153,12 @@ const UserReducer = (state, action) => {
         case "SET_SENDED_FRIEND_REQUEST":
             return { ...state, sendedFriendRequests: action.payload };
 
+        case "ADD_INCOMMING_FRIEND_REQUEST":
+            return {
+                ...state,
+                incommingFriendRequests: [...state.incommingFriendRequests, action.payload],
+            };
+
         case "ADD_SOCKET_FOR_FRIEND_ONLINE":
             const friendsOnlineAfterAddSocket = [...state.friendsOnline];
             const indexOfFriendOnlineAddedSocket = friendsOnlineAfterAddSocket.findIndex(

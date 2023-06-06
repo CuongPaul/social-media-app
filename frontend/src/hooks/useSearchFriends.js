@@ -6,10 +6,9 @@ import { UIContext } from "../App";
 const useSearchFriends = () => {
     const { uiDispatch } = useContext(UIContext);
 
-    const [friends, setFriends] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleSearchFriends = async (name) => {
+    const handleSearchFriends = async ({ name, setFriends }) => {
         setIsLoading(true);
 
         try {
@@ -30,7 +29,7 @@ const useSearchFriends = () => {
         }
     };
 
-    return { friends, isLoading, setFriends, handleSearchFriends };
+    return { isLoading, handleSearchFriends };
 };
 
 export default useSearchFriends;

@@ -42,7 +42,9 @@ const getMessagesController = async (req, res) => {
             await user.save();
         }
 
-        res.status(200).json({ message: "success", data: { count: "&#8734;", rows: messages } });
+        return res
+            .status(200)
+            .json({ message: "success", data: { count: "&#8734;", rows: messages } });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -75,7 +77,7 @@ const reactMessageController = async (req, res) => {
 
         await react.save();
 
-        res.status(200).json({ message: "success" });
+        return res.status(200).json({ message: "success" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -129,13 +131,8 @@ const createMessageController = async (req, res) => {
                     member.chat_rooms[index].furthest_unseen_message = newMessage._id;
                     await member.save();
                 }
-            }
-        }
 
-        for (const member of members) {
-            if (member._id != userId) {
                 const sockets = await redisClient.LRANGE(`socket-io:${member._id}`, 0, -1);
-
                 if (sockets.length) {
                     sockets.forEach((socketId) => {
                         req.io.sockets.to(socketId).emit("new-message", newMessage);
@@ -144,7 +141,7 @@ const createMessageController = async (req, res) => {
             }
         }
 
-        res.status(200).json({ data: newMessage, message: "success" });
+        return res.status(200).json({ data: newMessage, message: "success" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -168,7 +165,7 @@ const createMessageController = async (req, res) => {
 
 //         await message.remove();
 
-//         res.status(200).json({ message: "success" });
+//         return res.status(200).json({ message: "success" });
 //     } catch (err) {
 //         return res.status(500).json({ error: err.message });
 //     }
@@ -205,7 +202,7 @@ const updateMessagesController = async (req, res) => {
 
         await message.updateOne({ text, image });
 
-        res.status(200).json({
+        return res.status(200).json({
             message: "success",
             data: {
                 text,

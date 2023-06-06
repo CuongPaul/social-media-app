@@ -14,13 +14,13 @@ import {
     ListItemText,
     DialogContent,
     InputAdornment,
-    CircularProgress,
 } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import React, { useState, useEffect, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import LoadingIcon from "../UI/Loading";
 import { ChatContext } from "../../App";
 import AvatarIcon from "../UI/AvatarIcon";
 import { useChatRoom, useSearchFriends } from "../../hooks";
@@ -30,14 +30,16 @@ const AddMembers = ({ isOpen, setIsOpen }) => {
         chatState: { chatRoomSelected },
     } = useContext(ChatContext);
 
+    const [friends, setFriends] = useState([]);
     const [searchValue, setSearchValue] = useState("");
     const [friendsSelected, setFriendsSelected] = useState([]);
 
-    const { handleAddMembers } = useChatRoom();
-    const { friends, isLoading, setFriends, handleSearchFriends } = useSearchFriends();
+    const { handleAddMembers, isLoading: isLoadingChatRoom } = useChatRoom();
+    const { handleSearchFriends, isLoading: isLoadingSearchFriends } = useSearchFriends();
 
     const handleClickFriend = async (friend) => {
         const isSelected = friendsSelected.findIndex((item) => item._id === friend._id);
+
         if (isSelected === -1) {
             setFriendsSelected([...friendsSelected, friend]);
         } else {
@@ -107,14 +109,15 @@ const AddMembers = ({ isOpen, setIsOpen }) => {
                                 minHeight: "56px",
                                 borderRadius: "5px",
                             }}
+                            disabled={isLoadingChatRoom}
                             onClick={() =>
-                                handleAddMembers(
-                                    chatRoomSelected._id,
-                                    friendsSelected.map((item) => item._id)
-                                )
+                                handleAddMembers({
+                                    chatRoomId: chatRoomSelected._id,
+                                    members: friendsSelected.map((item) => item._id),
+                                })
                             }
                         >
-                            Add
+                            <LoadingIcon text={"Add"} isLoading={isLoadingChatRoom} />
                         </Button>
                     </div>
                 ) : null}
@@ -127,7 +130,10 @@ const AddMembers = ({ isOpen, setIsOpen }) => {
                         placeholder="Enter friend name"
                         onChange={(e) => setSearchValue(e.target.value)}
                         style={{ flex: 4, width: "100%", marginRight: "16px" }}
-                        onKeyPress={(e) => e.key === "Enter" && handleSearchFriends(searchValue)}
+                        onKeyPress={(e) =>
+                            e.key === "Enter" &&
+                            handleSearchFriends({ setFriends, name: searchValue })
+                        }
                         InputProps={{
                             endAdornment: searchValue && (
                                 <InputAdornment position="end">
@@ -146,19 +152,11 @@ const AddMembers = ({ isOpen, setIsOpen }) => {
                     <Button
                         color="primary"
                         variant="contained"
-                        disabled={isLoading}
-                        onClick={() => handleSearchFriends(searchValue)}
+                        disabled={isLoadingSearchFriends}
+                        onClick={() => handleSearchFriends({ setFriends, name: searchValue })}
                         style={{ flex: 1, width: "100%", borderRadius: "5px" }}
                     >
-                        {isLoading ? (
-                            <CircularProgress
-                                size={25}
-                                variant="indeterminate"
-                                style={{ color: "#fff" }}
-                            />
-                        ) : (
-                            "Search"
-                        )}
+                        <LoadingIcon text={"Search"} isLoading={isLoadingSearchFriends} />
                     </Button>
                 </div>
                 <List>

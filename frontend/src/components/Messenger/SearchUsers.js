@@ -11,29 +11,28 @@ import {
     ListItemText,
     DialogContent,
     InputAdornment,
-    CircularProgress,
 } from "@material-ui/core";
 import { Close, ArrowForward } from "@material-ui/icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import React, { useState, Fragment, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import callApi from "../../api";
+import LoadingIcon from "../UI/Loading";
+import { ChatContext } from "../../App";
 import AvatarIcon from "../UI/AvatarIcon";
-import { useSearchUsers } from "../../hooks";
-import { UIContext, ChatContext } from "../../App";
+import { useChatRoom, useSearchUsers } from "../../hooks";
 
 const SearchUsers = () => {
     const {
-        chatDispatch,
         chatState: { chatRooms },
     } = useContext(ChatContext);
-    const { uiDispatch } = useContext(UIContext);
 
+    const [users, setUsers] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
 
-    const { users, isLoading, setUsers, handleSearchUsers } = useSearchUsers();
+    const { isLoading, handleSearchUsers } = useSearchUsers();
+    const { handleSelectChatRoom, handleCreateChatRoomForTwoPeople } = useChatRoom();
 
     const handleClickUserItem = async (user) => {
         const chatRoomExisted = chatRooms.find(
@@ -43,47 +42,12 @@ const SearchUsers = () => {
         );
 
         if (chatRoomExisted) {
-            handleSelectChat(chatRoomExisted);
+            handleSelectChatRoom(chatRoomExisted);
         } else {
-            handleCreateChat(user);
+            handleCreateChatRoomForTwoPeople(user._id);
         }
-    };
 
-    const handleSelectChat = async (chat) => {
-        try {
-            const { data } = await callApi({
-                method: "GET",
-                url: `/message/chat-room/${chat._id}`,
-            });
-            chatDispatch({ type: "SET_MESSAGES", payload: data.rows });
-            chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: chat });
-
-            setIsOpen(false);
-        } catch (err) {
-            uiDispatch({
-                type: "SET_ALERT_MESSAGE",
-                payload: { display: true, color: "error", text: err.message },
-            });
-        }
-    };
-
-    const handleCreateChat = async (reciver) => {
-        try {
-            const { data } = await callApi({
-                method: "POST",
-                data: { reciver: reciver._id },
-                url: `/chat-room/two-people`,
-            });
-            chatDispatch({ type: "ADD_CHATROOM", payload: data });
-            chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: data });
-
-            setIsOpen(false);
-        } catch (err) {
-            uiDispatch({
-                type: "SET_ALERT_MESSAGE",
-                payload: { display: true, color: "error", text: err.message },
-            });
-        }
+        setIsOpen(false);
     };
 
     return (
@@ -118,8 +82,11 @@ const SearchUsers = () => {
                             value={searchValue}
                             placeholder="Enter user name"
                             onChange={(e) => setSearchValue(e.target.value)}
+                            onKeyPress={(e) =>
+                                e.key === "Enter" &&
+                                handleSearchUsers({ setUsers, name: searchValue })
+                            }
                             style={{ flex: 4, width: "100%", marginRight: "16px" }}
-                            onKeyPress={(e) => e.key === "Enter" && handleSearchUsers(searchValue)}
                             InputProps={{
                                 endAdornment: searchValue && (
                                     <InputAdornment position="end">
@@ -139,18 +106,10 @@ const SearchUsers = () => {
                             color="primary"
                             variant="contained"
                             disabled={isLoading}
-                            onClick={() => handleSearchUsers(searchValue)}
                             style={{ flex: 1, width: "100%", borderRadius: "5px" }}
+                            onClick={() => handleSearchUsers({ setUsers, name: searchValue })}
                         >
-                            {isLoading ? (
-                                <CircularProgress
-                                    size={25}
-                                    variant="indeterminate"
-                                    style={{ color: "#fff" }}
-                                />
-                            ) : (
-                                "Search"
-                            )}
+                            <LoadingIcon text={"Search"} isLoading={isLoading} />
                         </Button>
                     </div>
                     <List>

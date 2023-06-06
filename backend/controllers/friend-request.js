@@ -1,3 +1,4 @@
+import redisClient from "../config/redis";
 import { User, Notification, FriendRequest } from "../models";
 
 const sendFriendRequestController = async (req, res) => {
@@ -22,12 +23,26 @@ const sendFriendRequestController = async (req, res) => {
                 .json({ message: `You and ${receiver.name} are already friends` });
         }
 
-        const friendRequest = await FriendRequest.findOne({
+        // Check current user send friend request to receiver
+        const friendRequestCreatedByCurrentUser = await FriendRequest.findOne({
             sender: userId,
+            is_accepted: false,
             receiver: receiver_id,
         });
 
-        if (!friendRequest) {
+        // Check reciver send friend request to current user
+        const friendRequestCreatedByReciver = await FriendRequest.findOne({
+            receiver: userId,
+            is_accepted: false,
+            sender: receiver_id,
+        });
+        if (friendRequestCreatedByReciver) {
+            return res
+                .status(201)
+                .json({ message: `${receiver.name} have been sent friend request for you` });
+        }
+
+        if (!friendRequestCreatedByCurrentUser) {
             const newFriendRequest = await new FriendRequest({
                 sender: userId,
                 receiver: receiver_id,
@@ -42,12 +57,22 @@ const sendFriendRequestController = async (req, res) => {
 
             const user = await User.findById(userId);
 
-            await new Notification({
+            const notification = await new Notification({
                 user: receiver_id,
                 type: "FRIEND_REQUEST-SEND",
                 friend_request: newFriendRequest._id,
                 content: `${user.name} has send you friend request`,
             }).save();
+
+            const sockets = await redisClient.LRANGE(`socket-io:${receiver_id}`, 0, -1);
+            if (sockets.length) {
+                sockets.forEach((socketId) => {
+                    req.io.sockets.to(socketId).emit("add-incomming-friend-request", {
+                        notification,
+                        friend_request: newFriendRequest,
+                    });
+                });
+            }
 
             return res
                 .status(200)
@@ -86,11 +111,21 @@ const acceptFriendRequestController = async (req, res) => {
             await User.findByIdAndUpdate(senderId, { $push: { friends: receiverId } });
             await User.findByIdAndUpdate(receiverId, { $push: { friends: senderId } });
 
-            await new Notification({
+            const notification = await new Notification({
                 user: senderId,
                 type: "FRIEND_REQUEST-ACCEPT",
                 content: `${receiverName} has accept friend request`,
             }).save();
+
+            const sockets = await redisClient.LRANGE(`socket-io:${senderId}`, 0, -1);
+            if (sockets.length) {
+                sockets.forEach((socketId) => {
+                    req.io.sockets.to(socketId).emit("accept-friend-request", {
+                        notification,
+                        friend_request_id: friendRequest._id,
+                    });
+                });
+            }
         }
 
         return res.status(200).json({ message: `You and ${senderName} are already friend` });

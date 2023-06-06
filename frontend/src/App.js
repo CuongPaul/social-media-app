@@ -155,13 +155,58 @@ const App = () => {
                 userDispatch({ type: "REMOVE_FRIEND_ONLINE", payload: _id });
             });
 
-            socketIO.current.on("new-message", async (data) => {
+            socketIO.current.on("new-message", (data) => {
                 const { chat_room, updatedAt, ...rest } = data;
 
                 chatDispatch({
                     type: "INCREASE_UNSEND_MESSAGE",
                     payload: { message: rest, chatRoomId: chat_room },
                 });
+            });
+
+            socketIO.current.on("change-admin-chatroom", (data) => {
+                const { new_admin, notification, chat_room_id } = data;
+
+                chatDispatch({
+                    payload: { memberId: new_admin, chatRoomId: chat_room_id },
+                    type: "SET_NEW_ADMIN",
+                });
+                uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
+            });
+
+            socketIO.current.on("new-chatroom", (data) => {
+                const { chat_room, notification } = data;
+
+                chatDispatch({ payload: chat_room, type: "ADD_CHATROOM" });
+                uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
+            });
+
+            socketIO.current.on("delete-chatroom", (data) => {
+                const { notification, chat_room_id } = data;
+
+                uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
+                chatDispatch({ payload: chat_room_id, type: "REMOVE_CHATROOM" });
+            });
+
+            socketIO.current.on("update-chatroom", (data) => {
+                const { chat_room, notification } = data;
+
+                chatDispatch({ payload: chat_room, type: "UPDATE_CHATROOM" });
+                uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
+            });
+
+            socketIO.current.on("add-incomming-friend-request", (data) => {
+                const { notification, friend_request } = data;
+
+                uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
+                userDispatch({ payload: friend_request, type: "ADD_INCOMMING_FRIEND_REQUEST" });
+            });
+
+            socketIO.current.on("accept-friend-request", (data) => {
+                const { notification, friend_request_id } = data;
+
+                uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
+                userDispatch({ payload: friend_request_id, type: "ACCEPT_FRIEND_REQUEST" });
             });
         }
     }, [userState.currentUser?._id]);

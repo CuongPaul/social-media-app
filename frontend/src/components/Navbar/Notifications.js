@@ -13,10 +13,9 @@ import {
 import moment from "moment";
 import { faBell } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState, Fragment, useEffect, useContext } from "react";
 import { Label, Forum, PersonAdd, PlaylistAddCheck } from "@material-ui/icons";
+import React, { useRef, useState, Fragment, useEffect, useContext } from "react";
 
-import callApi from "../../api";
 import { UIContext } from "../../App";
 import { useNotifications } from "../../hooks";
 
@@ -24,8 +23,6 @@ const Subheader = () => {
     const {
         uiState: { darkMode, notifications },
     } = useContext(UIContext);
-
-    const notificationsRead = notifications.filter((item) => item.is_read);
 
     const { handleReadAllNotifications } = useNotifications();
 
@@ -41,7 +38,7 @@ const Subheader = () => {
             }}
         >
             <Typography style={{ fontSize: "20px", fontWeight: "800" }}>Notifications</Typography>
-            {notificationsRead.length < notifications.length && (
+            {notifications.length > notifications.filter((item) => item.is_read).length && (
                 <IconButton onClick={handleReadAllNotifications}>
                     <PlaylistAddCheck />
                 </IconButton>
@@ -52,27 +49,29 @@ const Subheader = () => {
 
 const Notifications = () => {
     const {
-        uiDispatch,
         uiState: { darkMode, notifications },
     } = useContext(UIContext);
 
+    const notificationsScroll = useRef(null);
     const [anchorEl, setAnchorEl] = useState(null);
+    const [notificationsPage, setNotificationsPage] = useState(1);
 
-    const { handleReadNotifications } = useNotifications();
+    const { handleGetNotifications, handleReadNotifications } = useNotifications();
+
+    const handleScrollChatNotifications = async (e) => {
+        const { scrollTop, clientHeight, scrollHeight } = e.target;
+
+        const isBottom = scrollHeight - scrollTop === clientHeight;
+
+        if (isBottom) {
+            handleGetNotifications(notificationsPage + 1);
+
+            setNotificationsPage(notificationsPage + 1);
+        }
+    };
 
     useEffect(() => {
-        (async () => {
-            try {
-                const { data } = await callApi({ method: "GET", url: "/notification" });
-
-                uiDispatch({ type: "SET_NOTIFICATIONS", payload: data.rows });
-            } catch (err) {
-                uiDispatch({
-                    type: "SET_ALERT_MESSAGE",
-                    payload: { text: err.message, display: true, color: "error" },
-                });
-            }
-        })();
+        handleGetNotifications();
     }, []);
 
     return (
@@ -97,8 +96,10 @@ const Notifications = () => {
             <Menu
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
-                style={{ marginTop: "50px" }}
+                ref={notificationsScroll}
                 onClose={() => setAnchorEl(null)}
+                onScroll={handleScrollChatNotifications}
+                style={{ marginTop: "50px", maxHeight: "500px" }}
             >
                 <List subheader={<Subheader />}>
                     {notifications.map((notification) => (

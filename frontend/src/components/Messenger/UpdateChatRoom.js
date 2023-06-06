@@ -13,78 +13,27 @@ import {
 } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 import { CameraAlt } from "@material-ui/icons";
-import React, { useRef, useState, Fragment, useContext } from "react";
+import React, { useRef, useState, Fragment } from "react";
 
-import callApi from "../../api";
+import LoadingIcon from "../UI/Loading";
 import AvatarIcon from "../UI/AvatarIcon";
-import { UIContext, ChatContext } from "../../App";
+import { useChatRoom } from "../../hooks";
 
-const ChatRoomUpdate = ({ isOpen, chatRoom, setIsOpen }) => {
-    const { uiDispatch } = useContext(UIContext);
-    const { chatDispatch } = useContext(ChatContext);
-
+const UpdateChatRoom = ({ isOpen, chatRoom, setIsOpen }) => {
     const inputRef = useRef(null);
-    const [isLoading, setIsLoading] = useState(false);
     const [imageUpload, setImageUpload] = useState(null);
     const [isPublic, setIsPublic] = useState(chatRoom?.is_public);
     const [chatRoomName, setChatRoomName] = useState(chatRoom?.name);
     const [imagePreview, setImagePreview] = useState(chatRoom?.avatar_image);
+
+    const { isLoading, handleUpdateChatRoom } = useChatRoom();
 
     const handleChangeImage = (e) => {
         setImageUpload(e.target.files[0]);
 
         const reader = new FileReader();
         reader.readAsDataURL(e.target.files[0]);
-        reader.onload = () => {
-            setImagePreview(reader.result);
-        };
-    };
-
-    const handleUpdateChatRoom = async ({
-        isPublic,
-        chatRoomId,
-        imageUpload,
-        chatRoomName,
-        currentImage,
-    }) => {
-        setIsLoading(true);
-
-        try {
-            let imageUrl = "";
-            if (imageUpload) {
-                const formData = new FormData();
-                formData.append("files", imageUpload);
-                formData.append("folder", "chat-room-avatar");
-
-                const { data } = await callApi({
-                    data: formData,
-                    method: "POST",
-                    url: "/upload/files",
-                });
-
-                imageUrl = data.images[0];
-            }
-
-            const { data } = await callApi({
-                method: "PUT",
-                data: {
-                    name: chatRoomName,
-                    is_public: isPublic,
-                    avatar_image: imageUrl || currentImage,
-                },
-                url: `/chat-room/update-info/${chatRoomId}`,
-            });
-            chatDispatch({ type: "UPDATE_CHATROOM", payload: data });
-
-            setIsOpen(false);
-            setIsLoading(false);
-        } catch (err) {
-            setIsLoading(true);
-            uiDispatch({
-                type: "SET_ALERT_MESSAGE",
-                payload: { display: true, color: "error", text: err.message },
-            });
-        }
+        reader.onload = () => setImagePreview(reader.result);
     };
 
     return (
@@ -159,17 +108,19 @@ const ChatRoomUpdate = ({ isOpen, chatRoom, setIsOpen }) => {
                         variant="contained"
                         disabled={isLoading}
                         style={{ flex: 1, borderRadius: "5px" }}
-                        onClick={() =>
+                        onClick={() => {
                             handleUpdateChatRoom({
                                 isPublic,
                                 imageUpload,
                                 chatRoomName,
                                 chatRoomId: chatRoom._id,
                                 currentImage: chatRoom.avatar_image,
-                            })
-                        }
+                            });
+
+                            setIsOpen(false);
+                        }}
                     >
-                        Update
+                        <LoadingIcon text={"Update"} isLoading={isLoading} />
                     </Button>
                 </CardContent>
             </Dialog>
@@ -177,4 +128,4 @@ const ChatRoomUpdate = ({ isOpen, chatRoom, setIsOpen }) => {
     );
 };
 
-export default ChatRoomUpdate;
+export default UpdateChatRoom;

@@ -120,7 +120,7 @@ const getCommentsByPostController = async (req, res) => {
 
         const count = await Comment.countDocuments(query);
 
-        res.status(200).json({ message: "success", data: { count, rows: comments } });
+        return res.status(200).json({ message: "success", data: { count, rows: comments } });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
