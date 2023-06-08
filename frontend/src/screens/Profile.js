@@ -4,10 +4,10 @@ import { Tab, Grid, Tabs, Paper, AppBar, Divider } from "@material-ui/core";
 
 import callApi from "../api";
 import Posts from "../components/Post/Posts";
-import { UIContext, UserContext } from "../App";
 import PostBar from "../components/Post/PostBar";
 import Friends from "../components/Profile/Friends";
 import TabPanel from "../components/Profile/TabPanel";
+import { UIContext, UserContext, PostContext } from "../App";
 import ProfileHeader from "../components/Profile/ProfileHeader";
 
 const Profile = ({ userId, conScreen }) => {
@@ -18,25 +18,34 @@ const Profile = ({ userId, conScreen }) => {
     const {
         userState: { currentUser },
     } = useContext(UserContext);
+    const { postDispatch } = useContext(PostContext);
 
     const params = useParams();
     const [tab, setTab] = useState(0);
     const [user, setUser] = useState(null);
 
     useEffect(() => {
+        if (userId === currentUser?._id || params.userId === currentUser?._id) {
+            setUser(currentUser);
+        }
+    }, [currentUser]);
+
+    useEffect(() => {
         (async () => {
             try {
-                const { data: userData } = await callApi({
-                    method: "GET",
-                    url: `/user/${userId ? userId : params.userId}`,
-                });
-                setUser(userData);
+                if (userId !== currentUser?._id || params.userId !== currentUser?._id) {
+                    const { data: userData } = await callApi({
+                        method: "GET",
+                        url: `/user/${userId ? userId : params.userId}`,
+                    });
+                    setUser(userData);
+                }
 
                 const { data: postsData } = await callApi({
                     method: "GET",
                     url: `/post/user/${userId ? userId : params.userId}`,
                 });
-                uiDispatch({ type: "SET_POSTS", payload: postsData.rows });
+                postDispatch({ type: "SET_POSTS", payload: postsData.rows });
             } catch (err) {
                 uiDispatch({
                     type: "SET_ALERT_MESSAGE",

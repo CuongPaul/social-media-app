@@ -1,5 +1,4 @@
 const initialUIState = {
-    posts: [],
     darkMode: false,
     notifications: [],
     alert_message: null,
@@ -7,33 +6,6 @@ const initialUIState = {
 
 const UIReducer = (state, action) => {
     switch (action.type) {
-        case "ADD_POSTS":
-            return { ...state, posts: [...state.posts, ...action.payload] };
-
-        case "SET_POSTS":
-            return { ...state, posts: action.payload };
-
-        case "UPDATE_POST":
-            const postsAfterUpdate = [...state.posts];
-
-            const postUpdatedIndex = postsAfterUpdate.findIndex(
-                (post) => post._id === action.payload._id
-            );
-            postsAfterUpdate[postUpdatedIndex] = action.payload;
-
-            return { ...state, posts: postsAfterUpdate };
-
-        case "CREATE_POST":
-            const postsAfterCreate = [...state.posts];
-            postsAfterCreate.unshift(action.payload);
-
-            return { ...state, posts: postsAfterCreate };
-
-        case "DELETE_POST":
-            const postsAfterDelete = state.posts.filter((post) => post._id !== action.payload);
-
-            return { ...state, posts: postsAfterDelete };
-
         case "SET_DARK_MODE":
             localStorage.setItem("dark_mode", action.payload);
 
@@ -51,7 +23,7 @@ const UIReducer = (state, action) => {
         case "ADD_NOTIFICATIONS":
             return { ...state, notifications: [...state.notifications, ...action.payload] };
 
-        case "READ_NOTIFICATIONS":
+        case "READ_NOTIFICATION":
             const notificationReadIndex = state.notifications.findIndex(
                 (item) => item._id === action.payload
             );

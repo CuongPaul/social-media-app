@@ -1,40 +1,26 @@
 import EmojiPicker from "emoji-picker-react";
 import { SendOutlined } from "@material-ui/icons";
+import React, { useContext, useState } from "react";
 import { faSmile } from "@fortawesome/free-solid-svg-icons";
-import React, { useContext, useState, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Grid, Paper, Avatar, TextField, IconButton, LinearProgress } from "@material-ui/core";
+import { Grid, Paper, TextField, IconButton, LinearProgress } from "@material-ui/core";
 
 import AvatarIcon from "../UI/AvatarIcon";
 import StyledBadge from "../UI/StyledBadge";
 import { UIContext, UserContext } from "../../App";
-import useCreateComment from "../../hooks/useCreateComment";
 import FilePreview from "../Post/PostDialog/FilePreview";
 import FilesUpload from "../Post/PostDialog/FilesUpload";
+import useCreateComment from "../../hooks/useCreateComment";
 
 const CommentTextArea = ({ post }) => {
     const { uiState } = useContext(UIContext);
     const { userState } = useContext(UserContext);
 
-    const fileRef = useRef();
     const [error, setError] = useState("");
     const [showEmoji, setShowEmoji] = useState(false);
     const [commentText, setCommentText] = useState("");
     const [previewImage, setPreviewImage] = useState("");
     const [commentImage, setCommentImage] = useState(null);
-
-    // const handleImageChange = (e) => {
-    //     const formData = new FormData();
-    //     formData.append("files", e.target.files[0]);
-    //     setCommentImage(formData);
-    //     formData.append("folder", "comment");
-
-    //     const reader = new FileReader();
-    //     reader.readAsDataURL(e.target.files[0]);
-    //     reader.onload = () => {
-    //         setPreviewImage(reader.result);
-    //     };
-    // };
 
     const removeFileImage = () => {
         setPreviewImage("");

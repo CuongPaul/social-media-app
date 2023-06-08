@@ -4,7 +4,9 @@ import { Drawer } from "@material-ui/core";
 import { UIContext } from "../App";
 
 const Sidebar = ({ children, anchor = "left", width = "300px" }) => {
-    const { uiState } = useContext(UIContext);
+    const {
+        uiState: { darkMode },
+    } = useContext(UIContext);
 
     return (
         <Drawer
@@ -15,7 +17,7 @@ const Sidebar = ({ children, anchor = "left", width = "300px" }) => {
                     width,
                     border: "none",
                     marginTop: "75px",
-                    backgroundColor: uiState.darkMode ? "rgb(24,25,26)" : "rgb(244,245,246)",
+                    backgroundColor: darkMode ? "rgb(24,25,26)" : "rgb(244,245,246)",
                 },
             }}
         >

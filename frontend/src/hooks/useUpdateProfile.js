@@ -4,9 +4,10 @@ import axios from "axios";
 const url = process.env.REACT_APP_BASE_API_URL;
 
 const useUpdateProfile = () => {
-    const [loading, setLoading] = useState(false);
-    const { userDispatch } = useContext(UserContext);
     const { uiDispatch } = useContext(UIContext);
+    const { userDispatch } = useContext(UserContext);
+
+    const [loading, setLoading] = useState(false);
 
     let token = localStorage.getItem("token");
 

@@ -32,9 +32,11 @@ import { UIContext, UserContext } from "../../../App";
 
 const PostDialog = ({ isOpen, postData, setIsOpen }) => {
     const {
+        uiState: { darkMode },
+    } = useContext(UIContext);
+    const {
         userState: { currentUser },
     } = useContext(UserContext);
-    const { uiState } = useContext(UIContext);
 
     const [text, setText] = useState("");
     const [feelings, setFeelings] = useState("");
@@ -115,7 +117,7 @@ const PostDialog = ({ isOpen, postData, setIsOpen }) => {
                             width: "100%",
                             border: "none",
                             position: "relative",
-                            background: uiState.darkMode ? null : "#fff",
+                            background: darkMode ? null : "#fff",
                         }}
                         placeholder={`What's in your mind, ${currentUser?.name}?`}
                         InputProps={{

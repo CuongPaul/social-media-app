@@ -5,7 +5,7 @@ import { Card, Button, Divider, CardHeader, Typography, CardContent } from "@mat
 import PostAction from "./PostAction";
 import PostFooter from "./PostFooter";
 import SlideImage from "./SlideImage";
-import { UIContext } from "../../App";
+import { UIContext, PostContext } from "../../App";
 import LoadingIcon from "../UI/Loading";
 import AvatarIcon from "../UI/AvatarIcon";
 import PostSubContent from "./PostSubContent";
@@ -13,8 +13,11 @@ import useFetchPost from "../../hooks/useFetchPost";
 
 const Posts = ({ userId }) => {
     const {
-        uiState: { posts, darkMode },
+        uiState: { darkMode },
     } = useContext(UIContext);
+    const {
+        postState: { posts },
+    } = useContext(PostContext);
 
     const [postsPage, postPage] = useState(1);
 

@@ -5,7 +5,7 @@ import { List, Avatar, ListItem, ListItemIcon, ListItemText } from "@material-ui
 import callApi from "../api";
 import Sidebar from "../components/Sidebar";
 import Posts from "../components/Post/Posts";
-import { UIContext, UserContext } from "../App";
+import { UIContext, UserContext, PostContext } from "../App";
 import PostBar from "../components/Post/PostBar";
 import AvatarIcon from "../components/UI/AvatarIcon";
 import FriendsOnlineList from "../components/Friends/FriendsOnlineList";
@@ -17,19 +17,23 @@ const leftSidebarItems = [
 
 const Home = () => {
     const {
+        uiDispatch,
+        uiState: { darkMode },
+    } = useContext(UIContext);
+    const {
+        postDispatch,
+        postState: { posts },
+    } = useContext(PostContext);
+    const {
         userState: { currentUser },
     } = useContext(UserContext);
-    const {
-        uiDispatch,
-        uiState: { posts, darkMode },
-    } = useContext(UIContext);
 
     useEffect(() => {
         (async () => {
             try {
                 const { data } = await callApi({ url: "/post", method: "GET" });
 
-                uiDispatch({ type: "SET_POSTS", payload: data.rows });
+                postDispatch({ type: "SET_POSTS", payload: data.rows });
             } catch (err) {
                 uiDispatch({
                     type: "SET_ALERT_MESSAGE",

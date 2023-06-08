@@ -4,10 +4,10 @@ import { UserContext, UIContext } from "../App";
 const url = process.env.REACT_APP_BASE_API_URL;
 
 const useUpdateProfilePic = ({ avatar_image, cover_pic, history }) => {
-    const [loading, setLoading] = useState(false);
-
-    const { userState, userDispatch } = useContext(UserContext);
     const { uiDispatch } = useContext(UIContext);
+    const { userState, userDispatch } = useContext(UserContext);
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const updateProfilePic = () => {
         let filename = `avatar_image/${userState.currentUser.name}-${Date.now()}-${
@@ -17,10 +17,10 @@ const useUpdateProfilePic = ({ avatar_image, cover_pic, history }) => {
         // uploadTask.on(
         //     "state_changed",
         //     () => {
-        //         setLoading(true);
+        //         setIsLoading(true);
         //     },
         //     (err) => {
-        //         setLoading(false);
+        //         setIsLoading(false);
         //     },
         //     () => {
         //         storage
@@ -40,10 +40,10 @@ const useUpdateProfilePic = ({ avatar_image, cover_pic, history }) => {
         // uploadTask.on(
         //     "state_changed",
         //     () => {
-        //         setLoading(true);
+        //         setIsLoading(true);
         //     },
         //     (err) => {
-        //         setLoading(false);
+        //         setIsLoading(false);
         //     },
         //     () => {
         //         storage
@@ -58,7 +58,7 @@ const useUpdateProfilePic = ({ avatar_image, cover_pic, history }) => {
     };
 
     const saveProfilePic = async (profile_url) => {
-        setLoading(true);
+        setIsLoading(true);
         try {
             let token = JSON.parse(localStorage.getItem("token"));
             const response = await axios.put(
@@ -81,16 +81,16 @@ const useUpdateProfilePic = ({ avatar_image, cover_pic, history }) => {
                 });
                 userDispatch({ type: "UPDATE_USER", payload: response.data.user });
             }
-            setLoading(false);
+            setIsLoading(false);
             history.push("/home");
         } catch (err) {
-            setLoading(false);
+            setIsLoading(false);
             console.log(err);
         }
     };
 
     const saveCoverImage = async (cover_url) => {
-        setLoading(true);
+        setIsLoading(true);
         try {
             let token = localStorage.getItem("token");
             const response = await axios.put(
@@ -113,10 +113,10 @@ const useUpdateProfilePic = ({ avatar_image, cover_pic, history }) => {
                 });
                 userDispatch({ type: "UPDATE_USER", payload: response.data.user });
             }
-            setLoading(false);
+            setIsLoading(false);
             history.push("/home");
         } catch (err) {
-            setLoading(false);
+            setIsLoading(false);
             console.log(err);
         }
     };
@@ -125,7 +125,7 @@ const useUpdateProfilePic = ({ avatar_image, cover_pic, history }) => {
         updateProfilePic,
         updateCoverPic,
 
-        loading,
+        isLoading,
     };
 };
 

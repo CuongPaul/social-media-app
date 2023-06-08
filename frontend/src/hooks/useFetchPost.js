@@ -47,7 +47,7 @@ const useFetchPost = () => {
                 url: `/post/user/${userId}`,
             });
 
-            uiDispatch({ type: "ADD_POSTS", payload: data.rows });
+            postDispatch({ type: "ADD_POSTS", payload: data.rows });
 
             setIsLoading(false);
         } catch (err) {

@@ -1,7 +1,6 @@
 import {
     Menu,
     List,
-    Avatar,
     Button,
     Divider,
     ListItem,
@@ -20,13 +19,11 @@ import { faThumbsUp } from "@fortawesome/free-regular-svg-icons";
 import { faThumbsUp as filledLike } from "@fortawesome/free-solid-svg-icons";
 
 import AvatarIcon from "../UI/AvatarIcon";
-import { PostContext, UserContext, UIContext } from "../../App";
-// import { reactComment, updateComment, deleteComment } from "../../services/CommentService";
+import { UserContext, UIContext } from "../../App";
 
 const Comment = ({ comment }) => {
+    const { uiState } = useContext(UIContext);
     const { userState } = useContext(UserContext);
-    const { uiDispatch, uiState } = useContext(UIContext);
-    const { postState, postDispatch } = useContext(PostContext);
 
     const [error, setError] = useState("");
     const [isOpen, setIsOpen] = useState(null);
@@ -34,15 +31,7 @@ const Comment = ({ comment }) => {
     const [commentText, setCommentText] = useState(comment.text ? comment.text : "");
 
     const handleLikeComment = () => {
-        // reactComment(comment._id).then((res) => {
-        //     if (res.data) {
-        //         postDispatch({ type: "LIKE_UNLIKE_COMMENT", payload: res.data.comment });
-        //         uiDispatch({
-        //             type: "SET_ALERT_MESSAGE",
-        //             payload: { color: "success", text: res.data.message, display: true },
-        //         });
-        //     }
-        // });
+        console.log("ABC");
     };
 
     const isLiked = () => {

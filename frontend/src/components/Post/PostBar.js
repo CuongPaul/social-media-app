@@ -7,9 +7,11 @@ import { UIContext, UserContext } from "../../App";
 
 const PostBar = () => {
     const {
+        uiState: { darkMode },
+    } = useContext(UIContext);
+    const {
         userState: { currentUser },
     } = useContext(UserContext);
-    const { uiState } = useContext(UIContext);
 
     const [isOpenPostDialog, setIsOpenPostDialog] = useState(false);
 
@@ -21,7 +23,7 @@ const PostBar = () => {
                     padding: "20px",
                     maxWidth: "100%",
                     borderRadius: "10px",
-                    backgroundColor: uiState.darkMode && "rgb(36,37,38)",
+                    backgroundColor: darkMode && "rgb(36,37,38)",
                 }}
             >
                 <AvatarIcon text={currentUser?.name} imageUrl={currentUser?.avatar_image} />
@@ -32,7 +34,7 @@ const PostBar = () => {
                             cursor: "pointer",
                             borderRadius: "16px",
                             padding: "10px 20px",
-                            background: uiState.darkMode ? null : "rgb(244,245,246)",
+                            background: darkMode ? null : "rgb(244,245,246)",
                         }}
                         onClick={() => setIsOpenPostDialog(true)}
                     >

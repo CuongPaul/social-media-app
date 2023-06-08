@@ -1,10 +1,11 @@
 import { useState, useContext } from "react";
 
 import callApi from "../api";
-import { UIContext } from "../App";
+import { UIContext, PostContext } from "../App";
 
 const usePostActions = ({ postData, setIsOpen, filesUpload, filesPreview }) => {
     const { uiDispatch } = useContext(UIContext);
+    const { postDispatch } = useContext(PostContext);
 
     const [loading, setLoading] = useState(false);
 
@@ -34,7 +35,7 @@ const usePostActions = ({ postData, setIsOpen, filesUpload, filesPreview }) => {
             });
             setLoading(false);
 
-            uiDispatch({ payload: data, type: "UPDATE_POST" });
+            postDispatch({ payload: data, type: "UPDATE_POST" });
 
             setIsOpen(false);
         } catch (err) {
@@ -53,7 +54,7 @@ const usePostActions = ({ postData, setIsOpen, filesUpload, filesPreview }) => {
             const { message } = await callApi({ method: "DELETE", url: `/post/${postId}` });
             setLoading(false);
 
-            uiDispatch({ payload: postId, type: "DELETE_POST" });
+            postDispatch({ payload: postId, type: "DELETE_POST" });
 
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
@@ -90,7 +91,7 @@ const usePostActions = ({ postData, setIsOpen, filesUpload, filesPreview }) => {
             const { data } = await callApi({ url: "/post", method: "POST", data: formData });
             setLoading(false);
 
-            uiDispatch({ payload: data, type: "CREATE_POST" });
+            postDispatch({ payload: data, type: "CREATE_POST" });
 
             setIsOpen(false);
         } catch (err) {

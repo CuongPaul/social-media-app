@@ -29,19 +29,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Search = ({ placeholder }) => {
-    const { uiState } = useContext(UIContext);
+    const {
+        uiState: { darkMode },
+    } = useContext(UIContext);
 
     const classes = useStyles();
 
     return (
-        <div
-            className={classes.search}
-            style={{ backgroundColor: !uiState.darkMode ? "#F0F2F5" : null }}
-        >
-            <div
-                className={classes.searchIcon}
-                style={{ color: !uiState.darkMode ? "#606770" : null }}
-            >
+        <div className={classes.search} style={{ backgroundColor: !darkMode ? "#F0F2F5" : null }}>
+            <div className={classes.searchIcon} style={{ color: !darkMode ? "#606770" : null }}>
                 <SearchIcon />
             </div>
             <InputBase

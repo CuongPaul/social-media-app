@@ -7,16 +7,15 @@ const url = process.env.REACT_APP_BASE_API_URL;
 const useCreateComment = ({
     post_id,
     commentText,
-    setError,
     setCommentText,
     commentImage,
     removeFileImage,
     setShowEmoji,
 }) => {
-    const [loading, setLoading] = useState(false);
-
-    const { postDispatch } = useContext(PostContext);
     const { uiDispatch } = useContext(UIContext);
+    const { postDispatch } = useContext(PostContext);
+
+    const [loading, setLoading] = useState(false);
 
     const createComment = async (uri) => {
         setLoading(true);

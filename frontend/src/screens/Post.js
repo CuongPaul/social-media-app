@@ -25,7 +25,10 @@ import PostSubContent from "../components/Post/PostSubContent";
 import CommentTextArea from "../components/Comment/CommentTextArea";
 
 const Post = () => {
-    const { uiState, uiDispatch } = useContext(UIContext);
+    const {
+        uiState: { darkMode },
+        uiDispatch,
+    } = useContext(UIContext);
 
     const [post, setPost] = useState(null);
     const [comments, setComments] = useState(null);
@@ -73,7 +76,7 @@ const Post = () => {
                                 width: "100%",
                                 height: "80vh",
                                 position: "sticky",
-                                backgroundColor: uiState.darkMode && "rgb(36,37,38)",
+                                backgroundColor: darkMode && "rgb(36,37,38)",
                             }}
                         >
                             <CardHeader
@@ -112,7 +115,7 @@ const Post = () => {
                         <Paper
                             style={{
                                 padding: "16px",
-                                backgroundColor: uiState.darkMode && "rgb(36,37,38)",
+                                backgroundColor: darkMode && "rgb(36,37,38)",
                             }}
                         >
                             <CommentTextArea post={post} />

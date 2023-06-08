@@ -39,7 +39,7 @@ const useNotifications = () => {
         try {
             await callApi({ method: "PUT", url: `/notification/read/${notificationId}` });
 
-            uiDispatch({ payload: notificationId, type: "READ_NOTIFICATIONS" });
+            uiDispatch({ payload: notificationId, type: "READ_NOTIFICATION" });
 
             setIsLoading(false);
         } catch (err) {

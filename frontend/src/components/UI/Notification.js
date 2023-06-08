@@ -5,7 +5,10 @@ import { Snackbar } from "@material-ui/core";
 import { UIContext } from "../../App";
 
 const Notification = () => {
-    const { uiState, uiDispatch } = useContext(UIContext);
+    const {
+        uiState: { alert_message },
+        uiDispatch,
+    } = useContext(UIContext);
 
     const handleClose = () => {
         uiDispatch({ payload: null, type: "SET_ALERT_MESSAGE" });
@@ -15,12 +18,12 @@ const Notification = () => {
         <Snackbar
             onClose={handleClose}
             autoHideDuration={3000}
-            open={uiState.alert_message.display}
+            open={alert_message.display}
             style={{ color: "#fff", marginTop: 60 }}
             anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
-            <Alert onClose={handleClose} severity={uiState.alert_message.color}>
-                {uiState.alert_message.text}
+            <Alert onClose={handleClose} severity={alert_message.color}>
+                {alert_message.text}
             </Alert>
         </Snackbar>
     );
