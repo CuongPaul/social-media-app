@@ -19,9 +19,9 @@ import React, { useRef, useState, useContext } from "react";
 import { UserContext } from "../../App";
 import LoadingIcon from "../UI/Loading";
 import AvatarIcon from "../UI/AvatarIcon";
-import { useUserActions } from "../../hooks";
+import { useUser } from "../../hooks";
 
-const ProfileHeader = ({ user }) => {
+const ProfileHeader = ({ user, conScreen }) => {
     const {
         userState: { currentUser },
     } = useContext(UserContext);
@@ -33,7 +33,7 @@ const ProfileHeader = ({ user }) => {
     const [imagePreview, setImagePreview] = useState("");
     const [isOpenPreviewImage, setIsOpenPreviewImage] = useState(false);
 
-    const { isLoading, handleUpdateCoverImage, handleUpdateAvatarImage } = useUserActions();
+    const { isLoading, handleUpdateCoverImage, handleUpdateAvatarImage } = useUser();
 
     const handleChangeImage = (e) => {
         setImageUpload(e.target.files[0]);
@@ -65,7 +65,7 @@ const ProfileHeader = ({ user }) => {
     return (
         <div>
             <Grid container alignItems="center" justifyContent="center">
-                <Grid item md={6} xs={12} sm={12}>
+                <Grid item md={conScreen ? 12 : 6} xs={12} sm={12}>
                     <Paper
                         style={{
                             height: "40vh",

@@ -4,7 +4,7 @@ import useSignup from "./useSignup";
 import useChatRoom from "./useChatRoom";
 import useFetchPost from "./useFetchPost";
 import usePostActions from "./usePostActions";
-import useUserActions from "./useUserActions";
+import useUser from "./useUser";
 import useSearchUsers from "./useSearchUsers";
 import useSubmitMessage from "./useSubmitMessage";
 import useSearchFriends from "./useSearchFriends";
@@ -22,7 +22,7 @@ export {
     useSignup,
     useChatRoom,
     useFetchPost,
-    useUserActions,
+    useUser,
     usePostActions,
     useSearchUsers,
     useSubmitMessage,

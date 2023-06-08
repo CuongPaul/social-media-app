@@ -4,7 +4,7 @@ import { Grid, Paper, Button, Typography } from "@material-ui/core";
 
 import { UserContext } from "../../App";
 import AvatarIcon from "../UI/AvatarIcon";
-import { useUserActions, useFriendRequest } from "../../hooks";
+import { useUser, useFriendRequest } from "../../hooks";
 
 const Friends = ({ friends }) => {
     const {
@@ -13,7 +13,7 @@ const Friends = ({ friends }) => {
 
     const history = useHistory();
 
-    const { handleUnfriend, handleBlockUser, handleUnblockUser } = useUserActions();
+    const { handleUnfriend, handleBlockUser, handleUnblockUser } = useUser();
     const { handleSendFriendRequest, handleCancelFriendRequest } = useFriendRequest();
 
     return (

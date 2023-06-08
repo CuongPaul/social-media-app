@@ -29,6 +29,7 @@ const Profile = ({ userId, conScreen }) => {
             setUser(currentUser);
         }
     }, [currentUser]);
+    console.log(conScreen);
 
     useEffect(() => {
         (async () => {
@@ -58,9 +59,9 @@ const Profile = ({ userId, conScreen }) => {
     return (
         <Fragment>
             <Paper>
-                <ProfileHeader user={user} />
+                <ProfileHeader user={user} conScreen={conScreen} />
                 <Grid container justifyContent="center" alignItems="center">
-                    <Grid item xs={12} sm={12} md={6}>
+                    <Grid item xs={12} sm={12} md={conScreen ? 12 : 6}>
                         <Divider />
                         <AppBar
                             elevation={0}
@@ -83,7 +84,7 @@ const Profile = ({ userId, conScreen }) => {
                 <Grid item xs={12} sm={12} md={conScreen ? 12 : 8}>
                     <TabPanel id={0} index={tab}>
                         <Grid container justifyContent="center" style={{ marginTop: "25px" }}>
-                            <Grid item md={8} xs={12} sm={12}>
+                            <Grid item md={conScreen ? 12 : 8} xs={12} sm={12}>
                                 {user?._id === currentUser?._id && <PostBar />}
                                 <Posts userId={userId ? userId : params.userId} />
                             </Grid>

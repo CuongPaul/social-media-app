@@ -17,7 +17,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 
 import AvatarIcon from "../UI/AvatarIcon";
-import { useUserActions } from "../../hooks";
+import { useUser } from "../../hooks";
 import { UIContext, UserContext } from "../../App";
 
 const ProfileItem = () => {
@@ -83,7 +83,7 @@ const DarkModeItem = () => {
 };
 
 const SignoutItem = () => {
-    const { handleSignout } = useUserActions();
+    const { handleSignout } = useUser();
 
     return (
         <ListItem button onClick={handleSignout}>

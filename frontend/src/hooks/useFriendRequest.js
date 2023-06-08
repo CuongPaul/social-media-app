@@ -7,10 +7,10 @@ const useFriendRequest = () => {
     const { uiDispatch } = useContext(UIContext);
     const { userDispatch } = useContext(UserContext);
 
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSendFriendRequest = async (userId) => {
-        setLoading(true);
+        setIsLoading(true);
 
         try {
             const { data, message } = await callApi({
@@ -18,7 +18,7 @@ const useFriendRequest = () => {
                 url: "/friend-request",
                 data: { receiver_id: userId },
             });
-            setLoading(false);
+            setIsLoading(false);
 
             if (data) {
                 userDispatch({ type: "SEND_FRIEND_REQUEST", payload: data });
@@ -29,7 +29,7 @@ const useFriendRequest = () => {
                 payload: { display: true, text: message, color: "success" },
             });
         } catch (err) {
-            setLoading(false);
+            setIsLoading(false);
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -38,14 +38,14 @@ const useFriendRequest = () => {
     };
 
     const handleAcceptFriendRequest = async (request) => {
-        setLoading(true);
+        setIsLoading(true);
 
         try {
             const { message } = await callApi({
                 method: "PUT",
                 url: `/friend-request/${request._id}`,
             });
-            setLoading(false);
+            setIsLoading(false);
 
             userDispatch({ type: "ADD_FRIEND", payload: request.sender });
             userDispatch({ type: "ACCEPT_FRIEND_REQUEST", payload: request._id });
@@ -55,7 +55,7 @@ const useFriendRequest = () => {
                 payload: { display: true, text: message, color: "success" },
             });
         } catch (err) {
-            setLoading(false);
+            setIsLoading(false);
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -64,14 +64,14 @@ const useFriendRequest = () => {
     };
 
     const handleCancelFriendRequest = async (requestId) => {
-        setLoading(true);
+        setIsLoading(true);
 
         try {
             const { message } = await callApi({
                 method: "DELETE",
                 url: `/friend-request/${requestId}`,
             });
-            setLoading(false);
+            setIsLoading(false);
 
             userDispatch({ type: "CANCEL_FRIEND_REQUEST", payload: requestId });
 
@@ -80,7 +80,7 @@ const useFriendRequest = () => {
                 payload: { display: true, text: message, color: "success" },
             });
         } catch (err) {
-            setLoading(false);
+            setIsLoading(false);
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -89,14 +89,14 @@ const useFriendRequest = () => {
     };
 
     const handleDeclineFriendRequest = async (requestId) => {
-        setLoading(true);
+        setIsLoading(true);
 
         try {
             const { message } = await callApi({
                 method: "DELETE",
                 url: `/friend-request/${requestId}`,
             });
-            setLoading(false);
+            setIsLoading(false);
 
             userDispatch({ type: "DECLINE_FRIEND_REQUEST", payload: requestId });
 
@@ -105,7 +105,7 @@ const useFriendRequest = () => {
                 payload: { display: true, text: message, color: "success" },
             });
         } catch (err) {
-            setLoading(false);
+            setIsLoading(false);
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -114,7 +114,7 @@ const useFriendRequest = () => {
     };
 
     return {
-        loading,
+        isLoading,
         handleSendFriendRequest,
         handleAcceptFriendRequest,
         handleCancelFriendRequest,

@@ -22,7 +22,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import AvatarIcon from "../UI/AvatarIcon";
 import { UIContext, UserContext } from "../../App";
-import { useSearchUsers, useUserActions, useFriendRequest } from "../../hooks";
+import { useSearchUsers, useUser, useFriendRequest } from "../../hooks";
 
 const SearchUsers = () => {
     const {
@@ -37,7 +37,7 @@ const SearchUsers = () => {
     const [searchValue, setSearchValue] = useState("");
 
     const { isLoading, handleSearchUsers } = useSearchUsers();
-    const { handleUnfriend, handleBlockUser, handleUnblockUser } = useUserActions();
+    const { handleUnfriend, handleBlockUser, handleUnblockUser } = useUser();
     const { handleSendFriendRequest, handleCancelFriendRequest } = useFriendRequest();
 
     return (

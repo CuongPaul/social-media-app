@@ -3,7 +3,7 @@ import { useState, useContext } from "react";
 import callApi from "../api";
 import { UIContext, UserContext } from "../App";
 
-const useUserActions = () => {
+const useUser = () => {
     const { socketIO, uiDispatch } = useContext(UIContext);
     const { userState, userDispatch } = useContext(UserContext);
 
@@ -167,4 +167,4 @@ const useUserActions = () => {
     };
 };
 
-export default useUserActions;
+export default useUser;
