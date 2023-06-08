@@ -347,6 +347,8 @@ const getChatRoomsByUserController = async (req, res) => {
 
         const count = await ChatRoom.countDocuments(query);
 
+        result.sort((a, b) => b.unseen_message - a.unseen_message);
+
         return res.status(200).json({ message: "success", data: { count, rows: result } });
     } catch (err) {
         return res.status(500).json({ error: err.message });

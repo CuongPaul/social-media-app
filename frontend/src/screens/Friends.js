@@ -15,14 +15,14 @@ import { UserContext } from "../App";
 import Profile from "../screens/Profile";
 import Sidebar from "../components/Sidebar";
 import User from "../components/Friends/User";
-import { useUserActions, useFriendRequestAction } from "../hooks";
+import { useUserActions, useFriendRequest } from "../hooks";
 
 const Friends = () => {
     const {
         userState: { currentUser, sendedFriendRequests, incommingFriendRequests },
     } = useContext(UserContext);
 
-    const [selectedUser, setSelectedUser] = useState(null);
+    const [userSelected, setSelectedUser] = useState(null);
     const [usersRecommend, setUsersRecommend] = useState([]);
 
     const {
@@ -30,7 +30,7 @@ const Friends = () => {
         handleAcceptFriendRequest,
         handleCancelFriendRequest,
         handleDeclineFriendRequest,
-    } = useFriendRequestAction();
+    } = useFriendRequest();
     const { handleBlockUser, handleUnblockUser } = useUserActions();
 
     const isFriendRequest = (user) => {
@@ -51,165 +51,155 @@ const Friends = () => {
     return (
         <Grid container>
             <Grid item md={3}>
-                <Sidebar width="350px">
-                    <div style={{ overflow: "auto", maxHeight: "250px", overflowX: "hidden" }}>
-                        <List>
-                            <ListSubheader>Sended friend reques</ListSubheader>
-                            {sendedFriendRequests.map((request) => (
-                                <ListItem key={request._id}>
-                                    <User user={request.receiver} setSelectedUser={setSelectedUser}>
-                                        <CardActions
+                <div style={{ overflow: "auto", maxHeight: "250px", overflowX: "hidden" }}>
+                    <List>
+                        <ListSubheader>Sended friend reques</ListSubheader>
+                        {sendedFriendRequests.map((request) => (
+                            <ListItem key={request._id}>
+                                <User user={request.receiver} setSelectedUser={setSelectedUser}>
+                                    <CardActions
+                                        style={{
+                                            padding: "0px",
+                                            marginLeft: "16px",
+                                        }}
+                                    >
+                                        <Button
+                                            variant="contained"
                                             style={{
-                                                padding: "0px",
-                                                marginLeft: "16px",
+                                                color: "white",
+                                                minWidth: "80px",
+                                                fontSize: "10px",
+                                                background: "rgb(255,193,7)",
                                             }}
+                                            onClick={() => handleCancelFriendRequest(request._id)}
                                         >
-                                            <Button
-                                                variant="contained"
-                                                style={{
-                                                    color: "white",
-                                                    minWidth: "80px",
-                                                    fontSize: "10px",
-                                                    background: "rgb(255,193,7)",
-                                                }}
-                                                onClick={() =>
-                                                    handleCancelFriendRequest(request._id)
-                                                }
-                                            >
-                                                Cancel
-                                            </Button>
-                                        </CardActions>
-                                    </User>
-                                </ListItem>
-                            ))}
-                        </List>
-                    </div>
-                    <div style={{ overflow: "auto", maxHeight: "250px", overflowX: "hidden" }}>
-                        <List>
-                            <ListSubheader>Incomming User Requests</ListSubheader>
-                            {incommingFriendRequests?.map((request) => (
-                                <ListItem key={request._id}>
-                                    <User user={request.sender} setSelectedUser={setSelectedUser}>
-                                        <CardActions
+                                            Cancel
+                                        </Button>
+                                    </CardActions>
+                                </User>
+                            </ListItem>
+                        ))}
+                    </List>
+                </div>
+                <div style={{ overflow: "auto", maxHeight: "250px", overflowX: "hidden" }}>
+                    <List>
+                        <ListSubheader>Incomming User Requests</ListSubheader>
+                        {incommingFriendRequests?.map((request) => (
+                            <ListItem key={request._id}>
+                                <User user={request.sender} setSelectedUser={setSelectedUser}>
+                                    <CardActions
+                                        style={{
+                                            padding: "0px",
+                                            display: "flex",
+                                            marginLeft: "16px",
+                                            flexDirection: "column",
+                                        }}
+                                    >
+                                        <Button
+                                            variant="contained"
                                             style={{
-                                                padding: "0px",
-                                                display: "flex",
-                                                marginLeft: "16px",
-                                                flexDirection: "column",
+                                                color: "white",
+                                                minWidth: "80px",
+                                                fontSize: "10px",
+                                                marginLeft: "0px",
+                                                background: "rgb(46,139,87)",
                                             }}
+                                            onClick={() => handleAcceptFriendRequest(request)}
                                         >
-                                            <Button
-                                                variant="contained"
+                                            Accept
+                                        </Button>
+                                        <Button
+                                            variant="contained"
+                                            style={{
+                                                color: "white",
+                                                marginTop: "5px",
+                                                minWidth: "80px",
+                                                fontSize: "10px",
+                                                marginLeft: "0px",
+                                                background: "rgb(108,117,125)",
+                                            }}
+                                            onClick={() => handleDeclineFriendRequest(request._id)}
+                                        >
+                                            Decline
+                                        </Button>
+                                    </CardActions>
+                                </User>
+                            </ListItem>
+                        ))}
+                    </List>
+                </div>
+                <div style={{ overflow: "auto", maxHeight: "250px", overflowX: "hidden" }}>
+                    <List>
+                        <ListSubheader>People you may know</ListSubheader>
+                        {usersRecommend?.map(
+                            (user) =>
+                                isFriendRequest(user) && (
+                                    <ListItem key={user._id}>
+                                        <User user={user} setSelectedUser={setSelectedUser}>
+                                            <CardActions
                                                 style={{
-                                                    color: "white",
-                                                    minWidth: "80px",
-                                                    fontSize: "10px",
-                                                    marginLeft: "0px",
-                                                    background: "rgb(46,139,87)",
+                                                    padding: "0px",
+                                                    display: "flex",
+                                                    marginLeft: "16px",
+                                                    flexDirection: "column",
                                                 }}
-                                                onClick={() => handleAcceptFriendRequest(request)}
                                             >
-                                                Accept
-                                            </Button>
-                                            <Button
-                                                variant="contained"
-                                                style={{
-                                                    color: "white",
-                                                    marginTop: "5px",
-                                                    minWidth: "80px",
-                                                    fontSize: "10px",
-                                                    marginLeft: "0px",
-                                                    background: "rgb(108,117,125)",
-                                                }}
-                                                onClick={() =>
-                                                    handleDeclineFriendRequest(request._id)
-                                                }
-                                            >
-                                                Decline
-                                            </Button>
-                                        </CardActions>
-                                    </User>
-                                </ListItem>
-                            ))}
-                        </List>
-                    </div>
-                    <div style={{ overflow: "auto", maxHeight: "250px", overflowX: "hidden" }}>
-                        <List>
-                            <ListSubheader>People you may know</ListSubheader>
-                            {usersRecommend?.map(
-                                (user) =>
-                                    isFriendRequest(user) && (
-                                        <ListItem key={user._id}>
-                                            <User user={user} setSelectedUser={setSelectedUser}>
-                                                <CardActions
+                                                <Button
+                                                    variant="contained"
                                                     style={{
-                                                        padding: "0px",
-                                                        display: "flex",
-                                                        marginLeft: "16px",
-                                                        flexDirection: "column",
+                                                        color: "white",
+                                                        minWidth: "80px",
+                                                        fontSize: "10px",
+                                                        background: "rgb(1,133,243)",
                                                     }}
+                                                    onClick={() =>
+                                                        handleSendFriendRequest(user._id)
+                                                    }
                                                 >
+                                                    Add
+                                                </Button>
+                                                {currentUser?.block_users.includes(user._id) ? (
                                                     <Button
                                                         variant="contained"
                                                         style={{
                                                             color: "white",
+                                                            marginTop: "5px",
                                                             minWidth: "80px",
                                                             fontSize: "10px",
-                                                            background: "rgb(1,133,243)",
+                                                            marginLeft: "0px",
+                                                            background: "rgb(23,162,184)",
                                                         }}
-                                                        onClick={() =>
-                                                            handleSendFriendRequest(user._id)
-                                                        }
+                                                        onClick={() => handleUnblockUser(user._id)}
                                                     >
-                                                        Add
+                                                        Unblock
                                                     </Button>
-                                                    {currentUser?.block_users.includes(user._id) ? (
-                                                        <Button
-                                                            variant="contained"
-                                                            style={{
-                                                                color: "white",
-                                                                marginTop: "5px",
-                                                                minWidth: "80px",
-                                                                fontSize: "10px",
-                                                                marginLeft: "0px",
-                                                                background: "rgb(23,162,184)",
-                                                            }}
-                                                            onClick={() =>
-                                                                handleUnblockUser(user._id)
-                                                            }
-                                                        >
-                                                            Unblock
-                                                        </Button>
-                                                    ) : (
-                                                        <Button
-                                                            variant="contained"
-                                                            style={{
-                                                                color: "white",
-                                                                marginTop: "5px",
-                                                                minWidth: "80px",
-                                                                fontSize: "10px",
-                                                                marginLeft: "0px",
-                                                                background: "rgb(220,53,69)",
-                                                            }}
-                                                            onClick={() =>
-                                                                handleBlockUser(user._id)
-                                                            }
-                                                        >
-                                                            Block
-                                                        </Button>
-                                                    )}
-                                                </CardActions>
-                                            </User>
-                                        </ListItem>
-                                    )
-                            )}
-                        </List>
-                    </div>
-                </Sidebar>
+                                                ) : (
+                                                    <Button
+                                                        variant="contained"
+                                                        style={{
+                                                            color: "white",
+                                                            marginTop: "5px",
+                                                            minWidth: "80px",
+                                                            fontSize: "10px",
+                                                            marginLeft: "0px",
+                                                            background: "rgb(220,53,69)",
+                                                        }}
+                                                        onClick={() => handleBlockUser(user._id)}
+                                                    >
+                                                        Block
+                                                    </Button>
+                                                )}
+                                            </CardActions>
+                                        </User>
+                                    </ListItem>
+                                )
+                        )}
+                    </List>
+                </div>
             </Grid>
             <Grid item md={8} style={{ margin: "auto" }}>
-                {selectedUser ? (
-                    <Profile conScreen userData={selectedUser} />
+                {userSelected ? (
+                    <Profile conScreen userId={userSelected._id} />
                 ) : (
                     <div
                         style={{

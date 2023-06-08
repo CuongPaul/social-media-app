@@ -148,6 +148,8 @@ export const ChatReducer = (state, action) => {
                     .unseen_message++;
             }
 
+            chatRoomsAfterIncreaseUnsendMessage.sort((a, b) => b.unseen_message - a.unseen_message);
+
             return {
                 ...state,
                 messages: messagesAfterIncreaseUnsendMessage,

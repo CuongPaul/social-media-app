@@ -7,6 +7,9 @@ const initialUIState = {
 
 const UIReducer = (state, action) => {
     switch (action.type) {
+        case "ADD_POSTS":
+            return { ...state, posts: [...state.posts, ...action.payload] };
+
         case "SET_POSTS":
             return { ...state, posts: action.payload };
 

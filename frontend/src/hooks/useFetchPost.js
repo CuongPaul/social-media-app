@@ -2,16 +2,15 @@ import { useState, useContext } from "react";
 
 import callApi from "../api";
 import { UIContext, PostContext } from "../App";
-// import { getAllPosts } from "../services/PostServices";
 
 const useFetchPost = () => {
     const { uiDispatch } = useContext(UIContext);
-    const { postState, postDispatch } = useContext(PostContext);
+    const { postDispatch } = useContext(PostContext);
 
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const fetchComments = async (post_id) => {
-        setLoading(true);
+        setIsLoading(true);
 
         try {
             const { data } = await callApi({
@@ -19,18 +18,18 @@ const useFetchPost = () => {
                 url: "/comment",
                 query: { post_id: post_id },
             });
-
-            setLoading(false);
             postDispatch({
                 type: "COMMENT_PAGINATION",
                 payload: {
                     currentPage: 1,
-                    totalPage: data.count,
                     comments: data.rows,
+                    totalPage: data.count,
                 },
             });
+
+            setIsLoading(false);
         } catch (err) {
-            setLoading(false);
+            setIsLoading(false);
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -38,45 +37,32 @@ const useFetchPost = () => {
         }
     };
 
-    const fetchPosts = async () => {
-        if (postState.postPagination.currentPage > postState.postPagination.totalPage) {
-            return;
-        } else {
-            setLoading(true);
-            try {
-                // const { data } = await getAllPosts(postState.postPagination.currentPage);
+    const handleGetPosts = async (page, userId) => {
+        setIsLoading(true);
 
-                setLoading(false);
+        try {
+            const { data } = await callApi({
+                method: "GET",
+                query: { page },
+                url: `/post/user/${userId}`,
+            });
 
-                // if (data) {
-                //     postDispatch({
-                //         type: "POST_PAGINATION",
-                //         payload: {
-                //             currentPage: data.pagination.currentPage + 1,
-                //             totalPage: data.pagination.totalPage,
-                //             posts: data.posts,
-                //         },
-                //     });
-                // }
-            } catch (err) {
-                setLoading(false);
+            uiDispatch({ type: "ADD_POSTS", payload: data.rows });
 
-                uiDispatch({
-                    type: "SET_ALERT_MESSAGE",
-                    payload: {
-                        text: err.message,
-                        display: true,
-                        color: "error",
-                    },
-                });
-            }
+            setIsLoading(false);
+        } catch (err) {
+            setIsLoading(false);
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, color: "error", text: err.message },
+            });
         }
     };
 
     return {
-        fetchPosts,
+        handleGetPosts,
         fetchComments,
-        loading,
+        isLoading,
     };
 };
 

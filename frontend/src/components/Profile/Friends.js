@@ -17,7 +17,7 @@ const Friends = ({ friends }) => {
     const { handleSendFriendRequest, handleCancelFriendRequest } = useFriendRequest();
 
     return (
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex", justifyContent: "center" }}>
             {friends.map((friend) => {
                 const mutualFriends = currentUser?.friends.filter((item) =>
                     friend.friends.includes(item._id)

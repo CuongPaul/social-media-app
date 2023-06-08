@@ -12,6 +12,7 @@ const AvatarIcon = ({ variant, imageUrl, text = "?", size = "40px", fontSize = "
                 backgroundColor: generateColor(text),
                 width: variant === "square" && imageUrl ? "100%" : size,
                 height: variant === "square" && imageUrl ? "100%" : size,
+                border: `${parseInt(size.slice(0, -2)) / 34}px solid rgb(255 255 255)`,
             }}
         >
             {imageUrl ? (

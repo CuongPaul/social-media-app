@@ -1,40 +1,55 @@
 import { useParams } from "react-router-dom";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, Fragment, useEffect, useContext } from "react";
 import { Tab, Grid, Tabs, Paper, AppBar, Divider } from "@material-ui/core";
 
 import callApi from "../api";
-import { UIContext } from "../App";
+import Posts from "../components/Post/Posts";
+import { UIContext, UserContext } from "../App";
+import PostBar from "../components/Post/PostBar";
 import Friends from "../components/Profile/Friends";
 import TabPanel from "../components/Profile/TabPanel";
 import ProfileHeader from "../components/Profile/ProfileHeader";
-import ProfileTimeline from "../components/Profile/ProfileTimeline";
 
-const Profile = ({ userData, conScreen }) => {
-    const { uiState } = useContext(UIContext);
+const Profile = ({ userId, conScreen }) => {
+    const {
+        uiDispatch,
+        uiState: { darkMode },
+    } = useContext(UIContext);
+    const {
+        userState: { currentUser },
+    } = useContext(UserContext);
 
     const params = useParams();
-
     const [tab, setTab] = useState(0);
     const [user, setUser] = useState(null);
 
     useEffect(() => {
         (async () => {
-            const abc = userData ? userData._id : params.userId;
-            const { data } = await callApi({ url: `/user/${abc}`, method: "GET" });
+            try {
+                const { data: userData } = await callApi({
+                    method: "GET",
+                    url: `/user/${userId ? userId : params.userId}`,
+                });
+                setUser(userData);
 
-            setUser(data);
+                const { data: postsData } = await callApi({
+                    method: "GET",
+                    url: `/post/user/${userId ? userId : params.userId}`,
+                });
+                uiDispatch({ type: "SET_POSTS", payload: postsData.rows });
+            } catch (err) {
+                uiDispatch({
+                    type: "SET_ALERT_MESSAGE",
+                    payload: { display: true, color: "error", text: err.message },
+                });
+            }
         })();
-    }, [userData, params.userId]);
+    }, [userId, params.userId]);
 
     return (
-        <div style={{ minHeight: "100vh" }}>
-            <Paper
-                style={{
-                    width: "100%",
-                    backgroundColor: uiState.darkMode && "rgb(36,37,38)",
-                }}
-            >
-                {user && <ProfileHeader user={user} />}
+        <Fragment>
+            <Paper>
+                <ProfileHeader user={user} />
                 <Grid container justifyContent="center" alignItems="center">
                     <Grid item xs={12} sm={12} md={6}>
                         <Divider />
@@ -43,11 +58,11 @@ const Profile = ({ userData, conScreen }) => {
                             position="static"
                             style={{
                                 alignItems: "center",
-                                color: uiState.darkMode ? "rgb(255,255,255)" : "rgb(0,0,0)",
-                                background: uiState.darkMode ? "rgb(36,37,38)" : "rgb(255,255,255)",
+                                color: darkMode ? "rgb(255,255,255)" : "rgb(0,0,0)",
+                                background: darkMode ? "rgb(36,37,38)" : "rgb(255,255,255)",
                             }}
                         >
-                            <Tabs value={tab} onChange={(_e, newValue) => setTab(newValue)}>
+                            <Tabs value={tab} onChange={(_e, value) => setTab(value)}>
                                 <Tab label="Timeline" />
                                 <Tab label="Friends" />
                             </Tabs>
@@ -57,17 +72,20 @@ const Profile = ({ userData, conScreen }) => {
             </Paper>
             <Grid container justifyContent="center">
                 <Grid item xs={12} sm={12} md={conScreen ? 12 : 8}>
-                    {user && (
-                        <TabPanel id={0} index={tab}>
-                            <ProfileTimeline user={user} />
-                        </TabPanel>
-                    )}
+                    <TabPanel id={0} index={tab}>
+                        <Grid container justifyContent="center" style={{ marginTop: "25px" }}>
+                            <Grid item md={8} xs={12} sm={12}>
+                                {user?._id === currentUser?._id && <PostBar />}
+                                <Posts userId={userId ? userId : params.userId} />
+                            </Grid>
+                        </Grid>
+                    </TabPanel>
                     <TabPanel id={1} index={tab}>
                         <Friends friends={user?.friends} />
                     </TabPanel>
                 </Grid>
             </Grid>
-        </div>
+        </Fragment>
     );
 };
 

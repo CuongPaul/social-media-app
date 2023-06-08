@@ -58,15 +58,14 @@ const Notifications = () => {
 
     const { handleGetNotifications, handleReadNotifications } = useNotifications();
 
-    const handleScrollChatNotifications = async (e) => {
+    const handleScrollNotifications = async (e) => {
         const { scrollTop, clientHeight, scrollHeight } = e.target;
 
         const isBottom = scrollHeight - scrollTop === clientHeight;
 
         if (isBottom) {
-            handleGetNotifications(notificationsPage + 1);
-
             setNotificationsPage(notificationsPage + 1);
+            handleGetNotifications(notificationsPage + 1);
         }
     };
 
@@ -98,7 +97,7 @@ const Notifications = () => {
                 open={Boolean(anchorEl)}
                 ref={notificationsScroll}
                 onClose={() => setAnchorEl(null)}
-                onScroll={handleScrollChatNotifications}
+                onScroll={handleScrollNotifications}
                 style={{ marginTop: "50px", maxHeight: "500px" }}
             >
                 <List subheader={<Subheader />}>

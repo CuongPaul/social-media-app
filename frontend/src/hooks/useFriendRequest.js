@@ -3,7 +3,7 @@ import { useState, useContext } from "react";
 import callApi from "../api";
 import { UIContext, UserContext } from "../App";
 
-const useFriendRequestAction = () => {
+const useFriendRequest = () => {
     const { uiDispatch } = useContext(UIContext);
     const { userDispatch } = useContext(UserContext);
 
@@ -122,4 +122,4 @@ const useFriendRequestAction = () => {
     };
 };
 
-export default useFriendRequestAction;
+export default useFriendRequest;

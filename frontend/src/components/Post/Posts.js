@@ -1,23 +1,24 @@
 import moment from "moment";
-import React, { Fragment, useContext } from "react";
+import React, { useState, Fragment, useContext } from "react";
 import { Card, Button, Divider, CardHeader, Typography, CardContent } from "@material-ui/core";
 
 import PostAction from "./PostAction";
 import PostFooter from "./PostFooter";
 import SlideImage from "./SlideImage";
 import { UIContext } from "../../App";
+import LoadingIcon from "../UI/Loading";
 import AvatarIcon from "../UI/AvatarIcon";
 import PostSubContent from "./PostSubContent";
 import useFetchPost from "../../hooks/useFetchPost";
 
-const Posts = ({ posts }) => {
-    const { uiState } = useContext(UIContext);
+const Posts = ({ userId }) => {
+    const {
+        uiState: { posts, darkMode },
+    } = useContext(UIContext);
 
-    const { fetchPosts } = useFetchPost();
+    const [postsPage, postPage] = useState(1);
 
-    const handleFetchPosts = () => {
-        fetchPosts();
-    };
+    const { isLoading, handleGetPosts } = useFetchPost();
 
     return (
         <Fragment>
@@ -27,7 +28,7 @@ const Posts = ({ posts }) => {
                     style={{
                         marginTop: "20px",
                         borderRadius: "15px",
-                        backgroundColor: uiState.darkMode && "rgb(36,37,38)",
+                        backgroundColor: darkMode && "rgb(36,37,38)",
                     }}
                 >
                     <CardHeader
@@ -50,15 +51,16 @@ const Posts = ({ posts }) => {
                     <PostFooter post={post} />
                 </Card>
             ))}
-            <div
-                style={{
-                    display: "flex",
-                    marginTop: "20px",
-                    justifyContent: "center",
-                }}
-            >
-                <Button variant="contained" color="primary" onClick={handleFetchPosts}>
-                    More Posts
+            <div style={{ display: "flex", marginTop: "20px", justifyContent: "center" }}>
+                <Button
+                    color="primary"
+                    variant="contained"
+                    onClick={() => {
+                        postPage(postsPage + 1);
+                        handleGetPosts(postsPage + 1, userId);
+                    }}
+                >
+                    <LoadingIcon text={"More posts"} isLoading={isLoading} />
                 </Button>
             </div>
         </Fragment>
