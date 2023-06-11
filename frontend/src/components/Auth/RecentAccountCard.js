@@ -38,6 +38,7 @@ const RecentAccountCard = ({ account }) => {
                         >
                             <AvatarIcon
                                 size="80px"
+                                border={false}
                                 fontSize="40px"
                                 variant="square"
                                 text={account.name}

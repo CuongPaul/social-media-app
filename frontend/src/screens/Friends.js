@@ -186,6 +186,7 @@ const Friends = () => {
                 <div
                     style={{
                         flex: 1,
+                        margin: "10px",
                         overflow: "hidden auto",
                     }}
                 >

@@ -28,14 +28,14 @@ const Comment = ({ comment }) => {
     const [error, setError] = useState("");
     const [isOpen, setIsOpen] = useState(null);
     const [isEdit, setIsEdit] = useState(false);
-    const [commentText, setCommentText] = useState(comment.text ? comment.text : "");
+    const [commentText, setCommentText] = useState(comment?.text ? comment.text : "");
 
     const handleLikeComment = () => {
         console.log("ABC");
     };
 
     const isLiked = () => {
-        return comment.react.like.includes(userState.currentUser._id);
+        return comment?.react?.like?.includes(userState?.currentUser?._id);
     };
 
     const handleEditComment = (e) => {
@@ -46,12 +46,12 @@ const Comment = ({ comment }) => {
     const listItems = (
         <ListItem alignItems="flex-start">
             <ListItemAvatar>
-                <AvatarIcon text={comment.user.name} imageUrl={comment.user.avatar_image} />
+                <AvatarIcon text={comment?.user.name} imageUrl={comment?.user.avatar_image} />
             </ListItemAvatar>
             <ListItemText
                 primary={
                     <Typography style={{ color: uiState.darkMode && "#fff" }}>
-                        {comment.user.name}
+                        {comment?.user.name}
                     </Typography>
                 }
                 secondary={
@@ -78,7 +78,7 @@ const Comment = ({ comment }) => {
                                 <IconButton
                                     onClick={() => {
                                         // updateComment({
-                                        //     id: comment._id,
+                                        //     id: comment?._id,
                                         //     body: { text: commentText },
                                         // }).then((res) => {
                                         //     if (res.data.message === "success") {
@@ -94,10 +94,10 @@ const Comment = ({ comment }) => {
                             commentText
                         )}
 
-                        {comment.image && (
+                        {comment?.image && (
                             <CardMedia
                                 component={
-                                    comment.image.split(".").pop().substring(0, 3) === "mp4"
+                                    comment?.image.split(".").pop().substring(0, 3) === "mp4"
                                         ? "video"
                                         : "img"
                                 }
@@ -106,7 +106,7 @@ const Comment = ({ comment }) => {
                                     height: "100%",
                                     objectFit: "contain",
                                 }}
-                                image={comment.image}
+                                image={comment?.image}
                                 title="Paella dish"
                                 controls
                             />
@@ -175,7 +175,7 @@ const Comment = ({ comment }) => {
                             )
                         }
                     >
-                        ({comment.react.like.length})
+                        ({comment?.react.like.length})
                     </Button>
                 </div>
                 <Divider variant="inset" component="li" />

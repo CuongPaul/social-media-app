@@ -11,31 +11,33 @@ import {
 } from "@material-ui/core";
 import moment from "moment";
 import { useParams } from "react-router-dom";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 
 import callApi from "../api";
-import { UIContext } from "../App";
+import { UIContext, PostContext } from "../App";
 import useFetchPost from "../hooks/useFetchPost";
 import Comment from "../components/Comment/Comment";
 import AvatarIcon from "../components/UI/AvatarIcon";
 import PostAction from "../components/Post/PostAction";
 import PostFooter from "../components/Post/PostFooter";
 import SlideImage from "../components/Post/SlideImage";
+import CommentInput from "../components/Comment/CommentInput";
 import PostSubContent from "../components/Post/PostSubContent";
-import CommentTextArea from "../components/Comment/CommentTextArea";
 
 const Post = () => {
     const {
         uiState: { darkMode },
         uiDispatch,
     } = useContext(UIContext);
-
-    const [post, setPost] = useState(null);
-    const [comments, setComments] = useState(null);
+    const {
+        postDispatch,
+        postState: { comments, postSelected },
+    } = useContext(PostContext);
 
     const { postId } = useParams();
+    const [page, setPage] = useState(1);
 
-    const { fetchComments } = useFetchPost();
+    const { handleGetComments } = useFetchPost();
 
     useEffect(() => {
         (async () => {
@@ -45,13 +47,13 @@ const Post = () => {
                     url: "/comment",
                     query: { post_id: postId },
                 });
-                setComments(data.rows);
+                postDispatch({ type: "SET_COMMENTS", payload: data.rows });
 
                 const { data: postData } = await callApi({
                     method: "GET",
                     url: `/post/${postId}`,
                 });
-                setPost(postData);
+                postDispatch({ type: "SET_CURRENT_POST", payload: postData });
             } catch (err) {
                 uiDispatch({
                     type: "SET_ALERT_MESSAGE",
@@ -61,91 +63,90 @@ const Post = () => {
         })();
     }, []);
 
-    const handleFetchComments = () => {
-        fetchComments(postId);
-    };
-
-    return post ? (
-        <div style={{ minHeight: "100vh", paddingTop: "100px" }}>
-            <Container>
-                <Grid spacing={3} container>
-                    <Grid item md={7} xs={12} sm={12}>
-                        <Card
-                            style={{
-                                top: "100px",
-                                width: "100%",
-                                height: "80vh",
-                                position: "sticky",
-                                backgroundColor: darkMode && "rgb(36,37,38)",
-                            }}
-                        >
-                            <CardHeader
-                                action={<PostAction post={post} />}
-                                subheader={moment(post.createdAt).fromNow()}
-                                title={
-                                    <PostSubContent
-                                        postBody={post.body}
-                                        username={post.user.name}
-                                    />
-                                }
-                                avatar={
-                                    <AvatarIcon
-                                        text={post.user.name}
-                                        imageUrl={post.user.avatar_image}
-                                    />
-                                }
+    return postSelected ? (
+        <div
+            style={{
+                display: "flex",
+                padding: "30px",
+                marginTop: "64px",
+                height: `calc(100vh - 64px)`,
+                justifyContent: "space-around",
+            }}
+        >
+            <Grid item md={7}>
+                <Card
+                    style={{
+                        backgroundColor: darkMode && "rgb(36,37,38)",
+                    }}
+                >
+                    <CardHeader
+                        action={<PostAction post={postSelected} />}
+                        subheader={moment(postSelected.createdAt).fromNow()}
+                        title={
+                            <PostSubContent
+                                postBody={postSelected.body}
+                                username={postSelected.user.name}
                             />
-                            <CardContent>
-                                <Typography
-                                    style={{
-                                        fontSize: "16px",
-                                        fontWeight: "400",
-                                        fontFamily: "fantasy",
-                                    }}
-                                >
-                                    {post.text}
-                                </Typography>
-                            </CardContent>
-                            {post.images && <SlideImage images={post.images} />}
-                            <Divider />
-                            <PostFooter post={post} />
-                        </Card>
-                    </Grid>
-                    <Grid item md={5} sm={12} xs={12} style={{ marginBottom: "0px" }}>
-                        <Paper
+                        }
+                        avatar={
+                            <AvatarIcon
+                                text={postSelected.user.name}
+                                imageUrl={postSelected.user.avatar_image}
+                            />
+                        }
+                    />
+                    <CardContent>
+                        <Typography
                             style={{
-                                padding: "16px",
-                                backgroundColor: darkMode && "rgb(36,37,38)",
+                                fontSize: "16px",
+                                fontWeight: "400",
+                                fontFamily: "fantasy",
                             }}
                         >
-                            <CommentTextArea post={post} />
-                        </Paper>
-                        {comments && comments.length ? (
-                            <>
-                                {comments.map((comment) => (
-                                    <div key={comment.id}>
-                                        <Comment comment={comment} />
-                                    </div>
-                                ))}
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        justifyContent: "center",
-                                    }}
-                                >
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={handleFetchComments}
-                                    >
-                                        More Comments
-                                    </Button>
-                                </div>
-                            </>
-                        ) : null}
-                    </Grid>
-                </Grid>
-            </Container>
+                            {postSelected.text}
+                        </Typography>
+                    </CardContent>
+                    {postSelected.images && <SlideImage images={postSelected.images} />}
+                    <Divider />
+                    <PostFooter post={postSelected} />
+                </Card>
+            </Grid>
+            <Grid item md={4} sm={12} xs={12} style={{ marginBottom: "0px", overflowX: "auto" }}>
+                <Paper
+                    style={{
+                        padding: "16px",
+                        backgroundColor: darkMode && "rgb(36,37,38)",
+                    }}
+                >
+                    <CommentInput postId={postSelected?._id} />
+                </Paper>
+                {comments && comments.length ? (
+                    <>
+                        {comments.map((comment) => (
+                            <div key={comment?._id}>
+                                <Comment comment={comment} />
+                            </div>
+                        ))}
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "center",
+                            }}
+                        >
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => {
+                                    setPage(page + 1);
+                                    handleGetComments(page + 1, postId);
+                                }}
+                            >
+                                More Comments
+                            </Button>
+                        </div>
+                    </>
+                ) : null}
+            </Grid>
         </div>
     ) : null;
 };

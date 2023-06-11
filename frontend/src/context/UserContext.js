@@ -59,15 +59,26 @@ const UserReducer = (state, action) => {
 
         case "SET_CURRENT_USER":
             const recentAccountStored = JSON.parse(localStorage.getItem("recent_accounts")) || [];
-            const isStored = recentAccountStored.find((item) => item._id === action.payload._id);
+            const indexOfCurrentAccount = recentAccountStored.findIndex(
+                (item) => item._id === action.payload._id
+            );
 
-            if (!isStored) {
+            if (indexOfCurrentAccount === -1) {
                 recentAccountStored.push({
                     _id: action.payload._id,
                     name: action.payload.name,
                     email: action.payload.email,
                     avatar_image: action.payload.avatar_image,
                 });
+
+                localStorage.setItem("recent_accounts", JSON.stringify(recentAccountStored));
+            }
+            if (
+                action.payload.avatar_image !==
+                recentAccountStored[indexOfCurrentAccount].avatar_image
+            ) {
+                recentAccountStored[indexOfCurrentAccount].avatar_image =
+                    action.payload.avatar_image;
 
                 localStorage.setItem("recent_accounts", JSON.stringify(recentAccountStored));
             }

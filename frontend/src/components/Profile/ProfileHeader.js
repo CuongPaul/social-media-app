@@ -69,10 +69,10 @@ const ProfileHeader = ({ user, conScreen }) => {
                     <Paper
                         style={{
                             height: "40vh",
-                            marginTop: "70px",
                             borderRadius: "10px",
                             position: "relative",
                             backgroundPosition: "center",
+                            marginTop: !conScreen && "70px",
                             backgroundColor: !user?.cover_image && "rgba(0,0,0,0.5)",
                             backgroundImage: user?.cover_image && `url("${user?.cover_image}")`,
                         }}

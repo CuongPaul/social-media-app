@@ -5,24 +5,24 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Paper, TextField, IconButton, InputAdornment } from "@material-ui/core";
 
 import Emoji from "../Emoji";
-import { UIContext, ChatContext } from "../../App";
+import { useSubmitComment } from "../../hooks";
+import { UIContext, PostContext } from "../../App";
 import FilesUpload from "../Post/PostDialog/FilesUpload";
 import FilePreview from "../Post/PostDialog/FilePreview";
-import useSubmitMessage from "../../hooks/useSubmitMessage";
 
-const MessageInput = ({ chatRoomId }) => {
+const CommentInput = ({ postId }) => {
     const {
         uiState: { darkMode },
     } = useContext(UIContext);
     const {
-        chatState: { messageSelected, chatRoomSelected },
-    } = useContext(ChatContext);
+        postState: { postSelected, commentSelected },
+    } = useContext(PostContext);
 
     const [text, setText] = useState("");
     const [filePreview, setFilePreview] = useState("");
     const [fileUpload, setFileUpload] = useState(null);
 
-    const { handleCreateMessage, handleUpdateMessage } = useSubmitMessage();
+    const { handleCreateComment, handleUpdateComment } = useSubmitComment();
 
     const handleClear = () => {
         setText("");
@@ -36,18 +36,18 @@ const MessageInput = ({ chatRoomId }) => {
 
     useEffect(() => {
         handleClear();
-    }, [chatRoomSelected]);
+    }, [commentSelected]);
 
     useEffect(() => {
-        if (messageSelected) {
+        if (commentSelected) {
             setFileUpload(null);
-            setText(messageSelected.text);
+            setText(commentSelected.text);
 
-            if (messageSelected.image) {
-                setFilePreview(messageSelected.image);
+            if (commentSelected.image) {
+                setFilePreview(commentSelected.image);
             }
         }
-    }, [messageSelected]);
+    }, [commentSelected]);
 
     return (
         <Paper
@@ -105,20 +105,21 @@ const MessageInput = ({ chatRoomId }) => {
                         const argument = {
                             text,
                             setText,
-                            chatRoomId,
+                            postId,
                             fileUpload,
                             handleRemoveFile,
                         };
 
-                        if (messageSelected) {
-                            handleUpdateMessage({
-                                ...argument,
-                                currentImage: filePreview,
-                                messageId: messageSelected._id,
-                            });
-                        } else {
-                            handleCreateMessage(argument);
-                        }
+                        // if (postSelected) {
+                        //     handleUpdateComment({
+                        //         ...argument,
+                        //         currentImage: filePreview,
+                        //         messageId: postSelected._id,
+                        //     });
+                        // } else {
+                        //     handleCreateComment(argument);
+                        // }
+                        handleCreateComment(argument);
                     }
                 }}
                 style={{
@@ -136,20 +137,21 @@ const MessageInput = ({ chatRoomId }) => {
                     const argument = {
                         text,
                         setText,
-                        chatRoomId,
+                        postId,
                         fileUpload,
                         handleRemoveFile,
                     };
 
-                    if (messageSelected) {
-                        handleUpdateMessage({
-                            ...argument,
-                            currentImage: filePreview,
-                            messageId: messageSelected._id,
-                        });
-                    } else {
-                        handleCreateMessage(argument);
-                    }
+                    // if (postSelected) {
+                    //     handleUpdateComment({
+                    //         ...argument,
+                    //         currentImage: filePreview,
+                    //         messageId: postSelected._id,
+                    //     });
+                    // } else {
+                    //     handleCreateComment(argument);
+                    // }
+                    handleCreateComment(argument);
                 }}
                 style={{
                     marginLeft: "16px",
@@ -163,4 +165,4 @@ const MessageInput = ({ chatRoomId }) => {
     );
 };
 
-export default MessageInput;
+export default CommentInput;

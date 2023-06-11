@@ -8,7 +8,7 @@ import {
     ListItemAvatar,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
-import React, { Fragment, useContext } from "react";
+import React, { useContext } from "react";
 
 import { UserContext } from "../../App";
 import AvatarIcon from "../UI/AvatarIcon";
@@ -20,7 +20,7 @@ const Subheader = () => {
         <ListSubheader>
             <Grid container alignItems="center" justifyContent="flex-start">
                 <Typography style={{ fontWeight: "800", color: "rgb(101,103,107)" }}>
-                    Contacts
+                    Friends online
                 </Typography>
             </Grid>
         </ListSubheader>
@@ -31,7 +31,7 @@ const FriendsOnlineList = () => {
     const { userState } = useContext(UserContext);
 
     return (
-        <Fragment>
+        <div style={{ overflowX: "auto" }}>
             <List subheader={<Subheader />} style={{ marginTop: "16px" }}>
                 {userState?.friendsOnline?.map((user, index) => (
                     <div key={index}>
@@ -56,7 +56,7 @@ const FriendsOnlineList = () => {
                     </div>
                 ))}
             </List>
-        </Fragment>
+        </div>
     );
 };
 

@@ -1,7 +1,8 @@
 export const initialPostState = {
     posts: [],
-    postComments: [],
+    comments: [],
     postSelected: null,
+    commentSelected: null,
 };
 
 export const PostReducer = (state, action) => {
@@ -22,6 +23,15 @@ export const PostReducer = (state, action) => {
 
             return { ...state, posts: postsAfterUpdate };
 
+        case "ADD_COMMENT":
+            return { ...state, comments: [action.payload, ...state.comments] };
+
+        case "ADD_COMMENTS":
+            return { ...state, comments: [...state.comments, ...action.payload] };
+
+        case "SET_COMMENTS":
+            return { ...state, comments: action.payload };
+
         case "CREATE_POST":
             const postsAfterCreate = [...state.posts];
             postsAfterCreate.unshift(action.payload);
@@ -39,17 +49,38 @@ export const PostReducer = (state, action) => {
         case "REMOVE_CURRENT_POST":
             return {
                 ...state,
-                postComments: [],
+                comments: [],
             };
 
         case "COMMENT_PAGINATION":
             return {
                 ...state,
-                postComments: action.payload,
+                comments: action.payload,
             };
 
         case "REACT_POST":
-            return { ...state, posts: action.payload };
+            const postsAfterReact = [...state.posts];
+            const postSelectedAfterReact = { ...state.postSelected };
+
+            const indexOfPostSelected = postsAfterReact.findIndex(
+                (item) => item._id === action.payload.post_id
+            );
+            const indexOfReact = postsAfterReact[indexOfPostSelected].react[
+                action.payload.key
+            ].findIndex((element) => element._id === action.payload.user._id);
+
+            if (indexOfReact === -1) {
+                postSelectedAfterReact.react[action.payload.key].push({
+                    _id: action.payload.user._id,
+                    name: action.payload.user.name,
+                    avatar_image: action.payload.user.avatar_image,
+                });
+            } else {
+                postSelectedAfterReact.react[action.payload.key].splice(indexOfReact, 1);
+            }
+            postsAfterReact[indexOfPostSelected] = postSelectedAfterReact;
+
+            return { ...state, posts: postsAfterReact, postSelected: postSelectedAfterReact };
 
         case "ADD_POST_COMMENT":
             return {

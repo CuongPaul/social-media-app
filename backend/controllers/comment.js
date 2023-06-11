@@ -40,15 +40,33 @@ const createCommentController = async (req, res) => {
 
         const emptyReact = await new React().save();
 
-        await new Comment({
+        const comment = await new Comment({
             text,
             image,
             user: userId,
             post: post_id,
             react: emptyReact._id,
-        }).save();
+        })
+            .save()
+            .then((res) =>
+                res
+                    .populate("user", { _id: 1, name: 1, avatar_image: 1 })
+                    .populate({
+                        path: "react",
+                        select: "_id wow sad like love haha angry",
+                        populate: [
+                            { path: "wow", select: "_id name avatar_image" },
+                            { path: "sad", select: "_id name avatar_image" },
+                            { path: "like", select: "_id name avatar_image" },
+                            { path: "love", select: "_id name avatar_image" },
+                            { path: "haha", select: "_id name avatar_image" },
+                            { path: "angry", select: "_id name avatar_image" },
+                        ],
+                    })
+                    .execPopulate()
+            );
 
-        return res.status(200).json({ message: "success" });
+        return res.status(200).json({ data: comment, message: "success" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }

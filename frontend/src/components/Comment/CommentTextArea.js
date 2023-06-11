@@ -10,7 +10,7 @@ import StyledBadge from "../UI/StyledBadge";
 import { UIContext, UserContext } from "../../App";
 import FilePreview from "../Post/PostDialog/FilePreview";
 import FilesUpload from "../Post/PostDialog/FilesUpload";
-import useCreateComment from "../../hooks/useCreateComment";
+import useSubmitComment from "../../hooks/useSubmitComment";
 
 const CommentTextArea = ({ post }) => {
     const { uiState } = useContext(UIContext);
@@ -37,7 +37,7 @@ const CommentTextArea = ({ post }) => {
         setCommentText(commentText + emojiObject.emoji);
     };
 
-    const { handleSubmitComment, loading } = useCreateComment({
+    const { handleSubmitComment, loading } = useSubmitComment({
         setError,
         commentText,
         setShowEmoji,

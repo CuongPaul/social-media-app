@@ -1,25 +1,25 @@
-import { useState, useContext } from "react";
+import { useContext, useState } from "react";
 
 import callApi from "../api";
-import { UIContext, ChatContext } from "../App";
+import { PostContext, UIContext } from "../App";
 
-const useSubmitMessage = () => {
+const useSubmitComment = () => {
     const { uiDispatch } = useContext(UIContext);
-    const { chatDispatch } = useContext(ChatContext);
+    const { postDispatch } = useContext(PostContext);
 
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleCreateMessage = async (messageData) => {
+    const handleCreateComment = async (commentData) => {
         setIsLoading(true);
 
         try {
-            const { text, setText, chatRoomId, fileUpload, handleRemoveFile } = messageData;
+            const { text, setText, postId, fileUpload, handleRemoveFile } = commentData;
 
             let imageUrl = "";
             if (fileUpload) {
                 const formData = new FormData();
                 formData.append("files", fileUpload);
-                formData.append("folder", "message");
+                formData.append("folder", "comment");
 
                 const { data } = await callApi({
                     data: formData,
@@ -32,10 +32,11 @@ const useSubmitMessage = () => {
 
             const { data } = await callApi({
                 method: "POST",
-                url: "/message",
-                data: { text, image: imageUrl, chat_room_id: chatRoomId },
+                url: "/comment",
+                data: { text, image: imageUrl, post_id: postId },
             });
-            chatDispatch({ payload: data, type: "ADD_MESSAGE" });
+            console.log("data: ", data);
+            postDispatch({ payload: data, type: "ADD_COMMENT" });
 
             setText("");
             handleRemoveFile();
@@ -51,25 +52,18 @@ const useSubmitMessage = () => {
         }
     };
 
-    const handleUpdateMessage = async (messageData) => {
+    const handleUpdateComment = async (commentData) => {
         setIsLoading(true);
 
         try {
-            const {
-                text,
-                setText,
-                messageId,
-                chatRoomId,
-                fileUpload,
-                currentImage,
-                handleRemoveFile,
-            } = messageData;
+            const { text, setText, commentId, fileUpload, currentImage, handleRemoveFile } =
+                commentData;
 
             let imageUrl = "";
             if (fileUpload) {
                 const formData = new FormData();
                 formData.append("files", fileUpload);
-                formData.append("folder", "message");
+                formData.append("folder", "comment");
 
                 const { data } = await callApi({
                     method: "POST",
@@ -82,16 +76,18 @@ const useSubmitMessage = () => {
 
             const { data } = await callApi({
                 method: "PUT",
-                url: `/message/${messageId}`,
-                data: { text, chat_room_id: chatRoomId, image: imageUrl || currentImage },
+                url: `/comment/${commentId}`,
+                data: { text, image: imageUrl || currentImage },
             });
-            chatDispatch({ payload: data, type: "UPDATE_MESSAGE_SELECTED" });
+            postDispatch({ payload: data, type: "UPDATE_COMMENT_SELECTED" });
 
             setText("");
             handleRemoveFile();
+
             setIsLoading(false);
         } catch (err) {
             setIsLoading(true);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -101,9 +97,9 @@ const useSubmitMessage = () => {
 
     return {
         isLoading,
-        handleCreateMessage,
-        handleUpdateMessage,
+        handleCreateComment,
+        handleUpdateComment,
     };
 };
 
-export default useSubmitMessage;
+export default useSubmitComment;

@@ -3,16 +3,23 @@ import { Avatar, Typography } from "@material-ui/core";
 
 import generateColor from "../../utils/generate-color";
 
-const AvatarIcon = ({ variant, imageUrl, text = "?", size = "40px", fontSize = "16px" }) => {
+const AvatarIcon = ({
+    variant,
+    imageUrl,
+    text = "?",
+    border = true,
+    size = "40px",
+    fontSize = "16px",
+}) => {
     return (
         <Avatar
-            alt={text}
+            alt=""
             variant={imageUrl ? variant : "circular"}
             style={{
                 backgroundColor: generateColor(text),
                 width: variant === "square" && imageUrl ? "100%" : size,
                 height: variant === "square" && imageUrl ? "100%" : size,
-                border: `${parseInt(size.slice(0, -2)) / 34}px solid rgb(255 255 255)`,
+                border: border && `${parseInt(size.slice(0, -2)) / 34}px solid rgb(255 255 255)`,
             }}
         >
             {imageUrl ? (

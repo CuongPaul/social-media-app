@@ -9,27 +9,21 @@ const useFetchPost = () => {
 
     const [isLoading, setIsLoading] = useState(false);
 
-    const fetchComments = async (post_id) => {
+    const handleGetComments = async (page, postId) => {
         setIsLoading(true);
 
         try {
             const { data } = await callApi({
                 method: "GET",
                 url: "/comment",
-                query: { post_id: post_id },
+                query: { page, post_id: postId },
             });
-            postDispatch({
-                type: "COMMENT_PAGINATION",
-                payload: {
-                    currentPage: 1,
-                    comments: data.rows,
-                    totalPage: data.count,
-                },
-            });
+            postDispatch({ payload: data.rows, type: "ADD_COMMENTS" });
 
             setIsLoading(false);
         } catch (err) {
             setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -61,7 +55,7 @@ const useFetchPost = () => {
 
     return {
         handleGetPosts,
-        fetchComments,
+        handleGetComments,
         isLoading,
     };
 };

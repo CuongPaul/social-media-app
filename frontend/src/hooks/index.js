@@ -1,14 +1,14 @@
+import useUser from "./useUser";
 import useTheme from "./useTheme";
 import useSignin from "./useSignin";
 import useSignup from "./useSignup";
 import useChatRoom from "./useChatRoom";
 import useFetchPost from "./useFetchPost";
 import usePostActions from "./usePostActions";
-import useUser from "./useUser";
 import useSearchUsers from "./useSearchUsers";
 import useSubmitMessage from "./useSubmitMessage";
 import useSearchFriends from "./useSearchFriends";
-import useCreateComment from "./useCreateComment";
+import useSubmitComment from "./useSubmitComment";
 import useFetchComments from "./useFetchComments";
 import useFriendRequest from "./useFriendRequest";
 import useNotifications from "./useNotifications";
@@ -17,16 +17,16 @@ import useLocationService from "./useLocationService";
 import useUpdateProfilePic from "./useUpdateProfilePic";
 
 export {
+    useUser,
     useTheme,
     useSignin,
     useSignup,
     useChatRoom,
     useFetchPost,
-    useUser,
     usePostActions,
     useSearchUsers,
     useSubmitMessage,
-    useCreateComment,
+    useSubmitComment,
     useFetchComments,
     useFriendRequest,
     useNotifications,

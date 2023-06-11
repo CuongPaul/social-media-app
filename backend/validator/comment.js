@@ -12,7 +12,7 @@ const reactCommentValidation = {
 const createCommentValidation = {
     body: Joi.object({
         text: Joi.string().trim().required(),
-        image: Joi.string().allow(null).trim(),
+        image: Joi.string().allow("", null).trim(),
         post_id: Joi.string().trim().required(),
     }),
 };
@@ -26,7 +26,7 @@ const deleteCommentValidation = {
 const updateCommentValidation = {
     body: Joi.object({
         text: Joi.string().trim().required(),
-        image: Joi.string().allow(null).trim(),
+        image: Joi.string().allow("", null).trim(),
     }),
     params: Joi.object({
         commentId: Joi.string().trim().required(),

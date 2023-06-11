@@ -49,7 +49,11 @@ const LikePost = ({ post }) => {
 
             postDispatch({
                 type: "REACT_POST",
-                payload: newPostReact,
+                payload: {
+                    post_id: postState.postSelected._id,
+                    key: type,
+                    user: userState?.currentUser,
+                },
             });
         } catch (err) {
             uiDispatch({
