@@ -1,4 +1,4 @@
-import redisClient from "../config/redis";
+import redisClient from "../helpers/redis";
 import { User, Notification, FriendRequest } from "../models";
 
 const sendFriendRequestController = async (req, res) => {

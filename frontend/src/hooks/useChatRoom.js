@@ -35,17 +35,17 @@ const useChatRoom = () => {
         }
     };
 
-    const handleChangeAdmin = async ({ memberId, chatRoomId }) => {
+    const handleChangeAdmin = async ({ newAdmin, chatRoomId }) => {
         try {
             const { message } = await callApi({
                 method: "PUT",
-                data: { new_admin: memberId },
+                data: { new_admin: newAdmin },
                 url: `/chat-room/change-admin/${chatRoomId}`,
             });
 
             chatDispatch({
                 type: "SET_NEW_ADMIN",
-                payload: { memberId, chatRoomId: chatRoomId },
+                payload: { newAdmin, chatRoomId: chatRoomId },
             });
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",

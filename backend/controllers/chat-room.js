@@ -1,4 +1,4 @@
-import redisClient from "../config/redis";
+import redisClient from "../helpers/redis";
 import { User, ChatRoom, Message, Notification } from "../models";
 
 const changeAdminController = async (req, res) => {
@@ -12,10 +12,10 @@ const changeAdminController = async (req, res) => {
             return res.status(400).json({ message: "Group doesn't exist" });
         }
 
-        const { name, admin, members, avatar_image, is_public } = chatRoom;
+        const { name, admin, members, is_public, avatar_image } = chatRoom;
 
         const isTwoPeopleChatRoom =
-            !is_public && name == "" && admin == null && members.length == 2 && avatar_image == "";
+            !is_public && name == "" && admin == null && avatar_image == "" && members.length == 2;
 
         if (admin != userId || isTwoPeopleChatRoom) {
             return res.status(403).json({ message: "You don't have permission" });
@@ -81,15 +81,17 @@ const joinChatRoomController = async (req, res) => {
         const user = await User.findById(userId, { _id: 1, name: 1, avatar_image: 1 });
         await user.updateOne({ $push: { chat_rooms: { _id: chatRoom._id } } });
 
+        const responseData = {
+            _id: chatRoom._id,
+            unseen_message: 0,
+            name: chatRoom.name,
+            admin: chatRoom.admin,
+            avatar_image: chatRoom.avatar_image,
+            members: [...chatRoom.members, user],
+        };
+
         return res.status(200).json({
-            data: {
-                _id: chatRoom._id,
-                unseen_message: 0,
-                name: chatRoom.name,
-                admin: chatRoom.admin,
-                avatar_image: chatRoom.avatar_image,
-                members: [...chatRoom.members, user],
-            },
+            data: responseData,
             message: `You have joined the group ${chatRoom.name}`,
         });
     } catch (err) {
@@ -261,29 +263,24 @@ const searchChatRoomsController = async (req, res) => {
         const count = await ChatRoom.countDocuments(query);
 
         const chatRoomsData = chatRooms.map((item) => {
-            if (
-                !item.name &&
-                !item.admin &&
-                !item.is_public &&
-                !item.avatar_image &&
-                item.members.length == 2
-            ) {
-                const reciver = item.members.find((member) => member != userId);
+            const { name, admin, members, is_public, avatar_image } = item;
 
-                return {
-                    _id: item._id,
-                    name: reciver.name,
-                    members: item.members,
-                    avatar_image: reciver.avatar_image,
-                };
+            const isTwoPeopleChatRoom =
+                !is_public &&
+                name == "" &&
+                admin == null &&
+                avatar_image == "" &&
+                members.length == 2;
+
+            const result = { _id, name, members, avatar_image };
+
+            if (isTwoPeopleChatRoom) {
+                const reciver = members.find((member) => member != userId);
+
+                return { ...result, name: reciver.name, avatar_image: reciver.avatar_image };
             }
 
-            return {
-                _id: item._id,
-                name: item.name,
-                members: item.members,
-                avatar_image: item.avatar_image,
-            };
+            return result;
         });
 
         return res.status(200).json({ message: "success", data: { count, rows: chatRoomsData } });

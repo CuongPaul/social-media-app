@@ -1,7 +1,7 @@
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 import { User } from "../models";
-import storage from "../config/firebase";
+import storage from "../helpers/firebase";
 import { createPostValidation, updatePostValidation } from "../validator/post";
 
 const uploadFiles = async (req, res, next) => {

@@ -1,4 +1,4 @@
-import redisClient from "../config/redis";
+import redisClient from "../helpers/redis";
 import { User, React, Message, ChatRoom } from "../models";
 
 const getMessagesController = async (req, res) => {

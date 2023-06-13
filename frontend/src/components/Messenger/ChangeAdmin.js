@@ -153,7 +153,7 @@ const ChangeAdmin = ({ isOpen, setIsOpen }) => {
                     disabled={!Boolean(memberSelected)}
                     onClick={() => {
                         handleChangeAdmin({
-                            memberId: memberSelected._id,
+                            newAdmin: memberSelected._id,
                             chatRoomId: chatRoomSelected?._id,
                         });
 
