@@ -8,22 +8,16 @@ import LikePost from "./React";
 
 const PostFooter = ({ post }) => {
     return (
-        <div style={{ margin: "8px 16px" }}>
-            <Grid container style={{ padding: "8px 0px" }}>
-                <Grid item xs={6}>
-                    <LikePost post={post} />
-                </Grid>
-                <Grid item xs={6}>
-                    <Button
-                        component={Link}
-                        to={`/post/${post._id}`}
-                        style={{ width: "100%" }}
-                        startIcon={<FontAwesomeIcon icon={faPaperPlane} />}
-                    >
-                        View
-                    </Button>
-                </Grid>
-            </Grid>
+        <div style={{ display: "flex", margin: "8px 16px" }}>
+            <LikePost post={post} />
+            <Button
+                component={Link}
+                to={`/post/${post._id}`}
+                style={{ width: "100%" }}
+                startIcon={<FontAwesomeIcon icon={faPaperPlane} />}
+            >
+                View
+            </Button>
         </div>
     );
 };

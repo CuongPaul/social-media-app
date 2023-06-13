@@ -1,24 +1,24 @@
 import React, { useContext } from "react";
 import {
-    faSmile,
-    // faFaceSadCry,
-    // faFaceSurprise,
-    // faThumbsUp,
-    // faHeart,
-    // faFaceLaughSquint,
-    // faFaceAngry,
+    faAngry,
+    faHeart,
+    faSadCry,
+    faSurprise,
+    faThumbsUp,
+    faLaughSquint,
 } from "@fortawesome/free-solid-svg-icons";
-import { Badge, Tooltip, IconButton } from "@material-ui/core";
+import { Badge, IconButton } from "@material-ui/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import callApi from "../../api";
-import AvatarIcon from "../UI/AvatarIcon";
 import { PostContext, UIContext, UserContext } from "../../App";
 
 const LikePost = ({ post }) => {
+    const {
+        userState: { currentUser },
+    } = useContext(UserContext);
     const { uiDispatch } = useContext(UIContext);
-    const { userState } = useContext(UserContext);
-    const { postState, postDispatch } = useContext(PostContext);
+    const { postDispatch } = useContext(PostContext);
 
     const handleReactPost = async (type) => {
         try {
@@ -27,32 +27,13 @@ const LikePost = ({ post }) => {
                 query: { key: type },
                 url: `/post/react-post/${post?._id}`,
             });
-            const newPostReact = [...postState.posts];
-            for (const item of newPostReact) {
-                if (item?._id === post?._id) {
-                    const abc = item.react[type].findIndex(
-                        (ele) => ele?._id === userState?.currentUser?._id
-                    );
-
-                    if (abc == -1) {
-                        const pushItem = {
-                            avatar_image: userState?.currentUser?.avatar_image,
-                            _id: userState?.currentUser?._id,
-                            name: userState.currentUser.name,
-                        };
-                        item.react[type].push(pushItem);
-                    } else {
-                        item.react[type].splice(abc, 1);
-                    }
-                }
-            }
 
             postDispatch({
                 type: "REACT_POST",
                 payload: {
-                    post_id: postState.postSelected._id,
                     key: type,
-                    user: userState?.currentUser,
+                    user: currentUser,
+                    post_id: post?._id,
                 },
             });
         } catch (err) {
@@ -63,42 +44,71 @@ const LikePost = ({ post }) => {
         }
     };
 
-    const TooltipTitle = () => {
-        return (
-            <div>
-                {[0, 1, 2, 3, 4].map((item) => (
-                    <AvatarIcon key={item} />
-                ))}
-            </div>
-        );
-    };
-
     return (
         <div style={{ display: "flex" }}>
             {[
-                { icon: "faFaceSadCry", reactKey: "sad" },
-                { icon: "faFaceSurprise", reactKey: "wow" },
-                { icon: "faThumbsUp", reactKey: "like" },
-                { icon: "faHeart", reactKey: "love" },
-                { icon: "faFaceLaughSquint", reactKey: "haha" },
-                { icon: "faFaceAngry", reactKey: "angry" },
+                { icon: faThumbsUp, reactKey: "like", color: "rgb(5,134,238)" },
+                { icon: faHeart, reactKey: "love", color: "rgb(242,65,91)" },
+                { icon: faLaughSquint, reactKey: "haha", color: "rgb(254,25,173)" },
+                { icon: faSurprise, reactKey: "wow", color: "rgb(94,229,38)" },
+                { icon: faSadCry, reactKey: "sad", color: "rgb(251,202,102)" },
+                { icon: faAngry, reactKey: "angry", color: "rgb(248,134,20)" },
             ].map((item) => (
-                <div key={item.reactKey}>
-                    <Tooltip arrow placement="bottom" title={<TooltipTitle />}>
-                        <Badge
-                            badgeContent={post?.react[item.reactKey]?.length}
-                            overlap="rectangular"
-                        >
-                            <IconButton onClick={() => handleReactPost(item.reactKey)}>
-                                <FontAwesomeIcon icon={faSmile} color="rgb(250,199,94)" />
-                            </IconButton>
-                        </Badge>
-                    </Tooltip>
-                    <span>
-                        {post?.react[item.reactKey].find(
-                            (item) => item?._id === userState?.currentUser?._id
-                        ) && "YOU"}
-                    </span>
+                <div
+                    key={item.reactKey}
+                    style={{
+                        margin: "0px 10px",
+                    }}
+                >
+                    <Badge
+                        style={{
+                            borderRadius: "50%",
+                            backgroundColor: "rgb(169,169,169)",
+                        }}
+                        overlap="rectangular"
+                        badgeContent={
+                            post?.react[item.reactKey]?.length && (
+                                <h4
+                                    onClick={() =>
+                                        console.log(`${item.reactKey}:`, post?.react[item.reactKey])
+                                    }
+                                    style={{
+                                        top: "-8px",
+                                        right: "4px",
+                                        width: "22px",
+                                        height: "22px",
+                                        cursor: "pointer",
+                                        lineHeight: "22px",
+                                        borderRadius: "50%",
+                                        textAlign: "center",
+                                        position: "absolute",
+                                        color: "rgb(255,255,255)",
+                                        backgroundColor: "rgb(244,67,54)",
+                                    }}
+                                >
+                                    {post?.react[item.reactKey]?.length < 10
+                                        ? post?.react[item.reactKey]?.length
+                                        : `${post?.react[item.reactKey]?.length}+`}
+                                </h4>
+                            )
+                        }
+                    >
+                        <IconButton onClick={() => handleReactPost(item.reactKey)}>
+                            <FontAwesomeIcon icon={item.icon} color={item.color} />
+                        </IconButton>
+                    </Badge>
+                    {post?.react[item.reactKey].find((item) => item?._id === currentUser?._id) && (
+                        <span
+                            style={{
+                                width: "10px",
+                                height: "10px",
+                                marginLeft: "19px",
+                                borderRadius: "50%",
+                                display: "inline-block",
+                                backgroundColor: "rgb(63,162,76)",
+                            }}
+                        />
+                    )}
                 </div>
             ))}
         </div>
