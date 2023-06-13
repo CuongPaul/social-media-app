@@ -52,10 +52,10 @@ export const ChatReducer = (state, action) => {
             const indexOfChatRoomSetNewAdmin = chatRoomsAfterSetNewAdmin.findIndex(
                 (item) => item._id === action.payload.chatRoomId
             );
-            chatRoomsAfterSetNewAdmin[indexOfChatRoomSetNewAdmin].admin = action.payload.memberId;
+            chatRoomsAfterSetNewAdmin[indexOfChatRoomSetNewAdmin].admin = action.payload.newAdmin;
 
             const chatRoomSelectedAfterSetNewAdmin = { ...state.chatRoomSelected };
-            chatRoomSelectedAfterSetNewAdmin.admin = action.payload.memberId;
+            chatRoomSelectedAfterSetNewAdmin.admin = action.payload.newAdmin;
 
             return {
                 ...state,

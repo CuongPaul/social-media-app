@@ -1,5 +1,5 @@
 import { User } from "../models";
-import redisClient from "../config/redis";
+import redisClient from "../helpers/redis";
 
 const unfriendController = async (req, res) => {
     const userId = req.user_id;

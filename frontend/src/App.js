@@ -168,7 +168,7 @@ const App = () => {
                 const { new_admin, notification, chat_room_id } = data;
 
                 chatDispatch({
-                    payload: { memberId: new_admin, chatRoomId: chat_room_id },
+                    payload: { newAdmin: new_admin, chatRoomId: chat_room_id },
                     type: "SET_NEW_ADMIN",
                 });
                 uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
