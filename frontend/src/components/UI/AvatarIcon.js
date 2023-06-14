@@ -14,7 +14,7 @@ const AvatarIcon = ({
     return (
         <Avatar
             alt=""
-            variant={imageUrl ? variant : "circular"}
+            variant={imageUrl ? variant : "circular"} // If imageUrl === "" => Text avatar => Avatar shape alaways is circl. On the other hand shape of avatar dependent value of variable variant
             style={{
                 backgroundColor: generateColor(text),
                 width: variant === "square" && imageUrl ? "100%" : size,

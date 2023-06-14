@@ -13,8 +13,8 @@ import {
 import moment from "moment";
 import { faBell } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useState, Fragment, useEffect, useContext } from "react";
 import { Label, Forum, PersonAdd, PlaylistAddCheck } from "@material-ui/icons";
-import React, { useRef, useState, Fragment, useEffect, useContext } from "react";
 
 import { UIContext } from "../../App";
 import { useNotifications } from "../../hooks";
@@ -52,7 +52,6 @@ const Notifications = () => {
         uiState: { darkMode, notifications },
     } = useContext(UIContext);
 
-    const notificationsScroll = useRef(null);
     const [anchorEl, setAnchorEl] = useState(null);
     const [notificationsPage, setNotificationsPage] = useState(1);
 
@@ -95,53 +94,72 @@ const Notifications = () => {
             <Menu
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
-                ref={notificationsScroll}
+                style={{ marginTop: "50px" }}
                 onClose={() => setAnchorEl(null)}
                 onScroll={handleScrollNotifications}
-                style={{ marginTop: "50px", maxHeight: "500px" }}
             >
                 <List subheader={<Subheader />}>
-                    {notifications.map((notification) => (
-                        <ListItem
-                            button
-                            key={notification._id}
-                            onClick={() =>
-                                !notification.is_read && handleReadNotifications(notification._id)
-                            }
-                            style={{
-                                width: "auto",
-                                margin: "5px 15px",
-                                borderRadius: "10px",
-                                backgroundColor: notification.is_read && "rgba(0,0,0,0.08)",
-                            }}
-                        >
-                            <ListItemIcon>
-                                <Avatar style={{ color: "#fff", background: "seagreen" }}>
-                                    {notification.type.includes("CHATROOM") ? (
-                                        <Forum />
-                                    ) : notification.type.includes("POST") ? (
-                                        <Label />
-                                    ) : (
-                                        <PersonAdd />
-                                    )}
-                                </Avatar>
-                            </ListItemIcon>
-                            <ListItemText>
-                                <Typography variant="body1" style={{ fontSize: "15px" }}>
-                                    {notification.content}
-                                </Typography>
-                                <Typography
-                                    variant="body1"
-                                    style={{
-                                        fontSize: "13px",
-                                        color: darkMode ? null : "#65676B",
-                                    }}
-                                >
-                                    {moment(notification.createdAt).fromNow()}
-                                </Typography>
-                            </ListItemText>
-                        </ListItem>
-                    ))}
+                    {notifications.map((notification) => {
+                        let avatarAttribute = {
+                            icon: <PersonAdd />,
+                            backgroundColor: "rgb(226,81,65)",
+                        };
+
+                        if (notification.type.includes("CHATROOM")) {
+                            avatarAttribute = {
+                                icon: <Forum />,
+                                backgroundColor: "rgb(65,83,175)",
+                            };
+                        }
+                        if (notification.type.includes("POST")) {
+                            avatarAttribute = {
+                                icon: <Label />,
+                                backgroundColor: "rgb(46,139,87)",
+                            };
+                        }
+
+                        return (
+                            <ListItem
+                                button
+                                key={notification._id}
+                                onClick={() =>
+                                    !notification.is_read &&
+                                    handleReadNotifications(notification._id)
+                                }
+                                style={{
+                                    width: "auto",
+                                    margin: "5px 15px",
+                                    borderRadius: "10px",
+                                    backgroundColor: notification.is_read && "rgba(0,0,0,0.08)",
+                                }}
+                            >
+                                <ListItemIcon>
+                                    <Avatar
+                                        style={{
+                                            color: "rgba(255,255,255)",
+                                            backgroundColor: avatarAttribute.backgroundColor,
+                                        }}
+                                    >
+                                        {avatarAttribute.icon}
+                                    </Avatar>
+                                </ListItemIcon>
+                                <ListItemText>
+                                    <Typography variant="body1" style={{ fontSize: "15px" }}>
+                                        {notification.content}
+                                    </Typography>
+                                    <Typography
+                                        variant="body1"
+                                        style={{
+                                            fontSize: "13px",
+                                            color: darkMode ? null : "#65676B",
+                                        }}
+                                    >
+                                        {moment(notification.createdAt).fromNow()}
+                                    </Typography>
+                                </ListItemText>
+                            </ListItem>
+                        );
+                    })}
                 </List>
             </Menu>
         </Fragment>

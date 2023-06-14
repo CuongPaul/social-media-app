@@ -12,8 +12,8 @@ import { createTheme, ThemeProvider } from "@material-ui/core/styles";
 import { Route, Switch, Redirect, BrowserRouter } from "react-router-dom";
 
 import callApi from "./api";
-import Loader from "./components/Loader";
 import Navbar from "./components/Navbar";
+import Loading from "./components/Loading";
 import ProtectedRoute from "./utils/protected-route";
 import Notification from "./components/UI/Notification";
 import { UIReducer, initialUIState } from "./context/UIContext";
@@ -227,7 +227,7 @@ const App = () => {
                                             : "rgb(244,245,246)",
                                     }}
                                 >
-                                    <Suspense fallback={<Loader />}>
+                                    <Suspense fallback={<Loading />}>
                                         <Switch>
                                             <ProtectedRoute
                                                 path="/messenger"

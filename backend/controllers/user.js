@@ -1,5 +1,5 @@
-import { User } from "../models";
 import redisClient from "../helpers/redis";
+import { User, FriendRequest } from "../models";
 
 const unfriendController = async (req, res) => {
     const userId = req.user_id;
@@ -265,6 +265,22 @@ const getRecommendUsersController = async (req, res) => {
         const userIndex = recommendUserIds.findIndex((item) => item == userId);
         if (userIndex != -1) {
             recommendUserIds.splice(userIndex, 1);
+        }
+
+        const friendRequests = await FriendRequest.find({
+            is_accepted: false,
+            $or: [{ sender: userId }, { receiver: userId }],
+        });
+        for (const request of friendRequests) {
+            const indexOfSender = recommendUserIds.findIndex((item) => item == request.sender);
+            if (indexOfSender !== -1) {
+                recommendUserIds.splice(indexOfSender, 1);
+            }
+
+            const indexOfReceiver = recommendUserIds.findIndex((item) => item == request.receiver);
+            if (indexOfReceiver !== -1) {
+                recommendUserIds.splice(indexOfReceiver, 1);
+            }
         }
 
         const query = {

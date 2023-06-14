@@ -142,7 +142,7 @@ const Post = () => {
                                     handleGetComments(page + 1, postId);
                                 }}
                             >
-                                More Comments
+                                More comments
                             </Button>
                         </div>
                     </>

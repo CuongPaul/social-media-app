@@ -15,7 +15,7 @@ const Messenger = () => {
     } = useContext(ChatContext);
 
     const numberOfUnsendMessage = useMemo(
-        () => chatRooms.filter((item) => item.unseen_message !== 0).length,
+        () => chatRooms.filter((item) => item.unseen_message).length,
         [chatRooms]
     );
 

@@ -11,7 +11,6 @@ import {
     ListItemText,
     DialogContent,
     InputAdornment,
-    CircularProgress,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { Close } from "@material-ui/icons";
@@ -20,25 +19,22 @@ import React, { useState, useContext } from "react";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { UIContext } from "../../App";
+import LoadingIcon from "../UI/Loading";
 import AvatarIcon from "../UI/AvatarIcon";
-import { UIContext, UserContext } from "../../App";
-import { useSearchUsers, useUser, useFriendRequest } from "../../hooks";
+import { useSearchUsers } from "../../hooks";
+import ButtonGroupUserActions from "../ButtonGroupUserActions";
 
 const SearchUsers = () => {
     const {
         uiState: { darkMode },
     } = useContext(UIContext);
-    const {
-        userState: { currentUser, sendedFriendRequests },
-    } = useContext(UserContext);
 
     const [users, setUsers] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
 
     const { isLoading, handleSearchUsers } = useSearchUsers();
-    const { handleUnfriend, handleBlockUser, handleUnblockUser } = useUser();
-    const { handleSendFriendRequest, handleCancelFriendRequest } = useFriendRequest();
 
     return (
         <div style={{ marginLeft: "16px" }}>
@@ -117,15 +113,7 @@ const SearchUsers = () => {
                             }}
                             onClick={() => handleSearchUsers({ setUsers, name: searchValue })}
                         >
-                            {isLoading ? (
-                                <CircularProgress
-                                    size={25}
-                                    variant="indeterminate"
-                                    style={{ color: "#fff" }}
-                                />
-                            ) : (
-                                "Search"
-                            )}
+                            <LoadingIcon text={"Search"} isLoading={isLoading} />
                         </Button>
                     </div>
                     <List>
@@ -162,86 +150,7 @@ const SearchUsers = () => {
                                         </Typography>
                                     </ListItemText>
                                 </ListItem>
-                                {currentUser?.friends.find((friend) => friend._id === user._id) ? (
-                                    <Button
-                                        variant="contained"
-                                        style={{
-                                            color: "white",
-                                            margin: "10px",
-                                            minWidth: "80px",
-                                            fontSize: "10px",
-                                            background: "rgb(108,117,125)",
-                                        }}
-                                        onClick={() => handleUnfriend(user._id)}
-                                    >
-                                        Unfriend
-                                    </Button>
-                                ) : sendedFriendRequests?.find(
-                                      (item) => item.receiver._id === user._id
-                                  ) ? (
-                                    <Button
-                                        variant="contained"
-                                        style={{
-                                            color: "white",
-                                            margin: "10px",
-                                            minWidth: "80px",
-                                            fontSize: "10px",
-                                            background: "rgb(255,193,7)",
-                                        }}
-                                        onClick={() =>
-                                            handleCancelFriendRequest(
-                                                sendedFriendRequests?.find(
-                                                    (item) => item.receiver._id === user._id
-                                                )._id
-                                            )
-                                        }
-                                    >
-                                        Cancel
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        variant="contained"
-                                        style={{
-                                            color: "white",
-                                            margin: "10px",
-                                            minWidth: "80px",
-                                            fontSize: "10px",
-                                            background: "rgb(0,123,255)",
-                                        }}
-                                        onClick={() => handleSendFriendRequest(user._id)}
-                                    >
-                                        Add
-                                    </Button>
-                                )}
-                                {currentUser.block_users.includes(user._id) ? (
-                                    <Button
-                                        variant="contained"
-                                        style={{
-                                            color: "white",
-                                            margin: "10px",
-                                            minWidth: "80px",
-                                            fontSize: "10px",
-                                            background: "rgb(23,162,184)",
-                                        }}
-                                        onClick={() => handleUnblockUser(user._id)}
-                                    >
-                                        Unblock
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        variant="contained"
-                                        style={{
-                                            color: "white",
-                                            margin: "10px",
-                                            minWidth: "80px",
-                                            fontSize: "10px",
-                                            background: "rgb(220,53,69)",
-                                        }}
-                                        onClick={() => handleBlockUser(user._id)}
-                                    >
-                                        Block
-                                    </Button>
-                                )}
+                                <ButtonGroupUserActions userId={user._id} />
                             </div>
                         ))}
                     </List>

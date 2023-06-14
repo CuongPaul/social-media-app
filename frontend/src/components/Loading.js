@@ -1,7 +1,7 @@
 import React from "react";
 import { Paper, CircularProgress } from "@material-ui/core";
 
-const Loader = () => {
+const Loading = () => {
     return (
         <div
             style={{
@@ -20,4 +20,4 @@ const Loader = () => {
     );
 };
 
-export default Loader;
+export default Loading;
