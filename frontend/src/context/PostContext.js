@@ -60,30 +60,9 @@ export const PostReducer = (state, action) => {
 
         case "REACT_POST":
             const postsAfterReact = [...state.posts];
-            const postSelectedAfterReact = { ...state.postSelected };
+            const postSelectedAfterReact = state.postSelected ? { ...state.postSelected } : null;
 
-            const indexOfPostSelected = postsAfterReact.findIndex(
-                (item) => item._id === action.payload.post_id
-            );
-
-            if (indexOfPostSelected !== -1) {
-                const indexOfReact = postsAfterReact[indexOfPostSelected].react[
-                    action.payload.key
-                ].findIndex((element) => element._id === action.payload.user._id);
-
-                if (indexOfReact === -1) {
-                    postsAfterReact[indexOfPostSelected].react[action.payload.key].push({
-                        _id: action.payload.user._id,
-                        name: action.payload.user.name,
-                        avatar_image: action.payload.user.avatar_image,
-                    });
-                } else {
-                    postsAfterReact[indexOfPostSelected].react[action.payload.key].splice(
-                        indexOfReact,
-                        1
-                    );
-                }
-            } else {
+            if (postSelectedAfterReact) {
                 const indexOfReact = postSelectedAfterReact.react[action.payload.key].findIndex(
                     (element) => element._id === action.payload.user._id
                 );
@@ -97,7 +76,34 @@ export const PostReducer = (state, action) => {
                 } else {
                     postSelectedAfterReact.react[action.payload.key].splice(indexOfReact, 1);
                 }
+            } else {
+                const indexOfPostSelected = postsAfterReact.findIndex(
+                    (element) => element._id === action.payload.post_id
+                );
+
+                if (indexOfPostSelected !== -1) {
+                    const indexOfReact = postsAfterReact[indexOfPostSelected].react[
+                        action.payload.key
+                    ].findIndex((element) => element._id === action.payload.user._id);
+
+                    if (indexOfReact === -1) {
+                        postsAfterReact[indexOfPostSelected].react[action.payload.key].push({
+                            _id: action.payload.user._id,
+                            name: action.payload.user.name,
+                            avatar_image: action.payload.user.avatar_image,
+                        });
+                    } else {
+                        postsAfterReact[indexOfPostSelected].react[action.payload.key].splice(
+                            indexOfReact,
+                            1
+                        );
+                    }
+                }
             }
+
+            const indexOfPostSelected = postsAfterReact.findIndex(
+                (item) => item._id === action.payload.post_id
+            );
 
             return { ...state, posts: postsAfterReact, postSelected: postSelectedAfterReact };
 

@@ -1,4 +1,17 @@
-import React, { useContext } from "react";
+import {
+    List,
+    Badge,
+    Button,
+    Dialog,
+    ListItem,
+    CardHeader,
+    IconButton,
+    Typography,
+    ListItemIcon,
+    ListItemText,
+    DialogContent,
+} from "@material-ui/core";
+import { Link } from "react-router-dom";
 import {
     faAngry,
     faHeart,
@@ -7,18 +20,31 @@ import {
     faThumbsUp,
     faLaughSquint,
 } from "@fortawesome/free-solid-svg-icons";
-import { Badge, IconButton } from "@material-ui/core";
+import { Close } from "@material-ui/icons";
+import React, { useState, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import callApi from "../../api";
-import { PostContext, UIContext, UserContext } from "../../App";
+import AvatarIcon from "../UI/AvatarIcon";
+import { useUser, useFriendRequest } from "../../hooks";
+import { UIContext, PostContext, UserContext } from "../../App";
 
 const LikePost = ({ post }) => {
     const {
-        userState: { currentUser },
-    } = useContext(UserContext);
-    const { uiDispatch } = useContext(UIContext);
+        uiDispatch,
+        uiState: { darkMode },
+    } = useContext(UIContext);
     const { postDispatch } = useContext(PostContext);
+    const {
+        userState: { currentUser, sendedFriendRequests },
+    } = useContext(UserContext);
+
+    const [react, setReact] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const [usersReact, setUsersReact] = useState([]);
+
+    const { handleUnfriend, handleBlockUser, handleUnblockUser } = useUser();
+    const { handleSendFriendRequest, handleCancelFriendRequest } = useFriendRequest();
 
     const handleReactPost = async (type) => {
         try {
@@ -43,6 +69,87 @@ const LikePost = ({ post }) => {
             });
         }
     };
+
+    const ButtonGroup = ({ user }) => (
+        <>
+            {currentUser?.friends.find((friend) => friend._id === user._id) ? (
+                <Button
+                    variant="contained"
+                    style={{
+                        color: "white",
+                        margin: "10px",
+                        minWidth: "80px",
+                        fontSize: "10px",
+                        background: "rgb(108,117,125)",
+                    }}
+                    onClick={() => handleUnfriend(user._id)}
+                >
+                    Unfriend
+                </Button>
+            ) : sendedFriendRequests?.find((item) => item.receiver._id === user._id) ? (
+                <Button
+                    variant="contained"
+                    style={{
+                        color: "white",
+                        margin: "10px",
+                        minWidth: "80px",
+                        fontSize: "10px",
+                        background: "rgb(255,193,7)",
+                    }}
+                    onClick={() =>
+                        handleCancelFriendRequest(
+                            sendedFriendRequests?.find((item) => item.receiver._id === user._id)._id
+                        )
+                    }
+                >
+                    Cancel
+                </Button>
+            ) : (
+                <Button
+                    variant="contained"
+                    style={{
+                        color: "white",
+                        margin: "10px",
+                        minWidth: "80px",
+                        fontSize: "10px",
+                        background: "rgb(0,123,255)",
+                    }}
+                    onClick={() => handleSendFriendRequest(user._id)}
+                >
+                    Add
+                </Button>
+            )}
+            {currentUser.block_users.includes(user._id) ? (
+                <Button
+                    variant="contained"
+                    style={{
+                        color: "white",
+                        margin: "10px",
+                        minWidth: "80px",
+                        fontSize: "10px",
+                        background: "rgb(23,162,184)",
+                    }}
+                    onClick={() => handleUnblockUser(user._id)}
+                >
+                    Unblock
+                </Button>
+            ) : (
+                <Button
+                    variant="contained"
+                    style={{
+                        color: "white",
+                        margin: "10px",
+                        minWidth: "80px",
+                        fontSize: "10px",
+                        background: "rgb(220,53,69)",
+                    }}
+                    onClick={() => handleBlockUser(user._id)}
+                >
+                    Block
+                </Button>
+            )}
+        </>
+    );
 
     return (
         <div style={{ display: "flex" }}>
@@ -69,9 +176,11 @@ const LikePost = ({ post }) => {
                         badgeContent={
                             post?.react[item.reactKey]?.length && (
                                 <h4
-                                    onClick={() =>
-                                        console.log(`${item.reactKey}:`, post?.react[item.reactKey])
-                                    }
+                                    onClick={() => {
+                                        setReact({ icon: item.icon, color: item.color });
+                                        setUsersReact(post?.react[item.reactKey]);
+                                        setIsOpen(true);
+                                    }}
                                     style={{
                                         top: "-8px",
                                         right: "4px",
@@ -111,6 +220,68 @@ const LikePost = ({ post }) => {
                     )}
                 </div>
             ))}
+            <Dialog fullWidth open={isOpen} onClose={() => setIsOpen(false)}>
+                <CardHeader
+                    action={
+                        <IconButton onClick={() => setIsOpen(false)}>
+                            <Close />
+                        </IconButton>
+                    }
+                    subheader={
+                        <Typography
+                            style={{ fontWeight: 800, fontSize: "20px", marginLeft: "10px" }}
+                        >
+                            Emoji{" "}
+                            {react && <FontAwesomeIcon icon={react.icon} color={react.color} />}
+                        </Typography>
+                    }
+                />
+                <DialogContent>
+                    <List>
+                        {usersReact.map((user) => (
+                            <div
+                                key={user._id}
+                                style={{
+                                    display: "flex",
+                                    cursor: "pointer",
+                                    borderRadius: "5px",
+                                    alignItems: "center",
+                                    marginBottom: "10px",
+                                    background: darkMode ? "rgb(58,59,60)" : "rgb(240,242,245)",
+                                }}
+                            >
+                                <ListItem
+                                    component={Link}
+                                    to={`/profile/${user._id}`}
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    <ListItemIcon>
+                                        <AvatarIcon text={user.name} imageUrl={user.avatar_image} />
+                                    </ListItemIcon>
+                                    <ListItemText style={{ marginLeft: "6px" }}>
+                                        <Typography
+                                            style={{
+                                                fontWeight: 700,
+                                                fontSize: "17px",
+                                                color: darkMode
+                                                    ? "rgb(255,255,255)"
+                                                    : "rgb(33,33,33)",
+                                            }}
+                                        >
+                                            {user.name}
+                                        </Typography>
+                                    </ListItemText>
+                                </ListItem>
+                                {user._id !== currentUser._id ? (
+                                    <ButtonGroup user={user} />
+                                ) : (
+                                    <span style={{ margin: "0px 40px" }}>You</span>
+                                )}
+                            </div>
+                        ))}
+                    </List>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

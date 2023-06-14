@@ -27,6 +27,10 @@ const blockUserController = async (req, res) => {
     const userIdBlocked = req.params.userId;
 
     try {
+        if (userId == userIdBlocked) {
+            return res.status(400).json({ message: "Can't block yourself" });
+        }
+
         const user = await User.findById(userId);
 
         const userBlocked = await User.findById(userIdBlocked);

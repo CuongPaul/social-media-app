@@ -60,6 +60,8 @@ const Post = () => {
                 });
             }
         })();
+
+        return () => postDispatch({ type: "SET_CURRENT_POST", payload: null });
     }, []);
 
     return postSelected ? (
