@@ -13,14 +13,14 @@ const CreatePost = () => {
 
     const history = useHistory();
 
-    const [isOpenPostDialog, setIsOpenPostDialog] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
 
     return (
         <Fragment>
             <IconButton
                 onClick={() => {
+                    setIsOpen(true);
                     history.push("/home");
-                    setIsOpenPostDialog(true);
                 }}
                 style={{
                     marginLeft: "32px",
@@ -30,7 +30,7 @@ const CreatePost = () => {
             >
                 <PostAdd />
             </IconButton>
-            <PostDialog isOpen={isOpenPostDialog} setIsOpen={setIsOpenPostDialog} />
+            <PostDialog isOpen={isOpen} setIsOpen={setIsOpen} />
         </Fragment>
     );
 };

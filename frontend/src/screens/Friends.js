@@ -22,7 +22,6 @@ const Friends = () => {
         userState: { currentUser, sendedFriendRequests, incommingFriendRequests },
     } = useContext(UserContext);
 
-    const [isLoading, setIsLoading] = useState(false);
     const [userSelected, setSelectedUser] = useState(null);
     const [recommendUsers, setRecommendUsers] = useState([]);
 
@@ -31,29 +30,15 @@ const Friends = () => {
         handleAcceptFriendRequest,
         handleCancelFriendRequest,
         handleDeclineFriendRequest,
-        isLoading: isLoadingFriendRequest,
     } = useFriendRequest();
-    const { handleBlockUser, handleUnblockUser, isLoading: isLoadingUser } = useUser();
-
-    const isFriendRequest = (user) => {
-        let s_index = sendedFriendRequests.find((request) => user._id === request.receiver._id);
-        let r_index = incommingFriendRequests.find((request) => user._id === request.sender._id);
-
-        return s_index || r_index ? false : true;
-    };
+    const { handleBlockUser, handleUnblockUser } = useUser();
 
     useEffect(() => {
         (async () => {
-            setIsLoading(true);
-
             try {
                 const { data } = await callApi({ umethod: "GET", url: "/user/recommend-users" });
                 setRecommendUsers(data.rows);
-
-                setIsLoading(false);
             } catch (err) {
-                setIsLoading(false);
-
                 uiDispatch({
                     type: "SET_ALERT_MESSAGE",
                     payload: { text: err.message, display: true, color: "error" },
@@ -239,73 +224,64 @@ const Friends = () => {
                             >
                                 People you may know
                             </ListSubheader>
-                            {recommendUsers?.map(
-                                (user) =>
-                                    isFriendRequest(user) && (
-                                        <ListItem key={user._id}>
-                                            <User user={user} setSelectedUser={setSelectedUser}>
-                                                <CardActions
+                            {recommendUsers?.map((user) => (
+                                <ListItem key={user._id}>
+                                    <User user={user} setSelectedUser={setSelectedUser}>
+                                        <CardActions
+                                            style={{
+                                                padding: "0px",
+                                                display: "flex",
+                                                marginLeft: "16px",
+                                                flexDirection: "column",
+                                            }}
+                                        >
+                                            <Button
+                                                variant="contained"
+                                                style={{
+                                                    color: "white",
+                                                    minWidth: "80px",
+                                                    fontSize: "10px",
+                                                    background: "rgb(1,133,243)",
+                                                }}
+                                                onClick={() => handleSendFriendRequest(user._id)}
+                                            >
+                                                Add
+                                            </Button>
+                                            {currentUser?.block_users.includes(user._id) ? (
+                                                <Button
+                                                    variant="contained"
                                                     style={{
-                                                        padding: "0px",
-                                                        display: "flex",
-                                                        marginLeft: "16px",
-                                                        flexDirection: "column",
+                                                        color: "white",
+                                                        marginTop: "5px",
+                                                        minWidth: "80px",
+                                                        fontSize: "10px",
+                                                        marginLeft: "0px",
+                                                        background: "rgb(23,162,184)",
                                                     }}
+                                                    onClick={() => handleUnblockUser(user._id)}
                                                 >
-                                                    <Button
-                                                        variant="contained"
-                                                        style={{
-                                                            color: "white",
-                                                            minWidth: "80px",
-                                                            fontSize: "10px",
-                                                            background: "rgb(1,133,243)",
-                                                        }}
-                                                        onClick={() =>
-                                                            handleSendFriendRequest(user._id)
-                                                        }
-                                                    >
-                                                        Add
-                                                    </Button>
-                                                    {currentUser?.block_users.includes(user._id) ? (
-                                                        <Button
-                                                            variant="contained"
-                                                            style={{
-                                                                color: "white",
-                                                                marginTop: "5px",
-                                                                minWidth: "80px",
-                                                                fontSize: "10px",
-                                                                marginLeft: "0px",
-                                                                background: "rgb(23,162,184)",
-                                                            }}
-                                                            onClick={() =>
-                                                                handleUnblockUser(user._id)
-                                                            }
-                                                        >
-                                                            Unblock
-                                                        </Button>
-                                                    ) : (
-                                                        <Button
-                                                            variant="contained"
-                                                            style={{
-                                                                color: "white",
-                                                                marginTop: "5px",
-                                                                minWidth: "80px",
-                                                                fontSize: "10px",
-                                                                marginLeft: "0px",
-                                                                background: "rgb(220,53,69)",
-                                                            }}
-                                                            onClick={() =>
-                                                                handleBlockUser(user._id)
-                                                            }
-                                                        >
-                                                            Block
-                                                        </Button>
-                                                    )}
-                                                </CardActions>
-                                            </User>
-                                        </ListItem>
-                                    )
-                            )}
+                                                    Unblock
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    variant="contained"
+                                                    style={{
+                                                        color: "white",
+                                                        marginTop: "5px",
+                                                        minWidth: "80px",
+                                                        fontSize: "10px",
+                                                        marginLeft: "0px",
+                                                        background: "rgb(220,53,69)",
+                                                    }}
+                                                    onClick={() => handleBlockUser(user._id)}
+                                                >
+                                                    Block
+                                                </Button>
+                                            )}
+                                        </CardActions>
+                                    </User>
+                                </ListItem>
+                            ))}
                         </List>
                     </div>
                 )}

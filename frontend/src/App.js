@@ -12,8 +12,8 @@ import { createTheme, ThemeProvider } from "@material-ui/core/styles";
 import { Route, Switch, Redirect, BrowserRouter } from "react-router-dom";
 
 import callApi from "./api";
-import Loader from "./components/Loader";
 import Navbar from "./components/Navbar";
+import Loading from "./components/Loading";
 import ProtectedRoute from "./utils/protected-route";
 import Notification from "./components/UI/Notification";
 import { UIReducer, initialUIState } from "./context/UIContext";
@@ -68,11 +68,11 @@ const App = () => {
     }, []);
 
     useEffect(() => {
-        const getData = async () => {
+        const getInitialData = async () => {
             try {
                 const { data: friendsOnlineData } = await callApi({
-                    url: "/user/friends-online",
                     method: "GET",
+                    url: "/user/friends-online",
                 });
                 if (friendsOnlineData) {
                     userDispatch({ type: "SET_FRIENDS_ONLINE", payload: friendsOnlineData.rows });
@@ -84,8 +84,8 @@ const App = () => {
                 }
 
                 const { data: sendedFriendRequestsData } = await callApi({
-                    url: "/friend-request/sended",
                     method: "GET",
+                    url: "/friend-request/sended",
                 });
                 if (sendedFriendRequestsData) {
                     userDispatch({
@@ -95,8 +95,8 @@ const App = () => {
                 }
 
                 const { data: incommingFriendRequestsData } = await callApi({
-                    url: "/friend-request/received",
                     method: "GET",
+                    url: "/friend-request/received",
                 });
                 if (incommingFriendRequestsData) {
                     userDispatch({
@@ -112,13 +112,13 @@ const App = () => {
             } catch (err) {
                 uiDispatch({
                     type: "SET_ALERT_MESSAGE",
-                    payload: { text: err.message, display: true, color: "error" },
+                    payload: { display: true, color: "error", text: err.message },
                 });
             }
         };
 
         if (token) {
-            getData();
+            getInitialData();
         }
     }, [userState.currentUser?._id]);
 
@@ -133,15 +133,15 @@ const App = () => {
                 avatar_image: userState.currentUser.avatar_image,
             });
 
+            socketIO.current.on("add-socket-for-user-online", ({ _id, socket }) => {
+                userDispatch({ payload: { _id, socket }, type: "ADD_SOCKET_FOR_FRIEND_ONLINE" });
+            });
+
             socketIO.current.on("user-online", ({ _id, name, sockets, avatar_image }) => {
                 userDispatch({
                     type: "ADD_FRIEND_ONLINE",
                     payload: { _id, name, sockets, avatar_image },
                 });
-            });
-
-            socketIO.current.on("add-socket-for-user-online", ({ _id, socket }) => {
-                userDispatch({ payload: { _id, socket }, type: "ADD_SOCKET_FOR_FRIEND_ONLINE" });
             });
 
             window.addEventListener("beforeunload", () => {
@@ -152,7 +152,7 @@ const App = () => {
             });
 
             socketIO.current.on("user-offline", (_id) => {
-                userDispatch({ type: "REMOVE_FRIEND_ONLINE", payload: _id });
+                userDispatch({ payload: _id, type: "REMOVE_FRIEND_ONLINE" });
             });
 
             socketIO.current.on("new-message", (data) => {
@@ -227,7 +227,7 @@ const App = () => {
                                             : "rgb(244,245,246)",
                                     }}
                                 >
-                                    <Suspense fallback={<Loader />}>
+                                    <Suspense fallback={<Loading />}>
                                         <Switch>
                                             <ProtectedRoute
                                                 path="/messenger"

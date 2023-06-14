@@ -14,8 +14,8 @@ const useNotifications = () => {
         try {
             const { data } = await callApi({
                 method: "GET",
+                query: { page },
                 url: "/notification",
-                query: { page: page || 1 },
             });
             if (page) {
                 uiDispatch({ type: "ADD_NOTIFICATIONS", payload: data.rows });

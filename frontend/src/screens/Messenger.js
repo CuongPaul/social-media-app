@@ -5,7 +5,7 @@ import { Grid, List, Paper, Avatar, Typography } from "@material-ui/core";
 import callApi from "../api";
 import AvatarIcon from "../components/UI/AvatarIcon";
 import Message from "../components/Messenger/Message";
-import ChatRoom from "../components/Messenger/ChatRoom";
+import ChatRooms from "../components/Messenger/ChatRooms";
 import { UIContext, ChatContext, UserContext } from "../App";
 import SearchUsers from "../components/Messenger/SearchUsers";
 import MessageInput from "../components/Messenger/MessageInput";
@@ -133,7 +133,7 @@ const Messenger = () => {
                     }}
                 >
                     {chatRooms?.map((chatRoom) => (
-                        <ChatRoom
+                        <ChatRooms
                             key={chatRoom._id}
                             chatRoom={chatRoom}
                             setIsOpenGroupMembers={setIsOpenGroupMembers}

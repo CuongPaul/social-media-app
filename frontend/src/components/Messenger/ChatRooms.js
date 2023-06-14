@@ -19,7 +19,7 @@ import StyledBadge from "../UI/StyledBadge";
 import UpdateChatRoom from "./UpdateChatRoom";
 import { ChatContext, UserContext } from "../../App";
 
-const ChatRoom = ({ chatRoom, setIsOpenGroupMembers }) => {
+const ChatRooms = ({ chatRoom, setIsOpenGroupMembers }) => {
     const {
         chatState: { chatRoomSelected },
     } = useContext(ChatContext);
@@ -153,4 +153,4 @@ const ChatRoom = ({ chatRoom, setIsOpenGroupMembers }) => {
     );
 };
 
-export default ChatRoom;
+export default ChatRooms;
