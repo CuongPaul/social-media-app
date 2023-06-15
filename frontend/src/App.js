@@ -17,17 +17,17 @@ import Loading from "./components/Loading";
 import ProtectedRoute from "./utils/protected-route";
 import Notification from "./components/UI/Notification";
 import { UIReducer, initialUIState } from "./context/UIContext";
-import { UserReducer, initialUserState } from "./context/UserContext";
-import { PostReducer, initialPostState } from "./context/PostContext";
 import { ChatReducer, initialChatState } from "./context/ChatContext";
+import { PostReducer, initialPostState } from "./context/PostContext";
+import { UserReducer, initialUserState } from "./context/UserContext";
 
 export const UIContext = createContext();
-export const UserContext = createContext();
-export const PostContext = createContext();
 export const ChatContext = createContext();
+export const PostContext = createContext();
+export const UserContext = createContext();
 
-const Home = lazy(() => import("./screens/Home"));
 const Auth = lazy(() => import("./screens/Auth"));
+const Home = lazy(() => import("./screens/Home"));
 const Post = lazy(() => import("./screens/Post"));
 const Friends = lazy(() => import("./screens/Friends"));
 const Profile = lazy(() => import("./screens/Profile"));
@@ -39,9 +39,9 @@ const App = () => {
     const token = localStorage.getItem("token");
 
     const [uiState, uiDispatch] = useReducer(UIReducer, initialUIState);
-    const [userState, userDispatch] = useReducer(UserReducer, initialUserState);
-    const [postState, postDispatch] = useReducer(PostReducer, initialPostState);
     const [chatState, chatDispatch] = useReducer(ChatReducer, initialChatState);
+    const [postState, postDispatch] = useReducer(PostReducer, initialPostState);
+    const [userState, userDispatch] = useReducer(UserReducer, initialUserState);
 
     const theme = useMemo(
         () =>
@@ -70,19 +70,6 @@ const App = () => {
     useEffect(() => {
         const getInitialData = async () => {
             try {
-                const { data: friendsOnlineData } = await callApi({
-                    method: "GET",
-                    url: "/user/friends-online",
-                });
-                if (friendsOnlineData) {
-                    userDispatch({ type: "SET_FRIENDS_ONLINE", payload: friendsOnlineData.rows });
-                }
-
-                const { data: currentUserData } = await callApi({ url: "/user", method: "GET" });
-                if (currentUserData) {
-                    userDispatch({ type: "SET_CURRENT_USER", payload: currentUserData });
-                }
-
                 const { data: sendedFriendRequestsData } = await callApi({
                     method: "GET",
                     url: "/friend-request/sended",
@@ -103,6 +90,19 @@ const App = () => {
                         type: "SET_INCOMMING_FRIEND_REQUEST",
                         payload: incommingFriendRequestsData.rows,
                     });
+                }
+
+                const { data: currentUserData } = await callApi({ url: "/user", method: "GET" });
+                if (currentUserData) {
+                    userDispatch({ type: "SET_CURRENT_USER", payload: currentUserData });
+                }
+
+                const { data: friendsOnlineData } = await callApi({
+                    method: "GET",
+                    url: "/user/friends-online",
+                });
+                if (friendsOnlineData) {
+                    userDispatch({ type: "SET_FRIENDS_ONLINE", payload: friendsOnlineData.rows });
                 }
 
                 const { data: chatRoomsData } = await callApi({ method: "GET", url: "/chat-room" });
@@ -133,26 +133,11 @@ const App = () => {
                 avatar_image: userState.currentUser.avatar_image,
             });
 
-            socketIO.current.on("add-socket-for-user-online", ({ _id, socket }) => {
-                userDispatch({ payload: { _id, socket }, type: "ADD_SOCKET_FOR_FRIEND_ONLINE" });
-            });
-
-            socketIO.current.on("user-online", ({ _id, name, sockets, avatar_image }) => {
-                userDispatch({
-                    type: "ADD_FRIEND_ONLINE",
-                    payload: { _id, name, sockets, avatar_image },
-                });
-            });
-
             window.addEventListener("beforeunload", () => {
                 socketIO.current.emit("client-disconnect", {
                     _id: userState.currentUser._id,
                     friends_online: userState.friendsOnline,
                 });
-            });
-
-            socketIO.current.on("user-offline", (_id) => {
-                userDispatch({ payload: _id, type: "REMOVE_FRIEND_ONLINE" });
             });
 
             socketIO.current.on("new-message", (data) => {
@@ -164,12 +149,16 @@ const App = () => {
                 });
             });
 
+            socketIO.current.on("user-offline", (_id) => {
+                userDispatch({ payload: _id, type: "REMOVE_FRIEND_ONLINE" });
+            });
+
             socketIO.current.on("change-admin-chatroom", (data) => {
                 const { new_admin, notification, chat_room_id } = data;
 
                 chatDispatch({
-                    payload: { newAdmin: new_admin, chatRoomId: chat_room_id },
                     type: "SET_NEW_ADMIN",
+                    payload: { newAdmin: new_admin, chatRoomId: chat_room_id },
                 });
                 uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
             });
@@ -181,6 +170,13 @@ const App = () => {
                 uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
             });
 
+            socketIO.current.on("update-chatroom", (data) => {
+                const { chat_room, notification } = data;
+
+                chatDispatch({ payload: chat_room, type: "UPDATE_CHATROOM" });
+                uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
+            });
+
             socketIO.current.on("delete-chatroom", (data) => {
                 const { notification, chat_room_id } = data;
 
@@ -188,11 +184,18 @@ const App = () => {
                 chatDispatch({ payload: chat_room_id, type: "REMOVE_CHATROOM" });
             });
 
-            socketIO.current.on("update-chatroom", (data) => {
-                const { chat_room, notification } = data;
+            socketIO.current.on("user-online", ({ _id, name, sockets, avatar_image }) => {
+                userDispatch({
+                    type: "ADD_FRIEND_ONLINE",
+                    payload: { _id, name, sockets, avatar_image },
+                });
+            });
 
-                chatDispatch({ payload: chat_room, type: "UPDATE_CHATROOM" });
+            socketIO.current.on("accept-friend-request", (data) => {
+                const { notification, friend_request_id } = data;
+
                 uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
+                userDispatch({ payload: friend_request_id, type: "ACCEPT_FRIEND_REQUEST" });
             });
 
             socketIO.current.on("add-incomming-friend-request", (data) => {
@@ -202,11 +205,8 @@ const App = () => {
                 userDispatch({ payload: friend_request, type: "ADD_INCOMMING_FRIEND_REQUEST" });
             });
 
-            socketIO.current.on("accept-friend-request", (data) => {
-                const { notification, friend_request_id } = data;
-
-                uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
-                userDispatch({ payload: friend_request_id, type: "ACCEPT_FRIEND_REQUEST" });
+            socketIO.current.on("add-socket-for-user-online", ({ _id, socket }) => {
+                userDispatch({ payload: { _id, socket }, type: "ADD_SOCKET_FOR_FRIEND_ONLINE" });
             });
         }
     }, [userState.currentUser?._id]);

@@ -71,7 +71,7 @@ const Message = ({ message }) => {
         >
             <Paper
                 style={{
-                    color: darkMode && "#fff",
+                    color: darkMode && "rgb(255,255,255)",
                     backgroundColor: isSender
                         ? darkMode
                             ? "rgb(1,133,243)"

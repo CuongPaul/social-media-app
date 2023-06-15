@@ -168,7 +168,10 @@ const ProfileHeader = ({ user, conScreen }) => {
                                 <Button
                                     variant="contained"
                                     onClick={handleClickCancel}
-                                    style={{ color: "#fff", backgroundColor: "rgb(255,99,72)" }}
+                                    style={{
+                                        color: "rgb(255,255,255)",
+                                        backgroundColor: "rgb(255,99,72)",
+                                    }}
                                 >
                                     Cancel
                                 </Button>

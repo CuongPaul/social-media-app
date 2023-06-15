@@ -25,7 +25,7 @@ const AvatarIcon = ({
             {imageUrl ? (
                 <img width="100%" height="100%" src={imageUrl} />
             ) : (
-                <Typography style={{ fontSize, color: "#fff", fontWeight: 800 }}>
+                <Typography style={{ fontSize, color: "rgb(255,255,255)", fontWeight: 800 }}>
                     {text[0]}
                 </Typography>
             )}

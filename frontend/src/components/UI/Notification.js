@@ -19,7 +19,7 @@ const Notification = () => {
             onClose={handleClose}
             autoHideDuration={3000}
             open={alert_message.display}
-            style={{ color: "#fff", marginTop: 60 }}
+            style={{ color: "rgb(255,255,255)", marginTop: "60px" }}
             anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
             <Alert onClose={handleClose} severity={alert_message.color}>

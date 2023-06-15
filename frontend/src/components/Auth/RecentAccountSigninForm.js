@@ -9,18 +9,18 @@ import {
     CardContent,
     FormControl,
     InputAdornment,
-    CircularProgress,
 } from "@material-ui/core";
 import React, { useState } from "react";
 import { Close, Visibility, VisibilityOff } from "@material-ui/icons";
 
 import { useSignin } from "../../hooks";
+import LoadingIcon from "../UI/Loading";
 import AvatarIcon from "../UI/AvatarIcon";
 
 const RecentAccountSigninForm = ({ account, isShowSigninForm, setIsShowSigninForm }) => {
     const [isShowPassword, setIsShowPassword] = useState(false);
 
-    const { loading, handleClickSignin, handleChangePassword } = useSignin(account);
+    const { isLoading, handleClickSignin, handleChangePassword } = useSignin(account);
 
     return (
         <Dialog fullWidth open={isShowSigninForm} onClose={() => setIsShowSigninForm(false)}>
@@ -82,24 +82,16 @@ const RecentAccountSigninForm = ({ account, isShowSigninForm, setIsShowSigninFor
                     </FormControl>
                     <Button
                         type="submit"
-                        disabled={loading}
                         variant="contained"
+                        disabled={isLoading}
                         style={{
-                            color: "#fff",
                             width: "100%",
                             marginTop: "16px",
+                            color: "rgb(255,255,255)",
                             background: "rgb(24,119,242)",
                         }}
                     >
-                        {loading ? (
-                            <CircularProgress
-                                size={25}
-                                variant="indeterminate"
-                                style={{ color: "#fff" }}
-                            />
-                        ) : (
-                            "Sign in"
-                        )}
+                        <LoadingIcon text={"Sign in"} isLoading={isLoading} />
                     </Button>
                 </form>
             </CardContent>

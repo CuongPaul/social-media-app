@@ -117,7 +117,7 @@ const PostDialog = ({ isOpen, postData, setIsOpen }) => {
                             width: "100%",
                             border: "none",
                             position: "relative",
-                            background: darkMode ? null : "#fff",
+                            background: darkMode ? null : "rgb(255,255,255)",
                         }}
                         placeholder={`What's in your mind, ${currentUser?.name}?`}
                         InputProps={{
@@ -170,7 +170,7 @@ const PostDialog = ({ isOpen, postData, setIsOpen }) => {
                             <CircularProgress
                                 size={25}
                                 variant="indeterminate"
-                                style={{ color: "#fff" }}
+                                style={{ color: "rgb(255,255,255)" }}
                             />
                         ) : postData ? (
                             "Update post"

@@ -59,9 +59,9 @@ const RecentAccountCard = ({ account }) => {
                     style={{
                         top: "-8px",
                         right: "-8px",
-                        color: "#fff",
                         background: "tomato",
                         position: "absolute",
+                        color: "rgb(24,119,242)",
                     }}
                     onClick={handleRemoveAccount}
                 >

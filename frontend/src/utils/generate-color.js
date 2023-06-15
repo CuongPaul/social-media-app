@@ -8,7 +8,7 @@ const generateColor = (str) => {
     const g = (num >> 8) & 255;
     const r = (num >> 16) & 255;
 
-    return `rgb(${r}, ${g}, ${b}, 0.75)`;
+    return `rgb(${r},${g},${b})`;
 };
 
 export default generateColor;

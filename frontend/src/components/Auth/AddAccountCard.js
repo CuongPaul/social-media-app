@@ -25,14 +25,14 @@ const AddAccountCard = () => {
                             height: "150px",
                             alignItems: "center",
                             justifyContent: "center",
-                            background: "rgb(245,246,247)",
+                            backgroundColor: "rgb(245,246,247)",
                         }}
                     >
                         <Avatar
                             style={{
-                                color: "#fff",
                                 width: "50px",
                                 height: "50px",
+                                color: "rgb(255,255,255)",
                                 background: "rgb(24,119,242)",
                             }}
                         >

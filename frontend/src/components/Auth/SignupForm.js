@@ -1,20 +1,14 @@
-import {
-    Button,
-    TextField,
-    IconButton,
-    FormControl,
-    InputAdornment,
-    CircularProgress,
-} from "@material-ui/core";
 import React, { useState } from "react";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
+import { Button, TextField, IconButton, FormControl, InputAdornment } from "@material-ui/core";
 
 import { useSignup } from "../../hooks";
+import LoadingIcon from "../UI/Loading";
 
 const SignupForm = () => {
     const [isShowPassword, setIsShowPassword] = useState(false);
 
-    const { loading, handleSignup, handleChangeName, handleChangeEmail, handleChangePassword } =
+    const { isLoading, handleSignup, handleChangeName, handleChangeEmail, handleChangePassword } =
         useSignup();
 
     return (
@@ -54,20 +48,16 @@ const SignupForm = () => {
             </FormControl>
             <Button
                 type="submit"
-                disabled={loading}
                 variant="contained"
+                disabled={isLoading}
                 style={{
                     width: "100%",
-                    color: "#fff",
                     marginTop: "32px",
+                    color: "rgb(255,255,255)",
                     background: "rgb(24,119,242)",
                 }}
             >
-                {loading ? (
-                    <CircularProgress size={25} variant="indeterminate" style={{ color: "#fff" }} />
-                ) : (
-                    "Sign up"
-                )}
+                <LoadingIcon text={"Sign up"} isLoading={isLoading} />
             </Button>
         </form>
     );

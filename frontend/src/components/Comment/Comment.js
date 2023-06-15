@@ -50,7 +50,7 @@ const Comment = ({ comment }) => {
             </ListItemAvatar>
             <ListItemText
                 primary={
-                    <Typography style={{ color: uiState.darkMode && "#fff" }}>
+                    <Typography style={{ color: uiState.darkMode && "rgb(255,255,255)" }}>
                         {comment?.user.name}
                     </Typography>
                 }

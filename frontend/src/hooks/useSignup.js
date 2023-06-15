@@ -7,7 +7,7 @@ const useSignup = () => {
     const { uiDispatch } = useContext(UIContext);
     const { userDispatch } = useContext(UserContext);
 
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [formValue, setFormValue] = useState({ name: "", email: "", password: "" });
 
     const handleChangeName = (name) => {
@@ -24,7 +24,7 @@ const useSignup = () => {
 
     const handleSignup = async (e) => {
         e.preventDefault();
-        setLoading(true);
+        setIsLoading(true);
 
         try {
             const { data } = await callApi({
@@ -32,13 +32,13 @@ const useSignup = () => {
                 data: formValue,
                 url: "/auth/signup",
             });
-            setLoading(false);
+            setIsLoading(false);
 
             localStorage.setItem("token", data.token);
 
             userDispatch({ type: "SET_CURRENT_USER", payload: data.user });
         } catch (err) {
-            setLoading(false);
+            setIsLoading(false);
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -47,7 +47,7 @@ const useSignup = () => {
     };
 
     return {
-        loading,
+        isLoading,
         handleSignup,
         handleChangeName,
         handleChangeEmail,

@@ -1,20 +1,14 @@
-import {
-    Button,
-    TextField,
-    IconButton,
-    FormControl,
-    InputAdornment,
-    CircularProgress,
-} from "@material-ui/core";
 import React, { useState } from "react";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
+import { Button, TextField, IconButton, FormControl, InputAdornment } from "@material-ui/core";
 
 import { useSignin } from "../../hooks";
+import LoadingIcon from "../UI/Loading";
 
 const SigninForm = () => {
     const [isShowPassword, setIsShowPassword] = useState(false);
 
-    const { loading, handleClickSignin, handleChangeEmail, handleChangePassword } = useSignin();
+    const { isLoading, handleClickSignin, handleChangeEmail, handleChangePassword } = useSignin();
 
     return (
         <form onSubmit={handleClickSignin}>
@@ -45,20 +39,16 @@ const SigninForm = () => {
             </FormControl>
             <Button
                 type="submit"
-                disabled={loading}
                 variant="contained"
+                disabled={isLoading}
                 style={{
                     width: "100%",
-                    color: "#fff",
                     marginTop: "32px",
+                    color: "rgb(255,255,255)",
                     background: "rgb(24,119,242)",
                 }}
             >
-                {loading ? (
-                    <CircularProgress size={25} variant="indeterminate" style={{ color: "#fff" }} />
-                ) : (
-                    "Sign in"
-                )}
+                <LoadingIcon text={"Sign in"} isLoading={isLoading} />
             </Button>
         </form>
     );

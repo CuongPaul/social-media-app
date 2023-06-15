@@ -114,7 +114,7 @@ const TagFriends = ({ tagFriends, setTagFriends }) => {
                                 <CircularProgress
                                     size={25}
                                     variant="indeterminate"
-                                    style={{ color: "#fff" }}
+                                    style={{ color: "rgb(255,255,255)" }}
                                 />
                             ) : (
                                 "Search"
