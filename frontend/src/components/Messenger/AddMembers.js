@@ -23,7 +23,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import LoadingIcon from "../UI/Loading";
 import { ChatContext } from "../../App";
 import AvatarIcon from "../UI/AvatarIcon";
-import { useChatRoom, useSearchFriends } from "../../hooks";
+import { useChatRoom, useSearch } from "../../hooks";
 
 const AddMembers = ({ isOpen, setIsOpen }) => {
     const {
@@ -35,7 +35,7 @@ const AddMembers = ({ isOpen, setIsOpen }) => {
     const [friendsSelected, setFriendsSelected] = useState([]);
 
     const { handleAddMembers, isLoading: isLoadingChatRoom } = useChatRoom();
-    const { handleSearchFriends, isLoading: isLoadingSearchFriends } = useSearchFriends();
+    const { handleSearchFriends, isLoading: isLoadingSearchFriends } = useSearch();
 
     const handleClickFriend = async (friend) => {
         const isSelected = friendsSelected.findIndex((item) => item._id === friend._id);
@@ -168,7 +168,7 @@ const AddMembers = ({ isOpen, setIsOpen }) => {
                                     cursor: "pointer",
                                     borderRadius: "10px",
                                     marginBottom: "10px",
-                                    background: "rgb(244,245,246)",
+                                    backgroundColor: "rgb(244,245,246)",
                                 }}
                                 onClick={() => handleClickFriend(friend)}
                             >

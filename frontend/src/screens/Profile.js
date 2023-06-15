@@ -29,7 +29,6 @@ const Profile = ({ userId, conScreen }) => {
             setUser(currentUser);
         }
     }, [currentUser]);
-    console.log(conScreen);
 
     useEffect(() => {
         (async () => {
@@ -69,7 +68,7 @@ const Profile = ({ userId, conScreen }) => {
                             style={{
                                 alignItems: "center",
                                 color: darkMode ? "rgb(255,255,255)" : "rgb(0,0,0)",
-                                background: darkMode ? "rgb(36,37,38)" : "rgb(255,255,255)",
+                                backgroundColor: darkMode ? "rgb(36,37,38)" : "rgb(255,255,255)",
                             }}
                         >
                             <Tabs value={tab} onChange={(_e, value) => setTab(value)}>

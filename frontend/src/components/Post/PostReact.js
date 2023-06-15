@@ -1,7 +1,6 @@
 import {
     List,
     Badge,
-    Button,
     Dialog,
     ListItem,
     CardHeader,
@@ -26,25 +25,22 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import callApi from "../../api";
 import AvatarIcon from "../UI/AvatarIcon";
-import { useUser, useFriendRequest } from "../../hooks";
+import ButtonGroupUserActions from "../ButtonGroupUserActions";
 import { UIContext, PostContext, UserContext } from "../../App";
 
-const LikePost = ({ post }) => {
+const PostReact = ({ post }) => {
     const {
         uiDispatch,
         uiState: { darkMode },
     } = useContext(UIContext);
-    const { postDispatch } = useContext(PostContext);
     const {
-        userState: { currentUser, sendedFriendRequests },
+        userState: { currentUser },
     } = useContext(UserContext);
+    const { postDispatch } = useContext(PostContext);
 
     const [react, setReact] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [usersReact, setUsersReact] = useState([]);
-
-    const { handleUnfriend, handleBlockUser, handleUnblockUser } = useUser();
-    const { handleSendFriendRequest, handleCancelFriendRequest } = useFriendRequest();
 
     const handleReactPost = async (type) => {
         try {
@@ -53,14 +49,9 @@ const LikePost = ({ post }) => {
                 query: { key: type },
                 url: `/post/react-post/${post?._id}`,
             });
-
             postDispatch({
                 type: "REACT_POST",
-                payload: {
-                    key: type,
-                    user: currentUser,
-                    post_id: post?._id,
-                },
+                payload: { key: type, user: currentUser, post_id: post?._id },
             });
         } catch (err) {
             uiDispatch({
@@ -69,87 +60,6 @@ const LikePost = ({ post }) => {
             });
         }
     };
-
-    const ButtonGroup = ({ user }) => (
-        <>
-            {currentUser?.friends.find((friend) => friend._id === user._id) ? (
-                <Button
-                    variant="contained"
-                    style={{
-                        color: "white",
-                        margin: "10px",
-                        minWidth: "80px",
-                        fontSize: "10px",
-                        background: "rgb(108,117,125)",
-                    }}
-                    onClick={() => handleUnfriend(user._id)}
-                >
-                    Unfriend
-                </Button>
-            ) : sendedFriendRequests?.find((item) => item.receiver._id === user._id) ? (
-                <Button
-                    variant="contained"
-                    style={{
-                        color: "white",
-                        margin: "10px",
-                        minWidth: "80px",
-                        fontSize: "10px",
-                        background: "rgb(255,193,7)",
-                    }}
-                    onClick={() =>
-                        handleCancelFriendRequest(
-                            sendedFriendRequests?.find((item) => item.receiver._id === user._id)._id
-                        )
-                    }
-                >
-                    Cancel
-                </Button>
-            ) : (
-                <Button
-                    variant="contained"
-                    style={{
-                        color: "white",
-                        margin: "10px",
-                        minWidth: "80px",
-                        fontSize: "10px",
-                        background: "rgb(0,123,255)",
-                    }}
-                    onClick={() => handleSendFriendRequest(user._id)}
-                >
-                    Add
-                </Button>
-            )}
-            {currentUser.block_users.includes(user._id) ? (
-                <Button
-                    variant="contained"
-                    style={{
-                        color: "white",
-                        margin: "10px",
-                        minWidth: "80px",
-                        fontSize: "10px",
-                        background: "rgb(23,162,184)",
-                    }}
-                    onClick={() => handleUnblockUser(user._id)}
-                >
-                    Unblock
-                </Button>
-            ) : (
-                <Button
-                    variant="contained"
-                    style={{
-                        color: "white",
-                        margin: "10px",
-                        minWidth: "80px",
-                        fontSize: "10px",
-                        background: "rgb(220,53,69)",
-                    }}
-                    onClick={() => handleBlockUser(user._id)}
-                >
-                    Block
-                </Button>
-            )}
-        </>
-    );
 
     return (
         <div style={{ display: "flex" }}>
@@ -161,18 +71,13 @@ const LikePost = ({ post }) => {
                 { icon: faSadCry, reactKey: "sad", color: "rgb(251,202,102)" },
                 { icon: faAngry, reactKey: "angry", color: "rgb(248,134,20)" },
             ].map((item) => (
-                <div
-                    key={item.reactKey}
-                    style={{
-                        margin: "0px 10px",
-                    }}
-                >
+                <div key={item.reactKey} style={{ margin: "0px 10px", position: "relative" }}>
                     <Badge
+                        overlap="rectangular"
                         style={{
                             borderRadius: "50%",
                             backgroundColor: "rgb(169,169,169)",
                         }}
-                        overlap="rectangular"
                         badgeContent={
                             post?.react[item.reactKey]?.length && (
                                 <h4
@@ -197,7 +102,7 @@ const LikePost = ({ post }) => {
                                 >
                                     {post?.react[item.reactKey]?.length < 10
                                         ? post?.react[item.reactKey]?.length
-                                        : `${post?.react[item.reactKey]?.length}+`}
+                                        : `9+`}
                                 </h4>
                             )
                         }
@@ -209,10 +114,12 @@ const LikePost = ({ post }) => {
                     {post?.react[item.reactKey].find((item) => item?._id === currentUser?._id) && (
                         <span
                             style={{
+                                left: "18px",
                                 width: "10px",
                                 height: "10px",
-                                marginLeft: "19px",
+                                bottom: "-12px",
                                 borderRadius: "50%",
+                                position: "absolute",
                                 display: "inline-block",
                                 backgroundColor: "rgb(63,162,76)",
                             }}
@@ -231,8 +138,7 @@ const LikePost = ({ post }) => {
                         <Typography
                             style={{ fontWeight: 800, fontSize: "20px", marginLeft: "10px" }}
                         >
-                            Emoji{" "}
-                            {react && <FontAwesomeIcon icon={react.icon} color={react.color} />}
+                            Emoji <FontAwesomeIcon icon={react?.icon} color={react?.color} />
                         </Typography>
                     }
                 />
@@ -247,7 +153,9 @@ const LikePost = ({ post }) => {
                                     borderRadius: "5px",
                                     alignItems: "center",
                                     marginBottom: "10px",
-                                    background: darkMode ? "rgb(58,59,60)" : "rgb(240,242,245)",
+                                    backgroundColor: darkMode
+                                        ? "rgb(58,59,60)"
+                                        : "rgb(240,242,245)",
                                 }}
                             >
                                 <ListItem
@@ -272,10 +180,10 @@ const LikePost = ({ post }) => {
                                         </Typography>
                                     </ListItemText>
                                 </ListItem>
-                                {user._id !== currentUser._id ? (
-                                    <ButtonGroup user={user} />
-                                ) : (
+                                {user._id === currentUser._id ? (
                                     <span style={{ margin: "0px 40px" }}>You</span>
+                                ) : (
+                                    <ButtonGroupUserActions userId={user._id} />
                                 )}
                             </div>
                         ))}
@@ -286,4 +194,4 @@ const LikePost = ({ post }) => {
     );
 };
 
-export default LikePost;
+export default PostReact;

@@ -10,7 +10,7 @@ import StyledBadge from "../UI/StyledBadge";
 import { UIContext, UserContext } from "../../App";
 import FilePreview from "../Post/PostDialog/FilePreview";
 import FilesUpload from "../Post/PostDialog/FilesUpload";
-import useSubmitComment from "../../hooks/useSubmitComment";
+import useComment from "../../hooks/useComment";
 
 const CommentTextArea = ({ post }) => {
     const { uiState } = useContext(UIContext);
@@ -37,7 +37,7 @@ const CommentTextArea = ({ post }) => {
         setCommentText(commentText + emojiObject.emoji);
     };
 
-    const { handleSubmitComment, loading } = useSubmitComment({
+    const { handleSubmitComment, loading } = useComment({
         setError,
         commentText,
         setShowEmoji,
@@ -81,7 +81,9 @@ const CommentTextArea = ({ post }) => {
                             border: "none",
                             padding: "8px 16px",
                             borderRadius: "20px",
-                            background: uiState.darkMode ? "rgb(24,25,26)" : "rgb(240,242,245)",
+                            backgroundColor: uiState.darkMode
+                                ? "rgb(24,25,26)"
+                                : "rgb(240,242,245)",
                         }}
                     />
                     {/* <FilesUpload fileRef={fileRef} /> */}

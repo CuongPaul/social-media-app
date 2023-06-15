@@ -16,7 +16,7 @@ const Subheader = ({ user }) => {
                             style={{
                                 color: "black",
                                 fontWeight: "800",
-                                background: "rgb(240,242,245)",
+                                backgroundColor: "rgb(240,242,245)",
                             }}
                         >
                             <FontAwesomeIcon icon={faMapMarkerAlt} />
@@ -39,7 +39,7 @@ const Subheader = ({ user }) => {
                             style={{
                                 color: "black",
                                 fontWeight: "800",
-                                background: "rgb(240,242,245)",
+                                backgroundColor: "rgb(240,242,245)",
                             }}
                         >
                             <FontAwesomeIcon icon={faUserGraduate} />
@@ -61,11 +61,7 @@ const AvartarCardHeader = ({ user }) => {
             isActive={user.is_active}
             border={`3px solid ${user.is_active ? "green" : "red"}`}
         >
-            <Avatar
-                alt={user.name}
-                src={user.avatar_image}
-                style={{ width: "70px", height: "70px" }}
-            />
+            <Avatar alt={""} src={user.avatar_image} style={{ width: "70px", height: "70px" }} />
         </StyledBadge>
     ) : (
         <StyledBadge

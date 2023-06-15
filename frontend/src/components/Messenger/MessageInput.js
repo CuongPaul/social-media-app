@@ -8,7 +8,7 @@ import Emoji from "../Emoji";
 import { UIContext, ChatContext } from "../../App";
 import FilesUpload from "../Post/PostDialog/FilesUpload";
 import FilePreview from "../Post/PostDialog/FilePreview";
-import useSubmitMessage from "../../hooks/useSubmitMessage";
+import useMessage from "../../hooks/useMessage";
 
 const MessageInput = ({ chatRoomId }) => {
     const {
@@ -22,7 +22,7 @@ const MessageInput = ({ chatRoomId }) => {
     const [filePreview, setFilePreview] = useState("");
     const [fileUpload, setFileUpload] = useState(null);
 
-    const { handleCreateMessage, handleUpdateMessage } = useSubmitMessage();
+    const { handleCreateMessage, handleUpdateMessage } = useMessage();
 
     const handleClear = () => {
         setText("");

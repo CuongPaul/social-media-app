@@ -24,8 +24,8 @@ import Location from "./Location";
 import TagFriends from "./TagFriends";
 import FilesUpload from "./FilesUpload";
 import FilePreview from "./FilePreview";
+import { usePost } from "../../../hooks";
 import AvatarIcon from "../../UI/AvatarIcon";
-import { usePostActions } from "../../../hooks";
 import PostSubContent from "../PostSubContent";
 import DialogLoading from "../../UI/DialogLoading";
 import { UIContext, UserContext } from "../../../App";
@@ -57,17 +57,7 @@ const PostDialog = ({ isOpen, postData, setIsOpen }) => {
         setFilesUpload(newFilesUpload);
     };
 
-    const { loading, handleUpdatePost, handleCreatePost } = usePostActions({
-        setIsOpen,
-        filesUpload,
-        filesPreview,
-        postData: {
-            text,
-            privacy,
-            images: postData?.images,
-            body: { feelings, location, tag_friends: tagFriends.map((item) => item._id) },
-        },
-    });
+    const { loading, handleUpdatePost, handleCreatePost } = usePost();
 
     useEffect(() => {
         if (postData) {
@@ -117,7 +107,7 @@ const PostDialog = ({ isOpen, postData, setIsOpen }) => {
                             width: "100%",
                             border: "none",
                             position: "relative",
-                            background: darkMode ? null : "rgb(255,255,255)",
+                            backgroundColor: darkMode ? null : "rgb(255,255,255)",
                         }}
                         placeholder={`What's in your mind, ${currentUser?.name}?`}
                         InputProps={{
@@ -160,10 +150,38 @@ const PostDialog = ({ isOpen, postData, setIsOpen }) => {
                         style={{ width: "100%", margin: "10px" }}
                         onClick={(e) => {
                             if (postData) {
-                                return handleUpdatePost(postData._id);
+                                return handleUpdatePost({
+                                    setIsOpen,
+                                    filesUpload,
+                                    filesPreview,
+                                    postId: postData._id,
+                                    postData: {
+                                        text,
+                                        privacy,
+                                        images: postData?.images,
+                                        body: {
+                                            feelings,
+                                            location,
+                                            tag_friends: tagFriends.map((item) => item._id),
+                                        },
+                                    },
+                                });
                             }
 
-                            return handleCreatePost(e);
+                            return handleCreatePost({
+                                setIsOpen,
+                                filesUpload,
+                                postData: {
+                                    text,
+                                    privacy,
+                                    images: postData?.images,
+                                    body: {
+                                        feelings,
+                                        location,
+                                        tag_friends: tagFriends.map((item) => item._id),
+                                    },
+                                },
+                            });
                         }}
                     >
                         {loading ? (

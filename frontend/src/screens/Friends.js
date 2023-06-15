@@ -13,7 +13,7 @@ import React, { useState, useEffect, useContext } from "react";
 import callApi from "../api";
 import Profile from "../screens/Profile";
 import User from "../components/Friends/User";
-import { UserContext, UIContext } from "../App";
+import { UIContext, UserContext } from "../App";
 import { useUser, useFriendRequest } from "../hooks";
 
 const Friends = () => {
@@ -22,7 +22,7 @@ const Friends = () => {
         userState: { currentUser, sendedFriendRequests, incommingFriendRequests },
     } = useContext(UserContext);
 
-    const [userSelected, setSelectedUser] = useState(null);
+    const [userSelected, setUserSelected] = useState(null);
     const [recommendUsers, setRecommendUsers] = useState([]);
 
     const {
@@ -36,12 +36,12 @@ const Friends = () => {
     useEffect(() => {
         (async () => {
             try {
-                const { data } = await callApi({ umethod: "GET", url: "/user/recommend-users" });
+                const { data } = await callApi({ method: "GET", url: "/user/recommend-users" });
                 setRecommendUsers(data.rows);
             } catch (err) {
                 uiDispatch({
                     type: "SET_ALERT_MESSAGE",
-                    payload: { text: err.message, display: true, color: "error" },
+                    payload: { display: true, color: "error", text: err.message },
                 });
             }
         })();
@@ -56,7 +56,7 @@ const Friends = () => {
                 justifyContent: "space-between",
             }}
         >
-            <Grid style={{ display: "flex", margin: "10px", flexDirection: "column" }}>
+            <Grid style={{ margin: "10px", display: "flex", flexDirection: "column" }}>
                 {Boolean(sendedFriendRequests.length) && (
                     <div
                         style={{
@@ -71,24 +71,19 @@ const Friends = () => {
                             <ListSubheader
                                 style={{ textAlign: "center", backgroundColor: "rgb(255,255,255)" }}
                             >
-                                Sended friend requests
+                                Friend requests sended
                             </ListSubheader>
                             {sendedFriendRequests.map((request) => (
                                 <ListItem key={request._id}>
-                                    <User user={request.receiver} setSelectedUser={setSelectedUser}>
-                                        <CardActions
-                                            style={{
-                                                padding: "0px",
-                                                marginLeft: "16px",
-                                            }}
-                                        >
+                                    <User user={request.receiver} setUserSelected={setUserSelected}>
+                                        <CardActions style={{ padding: "0px", marginLeft: "16px" }}>
                                             <Button
                                                 variant="contained"
                                                 style={{
-                                                    color: "white",
                                                     minWidth: "80px",
                                                     fontSize: "10px",
-                                                    background: "rgb(255,193,7)",
+                                                    color: "rgb(255,255,255)",
+                                                    backgroundColor: "rgb(255,193,7)",
                                                 }}
                                                 onClick={() =>
                                                     handleCancelFriendRequest(request._id)
@@ -117,11 +112,11 @@ const Friends = () => {
                             <ListSubheader
                                 style={{ textAlign: "center", backgroundColor: "rgb(255,255,255)" }}
                             >
-                                Incomming friend requests
+                                Friend requests incomming
                             </ListSubheader>
                             {incommingFriendRequests.map((request) => (
                                 <ListItem key={request._id}>
-                                    <User user={request.sender} setSelectedUser={setSelectedUser}>
+                                    <User user={request.sender} setUserSelected={setUserSelected}>
                                         <CardActions
                                             style={{
                                                 padding: "0px",
@@ -133,11 +128,11 @@ const Friends = () => {
                                             <Button
                                                 variant="contained"
                                                 style={{
-                                                    color: "white",
                                                     minWidth: "80px",
                                                     fontSize: "10px",
                                                     marginLeft: "0px",
-                                                    background: "rgb(46,139,87)",
+                                                    color: "rgb(255,255,255)",
+                                                    backgroundColor: "rgb(46,139,87)",
                                                 }}
                                                 onClick={() => handleAcceptFriendRequest(request)}
                                             >
@@ -146,12 +141,12 @@ const Friends = () => {
                                             <Button
                                                 variant="contained"
                                                 style={{
-                                                    color: "white",
+                                                    fontSize: "10px",
                                                     marginTop: "5px",
                                                     minWidth: "80px",
-                                                    fontSize: "10px",
                                                     marginLeft: "0px",
-                                                    background: "rgb(108,117,125)",
+                                                    color: "rgb(255,255,255)",
+                                                    backgroundColor: "rgb(108,117,125)",
                                                 }}
                                                 onClick={() =>
                                                     handleDeclineFriendRequest(request._id)
@@ -181,6 +176,7 @@ const Friends = () => {
                 <div
                     style={{
                         flex: 1,
+                        margin: "10px",
                         display: "flex",
                         alignItems: "center",
                         flexDirection: "column",
@@ -192,10 +188,10 @@ const Friends = () => {
                         style={{
                             width: "120px",
                             height: "120px",
-                            background: "transparent",
+                            backgroundColor: "transparent",
                         }}
                     >
-                        <img alt="" src={require("../assets/select-friends.svg")} />
+                        <img alt={""} src={require("../assets/select-friends.svg")} />
                     </Avatar>
                     <Typography
                         style={{
@@ -224,9 +220,9 @@ const Friends = () => {
                             >
                                 People you may know
                             </ListSubheader>
-                            {recommendUsers?.map((user) => (
+                            {recommendUsers.map((user) => (
                                 <ListItem key={user._id}>
-                                    <User user={user} setSelectedUser={setSelectedUser}>
+                                    <User user={user} setUserSelected={setUserSelected}>
                                         <CardActions
                                             style={{
                                                 padding: "0px",
@@ -238,10 +234,10 @@ const Friends = () => {
                                             <Button
                                                 variant="contained"
                                                 style={{
-                                                    color: "white",
                                                     minWidth: "80px",
                                                     fontSize: "10px",
-                                                    background: "rgb(1,133,243)",
+                                                    color: "rgb(255,255,255)",
+                                                    backgroundColor: "rgb(1,133,243)",
                                                 }}
                                                 onClick={() => handleSendFriendRequest(user._id)}
                                             >
@@ -251,12 +247,12 @@ const Friends = () => {
                                                 <Button
                                                     variant="contained"
                                                     style={{
-                                                        color: "white",
                                                         marginTop: "5px",
                                                         minWidth: "80px",
                                                         fontSize: "10px",
                                                         marginLeft: "0px",
-                                                        background: "rgb(23,162,184)",
+                                                        color: "rgb(255,255,255)",
+                                                        backgroundColor: "rgb(23,162,184)",
                                                     }}
                                                     onClick={() => handleUnblockUser(user._id)}
                                                 >
@@ -266,12 +262,12 @@ const Friends = () => {
                                                 <Button
                                                     variant="contained"
                                                     style={{
-                                                        color: "white",
                                                         marginTop: "5px",
                                                         minWidth: "80px",
                                                         fontSize: "10px",
                                                         marginLeft: "0px",
-                                                        background: "rgb(220,53,69)",
+                                                        color: "rgb(255,255,255)",
+                                                        backgroundColor: "rgb(220,53,69)",
                                                     }}
                                                     onClick={() => handleBlockUser(user._id)}
                                                 >

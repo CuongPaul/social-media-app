@@ -28,8 +28,8 @@ const EditLocation = ({ location, setLocation, updateLocation }) => {
     };
 
     const handleFetchLocation = () => {
-        setError(null);
-        getLocation();
+        // setError(null);
+        // getLocation();
     };
 
     return (

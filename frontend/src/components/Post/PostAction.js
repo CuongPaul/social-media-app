@@ -1,7 +1,3 @@
-import { MoreHoriz } from "@material-ui/icons";
-import React, { useState, useContext } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import {
     Menu,
     Button,
@@ -14,40 +10,47 @@ import {
     DialogContent,
     DialogContentText,
 } from "@material-ui/core";
+import { MoreHoriz } from "@material-ui/icons";
+import React, { useState, useContext } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 
+import { usePost } from "../../hooks";
 import PostDialog from "./PostDialog";
 import { UserContext } from "../../App";
-import { usePostActions } from "../../hooks";
+import LoadingIcon from "../UI/Loading";
 
 const PostAction = ({ post }) => {
-    const { userState } = useContext(UserContext);
+    const {
+        userState: { currentUser },
+    } = useContext(UserContext);
 
+    const [anchorEl, setAnchorEl] = useState(null);
     const [postData, setPostData] = useState(null);
-    const [isShowAction, setIsShowAction] = useState(null);
     const [isOpenPostDialog, setIsOpenPostDialog] = useState(false);
     const [isOpenConfirmDialog, setIsOpenConfirmDialog] = useState(false);
 
-    const { loading, handleDeletePost } = usePostActions({ setIsOpen: setIsOpenConfirmDialog });
+    const { isLoading, handleDeletePost } = usePost();
 
     return (
-        post?.user?._id === userState?.currentUser?._id && (
+        post?.user._id === currentUser?._id && (
             <div>
                 <IconButton
                     onClick={(e) => {
                         setPostData(post);
-                        setIsShowAction(e.currentTarget);
+                        setAnchorEl(e.currentTarget);
                     }}
                 >
                     <MoreHoriz />
                 </IconButton>
                 <Menu
-                    anchorEl={isShowAction}
-                    open={Boolean(isShowAction)}
-                    onClose={() => setIsShowAction(null)}
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={() => setAnchorEl(null)}
                 >
                     <MenuItem
                         onClick={() => {
-                            setIsShowAction(null);
+                            setAnchorEl(null);
                             setIsOpenPostDialog(true);
                         }}
                     >
@@ -56,7 +59,7 @@ const PostAction = ({ post }) => {
                     </MenuItem>
                     <MenuItem
                         onClick={() => {
-                            setIsShowAction(null);
+                            setAnchorEl(null);
                             setIsOpenConfirmDialog(true);
                         }}
                     >
@@ -78,11 +81,16 @@ const PostAction = ({ post }) => {
                     </DialogContent>
                     <DialogActions style={{ marginBottom: "10px", paddingRight: "20px" }}>
                         <Button
-                            disabled={loading}
                             variant="contained"
-                            onClick={() => handleDeletePost(post._id)}
+                            disabled={isLoading}
+                            onClick={() =>
+                                handleDeletePost({
+                                    postId: post?._id,
+                                    setIsOpen: setIsOpenConfirmDialog,
+                                })
+                            }
                         >
-                            Delete
+                            <LoadingIcon text={"Delete"} isLoading={isLoading} />
                         </Button>
                         <Button
                             color="primary"

@@ -224,10 +224,10 @@ const Messenger = () => {
                         style={{
                             width: "120px",
                             height: "120px",
-                            background: "transparent",
+                            backgroundColor: "transparent",
                         }}
                     >
-                        <img alt="" src={require("../assets/select-friends.svg")} />
+                        <img alt={""} src={require("../assets/select-friends.svg")} />
                     </Avatar>
                     <Typography style={{ fontWeight: 800, marginTop: "16px" }}>
                         Select friends from friend lists to start chat

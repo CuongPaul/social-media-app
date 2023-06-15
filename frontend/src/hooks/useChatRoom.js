@@ -18,14 +18,13 @@ const useChatRoom = () => {
                 data: { members },
                 url: `/chat-room/add-member/${chatRoomId}`,
             });
-            setIsLoading(false);
-
             chatDispatch({ type: "ADD_MEMBERS", payload: data });
-
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, text: message, color: "success" },
             });
+
+            setIsLoading(false);
         } catch (err) {
             setIsLoading(false);
             uiDispatch({

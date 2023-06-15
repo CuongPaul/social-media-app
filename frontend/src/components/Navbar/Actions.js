@@ -43,7 +43,7 @@ const SettingsItem = () => {
     return (
         <ListItem button component={Link} to={`/settings`}>
             <ListItemIcon>
-                <Avatar style={{ color: "rgb(255,255,255)", background: "teal" }}>
+                <Avatar style={{ color: "rgb(255,255,255)", backgroundColor: "teal" }}>
                     <Settings />
                 </Avatar>
             </ListItemIcon>
@@ -67,7 +67,7 @@ const DarkModeItem = () => {
     return (
         <ListItem>
             <ListItemIcon>
-                <Avatar style={{ color: "rgb(255,255,255)", background: "teal" }}>
+                <Avatar style={{ color: "rgb(255,255,255)", backgroundColor: "teal" }}>
                     <FontAwesomeIcon icon={faMoon} />
                 </Avatar>
             </ListItemIcon>
@@ -88,7 +88,7 @@ const SignoutItem = () => {
     return (
         <ListItem button onClick={handleSignout}>
             <ListItemIcon>
-                <Avatar style={{ color: "rgb(255,255,255)", background: "teal" }}>
+                <Avatar style={{ color: "rgb(255,255,255)", backgroundColor: "teal" }}>
                     <ExitToApp />
                 </Avatar>
             </ListItemIcon>

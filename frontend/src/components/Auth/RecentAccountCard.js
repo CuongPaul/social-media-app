@@ -18,8 +18,8 @@ const RecentAccountCard = ({ account }) => {
 
     const [isShowSigninForm, setIsShowSigninForm] = useState(false);
 
-    const handleRemoveAccount = () => {
-        userDispatch({ type: "REMOVE_RECENT_ACCOUNT", payload: account._id });
+    const handleRemoveAccount = (accountId) => {
+        userDispatch({ type: "REMOVE_RECENT_ACCOUNT", payload: accountId });
     };
 
     return (
@@ -33,7 +33,7 @@ const RecentAccountCard = ({ account }) => {
                                 height: "150px",
                                 alignItems: "center",
                                 justifyContent: "center",
-                                background: "rgb(245,246,247)",
+                                backgroundColor: "rgb(245,246,247)",
                             }}
                         >
                             <AvatarIcon
@@ -59,11 +59,11 @@ const RecentAccountCard = ({ account }) => {
                     style={{
                         top: "-8px",
                         right: "-8px",
-                        background: "tomato",
                         position: "absolute",
-                        color: "rgb(24,119,242)",
+                        color: "rgb(255,255,255)",
+                        backgroundColor: "rgb(255,99,72)",
                     }}
-                    onClick={handleRemoveAccount}
+                    onClick={() => handleRemoveAccount(account._id)}
                 >
                     <Close />
                 </IconButton>

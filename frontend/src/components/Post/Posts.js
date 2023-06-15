@@ -9,7 +9,7 @@ import { UIContext, PostContext } from "../../App";
 import LoadingIcon from "../UI/Loading";
 import AvatarIcon from "../UI/AvatarIcon";
 import PostSubContent from "./PostSubContent";
-import useFetchPost from "../../hooks/useFetchPost";
+import usePost from "../../hooks/usePost";
 
 const Posts = ({ userId }) => {
     const {
@@ -21,7 +21,7 @@ const Posts = ({ userId }) => {
 
     const [postsPage, postPage] = useState(1);
 
-    const { isLoading, handleGetPosts } = useFetchPost();
+    const { isLoading, handleGetPosts, handleGetPostsByUser } = usePost();
 
     return (
         <Fragment>
@@ -59,8 +59,15 @@ const Posts = ({ userId }) => {
                     color="primary"
                     variant="contained"
                     onClick={() => {
-                        postPage(postsPage + 1);
-                        handleGetPosts(postsPage + 1, userId);
+                        const nextpage = postsPage + 1;
+
+                        postPage(nextpage);
+
+                        if (!userId) {
+                            handleGetPosts(nextpage);
+                        } else {
+                            handleGetPostsByUser(nextpage, userId);
+                        }
                     }}
                 >
                     <LoadingIcon text={"More posts"} isLoading={isLoading} />

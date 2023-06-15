@@ -97,14 +97,37 @@ const updateCommentController = async (req, res) => {
     const { text, image } = req.body;
 
     try {
-        const comment = await Comment.findOne({ user: userId, _id: commentId });
+        const comment = await Comment.findOne({ user: userId, _id: commentId })
+            .populate("user", { _id: 1, name: 1, avatar_image: 1 })
+            .populate({
+                path: "react",
+                select: "_id wow sad like love haha angry",
+                populate: [
+                    { path: "wow", select: "_id name avatar_image" },
+                    { path: "sad", select: "_id name avatar_image" },
+                    { path: "like", select: "_id name avatar_image" },
+                    { path: "love", select: "_id name avatar_image" },
+                    { path: "haha", select: "_id name avatar_image" },
+                    { path: "angry", select: "_id name avatar_image" },
+                ],
+            });
         if (!comment) {
             return res.status(400).json({ message: "You don't allow edit this comment" });
         }
 
         await comment.updateOne({ text, image });
 
-        return res.status(200).json({ message: "success" });
+        return res.status(200).json({
+            message: "success",
+            data: {
+                text,
+                image,
+                _id: comment._id,
+                post: comment.post,
+                user: comment.user,
+                react: comment.react,
+            },
+        });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }

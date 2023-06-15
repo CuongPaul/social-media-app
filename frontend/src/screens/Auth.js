@@ -71,7 +71,7 @@ const Auth = () => {
                             style={{
                                 marginTop: "16px",
                                 color: "rgb(255,255,255)",
-                                background: "rgb(74,183,43)",
+                                backgroundColor: "rgb(74,183,43)",
                             }}
                             onClick={() => setIsShowSigninForm(!isShowSigninForm)}
                         >

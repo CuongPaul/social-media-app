@@ -45,7 +45,7 @@ const SigninForm = () => {
                     width: "100%",
                     marginTop: "32px",
                     color: "rgb(255,255,255)",
-                    background: "rgb(24,119,242)",
+                    backgroundColor: "rgb(24,119,242)",
                 }}
             >
                 <LoadingIcon text={"Sign in"} isLoading={isLoading} />

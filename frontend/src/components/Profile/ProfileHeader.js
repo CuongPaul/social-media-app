@@ -146,7 +146,7 @@ const ProfileHeader = ({ user, conScreen }) => {
                             />
                             <DialogContent>
                                 <img
-                                    alt=""
+                                    alt={""}
                                     src={imagePreview}
                                     style={{ width: "100%", borderRadius: "10px" }}
                                 />

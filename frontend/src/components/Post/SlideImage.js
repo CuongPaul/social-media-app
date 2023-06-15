@@ -22,7 +22,7 @@ const SlideImage = ({ images }) => {
                             key={index}
                             image={item}
                             autopause="true"
-                            style={{ width: "100%", maxHeight: "500px", objectFit: "contain" }}
+                            style={{ width: "100%", maxHeight: "400px", objectFit: "contain" }}
                             component={
                                 item.split(".").pop().substring(0, 3) === "mp4" ? "video" : "img"
                             }

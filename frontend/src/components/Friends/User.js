@@ -4,7 +4,7 @@ import { Card, Typography, CardContent } from "@material-ui/core";
 import AvatarIcon from "../UI/AvatarIcon";
 import { UIContext, UserContext } from "../../App";
 
-const User = ({ user, children, setSelectedUser }) => {
+const User = ({ user, children, setUserSelected }) => {
     const {
         uiState: { darkMode },
     } = useContext(UIContext);
@@ -26,7 +26,7 @@ const User = ({ user, children, setSelectedUser }) => {
                 backgroundColor: darkMode ? "rgb(36,37,38)" : "rgb(255,255,255)",
             }}
         >
-            <div style={{ display: "flex" }} onClick={() => setSelectedUser(user)}>
+            <div style={{ display: "flex" }} onClick={() => setUserSelected(user)}>
                 <CardContent
                     style={{
                         padding: "0px",

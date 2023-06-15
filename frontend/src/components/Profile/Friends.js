@@ -68,7 +68,7 @@ const Friends = ({ friends }) => {
                                         margin: "10px",
                                         minWidth: "100px",
                                         fontSize: "12px",
-                                        background: "rgb(108,117,125)",
+                                        backgroundColor: "rgb(108,117,125)",
                                     }}
                                     onClick={() => handleUnfriend(friend._id)}
                                 >
@@ -84,7 +84,7 @@ const Friends = ({ friends }) => {
                                         margin: "10px",
                                         minWidth: "100px",
                                         fontSize: "12px",
-                                        background: "rgb(255,193,7)",
+                                        backgroundColor: "rgb(255,193,7)",
                                     }}
                                     onClick={() =>
                                         handleCancelFriendRequest(
@@ -104,7 +104,7 @@ const Friends = ({ friends }) => {
                                         margin: "10px",
                                         minWidth: "100px",
                                         fontSize: "12px",
-                                        background: "rgb(0,123,255)",
+                                        backgroundColor: "rgb(0,123,255)",
                                     }}
                                     onClick={() => handleSendFriendRequest(friend._id)}
                                 >
@@ -119,7 +119,7 @@ const Friends = ({ friends }) => {
                                         margin: "10px",
                                         minWidth: "100px",
                                         fontSize: "12px",
-                                        background: "rgb(23,162,184)",
+                                        backgroundColor: "rgb(23,162,184)",
                                     }}
                                     onClick={() => handleUnblockUser(friend._id)}
                                 >
@@ -133,7 +133,7 @@ const Friends = ({ friends }) => {
                                         margin: "10px",
                                         minWidth: "100px",
                                         fontSize: "12px",
-                                        background: "rgb(220,53,69)",
+                                        backgroundColor: "rgb(220,53,69)",
                                     }}
                                     onClick={() => handleBlockUser(friend._id)}
                                 >

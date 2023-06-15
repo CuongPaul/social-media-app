@@ -198,7 +198,7 @@ const ChatRoomMembers = ({ isOpen, setIsOpen }) => {
                                 cursor: "pointer",
                                 borderRadius: "5px",
                                 marginBottom: "10px",
-                                background: darkMode ? "rgb(58,59,60)" : "rgb(240,242,245)",
+                                backgroundColor: darkMode ? "rgb(58,59,60)" : "rgb(240,242,245)",
                             }}
                         >
                             <ListItem onClick={() => handleClickMemberItem(member)}>

@@ -138,7 +138,10 @@ const Camera = ({ setFilesUpload, setFilesPreview }) => {
                                                 onClick={handleRemoveCaptureImage}
                                             >
                                                 <Avatar
-                                                    style={{ color: "white", background: "tomato" }}
+                                                    style={{
+                                                        color: "white",
+                                                        backgroundColor: "tomato",
+                                                    }}
                                                 >
                                                     <Close />
                                                 </Avatar>
@@ -150,7 +153,7 @@ const Camera = ({ setFilesUpload, setFilesPreview }) => {
                                                 <Avatar
                                                     style={{
                                                         color: "white",
-                                                        background: "seagreen",
+                                                        backgroundColor: "seagreen",
                                                     }}
                                                 >
                                                     <Check />
@@ -163,7 +166,9 @@ const Camera = ({ setFilesUpload, setFilesPreview }) => {
                                             color="primary"
                                             onClick={handleClickCapture}
                                         >
-                                            <Avatar style={{ color: "white", background: "teal" }}>
+                                            <Avatar
+                                                style={{ color: "white", backgroundColor: "teal" }}
+                                            >
                                                 <CameraMaterial />
                                             </Avatar>
                                         </IconButton>

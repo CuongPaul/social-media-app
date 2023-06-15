@@ -1,20 +1,11 @@
-import {
-    Card,
-    Grid,
-    Paper,
-    Button,
-    Divider,
-    CardHeader,
-    Typography,
-    CardContent,
-} from "@material-ui/core";
 import moment from "moment";
 import { useParams } from "react-router-dom";
-import React, { useEffect, useState, useContext } from "react";
+import React, { useRef, useState, useEffect, useContext } from "react";
+import { Card, Grid, Paper, Divider, CardHeader, Typography, CardContent } from "@material-ui/core";
 
 import callApi from "../api";
+import { useComment } from "../hooks";
 import { UIContext, PostContext } from "../App";
-import useFetchPost from "../hooks/useFetchPost";
 import Comment from "../components/Comment/Comment";
 import AvatarIcon from "../components/UI/AvatarIcon";
 import PostAction from "../components/Post/PostAction";
@@ -34,25 +25,35 @@ const Post = () => {
     } = useContext(PostContext);
 
     const { postId } = useParams();
+    const postAreaRef = useRef(null);
     const [page, setPage] = useState(1);
+    const [commentAreaHeight, setCommentAreaHeight] = useState(0);
 
-    const { handleGetComments } = useFetchPost();
+    const { handleGetComments } = useComment();
+
+    const handleScrollComment = async (e) => {
+        const { scrollTop, clientHeight, scrollHeight } = e.target;
+
+        const isBottom = scrollHeight - scrollTop === clientHeight + 0.5;
+
+        if (isBottom) {
+            setPage(page + 1);
+            handleGetComments(page + 1, postId);
+        }
+    };
 
     useEffect(() => {
         (async () => {
             try {
-                const { data } = await callApi({
+                const { data: commentsData } = await callApi({
                     method: "GET",
                     url: "/comment",
                     query: { post_id: postId },
                 });
-                postDispatch({ type: "SET_COMMENTS", payload: data.rows });
+                postDispatch({ type: "SET_COMMENTS", payload: commentsData.rows });
 
-                const { data: postData } = await callApi({
-                    method: "GET",
-                    url: `/post/${postId}`,
-                });
-                postDispatch({ type: "SET_CURRENT_POST", payload: postData });
+                const { data: postData } = await callApi({ method: "GET", url: `/post/${postId}` });
+                postDispatch({ payload: postData, type: "SET_CURRENT_POST" });
             } catch (err) {
                 uiDispatch({
                     type: "SET_ALERT_MESSAGE",
@@ -61,95 +62,89 @@ const Post = () => {
             }
         })();
 
-        return () => postDispatch({ type: "SET_CURRENT_POST", payload: null });
+        return () => {
+            postDispatch({ type: "SET_CURRENT_POST", payload: null });
+            postDispatch({ type: "SET_COMMENT_SELECTED", payload: null });
+        };
     }, []);
 
-    return postSelected ? (
+    useEffect(() => {
+        setTimeout(() => {
+            setCommentAreaHeight(postAreaRef.current?.clientHeight - 92 - 20);
+        }, 1000);
+    }, [postAreaRef.current?.clientHeight]);
+
+    return (
         <div
             style={{
                 display: "flex",
-                padding: "30px",
+                padding: "20px",
                 marginTop: "64px",
-                height: `calc(100vh - 64px)`,
                 justifyContent: "space-around",
+                minHeight: `calc(100vh - 64px)`,
             }}
         >
             <Grid item md={7}>
                 <Card
-                    style={{
-                        backgroundColor: darkMode && "rgb(36,37,38)",
-                    }}
+                    ref={postAreaRef}
+                    style={{ borderRadius: "10px", backgroundColor: darkMode && "rgb(36,37,38)" }}
                 >
                     <CardHeader
-                        action={<PostAction post={postSelected} />}
-                        subheader={moment(postSelected.createdAt).fromNow()}
                         title={
                             <PostSubContent
-                                postBody={postSelected.body}
-                                username={postSelected.user.name}
+                                postBody={postSelected?.body}
+                                username={postSelected?.user.name}
                             />
                         }
+                        action={<PostAction post={postSelected} />}
                         avatar={
                             <AvatarIcon
-                                text={postSelected.user.name}
-                                imageUrl={postSelected.user.avatar_image}
+                                text={postSelected?.user.name}
+                                imageUrl={postSelected?.user.avatar_image}
                             />
                         }
+                        subheader={moment(postSelected?.createdAt).fromNow()}
                     />
                     <CardContent>
-                        <Typography
-                            style={{
-                                fontSize: "16px",
-                                fontWeight: "400",
-                                fontFamily: "fantasy",
-                            }}
-                        >
-                            {postSelected.text}
+                        <Typography style={{ fontWeight: 400, fontSize: "16px" }}>
+                            {postSelected?.text}
                         </Typography>
                     </CardContent>
-                    {postSelected.images && <SlideImage images={postSelected.images} />}
+                    {postSelected?.images && <SlideImage images={postSelected?.images} />}
                     <Divider />
                     <PostFooter post={postSelected} />
                 </Card>
             </Grid>
-            <Grid item md={4} sm={12} xs={12} style={{ marginBottom: "0px", overflowX: "auto" }}>
+            <Grid item md={4}>
                 <Paper
                     style={{
-                        padding: "16px",
+                        padding: "5px",
+                        borderRadius: "10px",
                         backgroundColor: darkMode && "rgb(36,37,38)",
                     }}
                 >
                     <CommentInput postId={postSelected?._id} />
                 </Paper>
-                {comments && comments.length ? (
-                    <>
+                {Boolean(comments.length) && (
+                    <Paper
+                        onScroll={handleScrollComment}
+                        style={{
+                            marginTop: "20px",
+                            minHeight: "550px",
+                            borderRadius: "10px",
+                            overflow: "hidden auto",
+                            height: `${commentAreaHeight}px`,
+                            backgroundColor: "rgb(255,255,255)",
+                        }}
+                    >
                         {comments.map((comment) => (
-                            <div key={comment?._id}>
-                                <Comment comment={comment} />
-                            </div>
+                            <Comment comment={comment} key={comment?._id} />
                         ))}
-                        <div
-                            style={{
-                                display: "flex",
-                                justifyContent: "center",
-                            }}
-                        >
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={() => {
-                                    setPage(page + 1);
-                                    handleGetComments(page + 1, postId);
-                                }}
-                            >
-                                More comments
-                            </Button>
-                        </div>
-                    </>
-                ) : null}
+                    </Paper>
+                )}
             </Grid>
         </div>
-    ) : null;
+    );
 };
 
 export default Post;

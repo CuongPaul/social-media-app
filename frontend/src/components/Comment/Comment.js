@@ -1,186 +1,107 @@
 import {
     Menu,
     List,
-    Button,
     Divider,
     ListItem,
     MenuItem,
-    TextField,
     CardMedia,
     Typography,
     IconButton,
     ListItemText,
     ListItemAvatar,
 } from "@material-ui/core";
-import React, { useContext, useState } from "react";
-import { MoreHoriz, SendOutlined } from "@material-ui/icons";
+import { MoreHoriz } from "@material-ui/icons";
+import React, { useState, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faThumbsUp } from "@fortawesome/free-regular-svg-icons";
-import { faThumbsUp as filledLike } from "@fortawesome/free-solid-svg-icons";
+import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 import AvatarIcon from "../UI/AvatarIcon";
-import { UserContext, UIContext } from "../../App";
+import { useComment } from "../../hooks";
+import { UIContext, UserContext, PostContext } from "../../App";
 
 const Comment = ({ comment }) => {
-    const { uiState } = useContext(UIContext);
-    const { userState } = useContext(UserContext);
+    const {
+        uiState: { darkMode },
+    } = useContext(UIContext);
+    const {
+        userState: { currentUser },
+    } = useContext(UserContext);
+    const { postDispatch } = useContext(PostContext);
 
-    const [error, setError] = useState("");
-    const [isOpen, setIsOpen] = useState(null);
-    const [isEdit, setIsEdit] = useState(false);
-    const [commentText, setCommentText] = useState(comment?.text ? comment.text : "");
+    const [anchorEl, setAnchorEl] = useState(null);
 
-    const handleLikeComment = () => {
-        console.log("ABC");
-    };
+    const { handleDeleteComment } = useComment();
 
-    const isLiked = () => {
-        return comment?.react?.like?.includes(userState?.currentUser?._id);
-    };
-
-    const handleEditComment = (e) => {
-        setError("");
-        setCommentText(e.target.value);
-    };
-
-    const listItems = (
-        <ListItem alignItems="flex-start">
-            <ListItemAvatar>
-                <AvatarIcon text={comment?.user.name} imageUrl={comment?.user.avatar_image} />
-            </ListItemAvatar>
-            <ListItemText
-                primary={
-                    <Typography style={{ color: uiState.darkMode && "rgb(255,255,255)" }}>
-                        {comment?.user.name}
-                    </Typography>
-                }
-                secondary={
-                    <>
-                        {isEdit ? (
-                            <div style={{ display: "flex" }}>
-                                <TextField
-                                    error={error ? true : false}
-                                    helperText={error}
-                                    value={commentText}
-                                    onChange={handleEditComment}
-                                    multiline
-                                    maxRows={4}
-                                    style={{
-                                        width: "100%",
-                                        borderRadius: "20px",
-                                        border: "none",
-                                        background: uiState.darkMode
-                                            ? "rgb(24,25,26)"
-                                            : "rgb(240,242,245)",
-                                        padding: "8px 16px",
-                                    }}
-                                />
-                                <IconButton
-                                    onClick={() => {
-                                        // updateComment({
-                                        //     id: comment?._id,
-                                        //     body: { text: commentText },
-                                        // }).then((res) => {
-                                        //     if (res.data.message === "success") {
-                                        //         setIsEdit(false);
-                                        //     }
-                                        // });
-                                    }}
-                                >
-                                    <SendOutlined />
-                                </IconButton>
-                            </div>
-                        ) : (
-                            commentText
-                        )}
-
-                        {comment?.image && (
-                            <CardMedia
-                                component={
-                                    comment?.image.split(".").pop().substring(0, 3) === "mp4"
-                                        ? "video"
-                                        : "img"
-                                }
-                                style={{
-                                    width: "100%",
-                                    height: "100%",
-                                    objectFit: "contain",
-                                }}
-                                image={comment?.image}
-                                title="Paella dish"
-                                controls
-                            />
-                        )}
-                    </>
-                }
-            />
-            <div>
-                <IconButton onClick={(e) => setIsOpen(e.currentTarget)}>
-                    <MoreHoriz />
-                </IconButton>
-
-                <Menu
-                    id="comment-action-menu"
-                    anchorEl={isOpen}
-                    open={Boolean(isOpen)}
-                    onClose={() => setIsOpen(null)}
-                >
-                    <MenuItem
-                        onClick={() => {
-                            setIsOpen(null);
-                            setIsEdit(true);
-                        }}
-                    >
-                        Edit
-                    </MenuItem>
-                    <MenuItem
-                        onClick={() => {
-                            // deleteComment(comment._id).then((res) => {
-                            //     if (res.data.message === "success") {
-                            //         const newComments = postState.post.comments.filter(
-                            //             (item) => comment._id !== item.id
-                            //         );
-                            //         postDispatch({ type: "DELETE_COMMENT", payload: newComments });
-                            //     }
-                            // });
-                        }}
-                    >
-                        Delete
-                    </MenuItem>
-                </Menu>
-            </div>
-        </ListItem>
-    );
     return (
-        <div style={{ marginTop: "16px" }}>
-            <List>
-                {listItems}
-
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "flex-end",
-                    }}
-                >
-                    <Button
-                        onClick={handleLikeComment}
-                        size="small"
-                        color="primary"
-                        startIcon={
-                            isLiked() ? (
-                                <FontAwesomeIcon icon={filledLike} size="sm" />
-                            ) : (
-                                <FontAwesomeIcon icon={faThumbsUp} size="sm" />
-                            )
-                        }
-                    >
-                        ({comment?.react.like.length})
-                    </Button>
-                </div>
-                <Divider variant="inset" component="li" />
-            </List>
-        </div>
+        <List>
+            <ListItem style={{ display: "flex", alignItems: "start" }}>
+                <ListItemAvatar>
+                    <AvatarIcon text={comment.user.name} imageUrl={comment.user.avatar_image} />
+                </ListItemAvatar>
+                <ListItemText
+                    primary={
+                        <Typography style={{ color: darkMode && "rgb(255,255,255)" }}>
+                            {comment.user.name}
+                        </Typography>
+                    }
+                    secondary={
+                        <div style={{ marginTop: "5px" }}>
+                            <Typography style={{ color: darkMode && "rgb(255,255,255)" }}>
+                                {comment.text}
+                            </Typography>
+                            {comment.image && (
+                                <CardMedia
+                                    controls
+                                    title={""}
+                                    image={comment.image}
+                                    component={
+                                        comment.image.split(".").pop().substring(0, 3) === "mp4"
+                                            ? "video"
+                                            : "img"
+                                    }
+                                    style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                                />
+                            )}
+                        </div>
+                    }
+                />
+                {currentUser?._id === comment.user._id && (
+                    <div>
+                        <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
+                            <MoreHoriz />
+                        </IconButton>
+                        <Menu
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={() => setAnchorEl(null)}
+                        >
+                            <MenuItem
+                                onClick={() => {
+                                    setAnchorEl(null);
+                                    postDispatch({
+                                        payload: comment,
+                                        type: "SET_COMMENT_SELECTED",
+                                    });
+                                }}
+                            >
+                                <FontAwesomeIcon icon={faPen} />
+                                <Typography style={{ marginLeft: "20px" }}>Edit</Typography>
+                            </MenuItem>
+                            <MenuItem
+                                onClick={() => {
+                                    setAnchorEl(null);
+                                    handleDeleteComment(comment._id);
+                                }}
+                            >
+                                <FontAwesomeIcon icon={faTrash} />
+                                <Typography style={{ marginLeft: "20px" }}>Delete</Typography>
+                            </MenuItem>
+                        </Menu>
+                    </div>
+                )}
+            </ListItem>
+            <Divider variant="inset" />
+        </List>
     );
 };
 

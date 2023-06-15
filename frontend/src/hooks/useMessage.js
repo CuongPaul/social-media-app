@@ -3,7 +3,7 @@ import { useState, useContext } from "react";
 import callApi from "../api";
 import { UIContext, ChatContext } from "../App";
 
-const useSubmitMessage = () => {
+const useMessage = () => {
     const { uiDispatch } = useContext(UIContext);
     const { chatDispatch } = useContext(ChatContext);
 
@@ -106,4 +106,4 @@ const useSubmitMessage = () => {
     };
 };
 
-export default useSubmitMessage;
+export default useMessage;

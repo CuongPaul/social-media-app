@@ -22,14 +22,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faUserTag } from "@fortawesome/free-solid-svg-icons";
 
 import AvatarIcon from "../../UI/AvatarIcon";
-import { useSearchFriends } from "../../../hooks";
+import { useSearch } from "../../../hooks";
 
 const TagFriends = ({ tagFriends, setTagFriends }) => {
     const [friends, setFriends] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
 
-    const { isLoading, handleSearchFriends } = useSearchFriends();
+    const { isLoading, handleSearchFriends } = useSearch();
 
     const handleClickFriend = (friend) => {
         const isSelected = tagFriends.findIndex((item) => item._id === friend._id);
@@ -129,7 +129,7 @@ const TagFriends = ({ tagFriends, setTagFriends }) => {
                                     cursor: "pointer",
                                     borderRadius: "10px",
                                     marginBottom: "10px",
-                                    background: "rgb(244,245,246)",
+                                    backgroundColor: "rgb(244,245,246)",
                                 }}
                                 onClick={() => handleClickFriend(friend)}
                             >

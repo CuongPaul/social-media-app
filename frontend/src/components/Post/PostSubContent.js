@@ -14,14 +14,12 @@ const PostSubContent = ({ postBody, username }) => {
             {postBody?.tag_friends?.length ? (
                 <>
                     {" with "}
-                    <b>
-                        {postBody.tag_friends.map((friend, index) => (
-                            <span key={index}>
-                                {friend.name}
-                                {index < postBody.tag_friends.length - 1 ? ", " : " "}
-                            </span>
-                        ))}
-                    </b>
+                    {postBody.tag_friends.map((friend, index) => (
+                        <span key={index}>
+                            <b>{friend.name}</b>
+                            {index < postBody.tag_friends.length - 1 ? "and " : " "}
+                        </span>
+                    ))}
                 </>
             ) : null}
             {postBody?.location ? (

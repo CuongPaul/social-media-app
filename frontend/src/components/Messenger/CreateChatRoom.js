@@ -26,7 +26,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import LoadingIcon from "../UI/Loading";
 import AvatarIcon from "../UI/AvatarIcon";
-import { useChatRoom, useSearchFriends } from "../../hooks";
+import { useChatRoom, useSearch } from "../../hooks";
 
 const ChatRoomCreate = () => {
     const inputRef = useRef(null);
@@ -40,7 +40,7 @@ const ChatRoomCreate = () => {
     const [chatRoomMembers, setChatRoomMembers] = useState([]);
 
     const { handleCreateChatRoom, isLoading: isLoadingChatRoom } = useChatRoom();
-    const { handleSearchFriends, isLoading: isLoadingSearchFriend } = useSearchFriends();
+    const { handleSearchFriends, isLoading: isLoadingSearchFriend } = useSearch();
 
     const handleChangeImage = (e) => {
         setImageUpload(e.target.files[0]);
@@ -211,7 +211,7 @@ const ChatRoomCreate = () => {
                                     cursor: "pointer",
                                     borderRadius: "10px",
                                     marginBottom: "10px",
-                                    background: "rgb(244,245,246)",
+                                    backgroundColor: "rgb(244,245,246)",
                                 }}
                                 onClick={() => handleSelectFriend(friend)}
                             >

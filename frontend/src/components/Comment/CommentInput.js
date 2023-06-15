@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Paper, TextField, IconButton, InputAdornment } from "@material-ui/core";
 
 import Emoji from "../Emoji";
-import { useSubmitComment } from "../../hooks";
+import { useComment } from "../../hooks";
 import { UIContext, PostContext } from "../../App";
 import FilesUpload from "../Post/PostDialog/FilesUpload";
 import FilePreview from "../Post/PostDialog/FilePreview";
@@ -15,14 +15,14 @@ const CommentInput = ({ postId }) => {
         uiState: { darkMode },
     } = useContext(UIContext);
     const {
-        postState: { postSelected, commentSelected },
+        postState: { commentSelected },
     } = useContext(PostContext);
 
     const [text, setText] = useState("");
     const [filePreview, setFilePreview] = useState("");
     const [fileUpload, setFileUpload] = useState(null);
 
-    const { handleCreateComment, handleUpdateComment } = useSubmitComment();
+    const { handleCreateComment, handleUpdateComment } = useComment();
 
     const handleClear = () => {
         setText("");
@@ -110,16 +110,15 @@ const CommentInput = ({ postId }) => {
                             handleRemoveFile,
                         };
 
-                        // if (postSelected) {
-                        //     handleUpdateComment({
-                        //         ...argument,
-                        //         currentImage: filePreview,
-                        //         messageId: postSelected._id,
-                        //     });
-                        // } else {
-                        //     handleCreateComment(argument);
-                        // }
-                        handleCreateComment(argument);
+                        if (commentSelected) {
+                            handleUpdateComment({
+                                ...argument,
+                                currentImage: filePreview,
+                                commentId: commentSelected._id,
+                            });
+                        } else {
+                            handleCreateComment(argument);
+                        }
                     }
                 }}
                 style={{
@@ -142,16 +141,15 @@ const CommentInput = ({ postId }) => {
                         handleRemoveFile,
                     };
 
-                    // if (postSelected) {
-                    //     handleUpdateComment({
-                    //         ...argument,
-                    //         currentImage: filePreview,
-                    //         messageId: postSelected._id,
-                    //     });
-                    // } else {
-                    //     handleCreateComment(argument);
-                    // }
-                    handleCreateComment(argument);
+                    if (commentSelected) {
+                        handleUpdateComment({
+                            ...argument,
+                            currentImage: filePreview,
+                            commentId: commentSelected._id,
+                        });
+                    } else {
+                        handleCreateComment(argument);
+                    }
                 }}
                 style={{
                     marginLeft: "16px",

@@ -1,22 +1,22 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Grid, Button } from "@material-ui/core";
+import { Button } from "@material-ui/core";
+import { faComment } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 
-import LikePost from "./React";
+import PostReact from "./PostReact";
 
 const PostFooter = ({ post }) => {
     return (
-        <div style={{ display: "flex", margin: "8px 16px" }}>
-            <LikePost post={post} />
+        <div style={{ display: "flex", margin: "20px" }}>
+            <PostReact post={post} />
             <Button
                 component={Link}
-                to={`/post/${post._id}`}
+                to={`/post/${post?._id}`}
                 style={{ width: "100%" }}
-                startIcon={<FontAwesomeIcon icon={faPaperPlane} />}
+                startIcon={<FontAwesomeIcon icon={faComment} />}
             >
-                View
+                Comment
             </Button>
         </div>
     );

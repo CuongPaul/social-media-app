@@ -117,7 +117,7 @@ const SearchChatRooms = () => {
                                     cursor: "pointer",
                                     borderRadius: "10px",
                                     marginBottom: "10px",
-                                    background: "rgb(244,245,246)",
+                                    backgroundColor: "rgb(244,245,246)",
                                 }}
                                 onClick={() => handleClickChatItem(chatRoom)}
                             >

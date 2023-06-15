@@ -22,7 +22,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { UIContext } from "../../App";
 import LoadingIcon from "../UI/Loading";
 import AvatarIcon from "../UI/AvatarIcon";
-import { useSearchUsers } from "../../hooks";
+import { useSearch } from "../../hooks";
 import ButtonGroupUserActions from "../ButtonGroupUserActions";
 
 const SearchUsers = () => {
@@ -34,7 +34,7 @@ const SearchUsers = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
 
-    const { isLoading, handleSearchUsers } = useSearchUsers();
+    const { isLoading, handleSearchUsers } = useSearch();
 
     return (
         <div style={{ marginLeft: "16px" }}>
@@ -48,7 +48,7 @@ const SearchUsers = () => {
                     borderRadius: "20px",
                     color: "rgb(176,179,184)",
                     justifyContent: "space-between",
-                    background: darkMode ? "rgb(58,59,60)" : "rgb(240,242,245)",
+                    backgroundColor: darkMode ? "rgb(58,59,60)" : "rgb(240,242,245)",
                 }}
                 onClick={() => setIsOpen(true)}
             >
@@ -125,7 +125,9 @@ const SearchUsers = () => {
                                     cursor: "pointer",
                                     borderRadius: "5px",
                                     marginBottom: "10px",
-                                    background: darkMode ? "rgb(58,59,60)" : "rgb(240,242,245)",
+                                    backgroundColor: darkMode
+                                        ? "rgb(58,59,60)"
+                                        : "rgb(240,242,245)",
                                 }}
                             >
                                 <ListItem

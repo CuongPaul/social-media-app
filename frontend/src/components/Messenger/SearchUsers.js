@@ -20,7 +20,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import LoadingIcon from "../UI/Loading";
 import { ChatContext } from "../../App";
 import AvatarIcon from "../UI/AvatarIcon";
-import { useChatRoom, useSearchUsers } from "../../hooks";
+import { useChatRoom, useSearch } from "../../hooks";
 
 const SearchUsers = () => {
     const {
@@ -31,7 +31,7 @@ const SearchUsers = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
 
-    const { isLoading, handleSearchUsers } = useSearchUsers();
+    const { isLoading, handleSearchUsers } = useSearch();
     const { handleSelectChatRoom, handleCreateChatRoomForTwoPeople } = useChatRoom();
 
     const handleClickUserItem = async (user) => {
@@ -120,7 +120,7 @@ const SearchUsers = () => {
                                     cursor: "pointer",
                                     borderRadius: "10px",
                                     marginBottom: "10px",
-                                    background: "rgb(244,245,246)",
+                                    backgroundColor: "rgb(244,245,246)",
                                 }}
                                 onClick={() => handleClickUserItem(user)}
                             >

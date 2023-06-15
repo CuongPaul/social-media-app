@@ -23,7 +23,7 @@ const FilePreview = ({ filePreview, size = "100%", zoomOutVideo, handleRemoveFil
         <div style={{ position: "relative", margin: "20px 0px" }}>
             {component == "blob" ? (
                 <img
-                    alt="File upload"
+                    alt={""}
                     src={filePreview}
                     style={{ width: size, height: size, borderRadius: "10px" }}
                 />
@@ -63,7 +63,7 @@ const FilePreview = ({ filePreview, size = "100%", zoomOutVideo, handleRemoveFil
                             width: "25px",
                             color: "white",
                             height: "25px",
-                            background: "tomato",
+                            backgroundColor: "tomato",
                         }}
                     >
                         <Close />

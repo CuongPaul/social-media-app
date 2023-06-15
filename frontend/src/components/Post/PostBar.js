@@ -34,7 +34,7 @@ const PostBar = () => {
                             cursor: "pointer",
                             borderRadius: "16px",
                             padding: "10px 20px",
-                            background: darkMode ? null : "rgb(244,245,246)",
+                            backgroundColor: darkMode ? null : "rgb(244,245,246)",
                         }}
                         onClick={() => setIsOpenPostDialog(true)}
                     >
