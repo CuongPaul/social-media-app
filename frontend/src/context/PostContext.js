@@ -56,10 +56,6 @@ export const PostReducer = (state, action) => {
                 }
             }
 
-            const indexOfPostSelected = postsAfterReact.findIndex(
-                (item) => item._id === action.payload.post_id
-            );
-
             return { ...state, posts: postsAfterReact, postSelected: postSelectedAfterReact };
 
         case "UPDATE_POST":
@@ -91,6 +87,31 @@ export const PostReducer = (state, action) => {
 
         case "SET_COMMENTS":
             return { ...state, comments: action.payload };
+
+        case "REACT_COMMENT":
+            const commentsAfterReact = [...state.comments];
+            const indexOfCommentReacted = commentsAfterReact.findIndex(
+                (item) => item._id === action.payload.comment_id
+            );
+
+            const indexOfUserReact = commentsAfterReact[indexOfCommentReacted].react[
+                action.payload.key
+            ].findIndex((item) => item._id === action.payload.user._id);
+
+            if (indexOfUserReact === -1) {
+                commentsAfterReact[indexOfCommentReacted].react[action.payload.key].push({
+                    _id: action.payload.user._id,
+                    name: action.payload.user.name,
+                    avatar_image: action.payload.user.avatar_image,
+                });
+            } else {
+                commentsAfterReact[indexOfCommentReacted].react[action.payload.key].splice(
+                    indexOfUserReact,
+                    1
+                );
+            }
+
+            return { ...state, comments: commentsAfterReact };
 
         case "DELETE_COMMENT":
             const commentsAfterDelete = [...state.comments].filter(

@@ -16,6 +16,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 import { useComment } from "../../hooks";
+import CommentReact from "./CommentReact";
 import AvatarIcon from "../common/AvatarIcon";
 import { UIContext, UserContext, PostContext } from "../../App";
 
@@ -29,12 +30,13 @@ const Comment = ({ comment }) => {
     const { postDispatch } = useContext(PostContext);
 
     const [anchorEl, setAnchorEl] = useState(null);
+    const [isShowReact, setIsShowReact] = useState(false);
 
     const { handleDeleteComment } = useComment();
 
     return (
-        <List>
-            <ListItem style={{ display: "flex", alignItems: "start" }}>
+        <List onMouseEnter={() => setIsShowReact(true)} onMouseLeave={() => setIsShowReact(false)}>
+            <ListItem style={{ display: "flex", minHeight: "99px", alignItems: "start" }}>
                 <ListItemAvatar>
                     <AvatarIcon text={comment.user.name} imageUrl={comment.user.avatar_image} />
                 </ListItemAvatar>
@@ -65,40 +67,51 @@ const Comment = ({ comment }) => {
                         </div>
                     }
                 />
-                {currentUser?._id === comment.user._id && (
-                    <div>
-                        <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
-                            <MoreHoriz />
-                        </IconButton>
-                        <Menu
-                            anchorEl={anchorEl}
-                            open={Boolean(anchorEl)}
-                            onClose={() => setAnchorEl(null)}
-                        >
-                            <MenuItem
-                                onClick={() => {
-                                    setAnchorEl(null);
-                                    postDispatch({
-                                        payload: comment,
-                                        type: "SET_COMMENT_SELECTED",
-                                    });
-                                }}
+                <div style={{ display: "flex", alignItems: "center", flexDirection: "column" }}>
+                    {currentUser?._id === comment.user._id && (
+                        <div>
+                            <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
+                                <MoreHoriz />
+                            </IconButton>
+                            <Menu
+                                anchorEl={anchorEl}
+                                open={Boolean(anchorEl)}
+                                onClose={() => setAnchorEl(null)}
                             >
-                                <FontAwesomeIcon icon={faPen} />
-                                <Typography style={{ marginLeft: "20px" }}>Edit</Typography>
-                            </MenuItem>
-                            <MenuItem
-                                onClick={() => {
-                                    setAnchorEl(null);
-                                    handleDeleteComment(comment._id);
-                                }}
-                            >
-                                <FontAwesomeIcon icon={faTrash} />
-                                <Typography style={{ marginLeft: "20px" }}>Delete</Typography>
-                            </MenuItem>
-                        </Menu>
-                    </div>
-                )}
+                                <MenuItem
+                                    onClick={() => {
+                                        setAnchorEl(null);
+                                        postDispatch({
+                                            payload: comment,
+                                            type: "SET_COMMENT_SELECTED",
+                                        });
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faPen} />
+                                    <Typography style={{ marginLeft: "20px" }}>Edit</Typography>
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={() => {
+                                        setAnchorEl(null);
+                                        handleDeleteComment(comment._id);
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faTrash} />
+                                    <Typography style={{ marginLeft: "20px" }}>Delete</Typography>
+                                </MenuItem>
+                            </Menu>
+                        </div>
+                    )}
+                    {Boolean(
+                        isShowReact ||
+                            comment.react?.like.length ||
+                            comment.react?.love.length ||
+                            comment.react?.haha.length ||
+                            comment.react?.wow.length ||
+                            comment.react?.sad.length ||
+                            comment.react?.wow.length
+                    ) && <CommentReact comment={comment} />}
+                </div>
             </ListItem>
             <Divider variant="inset" />
         </List>

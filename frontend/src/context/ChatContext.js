@@ -43,6 +43,31 @@ export const ChatReducer = (state, action) => {
         case "ADD_CHATROOMS":
             return { ...state, chatRooms: [...state.chatRooms, ...action.payload] };
 
+        case "REACT_MESSAGE":
+            const messagesAfterReact = [...state.messages];
+            const indexOfMessageReacted = messagesAfterReact.findIndex(
+                (item) => item._id === action.payload.message_id
+            );
+
+            const indexOfUserReact = messagesAfterReact[indexOfMessageReacted].react[
+                action.payload.key
+            ].findIndex((item) => item._id === action.payload.user._id);
+
+            if (indexOfUserReact === -1) {
+                messagesAfterReact[indexOfMessageReacted].react[action.payload.key].push({
+                    _id: action.payload.user._id,
+                    name: action.payload.user.name,
+                    avatar_image: action.payload.user.avatar_image,
+                });
+            } else {
+                messagesAfterReact[indexOfMessageReacted].react[action.payload.key].splice(
+                    indexOfUserReact,
+                    1
+                );
+            }
+
+            return { ...state, messages: messagesAfterReact };
+
         case "SET_CHATROOMS":
             return { ...state, chatRooms: action.payload };
 
