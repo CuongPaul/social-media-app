@@ -12,6 +12,7 @@ import moment from "moment";
 import { MoreHoriz } from "@material-ui/icons";
 import React, { useState, useContext } from "react";
 
+import MessageReact from "./MessageReact";
 import { UIContext, ChatContext, UserContext } from "../../App";
 
 const useStyles = makeStyles(() => ({
@@ -71,7 +72,7 @@ const Message = ({ message }) => {
         >
             <Paper
                 style={{
-                    color: darkMode && "rgb(255,255,255)",
+                    position: "relative",
                     backgroundColor: isSender
                         ? darkMode
                             ? "rgb(1,133,243)"
@@ -79,6 +80,7 @@ const Message = ({ message }) => {
                         : darkMode
                         ? "rgb(46,139,87)"
                         : "rgb(240,242,245)",
+                    color: darkMode && "rgb(255,255,255)",
                 }}
                 className={isSender ? classes.sender : classes.reciver}
             >
@@ -101,6 +103,15 @@ const Message = ({ message }) => {
                 <Typography className={classes.date}>
                     {moment(message?.createdAt).fromNow()}
                 </Typography>
+                {Boolean(
+                    isShowActions ||
+                        message.react?.like.length ||
+                        message.react?.love.length ||
+                        message.react?.haha.length ||
+                        message.react?.wow.length ||
+                        message.react?.sad.length ||
+                        message.react?.wow.angry
+                ) && <MessageReact message={message} />}
             </Paper>
             {isSender && isShowActions && (
                 <div>

@@ -9,7 +9,7 @@ const messageSchema = new Schema(
     {
         image: StringType,
         text: StringType,
-        react: { ref: "react", required: true, type: ObjectIdType },
+        react: { ref: "react", type: ObjectIdType },
         sender: { ref: "user", required: true, type: ObjectIdType },
         chat_room: { required: true, ref: "chat-room", type: ObjectIdType },
     },

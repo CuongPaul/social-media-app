@@ -10,8 +10,8 @@ const postSchema = new Schema(
     {
         images: [TrimStringType],
         user: { ...UserIdType, required: true },
+        react: { ref: "react", type: ObjectIdType },
         text: { trim: true, type: String, required: true },
-        react: { ref: "react", required: true, type: ObjectIdType },
         privacy: { type: String, default: "PUBLIC", enum: ["FRIEND", "PUBLIC", "ONLY_ME"] },
         body: new Schema(
             { location: TrimStringType, feelings: TrimStringType, tag_friends: [UserIdType] },

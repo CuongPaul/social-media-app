@@ -61,6 +61,10 @@ const PostReact = ({ post }) => {
         }
     };
 
+    if (post && !post.react) {
+        post.react = { sad: [], wow: [], like: [], love: [], haha: [], angry: [] };
+    }
+
     return (
         <div style={{ display: "flex" }}>
             {[

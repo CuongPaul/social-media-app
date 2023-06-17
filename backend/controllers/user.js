@@ -191,7 +191,7 @@ const getCurrentUserController = async (req, res) => {
     try {
         const user = await User.findById(userId, { password: 0, chat_rooms: 0 }).populate(
             "friends",
-            { _id: 1, name: 1, avatar_image: 1 }
+            { _id: 1, name: 1, friends: 1, avatar_image: 1 }
         );
 
         if (!user) {

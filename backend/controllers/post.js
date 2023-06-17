@@ -55,7 +55,15 @@ const reactPostController = async (req, res) => {
             return res.status(400).json({ message: "Can't react this post" });
         }
 
-        const react = await React.findById(post.react);
+        let reactId = post.react;
+        if (!reactId) {
+            const emptyReact = await new React().save();
+
+            reactId = emptyReact._id;
+            await post.updateOne({ react: emptyReact._id });
+        }
+
+        const react = await React.findById(reactId);
         const userIndex = react[reactKey].indexOf(userId);
 
         if (userIndex == -1) {
@@ -79,8 +87,6 @@ const createPostController = async (req, res) => {
     const bodyInvalid = typeof body == "string" ? JSON.parse(body) : body;
 
     try {
-        const emptyReact = await new React().save();
-
         if (bodyInvalid?.tag_friends?.length) {
             const users = await User.find({ _id: { $in: bodyInvalid.tag_friends } });
 
@@ -99,26 +105,14 @@ const createPostController = async (req, res) => {
             text,
             images,
             privacy,
+            react: null,
             user: userId,
             body: bodyInvalid,
-            react: emptyReact._id,
         })
             .save()
             .then((res) =>
                 res
                     .populate("user", { _id: 1, name: 1, avatar_image: 1 })
-                    .populate({
-                        path: "react",
-                        select: "_id wow sad like love haha angry",
-                        populate: [
-                            { path: "wow", select: "_id name avatar_image" },
-                            { path: "sad", select: "_id name avatar_image" },
-                            { path: "like", select: "_id name avatar_image" },
-                            { path: "love", select: "_id name avatar_image" },
-                            { path: "haha", select: "_id name avatar_image" },
-                            { path: "angry", select: "_id name avatar_image" },
-                        ],
-                    })
                     .populate("body.tag_friends", { _id: 1, name: 1, avatar_image: 1 })
                     .execPopulate()
             );
