@@ -100,10 +100,10 @@ const Friends = ({ friends }) => {
                                 <Button
                                     variant="contained"
                                     style={{
-                                        color: "rgb(255,255,255)",
                                         margin: "10px",
-                                        minWidth: "100px",
                                         fontSize: "12px",
+                                        minWidth: "100px",
+                                        color: "rgb(255,255,255)",
                                         backgroundColor: "rgb(0,123,255)",
                                     }}
                                     onClick={() => handleSendFriendRequest(friend._id)}

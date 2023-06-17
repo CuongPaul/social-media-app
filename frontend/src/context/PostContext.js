@@ -59,8 +59,11 @@ export const PostReducer = (state, action) => {
             return { ...state, posts: postsAfterReact, postSelected: postSelectedAfterReact };
 
         case "UPDATE_POST":
-            const postsAfterUpdate = [...state.posts];
+            if (state.postSelected) {
+                return { ...state, postSelected: action.payload };
+            }
 
+            const postsAfterUpdate = [...state.posts];
             const postUpdatedIndex = postsAfterUpdate.findIndex(
                 (post) => post._id === action.payload._id
             );

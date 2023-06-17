@@ -15,7 +15,6 @@ import {
     DialogContent,
     LinearProgress,
     InputAdornment,
-    CircularProgress,
 } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 import React, { useState, Fragment, useEffect, useContext } from "react";
@@ -30,6 +29,7 @@ import FilePreview from "./FilePreview";
 import { usePost } from "../../../hooks";
 import PostSubContent from "../PostSubContent";
 import AvatarIcon from "../../common/AvatarIcon";
+import LoadingIcon from "../../common/LoadingIcon";
 import { UIContext, UserContext } from "../../../App";
 
 const PostDialog = ({ isOpen, postData, setIsOpen }) => {
@@ -186,17 +186,10 @@ const PostDialog = ({ isOpen, postData, setIsOpen }) => {
                             });
                         }}
                     >
-                        {isLoading ? (
-                            <CircularProgress
-                                size={25}
-                                variant="indeterminate"
-                                style={{ color: "rgb(255,255,255)" }}
-                            />
-                        ) : postData ? (
-                            "Update post"
-                        ) : (
-                            "Create post"
-                        )}
+                        <LoadingIcon
+                            isLoading={isLoading}
+                            text={postData ? "Update post" : "Create post"}
+                        />
                     </Button>
                 </DialogActions>
             </Dialog>

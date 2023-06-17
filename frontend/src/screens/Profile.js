@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import React, { useState, Fragment, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Tab, Grid, Tabs, Paper, AppBar, Divider } from "@material-ui/core";
 
 import callApi from "../api";
@@ -56,7 +56,7 @@ const Profile = ({ userId, conScreen }) => {
     }, [userId, params.userId]);
 
     return (
-        <Fragment>
+        <div style={{ minHeight: `calc(100vh - 64px)` }}>
             <Paper style={{ marginTop: !conScreen && "70px" }}>
                 <ProfileHeader user={user} conScreen={conScreen} />
                 <Grid container justifyContent="center" alignItems="center">
@@ -94,7 +94,7 @@ const Profile = ({ userId, conScreen }) => {
                     </TabPanel>
                 </Grid>
             </Grid>
-        </Fragment>
+        </div>
     );
 };
 

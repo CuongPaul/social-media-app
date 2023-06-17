@@ -64,7 +64,7 @@ const Message = ({ message }) => {
             onMouseEnter={() => setIsShowActions(true)}
             onMouseLeave={() => setIsShowActions(false)}
             style={{
-                marginTop: "16px",
+                marginTop: "24px",
                 display: isSender && "flex",
                 alignItems: isSender && "center",
                 flexDirection: isSender && "row-reverse",

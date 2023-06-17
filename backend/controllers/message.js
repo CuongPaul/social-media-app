@@ -96,9 +96,32 @@ const createMessageController = async (req, res) => {
     const { text, image, chat_room_id } = req.body;
 
     try {
-        const chatRoom = await ChatRoom.findOne({ _id: chat_room_id, members: userId });
+        const chatRoom = await ChatRoom.findOne({ _id: chat_room_id, members: userId }).populate(
+            "members"
+        );
         if (!chatRoom) {
             return res.status(400).json({ message: "Group doesn't exist" });
+        }
+
+        const isTwoPeopleChatRoom =
+            !chatRoom.is_public &&
+            chatRoom.name == "" &&
+            chatRoom.admin == null &&
+            chatRoom.avatar_image == "" &&
+            chatRoom.members.length == 2;
+
+        if (isTwoPeopleChatRoom) {
+            const sender = chatRoom.members.find((member) => userId == member._id);
+            const reciver = chatRoom.members.find((member) => userId != member._id);
+
+            if (reciver.block_users.includes(userId)) {
+                return res
+                    .status(400)
+                    .json({ message: `Currently unable to send messages to ${reciver.name}` });
+            }
+            if (sender.block_users.includes(reciver._id)) {
+                return res.status(400).json({ message: `Unblock ${reciver.name} to send message` });
+            }
         }
 
         const newMessage = await new Message({

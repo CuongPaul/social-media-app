@@ -303,7 +303,7 @@ const getChatRoomsByUserController = async (req, res) => {
             .limit(pageSize)
             .sort({ createdAt: -1 })
             .skip((page - 1) * pageSize)
-            .populate("members", { _id: 1, name: 1, avatar_image: 1 });
+            .populate("members", { _id: 1, name: 1, block_users: 1, avatar_image: 1 });
 
         const result = [];
         for (const chatRoom of chatRooms) {
@@ -334,12 +334,28 @@ const getChatRoomsByUserController = async (req, res) => {
                 !chatRoom.avatar_image &&
                 chatRoom.members.length == 2
             ) {
-                const friend = chatRoom.members.find((member) => member._id != userId);
+                const sender = chatRoom.members.find((member) => userId == member._id);
+                const reciver = chatRoom.members.find((member) => userId != member._id);
 
-                chatRoom.name = friend.name;
-                chatRoom.avatar_image = friend.avatar_image;
+                if (reciver.block_users.some((item) => String(item) == String(userId))) {
+                    chatRoom.type_block = "is_blocked";
+                }
+                if (sender.block_users.some((item) => String(item) == String(reciver._id))) {
+                    chatRoom.type_block = "block_reciver";
+                }
+
+                chatRoom.name = reciver.name;
+                chatRoom.avatar_image = reciver.avatar_image;
             }
-            result.push({ ...chatRoom, unseen_message });
+            result.push({
+                ...chatRoom,
+                unseen_message,
+                members: chatRoom.members.map((item) => ({
+                    _id: item._id,
+                    name: item.name,
+                    avatar_image: item.avatar_image,
+                })),
+            });
         }
 
         const count = await ChatRoom.countDocuments(query);

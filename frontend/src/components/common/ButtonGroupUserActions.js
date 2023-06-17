@@ -29,7 +29,7 @@ const ButtonGroupUserActions = ({ userId }) => {
     const { handleSendFriendRequest, handleCancelFriendRequest } = useFriendRequest();
 
     const isSendedFriendRequests = sendedFriendRequests.find(
-        (item) => item.receiver._id === userId
+        (item) => item?.receiver._id === userId
     );
     const isBlockUsers = currentUser?.block_users.includes(userId);
     const isFriend = currentUser?.friends.find((friend) => friend._id === userId);
