@@ -21,7 +21,7 @@ const FilePreview = ({ filePreview, size = "100%", zoomOutVideo, handleRemoveFil
 
     return (
         <div style={{ position: "relative", margin: "20px 0px" }}>
-            {component == "blob" ? (
+            {component === "blob" ? (
                 <img
                     alt={""}
                     src={filePreview}

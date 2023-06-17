@@ -90,7 +90,7 @@ const Friends = () => {
                                 Friend requests sended
                             </ListSubheader>
                             {sendedFriendRequests.map((request) => (
-                                <ListItem key={request._id}>
+                                <ListItem key={request?._id}>
                                     <User user={request.receiver} setUserSelected={setUserSelected}>
                                         <CardActions style={{ padding: "0px", marginLeft: "16px" }}>
                                             <ButtonAction

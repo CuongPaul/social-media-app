@@ -58,7 +58,7 @@ const usePost = () => {
         }
     };
 
-    const handleDeletePost = async (postId, setIsOpen) => {
+    const handleDeletePost = async ({ postId, setIsOpen }) => {
         setIsLoading(true);
 
         try {

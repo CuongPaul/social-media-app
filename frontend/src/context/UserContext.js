@@ -146,7 +146,7 @@ const UserReducer = (state, action) => {
 
         case "CANCEL_FRIEND_REQUEST":
             const sendedFriendRequestsAfterCancel = [...state.sendedFriendRequests].filter(
-                (friendRequest) => friendRequest._id !== action.payload
+                (friendRequest) => friendRequest?._id !== action.payload
             );
 
             return {

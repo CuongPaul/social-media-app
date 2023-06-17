@@ -106,7 +106,9 @@ const Post = () => {
                         subheader={moment(postSelected?.createdAt).fromNow()}
                     />
                     <CardContent>
-                        <Typography style={{ fontWeight: 400, fontSize: "16px" }}>
+                        <Typography
+                            style={{ fontWeight: 400, fontSize: "16px", fontFamily: "fantasy" }}
+                        >
                             {postSelected?.text}
                         </Typography>
                     </CardContent>
