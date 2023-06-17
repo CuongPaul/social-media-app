@@ -8,7 +8,6 @@ import useMessage from "./useMessage";
 import useChatRoom from "./useChatRoom";
 import useFriendRequest from "./useFriendRequest";
 import useNotifications from "./useNotifications";
-import useUpdateProfile from "./useUpdateProfile";
 import useLocationService from "./useLocationService";
 
 export {
@@ -22,6 +21,5 @@ export {
     useChatRoom,
     useFriendRequest,
     useNotifications,
-    useUpdateProfile,
     useLocationService,
 };

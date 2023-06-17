@@ -39,10 +39,10 @@ const deleteAccountValidation = {
 
 const updateProfileValidation = {
     body: Joi.object({
-        name: Joi.string().trim(),
-        gender: Joi.string().allow(null).trim(),
-        hometown: Joi.string().allow(null).trim(),
-        education: Joi.string().allow(null).trim(),
+        name: Joi.string().trim().required(),
+        gender: Joi.string().allow("", null).trim(),
+        hometown: Joi.string().allow("", null).trim(),
+        education: Joi.string().allow("", null).trim(),
     }),
 };
 

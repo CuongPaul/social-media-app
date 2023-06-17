@@ -92,6 +92,52 @@ const useUser = () => {
         }
     };
 
+    const handleUpdateProfile = async (data) => {
+        setIsLoading(true);
+
+        try {
+            const { message } = await callApi({ data, method: "PUT", url: "/user/update-profile" });
+            userDispatch({ payload: data, type: "UPDATE_PROFILE" });
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, text: message, color: "success" },
+            });
+
+            setIsLoading(false);
+        } catch (err) {
+            setIsLoading(false);
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, color: "error", text: err.message },
+            });
+        }
+    };
+
+    const handleUpdatePassword = async (data) => {
+        setIsLoading(true);
+
+        try {
+            const { message } = await callApi({
+                data,
+                method: "PUT",
+                url: "/user/update-password",
+            });
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, text: message, color: "success" },
+            });
+            userDispatch({ type: "SIGN_OUT" });
+
+            setIsLoading(false);
+        } catch (err) {
+            setIsLoading(false);
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, color: "error", text: err.message },
+            });
+        }
+    };
+
     const handleUpdateCoverImage = async (image) => {
         setIsLoading(true);
 
@@ -162,6 +208,8 @@ const useUser = () => {
         handleUnfriend,
         handleBlockUser,
         handleUnblockUser,
+        handleUpdateProfile,
+        handleUpdatePassword,
         handleUpdateCoverImage,
         handleUpdateAvatarImage,
     };

@@ -57,6 +57,9 @@ const UserReducer = (state, action) => {
                 },
             };
 
+        case "UPDATE_PROFILE":
+            return { ...state, currentUser: { ...state.currentUser, ...action.payload } };
+
         case "SET_CURRENT_USER":
             const recentAccountStored = JSON.parse(localStorage.getItem("recent_accounts")) || [];
             const indexOfCurrentAccount = recentAccountStored.findIndex(

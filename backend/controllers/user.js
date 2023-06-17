@@ -1,3 +1,5 @@
+import bcrypt from "bcrypt";
+
 import redisClient from "../helpers/redis";
 import { User, FriendRequest } from "../models";
 
