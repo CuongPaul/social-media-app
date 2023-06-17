@@ -18,6 +18,7 @@ const useComment = () => {
                 url: "/comment",
                 query: { page, post_id: postId },
             });
+
             postDispatch({ payload: data.rows, type: "ADD_COMMENTS" });
 
             setIsLoading(false);
@@ -56,7 +57,7 @@ const useComment = () => {
                 url: "/comment",
                 data: { text, image: imageUrl, post_id: postId },
             });
-            console.log("data: ", data);
+
             postDispatch({ payload: data, type: "ADD_COMMENT" });
 
             setText("");
@@ -64,7 +65,7 @@ const useComment = () => {
 
             setIsLoading(false);
         } catch (err) {
-            setIsLoading(true);
+            setIsLoading(false);
 
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
@@ -78,11 +79,13 @@ const useComment = () => {
 
         try {
             await callApi({ method: "DELETE", url: `/comment/${commentId}` });
+
             postDispatch({ payload: commentId, type: "DELETE_COMMENT" });
 
             setIsLoading(false);
         } catch (err) {
-            setIsLoading(true);
+            setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -117,6 +120,7 @@ const useComment = () => {
                 url: `/comment/${commentId}`,
                 data: { text, image: imageUrl || currentImage },
             });
+
             postDispatch({ payload: data, type: "UPDATE_COMMENT_SELECTED" });
 
             setText("");
@@ -124,7 +128,7 @@ const useComment = () => {
 
             setIsLoading(false);
         } catch (err) {
-            setIsLoading(true);
+            setIsLoading(false);
 
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",

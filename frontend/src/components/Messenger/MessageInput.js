@@ -4,11 +4,11 @@ import React, { useState, useEffect, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Paper, TextField, IconButton, InputAdornment } from "@material-ui/core";
 
-import Emoji from "../Emoji";
+import Emoji from "../common/Emoji";
+import useMessage from "../../hooks/useMessage";
 import { UIContext, ChatContext } from "../../App";
 import FilesUpload from "../Post/PostDialog/FilesUpload";
 import FilePreview from "../Post/PostDialog/FilePreview";
-import useMessage from "../../hooks/useMessage";
 
 const MessageInput = ({ chatRoomId }) => {
     const {

@@ -20,8 +20,8 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import React, { useState, useEffect, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import AvatarIcon from "../UI/AvatarIcon";
 import { useChatRoom } from "../../hooks";
+import AvatarIcon from "../common/AvatarIcon";
 import { UIContext, ChatContext, UserContext } from "../../App";
 
 const ChatRoomMembers = ({ isOpen, setIsOpen }) => {

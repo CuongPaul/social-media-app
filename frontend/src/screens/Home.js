@@ -6,7 +6,7 @@ import callApi from "../api";
 import Posts from "../components/Post/Posts";
 import Sidebar from "../components/Home/Sidebar";
 import PostBar from "../components/Post/PostBar";
-import AvatarIcon from "../components/UI/AvatarIcon";
+import AvatarIcon from "../components/common/AvatarIcon";
 import { UIContext, UserContext, PostContext } from "../App";
 import FriendsOnline from "../components/Home/FriendsOnline";
 

@@ -13,11 +13,13 @@ const useSearch = () => {
 
         try {
             const { data } = await callApi({ method: "GET", query: { name }, url: "/user/search" });
-            setIsLoading(false);
 
             setUsers(data.rows);
+
+            setIsLoading(false);
         } catch (err) {
             setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -35,10 +37,12 @@ const useSearch = () => {
                 url: "/user/search-friends",
             });
 
-            setIsLoading(false);
             setFriends(data.rows);
+
+            setIsLoading(false);
         } catch (err) {
             setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },

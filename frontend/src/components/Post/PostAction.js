@@ -18,7 +18,7 @@ import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { usePost } from "../../hooks";
 import PostDialog from "./PostDialog";
 import { UserContext } from "../../App";
-import LoadingIcon from "../UI/Loading";
+import LoadingIcon from "../common/LoadingIcon";
 
 const PostAction = ({ post }) => {
     const {

@@ -5,14 +5,14 @@ import {
     Dialog,
     Divider,
     ListItem,
-    Typography,
     IconButton,
+    Typography,
     DialogTitle,
     ListItemIcon,
     ListItemText,
-    OutlinedInput,
     DialogContent,
     DialogActions,
+    OutlinedInput,
     InputAdornment,
     ListItemSecondaryAction,
 } from "@material-ui/core";
@@ -21,16 +21,16 @@ import React, { useState, Fragment } from "react";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 
 import { useUser } from "../../hooks";
-import LoadingIcon from "../UI/Loading";
+import LoadingIcon from "../common/LoadingIcon";
 
 const Security = () => {
-    const [isOpen, setIsOpen] = useState(false);
     const [password, setPassword] = useState({
         newPassword: "",
         currentPassword: "",
         showNewPassword: false,
         showCurrentPassword: false,
     });
+    const [isOpen, setIsOpen] = useState(false);
 
     const { isLoading, handleUpdatePassword } = useUser();
 
@@ -86,7 +86,7 @@ const Security = () => {
                             setPassword({ ...password, currentPassword: e.target.value })
                         }
                         endAdornment={
-                            <InputAdornment>
+                            <InputAdornment position="end">
                                 <IconButton
                                     onClick={() =>
                                         setPassword({
@@ -111,7 +111,7 @@ const Security = () => {
                         type={password.showNewPassword ? "text" : "password"}
                         onChange={(e) => setPassword({ ...password, newPassword: e.target.value })}
                         endAdornment={
-                            <InputAdornment>
+                            <InputAdornment position="end">
                                 <IconButton
                                     onClick={() =>
                                         setPassword({
@@ -126,7 +126,7 @@ const Security = () => {
                         }
                     />
                 </DialogContent>
-                <DialogActions style={{ padding: "12px 24px" }}>
+                <DialogActions style={{ padding: "20px 24px" }}>
                     <Button
                         variant="outlined"
                         disabled={isLoading}
@@ -139,7 +139,11 @@ const Security = () => {
                         variant="contained"
                         disabled={isLoading}
                         onClick={handleClickUpdate}
-                        style={{ color: "rgb(255,255,255)", backgroundColor: "rgb(24,127,245)" }}
+                        style={{
+                            marginLeft: "25px",
+                            color: "rgb(255,255,255)",
+                            backgroundColor: "rgb(24,127,245)",
+                        }}
                     >
                         <LoadingIcon text={"Update"} isLoading={isLoading} />
                     </Button>

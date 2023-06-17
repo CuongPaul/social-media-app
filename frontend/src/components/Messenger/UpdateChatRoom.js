@@ -15,9 +15,9 @@ import { Close } from "@material-ui/icons";
 import { CameraAlt } from "@material-ui/icons";
 import React, { useRef, useState, Fragment } from "react";
 
-import LoadingIcon from "../UI/Loading";
-import AvatarIcon from "../UI/AvatarIcon";
 import { useChatRoom } from "../../hooks";
+import AvatarIcon from "../common/AvatarIcon";
+import LoadingIcon from "../common/LoadingIcon";
 
 const UpdateChatRoom = ({ isOpen, chatRoom, setIsOpen }) => {
     const inputRef = useRef(null);

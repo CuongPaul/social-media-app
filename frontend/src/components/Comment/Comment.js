@@ -15,8 +15,8 @@ import React, { useState, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 
-import AvatarIcon from "../UI/AvatarIcon";
 import { useComment } from "../../hooks";
+import AvatarIcon from "../common/AvatarIcon";
 import { UIContext, UserContext, PostContext } from "../../App";
 
 const Comment = ({ comment }) => {

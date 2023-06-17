@@ -4,7 +4,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Paper, TextField, IconButton, InputAdornment } from "@material-ui/core";
 
-import Emoji from "../Emoji";
+import Emoji from "../common/Emoji";
 import { useComment } from "../../hooks";
 import { UIContext, PostContext } from "../../App";
 import FilesUpload from "../Post/PostDialog/FilesUpload";

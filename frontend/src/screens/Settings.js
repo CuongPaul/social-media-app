@@ -11,8 +11,8 @@ import React, { useState, useContext } from "react";
 import { PersonOutline, SecurityOutlined } from "@material-ui/icons";
 
 import { UIContext } from "../App";
-import General from "../components/settings/General";
-import Security from "../components/settings/Security";
+import General from "../components/Settings/General";
+import Security from "../components/Settings/Security";
 
 const Settings = () => {
     const {

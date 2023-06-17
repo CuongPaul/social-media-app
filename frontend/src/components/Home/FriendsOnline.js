@@ -10,8 +10,8 @@ import { Link } from "react-router-dom";
 import React, { useContext } from "react";
 
 import { UserContext } from "../../App";
-import AvatarIcon from "../UI/AvatarIcon";
-import StyledBadge from "../UI/StyledBadge";
+import AvatarIcon from "../common/AvatarIcon";
+import StyledBadge from "../common/StyledBadge";
 
 const Subheader = () => {
     return (

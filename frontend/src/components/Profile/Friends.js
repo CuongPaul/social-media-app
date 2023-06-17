@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import { Grid, Paper, Button, Typography } from "@material-ui/core";
 
 import { UserContext } from "../../App";
-import AvatarIcon from "../UI/AvatarIcon";
+import AvatarIcon from "../common/AvatarIcon";
 import { useUser, useFriendRequest } from "../../hooks";
 
 const Friends = ({ friends }) => {
@@ -64,7 +64,7 @@ const Friends = ({ friends }) => {
                                 <Button
                                     variant="contained"
                                     style={{
-                                        color: "white",
+                                        color: "rgb(255,255,255)",
                                         margin: "10px",
                                         minWidth: "100px",
                                         fontSize: "12px",
@@ -80,7 +80,7 @@ const Friends = ({ friends }) => {
                                 <Button
                                     variant="contained"
                                     style={{
-                                        color: "white",
+                                        color: "rgb(255,255,255)",
                                         margin: "10px",
                                         minWidth: "100px",
                                         fontSize: "12px",
@@ -100,7 +100,7 @@ const Friends = ({ friends }) => {
                                 <Button
                                     variant="contained"
                                     style={{
-                                        color: "white",
+                                        color: "rgb(255,255,255)",
                                         margin: "10px",
                                         minWidth: "100px",
                                         fontSize: "12px",
@@ -115,7 +115,7 @@ const Friends = ({ friends }) => {
                                 <Button
                                     variant="contained"
                                     style={{
-                                        color: "white",
+                                        color: "rgb(255,255,255)",
                                         margin: "10px",
                                         minWidth: "100px",
                                         fontSize: "12px",
@@ -129,7 +129,7 @@ const Friends = ({ friends }) => {
                                 <Button
                                     variant="contained"
                                     style={{
-                                        color: "white",
+                                        color: "rgb(255,255,255)",
                                         margin: "10px",
                                         minWidth: "100px",
                                         fontSize: "12px",

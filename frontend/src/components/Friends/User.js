@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Card, Typography, CardContent } from "@material-ui/core";
 
-import AvatarIcon from "../UI/AvatarIcon";
+import AvatarIcon from "../common/AvatarIcon";
 import { UIContext, UserContext } from "../../App";
 
 const User = ({ user, children, setUserSelected }) => {
@@ -17,11 +17,11 @@ const User = ({ user, children, setUserSelected }) => {
     return (
         <Card
             style={{
-                padding: "16px",
                 display: "flex",
                 cursor: "pointer",
                 minWidth: "300px",
                 borderRadius: "10px",
+                padding: "12px 16px",
                 justifyContent: "space-between",
                 backgroundColor: darkMode ? "rgb(36,37,38)" : "rgb(255,255,255)",
             }}

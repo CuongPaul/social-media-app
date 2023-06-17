@@ -10,13 +10,13 @@ import { Close } from "@material-ui/icons";
 import React, { useState, Fragment, useContext } from "react";
 
 import { UserContext } from "../../App";
-import AvatarIcon from "../UI/AvatarIcon";
+import AvatarIcon from "../common/AvatarIcon";
 import RecentAccountSigninForm from "./RecentAccountSigninForm";
 
 const RecentAccountCard = ({ account }) => {
     const { userDispatch } = useContext(UserContext);
 
-    const [isShowSigninForm, setIsShowSigninForm] = useState(false);
+    const [isOpenSigninForm, setIsOpenSigninForm] = useState(false);
 
     const handleRemoveAccount = (accountId) => {
         userDispatch({ type: "REMOVE_RECENT_ACCOUNT", payload: accountId });
@@ -26,7 +26,7 @@ const RecentAccountCard = ({ account }) => {
         <Fragment>
             <div style={{ position: "relative" }}>
                 <Card style={{ borderRadius: "8px" }}>
-                    <CardActionArea onClick={() => setIsShowSigninForm(true)}>
+                    <CardActionArea onClick={() => setIsOpenSigninForm(true)}>
                         <CardMedia
                             style={{
                                 display: "flex",
@@ -70,8 +70,8 @@ const RecentAccountCard = ({ account }) => {
             </div>
             <RecentAccountSigninForm
                 account={account}
-                isShowSigninForm={isShowSigninForm}
-                setIsShowSigninForm={setIsShowSigninForm}
+                isOpenSigninForm={isOpenSigninForm}
+                setIsOpenSigninForm={setIsOpenSigninForm}
             />
         </Fragment>
     );

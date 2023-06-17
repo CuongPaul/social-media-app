@@ -139,8 +139,8 @@ const Camera = ({ setFilesUpload, setFilesPreview }) => {
                                             >
                                                 <Avatar
                                                     style={{
-                                                        color: "white",
-                                                        backgroundColor: "tomato",
+                                                        color: "rgb(255,255,255)",
+                                                        backgroundColor: "rgb(255,99,71)",
                                                     }}
                                                 >
                                                     <Close />
@@ -152,8 +152,8 @@ const Camera = ({ setFilesUpload, setFilesPreview }) => {
                                             >
                                                 <Avatar
                                                     style={{
-                                                        color: "white",
-                                                        backgroundColor: "seagreen",
+                                                        color: "rgb(255,255,255)",
+                                                        backgroundColor: "rgb(46,139,87)",
                                                     }}
                                                 >
                                                     <Check />
@@ -167,7 +167,10 @@ const Camera = ({ setFilesUpload, setFilesPreview }) => {
                                             onClick={handleClickCapture}
                                         >
                                             <Avatar
-                                                style={{ color: "white", backgroundColor: "teal" }}
+                                                style={{
+                                                    color: "rgb(255,255,255)",
+                                                    backgroundColor: "rgb(0,128,128)",
+                                                }}
                                             >
                                                 <CameraMaterial />
                                             </Avatar>

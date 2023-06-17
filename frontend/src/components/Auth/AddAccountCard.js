@@ -13,12 +13,12 @@ import React, { useState, Fragment } from "react";
 import SigninForm from "./SigninForm";
 
 const AddAccountCard = () => {
-    const [isShowAddAccountForm, setIsShowAddAccountForm] = useState(false);
+    const [isOpenAddAccountForm, setIsOpenAddAccountForm] = useState(false);
 
     return (
         <Fragment>
             <Card style={{ borderRadius: "8px" }}>
-                <CardActionArea onClick={() => setIsShowAddAccountForm(true)}>
+                <CardActionArea onClick={() => setIsOpenAddAccountForm(true)}>
                     <CardMedia
                         style={{
                             display: "flex",
@@ -48,8 +48,8 @@ const AddAccountCard = () => {
             </Card>
             <Dialog
                 style={{ width: "100%" }}
-                open={isShowAddAccountForm}
-                onClose={() => setIsShowAddAccountForm(false)}
+                open={isOpenAddAccountForm}
+                onClose={() => setIsOpenAddAccountForm(false)}
             >
                 <Card style={{ width: "100%" }}>
                     <CardContent style={{ padding: "32px" }}>

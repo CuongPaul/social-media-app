@@ -32,13 +32,15 @@ const useSignup = () => {
                 data: formValue,
                 url: "/auth/signup",
             });
-            setIsLoading(false);
 
             localStorage.setItem("token", data.token);
 
             userDispatch({ type: "SET_CURRENT_USER", payload: data.user });
+
+            setIsLoading(false);
         } catch (err) {
             setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },

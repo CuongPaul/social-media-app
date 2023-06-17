@@ -1,5 +1,6 @@
 import {
     Grid,
+    Paper,
     Button,
     Dialog,
     Select,
@@ -8,9 +9,11 @@ import {
     CardHeader,
     IconButton,
     InputLabel,
+    Typography,
     FormControl,
     DialogActions,
     DialogContent,
+    LinearProgress,
     InputAdornment,
     CircularProgress,
 } from "@material-ui/core";
@@ -18,16 +21,15 @@ import { Close } from "@material-ui/icons";
 import React, { useState, Fragment, useEffect, useContext } from "react";
 
 import Camera from "./Camera";
-import Emoji from "../../Emoji";
 import Feelings from "./Feelings";
 import Location from "./Location";
 import TagFriends from "./TagFriends";
+import Emoji from "../../common/Emoji";
 import FilesUpload from "./FilesUpload";
 import FilePreview from "./FilePreview";
 import { usePost } from "../../../hooks";
-import AvatarIcon from "../../UI/AvatarIcon";
 import PostSubContent from "../PostSubContent";
-import DialogLoading from "../../UI/DialogLoading";
+import AvatarIcon from "../../common/AvatarIcon";
 import { UIContext, UserContext } from "../../../App";
 
 const PostDialog = ({ isOpen, postData, setIsOpen }) => {
@@ -57,7 +59,7 @@ const PostDialog = ({ isOpen, postData, setIsOpen }) => {
         setFilesUpload(newFilesUpload);
     };
 
-    const { loading, handleUpdatePost, handleCreatePost } = usePost();
+    const { isLoading, handleUpdatePost, handleCreatePost } = usePost();
 
     useEffect(() => {
         if (postData) {
@@ -145,7 +147,7 @@ const PostDialog = ({ isOpen, postData, setIsOpen }) => {
                 <DialogActions>
                     <Button
                         color="primary"
-                        disabled={loading}
+                        disabled={isLoading}
                         variant="contained"
                         style={{ width: "100%", margin: "10px" }}
                         onClick={(e) => {
@@ -184,7 +186,7 @@ const PostDialog = ({ isOpen, postData, setIsOpen }) => {
                             });
                         }}
                     >
-                        {loading ? (
+                        {isLoading ? (
                             <CircularProgress
                                 size={25}
                                 variant="indeterminate"
@@ -198,7 +200,27 @@ const PostDialog = ({ isOpen, postData, setIsOpen }) => {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <DialogLoading loading={loading} text="Creating post ..." />
+            <Dialog fullWidth open={isLoading} style={{ width: "100%" }}>
+                <Paper
+                    style={{
+                        display: "flex",
+                        padding: "32px 0px",
+                        alignItems: "center",
+                        flexDirection: "column",
+                    }}
+                >
+                    <Typography
+                        style={{
+                            fontWeight: 800,
+                            fontSize: "20px",
+                            marginBottom: "16px",
+                        }}
+                    >
+                        Creating post ...
+                    </Typography>
+                    <LinearProgress color="secondary" style={{ width: "75%" }} />
+                </Paper>
+            </Dialog>
         </Fragment>
     );
 };

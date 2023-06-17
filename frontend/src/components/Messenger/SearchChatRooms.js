@@ -18,8 +18,8 @@ import React, { useState, Fragment, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { UserContext } from "../../App";
-import AvatarIcon from "../UI/AvatarIcon";
 import { useChatRoom } from "../../hooks";
+import AvatarIcon from "../common/AvatarIcon";
 
 const SearchChatRooms = () => {
     const {

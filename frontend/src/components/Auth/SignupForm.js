@@ -3,7 +3,7 @@ import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { Button, TextField, IconButton, FormControl, InputAdornment } from "@material-ui/core";
 
 import { useSignup } from "../../hooks";
-import LoadingIcon from "../UI/Loading";
+import LoadingIcon from "../common/LoadingIcon";
 
 const SignupForm = () => {
     const [isShowPassword, setIsShowPassword] = useState(false);

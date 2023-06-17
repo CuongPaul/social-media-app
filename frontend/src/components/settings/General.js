@@ -13,7 +13,7 @@ import React, { useState, Fragment, useContext } from "react";
 
 import { useUser } from "../../hooks";
 import { UserContext } from "../../App";
-import LoadingIcon from "../UI/Loading";
+import LoadingIcon from "../common/LoadingIcon";
 
 const General = () => {
     const {
@@ -79,7 +79,6 @@ const General = () => {
             <ItemEdited fieldName="Hometown" value={currentUser?.hometown} />
             <Divider />
             <ItemEdited fieldName="Education" value={currentUser?.education} />
-            <Divider />
             <Dialog fullWidth open={isOpen} onClose={() => setIsOpen(false)}>
                 <DialogTitle>Update {fieldSelected.toLocaleLowerCase()}</DialogTitle>
                 <DialogContent>
@@ -91,7 +90,7 @@ const General = () => {
                         onChange={(e) => setInputValue(e.target.value)}
                     />
                 </DialogContent>
-                <DialogActions style={{ padding: "12px 24px" }}>
+                <DialogActions style={{ padding: "20px 24px" }}>
                     <Button
                         variant="outlined"
                         disabled={isLoading}
@@ -104,7 +103,11 @@ const General = () => {
                         variant="contained"
                         disabled={isLoading}
                         onClick={handleClickUpdate}
-                        style={{ color: "rgb(255,255,255)", backgroundColor: "rgb(24,127,245)" }}
+                        style={{
+                            marginLeft: "25px",
+                            color: "rgb(255,255,255)",
+                            backgroundColor: "rgb(24,127,245)",
+                        }}
                     >
                         <LoadingIcon text={"Update"} isLoading={isLoading} />
                     </Button>

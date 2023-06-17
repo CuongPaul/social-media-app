@@ -10,6 +10,8 @@ const useUser = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSignout = async () => {
+        setIsLoading(true);
+
         try {
             await callApi({
                 method: "POST",
@@ -18,7 +20,11 @@ const useUser = () => {
             });
 
             userDispatch({ type: "SIGN_OUT" });
+
+            setIsLoading(false);
         } catch (err) {
+            setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -31,16 +37,17 @@ const useUser = () => {
 
         try {
             const { message } = await callApi({ method: "PUT", url: `/user/unfriend/${friendId}` });
-            setIsLoading(false);
 
             userDispatch({ type: "UNFRIEND", payload: friendId });
-
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, text: message, color: "success" },
             });
+
+            setIsLoading(false);
         } catch (err) {
             setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -53,16 +60,17 @@ const useUser = () => {
 
         try {
             const { message } = await callApi({ method: "PUT", url: `/user/block/${userId}` });
-            setIsLoading(false);
 
             userDispatch({ type: "BLOCK_USER", payload: userId });
-
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, text: message, color: "success" },
             });
+
+            setIsLoading(false);
         } catch (err) {
             setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -75,16 +83,17 @@ const useUser = () => {
 
         try {
             const { message } = await callApi({ method: "PUT", url: `/user/unblock/${userId}` });
-            setIsLoading(false);
 
             userDispatch({ type: "UNBLOCK_USER", payload: userId });
-
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, text: message, color: "success" },
             });
+
+            setIsLoading(false);
         } catch (err) {
             setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -97,6 +106,7 @@ const useUser = () => {
 
         try {
             const { message } = await callApi({ data, method: "PUT", url: "/user/update-profile" });
+
             userDispatch({ payload: data, type: "UPDATE_PROFILE" });
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
@@ -106,6 +116,7 @@ const useUser = () => {
             setIsLoading(false);
         } catch (err) {
             setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -122,6 +133,7 @@ const useUser = () => {
                 method: "PUT",
                 url: "/user/update-password",
             });
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, text: message, color: "success" },
@@ -131,6 +143,7 @@ const useUser = () => {
             setIsLoading(false);
         } catch (err) {
             setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -158,11 +171,13 @@ const useUser = () => {
                 data: { cover_image },
                 url: "/user/cover-image",
             });
-            userDispatch({ payload: cover_image, type: "UPDATE-COVER-IMAGE" });
+
+            userDispatch({ payload: cover_image, type: "UPDATE_COVER_IMAGE" });
 
             setIsLoading(false);
         } catch (err) {
             setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -190,11 +205,13 @@ const useUser = () => {
                 data: { avatar_image },
                 url: "/user/avatar-image",
             });
-            userDispatch({ payload: avatar_image, type: "UPDATE-AVATAR-IMAGE" });
+
+            userDispatch({ payload: avatar_image, type: "UPDATE_AVATAR_IMAGE" });
 
             setIsLoading(false);
         } catch (err) {
             setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },

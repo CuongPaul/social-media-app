@@ -20,10 +20,10 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { UIContext } from "../../App";
-import LoadingIcon from "../UI/Loading";
-import AvatarIcon from "../UI/AvatarIcon";
 import { useSearch } from "../../hooks";
-import ButtonGroupUserActions from "../ButtonGroupUserActions";
+import AvatarIcon from "../common/AvatarIcon";
+import LoadingIcon from "../common/LoadingIcon";
+import ButtonGroupUserActions from "../common/ButtonGroupUserActions";
 
 const SearchUsers = () => {
     const {

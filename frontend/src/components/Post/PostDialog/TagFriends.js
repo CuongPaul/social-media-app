@@ -21,8 +21,8 @@ import React, { useState, Fragment } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faUserTag } from "@fortawesome/free-solid-svg-icons";
 
-import AvatarIcon from "../../UI/AvatarIcon";
 import { useSearch } from "../../../hooks";
+import AvatarIcon from "../../common/AvatarIcon";
 
 const TagFriends = ({ tagFriends, setTagFriends }) => {
     const [friends, setFriends] = useState([]);

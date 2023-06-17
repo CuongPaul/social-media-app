@@ -7,10 +7,10 @@ import callApi from "../api";
 import { useComment } from "../hooks";
 import { UIContext, PostContext } from "../App";
 import Comment from "../components/Comment/Comment";
-import AvatarIcon from "../components/UI/AvatarIcon";
 import PostAction from "../components/Post/PostAction";
 import PostFooter from "../components/Post/PostFooter";
 import SlideImage from "../components/Post/SlideImage";
+import AvatarIcon from "../components/common/AvatarIcon";
 import CommentInput from "../components/Comment/CommentInput";
 import PostSubContent from "../components/Post/PostSubContent";
 

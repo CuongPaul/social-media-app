@@ -16,6 +16,22 @@ import User from "../components/Friends/User";
 import { UIContext, UserContext } from "../App";
 import { useUser, useFriendRequest } from "../hooks";
 
+const ButtonAction = ({ text, onClick, backgroundColor }) => (
+    <Button
+        onClick={onClick}
+        variant="contained"
+        style={{
+            margin: "5px",
+            minWidth: "80px",
+            fontSize: "10px",
+            color: "rgb(255,255,255)",
+            backgroundColor: backgroundColor,
+        }}
+    >
+        {text}
+    </Button>
+);
+
 const Friends = () => {
     const { uiDispatch } = useContext(UIContext);
     const {
@@ -77,20 +93,13 @@ const Friends = () => {
                                 <ListItem key={request._id}>
                                     <User user={request.receiver} setUserSelected={setUserSelected}>
                                         <CardActions style={{ padding: "0px", marginLeft: "16px" }}>
-                                            <Button
-                                                variant="contained"
-                                                style={{
-                                                    minWidth: "80px",
-                                                    fontSize: "10px",
-                                                    color: "rgb(255,255,255)",
-                                                    backgroundColor: "rgb(255,193,7)",
-                                                }}
+                                            <ButtonAction
+                                                text={"Cancel"}
+                                                backgroundColor={"rgb(255,193,7)"}
                                                 onClick={() =>
                                                     handleCancelFriendRequest(request._id)
                                                 }
-                                            >
-                                                Cancel
-                                            </Button>
+                                            />
                                         </CardActions>
                                     </User>
                                 </ListItem>
@@ -125,35 +134,18 @@ const Friends = () => {
                                                 flexDirection: "column",
                                             }}
                                         >
-                                            <Button
-                                                variant="contained"
-                                                style={{
-                                                    minWidth: "80px",
-                                                    fontSize: "10px",
-                                                    marginLeft: "0px",
-                                                    color: "rgb(255,255,255)",
-                                                    backgroundColor: "rgb(46,139,87)",
-                                                }}
-                                                onClick={() => handleAcceptFriendRequest(request)}
-                                            >
-                                                Accept
-                                            </Button>
-                                            <Button
-                                                variant="contained"
-                                                style={{
-                                                    fontSize: "10px",
-                                                    marginTop: "5px",
-                                                    minWidth: "80px",
-                                                    marginLeft: "0px",
-                                                    color: "rgb(255,255,255)",
-                                                    backgroundColor: "rgb(108,117,125)",
-                                                }}
+                                            <ButtonAction
+                                                text={"Decline"}
+                                                backgroundColor={"rgb(108,117,125)"}
                                                 onClick={() =>
                                                     handleDeclineFriendRequest(request._id)
                                                 }
-                                            >
-                                                Decline
-                                            </Button>
+                                            />
+                                            <ButtonAction
+                                                text={"Accept"}
+                                                backgroundColor={"rgb(46,139,87)"}
+                                                onClick={() => handleAcceptFriendRequest(request)}
+                                            />
                                         </CardActions>
                                     </User>
                                 </ListItem>
@@ -231,48 +223,23 @@ const Friends = () => {
                                                 flexDirection: "column",
                                             }}
                                         >
-                                            <Button
-                                                variant="contained"
-                                                style={{
-                                                    minWidth: "80px",
-                                                    fontSize: "10px",
-                                                    color: "rgb(255,255,255)",
-                                                    backgroundColor: "rgb(1,133,243)",
-                                                }}
+                                            <ButtonAction
+                                                text={"Add"}
+                                                backgroundColor={"rgb(1,133,243)"}
                                                 onClick={() => handleSendFriendRequest(user._id)}
-                                            >
-                                                Add
-                                            </Button>
+                                            />
                                             {currentUser?.block_users.includes(user._id) ? (
-                                                <Button
-                                                    variant="contained"
-                                                    style={{
-                                                        marginTop: "5px",
-                                                        minWidth: "80px",
-                                                        fontSize: "10px",
-                                                        marginLeft: "0px",
-                                                        color: "rgb(255,255,255)",
-                                                        backgroundColor: "rgb(23,162,184)",
-                                                    }}
+                                                <ButtonAction
+                                                    text={"Unblock"}
+                                                    backgroundColor={"rgb(23,162,184)"}
                                                     onClick={() => handleUnblockUser(user._id)}
-                                                >
-                                                    Unblock
-                                                </Button>
+                                                />
                                             ) : (
-                                                <Button
-                                                    variant="contained"
-                                                    style={{
-                                                        marginTop: "5px",
-                                                        minWidth: "80px",
-                                                        fontSize: "10px",
-                                                        marginLeft: "0px",
-                                                        color: "rgb(255,255,255)",
-                                                        backgroundColor: "rgb(220,53,69)",
-                                                    }}
+                                                <ButtonAction
+                                                    text={"Block"}
+                                                    backgroundColor={"rgb(220,53,69)"}
                                                     onClick={() => handleBlockUser(user._id)}
-                                                >
-                                                    Block
-                                                </Button>
+                                                />
                                             )}
                                         </CardActions>
                                     </User>

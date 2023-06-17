@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
 
 import { UserContext } from "../../App";
-import AvatarIcon from "../UI/AvatarIcon";
+import AvatarIcon from "../common/AvatarIcon";
 
 const Account = () => {
     const {

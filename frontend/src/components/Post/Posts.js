@@ -5,11 +5,11 @@ import { Card, Button, Divider, CardHeader, Typography, CardContent } from "@mat
 import PostAction from "./PostAction";
 import PostFooter from "./PostFooter";
 import SlideImage from "./SlideImage";
-import { UIContext, PostContext } from "../../App";
-import LoadingIcon from "../UI/Loading";
-import AvatarIcon from "../UI/AvatarIcon";
-import PostSubContent from "./PostSubContent";
 import usePost from "../../hooks/usePost";
+import PostSubContent from "./PostSubContent";
+import AvatarIcon from "../common/AvatarIcon";
+import LoadingIcon from "../common/LoadingIcon";
+import { UIContext, PostContext } from "../../App";
 
 const Posts = ({ userId }) => {
     const {

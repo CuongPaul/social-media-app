@@ -1,15 +1,15 @@
 import { Button } from "@material-ui/core";
 import React, { Fragment, useContext } from "react";
 
-import { UserContext } from "../App";
-import { useUser, useFriendRequest } from "../hooks";
+import { UserContext } from "../../App";
+import { useUser, useFriendRequest } from "../../hooks";
 
 const ButtonAction = ({ text, onClick, backgroundColor }) => (
     <Button
         onClick={onClick}
         variant="contained"
         style={{
-            color: "white",
+            color: "rgb(255,255,255)",
             margin: "10px",
             minWidth: "80px",
             fontSize: "10px",

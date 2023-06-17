@@ -106,13 +106,13 @@ const UserReducer = (state, action) => {
 
             return { ...state, friendsOnline: friendsOnlineAfterAddFriendsOnline };
 
-        case "UPDATE-COVER-IMAGE":
+        case "UPDATE_COVER_IMAGE":
             return { ...state, currentUser: { ...state.currentUser, cover_image: action.payload } };
 
         case "SET_FRIENDS_ONLINE":
             return { ...state, friendsOnline: action.payload };
 
-        case "UPDATE-AVATAR-IMAGE":
+        case "UPDATE_AVATAR_IMAGE":
             return {
                 ...state,
                 currentUser: { ...state.currentUser, avatar_image: action.payload },
@@ -201,4 +201,4 @@ const UserReducer = (state, action) => {
     }
 };
 
-export { initialUserState, UserReducer };
+export { UserReducer, initialUserState };

@@ -35,6 +35,7 @@ const useMessage = () => {
                 url: "/message",
                 data: { text, image: imageUrl, chat_room_id: chatRoomId },
             });
+
             chatDispatch({ payload: data, type: "ADD_MESSAGE" });
 
             setText("");
@@ -42,7 +43,7 @@ const useMessage = () => {
 
             setIsLoading(false);
         } catch (err) {
-            setIsLoading(true);
+            setIsLoading(false);
 
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
@@ -85,10 +86,12 @@ const useMessage = () => {
                 url: `/message/${messageId}`,
                 data: { text, chat_room_id: chatRoomId, image: imageUrl || currentImage },
             });
+
             chatDispatch({ payload: data, type: "UPDATE_MESSAGE_SELECTED" });
 
             setText("");
             handleRemoveFile();
+
             setIsLoading(false);
         } catch (err) {
             setIsLoading(true);

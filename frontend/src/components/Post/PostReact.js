@@ -24,9 +24,9 @@ import React, { useState, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import callApi from "../../api";
-import AvatarIcon from "../UI/AvatarIcon";
-import ButtonGroupUserActions from "../ButtonGroupUserActions";
+import AvatarIcon from "../common/AvatarIcon";
 import { UIContext, PostContext, UserContext } from "../../App";
+import ButtonGroupUserActions from "../common/ButtonGroupUserActions";
 
 const PostReact = ({ post }) => {
     const {

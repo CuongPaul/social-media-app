@@ -17,6 +17,7 @@ const useNotifications = () => {
                 query: { page },
                 url: "/notification",
             });
+
             if (page) {
                 uiDispatch({ type: "ADD_NOTIFICATIONS", payload: data.rows });
             } else {
@@ -26,6 +27,7 @@ const useNotifications = () => {
             setIsLoading(false);
         } catch (err) {
             setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -44,6 +46,7 @@ const useNotifications = () => {
             setIsLoading(false);
         } catch (err) {
             setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -62,6 +65,7 @@ const useNotifications = () => {
             setIsLoading(false);
         } catch (err) {
             setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },

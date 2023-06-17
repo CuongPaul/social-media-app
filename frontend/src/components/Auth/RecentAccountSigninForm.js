@@ -14,19 +14,19 @@ import React, { useState } from "react";
 import { Close, Visibility, VisibilityOff } from "@material-ui/icons";
 
 import { useSignin } from "../../hooks";
-import LoadingIcon from "../UI/Loading";
-import AvatarIcon from "../UI/AvatarIcon";
+import AvatarIcon from "../common/AvatarIcon";
+import LoadingIcon from "../common/LoadingIcon";
 
-const RecentAccountSigninForm = ({ account, isShowSigninForm, setIsShowSigninForm }) => {
+const RecentAccountSigninForm = ({ account, isOpenSigninForm, setIsOpenSigninForm }) => {
     const [isShowPassword, setIsShowPassword] = useState(false);
 
     const { isLoading, handleClickSignin, handleChangePassword } = useSignin(account);
 
     return (
-        <Dialog fullWidth open={isShowSigninForm} onClose={() => setIsShowSigninForm(false)}>
+        <Dialog fullWidth open={isOpenSigninForm} onClose={() => setIsOpenSigninForm(false)}>
             <CardHeader
                 action={
-                    <IconButton color="primary" onClick={() => setIsShowSigninForm(false)}>
+                    <IconButton color="primary" onClick={() => setIsOpenSigninForm(false)}>
                         <Close />
                     </IconButton>
                 }

@@ -57,7 +57,7 @@ const Profile = ({ userId, conScreen }) => {
 
     return (
         <Fragment>
-            <Paper>
+            <Paper style={{ marginTop: !conScreen && "70px" }}>
                 <ProfileHeader user={user} conScreen={conScreen} />
                 <Grid container justifyContent="center" alignItems="center">
                     <Grid item xs={12} sm={12} md={conScreen ? 12 : 6}>

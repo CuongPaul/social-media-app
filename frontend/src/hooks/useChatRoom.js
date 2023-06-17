@@ -18,6 +18,7 @@ const useChatRoom = () => {
                 data: { members },
                 url: `/chat-room/add-member/${chatRoomId}`,
             });
+
             chatDispatch({ type: "ADD_MEMBERS", payload: data });
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
@@ -27,6 +28,7 @@ const useChatRoom = () => {
             setIsLoading(false);
         } catch (err) {
             setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -35,6 +37,8 @@ const useChatRoom = () => {
     };
 
     const handleChangeAdmin = async ({ newAdmin, chatRoomId }) => {
+        setIsLoading(true);
+
         try {
             const { message } = await callApi({
                 method: "PUT",
@@ -50,7 +54,11 @@ const useChatRoom = () => {
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, text: message, color: "success" },
             });
+
+            setIsLoading(false);
         } catch (err) {
+            setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -77,6 +85,7 @@ const useChatRoom = () => {
             setIsLoading(false);
         } catch (err) {
             setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -85,6 +94,8 @@ const useChatRoom = () => {
     };
 
     const handleLeaveChatRoom = async (chatRoomId) => {
+        setIsLoading(true);
+
         try {
             const { message } = await callApi({
                 method: "PUT",
@@ -97,7 +108,11 @@ const useChatRoom = () => {
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, text: message, color: "success" },
             });
+
+            setIsLoading(false);
         } catch (err) {
+            setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -114,19 +129,20 @@ const useChatRoom = () => {
                 data: { members },
                 url: `/chat-room/remove-member/${chatRoomId}`,
             });
-            setIsLoading(false);
 
             chatDispatch({
                 payload: { members },
                 type: "REMOVE_MEMBERS",
             });
-
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, text: message, color: "success" },
             });
+
+            setIsLoading(false);
         } catch (err) {
             setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -171,6 +187,7 @@ const useChatRoom = () => {
             setIsLoading(false);
         } catch (err) {
             setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -179,6 +196,8 @@ const useChatRoom = () => {
     };
 
     const handleDeleteChatRoom = async (chatRoomId) => {
+        setIsLoading(true);
+
         try {
             const { message } = await callApi({
                 method: "DELETE",
@@ -191,7 +210,11 @@ const useChatRoom = () => {
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, text: message, color: "success" },
             });
+
+            setIsLoading(false);
         } catch (err) {
+            setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -213,6 +236,7 @@ const useChatRoom = () => {
             setIsLoading(false);
         } catch (err) {
             setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -255,6 +279,7 @@ const useChatRoom = () => {
             setIsLoading(false);
         } catch (err) {
             setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -272,10 +297,12 @@ const useChatRoom = () => {
                 url: "/chat-room/search",
             });
 
-            setIsLoading(false);
             setChatRooms(data.rows);
+
+            setIsLoading(false);
         } catch (err) {
             setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },
@@ -284,15 +311,22 @@ const useChatRoom = () => {
     };
 
     const handleCreateChatRoomForTwoPeople = async (reciverId) => {
+        setIsLoading(true);
+
         try {
             const { data } = await callApi({
                 method: "POST",
                 data: { reciver: reciverId },
                 url: `/chat-room/two-people`,
             });
+
             chatDispatch({ type: "ADD_CHATROOM", payload: data });
             chatDispatch({ type: "SET_CHATROOM_SELECTED", payload: data });
+
+            setIsLoading(false);
         } catch (err) {
+            setIsLoading(false);
+
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, color: "error", text: err.message },

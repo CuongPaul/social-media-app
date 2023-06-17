@@ -13,9 +13,9 @@ import { Route, Switch, Redirect, BrowserRouter } from "react-router-dom";
 
 import callApi from "./api";
 import Navbar from "./components/Navbar";
-import Loading from "./components/Loading";
+import Loading from "./components/common/Loading";
 import ProtectedRoute from "./utils/protected-route";
-import Notification from "./components/UI/Notification";
+import Notification from "./components/common/Notification";
 import { UIReducer, initialUIState } from "./context/UIContext";
 import { ChatReducer, initialChatState } from "./context/ChatContext";
 import { PostReducer, initialPostState } from "./context/PostContext";

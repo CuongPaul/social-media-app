@@ -61,9 +61,9 @@ const FilePreview = ({ filePreview, size = "100%", zoomOutVideo, handleRemoveFil
                     <Avatar
                         style={{
                             width: "25px",
-                            color: "white",
                             height: "25px",
-                            backgroundColor: "tomato",
+                            color: "rgb(255,255,255)",
+                            backgroundColor: "rgb(255,99,71)",
                         }}
                     >
                         <Close />

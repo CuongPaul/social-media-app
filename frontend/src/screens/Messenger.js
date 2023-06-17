@@ -3,8 +3,8 @@ import React, { useRef, useState, useEffect, useContext } from "react";
 import { Grid, List, Paper, Avatar, Typography } from "@material-ui/core";
 
 import callApi from "../api";
-import AvatarIcon from "../components/UI/AvatarIcon";
 import Message from "../components/Messenger/Message";
+import AvatarIcon from "../components/common/AvatarIcon";
 import ChatRooms from "../components/Messenger/ChatRooms";
 import { UIContext, ChatContext, UserContext } from "../App";
 import SearchUsers from "../components/Messenger/SearchUsers";
@@ -40,16 +40,14 @@ const Messenger = () => {
 
         if (isTop) {
             try {
-                const nextPage = messagePage + 1;
-
                 const { data } = await callApi({
                     method: "GET",
-                    query: { page: nextPage },
+                    query: { page: messagePage + 1 },
                     url: `/message/chat-room/${chatRoomSelected._id}`,
                 });
                 chatDispatch({ payload: data.rows, type: "ADD_MESSAGES" });
 
-                setMessagePage(nextPage);
+                setMessagePage(messagePage + 1);
             } catch (err) {
                 uiDispatch({
                     type: "SET_ALERT_MESSAGE",
@@ -66,16 +64,14 @@ const Messenger = () => {
 
         if (isBottom) {
             try {
-                const nextPage = chatRoomPage + 1;
-
                 const { data } = await callApi({
                     method: "GET",
                     url: `/chat-room`,
-                    query: { page: nextPage },
+                    query: { page: chatRoomPage + 1 },
                 });
                 chatDispatch({ payload: data.rows, type: "ADD_CHATROOMS" });
 
-                setChatRoomPage(nextPage);
+                setChatRoomPage(chatRoomPage + 1);
             } catch (err) {
                 uiDispatch({
                     type: "SET_ALERT_MESSAGE",

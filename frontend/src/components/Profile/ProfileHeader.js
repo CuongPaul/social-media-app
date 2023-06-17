@@ -14,12 +14,12 @@ import {
 import { Close } from "@material-ui/icons";
 import { useParams } from "react-router-dom";
 import { CameraAlt } from "@material-ui/icons";
-import React, { useRef, useState, useContext } from "react";
+import React, { useRef, useState, Fragment, useContext } from "react";
 
-import { UserContext } from "../../App";
-import LoadingIcon from "../UI/Loading";
-import AvatarIcon from "../UI/AvatarIcon";
 import { useUser } from "../../hooks";
+import { UserContext } from "../../App";
+import AvatarIcon from "../common/AvatarIcon";
+import LoadingIcon from "../common/LoadingIcon";
 
 const ProfileHeader = ({ user, conScreen }) => {
     const {
@@ -63,7 +63,7 @@ const ProfileHeader = ({ user, conScreen }) => {
     };
 
     return (
-        <div>
+        <Fragment>
             <Grid container alignItems="center" justifyContent="center">
                 <Grid item md={conScreen ? 12 : 6} xs={12} sm={12}>
                     <Paper
@@ -72,7 +72,6 @@ const ProfileHeader = ({ user, conScreen }) => {
                             borderRadius: "10px",
                             position: "relative",
                             backgroundPosition: "center",
-                            marginTop: !conScreen && "70px",
                             backgroundColor: !user?.cover_image && "rgba(0,0,0,0.5)",
                             backgroundImage: user?.cover_image && `url("${user?.cover_image}")`,
                         }}
@@ -139,7 +138,7 @@ const ProfileHeader = ({ user, conScreen }) => {
                                 }
                                 subheader={
                                     <Typography style={{ fontWeight: 800, fontSize: "20px" }}>
-                                        Upload {typeUpload === "avatar-image" ? "cover" : "avatar"}{" "}
+                                        Upload {typeUpload === "avatar-image" ? "avatar" : "cover"}{" "}
                                         image
                                     </Typography>
                                 }
@@ -159,13 +158,6 @@ const ProfileHeader = ({ user, conScreen }) => {
                                 }}
                             >
                                 <Button
-                                    color="primary"
-                                    variant="contained"
-                                    onClick={handleClickUpload}
-                                >
-                                    <LoadingIcon isLoading={isLoading} text={"Upload"} />
-                                </Button>
-                                <Button
                                     variant="contained"
                                     onClick={handleClickCancel}
                                     style={{
@@ -174,6 +166,14 @@ const ProfileHeader = ({ user, conScreen }) => {
                                     }}
                                 >
                                     Cancel
+                                </Button>
+                                <Button
+                                    color="primary"
+                                    variant="contained"
+                                    disabled={isLoading}
+                                    onClick={handleClickUpload}
+                                >
+                                    <LoadingIcon text={"Upload"} isLoading={isLoading} />
                                 </Button>
                             </DialogActions>
                         </Dialog>
@@ -190,7 +190,7 @@ const ProfileHeader = ({ user, conScreen }) => {
                     {user?.name}
                 </Typography>
             </Grid>
-        </div>
+        </Fragment>
     );
 };
 

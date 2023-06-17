@@ -18,9 +18,9 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import React, { useState, useEffect, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import LoadingIcon from "../UI/Loading";
-import AvatarIcon from "../UI/AvatarIcon";
 import { useChatRoom } from "../../hooks";
+import AvatarIcon from "../common/AvatarIcon";
+import LoadingIcon from "../common/LoadingIcon";
 import { UIContext, ChatContext, UserContext } from "../../App";
 
 const ChangeAdmin = ({ isOpen, setIsOpen }) => {

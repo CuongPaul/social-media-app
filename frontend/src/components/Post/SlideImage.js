@@ -16,10 +16,12 @@ const SlideImage = ({ images }) => {
                 infinite={isMultipleImage}
             >
                 {images.map((item, index) => (
-                    <div style={{ height: "100%", display: "flex", alignItems: "center" }}>
+                    <div
+                        key={index}
+                        style={{ height: "100%", display: "flex", alignItems: "center" }}
+                    >
                         <CardMedia
                             controls
-                            key={index}
                             image={item}
                             autopause="true"
                             style={{ width: "100%", maxHeight: "400px", objectFit: "contain" }}

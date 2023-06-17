@@ -13,10 +13,10 @@ import React, { useState, useContext, useEffect } from "react";
 
 import AddMembers from "./AddMembers";
 import ChangeAdmin from "./ChangeAdmin";
-import AvatarIcon from "../UI/AvatarIcon";
 import { useChatRoom } from "../../hooks";
-import StyledBadge from "../UI/StyledBadge";
+import AvatarIcon from "../common/AvatarIcon";
 import UpdateChatRoom from "./UpdateChatRoom";
+import StyledBadge from "../common/StyledBadge";
 import { ChatContext, UserContext } from "../../App";
 
 const ChatRooms = ({ chatRoom, setIsOpenGroupMembers }) => {
