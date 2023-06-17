@@ -1,224 +1,150 @@
-import {
-  Avatar,
-  Card,
-  CardContent,
-  CardHeader,
-  CardMedia,
-  Container,
-  Grid,
-  Paper,
-  Typography,
-  useMediaQuery,
-  useTheme,
-  Button,
-} from '@material-ui/core'
-import moment from 'moment'
-import React, { useContext, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
-import { PostContext, UIContext } from '../App'
-import useFetchPost from '../hooks/useFetchPost'
-import Comment from '../components/Comment/Comment'
+import moment from "moment";
+import { useParams } from "react-router-dom";
+import React, { useRef, useState, useEffect, useContext } from "react";
+import { Card, Grid, Paper, Divider, CardHeader, Typography, CardContent } from "@material-ui/core";
 
-import AvartarText from '../components/UI/AvartarText'
-import CommentTextArea from '../components/Comment/CommentTextArea'
+import callApi from "../api";
+import { useComment } from "../hooks";
+import { UIContext, PostContext } from "../App";
+import Comment from "../components/Comment/Comment";
+import PostAction from "../components/Post/PostAction";
+import PostFooter from "../components/Post/PostFooter";
+import SlideImage from "../components/Post/SlideImage";
+import AvatarIcon from "../components/common/AvatarIcon";
+import CommentInput from "../components/Comment/CommentInput";
+import PostSubContent from "../components/Post/PostSubContent";
 
-import PostSubContent from '../components/Post/PostSubContent'
+const Post = () => {
+    const {
+        uiState: { darkMode },
+        uiDispatch,
+    } = useContext(UIContext);
+    const {
+        postDispatch,
+        postState: { comments, postSelected },
+    } = useContext(PostContext);
 
-function Post() {
-  const { postState, postDispatch } = useContext(PostContext)
-  const { uiState } = useContext(UIContext)
-  const params = useParams()
+    const { postId } = useParams();
+    const postAreaRef = useRef(null);
+    const [page, setPage] = useState(1);
+    const [commentAreaHeight, setCommentAreaHeight] = useState(0);
 
-  const theme = useTheme()
-  const xsScreen = useMediaQuery(theme.breakpoints.only('xs'))
+    const { handleGetComments } = useComment();
 
-  const { fetchComments } = useFetchPost()
+    const handleScrollComment = async (e) => {
+        const { scrollTop, clientHeight, scrollHeight } = e.target;
 
-  useEffect(() => {
-    const post = postState.posts.find((post) => post.id == params.postId)
-    postDispatch({ type: 'SET_CURRENT_POST', payload: post })
-    fetchComments(params.postId)
+        const isBottom = scrollHeight - scrollTop === clientHeight + 0.5;
 
-    return () => {
-      postDispatch({ type: 'REMOVE_CURRENT_POST' })
-    }
-  }, [])
+        if (isBottom) {
+            setPage(page + 1);
+            handleGetComments(page + 1, postId);
+        }
+    };
 
-  function isContent() {
+    useEffect(() => {
+        (async () => {
+            try {
+                const { data: commentsData } = await callApi({
+                    method: "GET",
+                    url: "/comment",
+                    query: { post_id: postId },
+                });
+                postDispatch({ type: "SET_COMMENTS", payload: commentsData.rows });
+
+                const { data: postData } = await callApi({ method: "GET", url: `/post/${postId}` });
+                postDispatch({ payload: postData, type: "SET_CURRENT_POST" });
+            } catch (err) {
+                uiDispatch({
+                    type: "SET_ALERT_MESSAGE",
+                    payload: { display: true, color: "error", text: err.message },
+                });
+            }
+        })();
+
+        return () => {
+            postDispatch({ type: "SET_CURRENT_POST", payload: null });
+            postDispatch({ type: "SET_COMMENT_SELECTED", payload: null });
+        };
+    }, []);
+
+    useEffect(() => {
+        setTimeout(() => {
+            setCommentAreaHeight(postAreaRef.current?.clientHeight - 92 - 20);
+        }, 1000);
+    }, [postAreaRef.current?.clientHeight]);
+
     return (
-      postState.post.body.feelings ||
-      postState.post.body.with.length ||
-      postState.post.body.at ||
-      postState.post.body.date
-    )
-  }
-
-  const handleFetchComments = () => {
-    fetchComments(params.postId)
-  }
-  return (
-    <div
-      style={{
-        paddingTop: '100px',
-        minHeight: '100vh',
-      }}
-    >
-      <Container>
-        <Grid container spacing={3}>
-          <Grid item md={7} sm={12} xs={12}>
-            <Card
-              style={{
-                width: '100%',
-                height: '80vh',
-                position: 'sticky',
-                top: 100,
-                backgroundColor: uiState.darkMode && 'rgb(36,37,38)',
-              }}
-            >
-              {postState.post.user && (
-                <CardHeader
-                  avatar={
-                    postState.post.user.profile_pic ? (
-                      <Avatar>
-                        <img
-                          src={postState.post.user.profile_pic}
-                          style={{ width: '100%', height: '100%' }}
-                          alt=""
-                        />
-                      </Avatar>
-                    ) : (
-                      <AvartarText
-                        text={postState.post.user.name}
-                        bg={postState.post.user.active ? 'seagreen' : 'tomato'}
-                      />
-                    )
-                  }
-                  title={
-                    postState.post && (
-                      <Typography style={{ fontWeight: '800' }}>
-                        {postState.post.user.name}
-                      </Typography>
-                    )
-                  }
-                  subheader={moment(postState.post.createdAt).fromNow()}
-                />
-              )}
-              {postState.post.body && isContent() && (
-                <CardContent
-                  style={{
-                    marginBottom: '16px',
-                    background: uiState.darkMode ? null : 'rgb(240,242,245)',
-                    padding: '16px',
-                  }}
+        <div
+            style={{
+                display: "flex",
+                padding: "20px",
+                marginTop: "64px",
+                justifyContent: "space-around",
+                minHeight: `calc(100vh - 64px)`,
+            }}
+        >
+            <Grid item md={7}>
+                <Card
+                    ref={postAreaRef}
+                    style={{ borderRadius: "10px", backgroundColor: darkMode && "rgb(36,37,38)" }}
                 >
-                  <PostSubContent post={postState.post} />
-                </CardContent>
-              )}
-
-              <CardContent>
-                <Typography
-                  style={{
-                    fontWeight: '400',
-                    fontSize: '16px',
-                    fontFamily: 'fantasy',
-                  }}
-                >
-                  {postState.post.content && postState.post.content}
-                </Typography>
-              </CardContent>
-
-              {postState.post.image && (
-                <CardMedia
-                  component={postState.post.image.split('.').pop().substring(0, 3) === "mp4" ? "video" : "img"}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'contain',
-                  }}
-                  image={postState.post.image}
-                  title="Paella dish"
-                  controls
-                />
-              )}
-
-              {postState.post.profilePostData &&
-              Object.keys(postState.post.profilePostData).length ? (
-                <>
-                  <CardMedia
-                    style={{ width: '100%', height: '200px' }}
-                    image={postState.post.profilePostData.coverImage}
-                    title={postState.post.user.name}
-                  />
-
-                  <Avatar
-                    style={{
-                      border: '6px solid tomato',
-                      width: xsScreen ? '300px' : '400px',
-                      height: xsScreen ? '300px' : '400px',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      margin: 'auto',
-                      borderRadius: '100%',
-                      bottom: 130,
-                    }}
-                  >
-                    <img
-                      src={postState.post.profilePostData.profileImage}
-                      width="100%"
-                      height="100%"
-                      alt=""
+                    <CardHeader
+                        title={
+                            <PostSubContent
+                                postBody={postSelected?.body}
+                                username={postSelected?.user.name}
+                            />
+                        }
+                        action={<PostAction post={postSelected} />}
+                        avatar={
+                            <AvatarIcon
+                                text={postSelected?.user.name}
+                                imageUrl={postSelected?.user.avatar_image}
+                            />
+                        }
+                        subheader={moment(postSelected?.createdAt).fromNow()}
                     />
-                  </Avatar>
-                </>
-              ) : null}
-            </Card>
-          </Grid>
-
-          <Grid
-            item
-            md={5}
-            sm={12}
-            xs={12}
-            style={{ marginBottom: !uiState.mdScreen ? '70px' : '0px' }}
-          >
-            <Paper
-              style={{
-                padding: '16px',
-                backgroundColor: uiState.darkMode && 'rgb(36,37,38)',
-              }}
-            >
-              <CommentTextArea post={postState.post} />
-            </Paper>
-            {postState.post.comments && postState.post.comments.length ? (
-              <>
-                {postState.post.comments.map((comment) => (
-                  <div key={comment.id}>
-                    <Comment comment={comment} />
-                  </div>
-                ))}
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                  {postState.post.commentPagination.totalPage ==
-                  postState.post.commentPagination.currentPage ? (
-                    <Typography variant="h6" color="primary">
-                      No more comments
-                    </Typography>
-                  ) : (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleFetchComments}
+                    <CardContent>
+                        <Typography style={{ fontWeight: 400, fontSize: "16px" }}>
+                            {postSelected?.text}
+                        </Typography>
+                    </CardContent>
+                    {postSelected?.images && <SlideImage images={postSelected?.images} />}
+                    <Divider />
+                    <PostFooter post={postSelected} />
+                </Card>
+            </Grid>
+            <Grid item md={4}>
+                <Paper
+                    style={{
+                        padding: "5px",
+                        borderRadius: "10px",
+                        backgroundColor: darkMode && "rgb(36,37,38)",
+                    }}
+                >
+                    <CommentInput postId={postSelected?._id} />
+                </Paper>
+                {Boolean(comments.length) && (
+                    <Paper
+                        onScroll={handleScrollComment}
+                        style={{
+                            marginTop: "20px",
+                            minHeight: "550px",
+                            borderRadius: "10px",
+                            overflow: "hidden auto",
+                            height: `${commentAreaHeight}px`,
+                            backgroundColor: "rgb(255,255,255)",
+                        }}
                     >
-                      More Comments
-                    </Button>
-                  )}
-                </div>
-              </>
-            ) : null}
-          </Grid>
-        </Grid>
-      </Container>
-    </div>
-  )
-}
+                        {comments.map((comment) => (
+                            <Comment comment={comment} key={comment?._id} />
+                        ))}
+                    </Paper>
+                )}
+            </Grid>
+        </div>
+    );
+};
 
-export default Post
+export default Post;

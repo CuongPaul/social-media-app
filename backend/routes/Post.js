@@ -1,30 +1,41 @@
+import multer from "multer";
 import express from "express";
+import { validate } from "express-validation";
 
 import {
-    createComment,
-    fetchComments,
-    likeDislikeComment,
-    editComment,
-    deleteComment,
-} from "../controllers/Post/Comment";
-import { fetchAllPosts, fetchPostById, deletePost, editPost } from "../controllers/Post/FetchPost";
-import { createPost, likeDislikePost } from "../controllers/Post/postAction";
-import authRequired from "../middleware/AuthRequired";
+    getPostValidation,
+    reactPostValidation,
+    deletePostValidation,
+    getAllPostsValidation,
+    getPostsByUserValidation,
+} from "../validator/post";
+import {
+    getPostController,
+    reactPostController,
+    createPostController,
+    deletePostController,
+    updatePostController,
+    getAllPostsController,
+    getPostsByUserController,
+} from "../controllers/post";
+import verifyToken from "../middleware/verify-token";
+import uploadFiles from "../middleware/upload-files";
 
+const memoStorage = multer.memoryStorage();
+const upload = multer({ memoStorage });
 const router = express.Router();
 
-router.post("/", authRequired, createPost);
-router.get("/", authRequired, fetchAllPosts);
-router.get("/:postId", authRequired, fetchPostById);
-router.delete("/:postId", authRequired, deletePost);
-router.patch("/:postId", authRequired, editPost);
-
-router.delete("/comment/:commentId", authRequired, deleteComment);
-router.patch("/comment/:commentId", authRequired, editComment);
-router.get("/comment/:commentId/like_dislike", authRequired, likeDislikeComment);
-
-router.get("/:postId/like_dislike", authRequired, likeDislikePost);
-router.get("/:postId/comment", authRequired, fetchComments);
-router.post("/:postId/comment", authRequired, createComment);
+router.get(
+    "/user/:userId",
+    validate(getPostsByUserValidation),
+    verifyToken,
+    getPostsByUserController
+);
+router.get("/", validate(getAllPostsValidation), getAllPostsController);
+router.get("/:postId", validate(getPostValidation), verifyToken, getPostController);
+router.post("/", verifyToken, upload.any("images"), uploadFiles, createPostController);
+router.put("/:postId", verifyToken, upload.any("images"), uploadFiles, updatePostController);
+router.delete("/:postId", validate(deletePostValidation), verifyToken, deletePostController);
+router.put("/react-post/:postId", validate(reactPostValidation), verifyToken, reactPostController);
 
 export default router;

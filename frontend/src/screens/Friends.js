@@ -1,225 +1,256 @@
-import React, { useContext, useEffect } from "react";
-import { Typography, makeStyles, Avatar, Grid, CardActions, Button } from "@material-ui/core";
-import Sidebar from "../components/Sidebar";
-import UserLists from "../components/Friends/UserLists";
-import { UIContext, UserContext } from "../App";
-import DrawerBar from "../components/Navbar/DrawerBar";
-import UserProfile from "../components/Profile/UserProfile";
-import Friend from "../components/Friends/Friend";
-import useFriendAction from "../hooks/useFriendActions";
 import {
-    fetchIncommingFriendRequests,
-    fetchRecommandedUsers,
-    fetchSendedFriendRequests,
-} from "../services/UserServices";
-const useStyles = makeStyles((theme) => ({
-    sidebarContainer: {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        justifyContent: "center",
-        marginLeft: "16px",
-    },
+    List,
+    Grid,
+    Avatar,
+    Button,
+    ListItem,
+    Typography,
+    CardActions,
+    ListSubheader,
+} from "@material-ui/core";
+import React, { useState, useEffect, useContext } from "react";
 
-    noRequest: { marginLeft: "32px", marginTop: "16px", color: "grey" },
-    divider: {
-        width: "90%",
-        height: "1px",
-        marginTop: "16px",
-    },
+import callApi from "../api";
+import Profile from "../screens/Profile";
+import User from "../components/Friends/User";
+import { UIContext, UserContext } from "../App";
+import { useUser, useFriendRequest } from "../hooks";
 
-    main: {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-        marginLeft: "320px",
-        [theme.breakpoints.between("xs", "sm")]: {
-            marginLeft: 0,
-        },
-    },
+const ButtonAction = ({ text, onClick, backgroundColor }) => (
+    <Button
+        onClick={onClick}
+        variant="contained"
+        style={{
+            margin: "5px",
+            minWidth: "80px",
+            fontSize: "10px",
+            color: "rgb(255,255,255)",
+            backgroundColor: backgroundColor,
+        }}
+    >
+        {text}
+    </Button>
+);
 
-    avatar: { width: "112px", height: "112px", background: "transparent" },
-    image: { width: "100%", height: "100%" },
-    selectText: {
-        color: "#65676B",
-        fontSize: "20px",
-        fontFamily: "sans-serif",
-        fontWeight: "700",
-    },
-}));
-function Friends() {
-    const classes = useStyles();
-    const { uiState, uiDispatch } = useContext(UIContext);
-    const { userState, userDispatch } = useContext(UserContext);
+const Friends = () => {
+    const { uiDispatch } = useContext(UIContext);
+    const {
+        userState: { currentUser, sendedFriendRequests, incommingFriendRequests },
+    } = useContext(UserContext);
+
+    const [userSelected, setUserSelected] = useState(null);
+    const [recommendUsers, setRecommendUsers] = useState([]);
+
+    const {
+        handleSendFriendRequest,
+        handleAcceptFriendRequest,
+        handleCancelFriendRequest,
+        handleDeclineFriendRequest,
+    } = useFriendRequest();
+    const { handleBlockUser, handleUnblockUser } = useUser();
 
     useEffect(() => {
-        uiDispatch({ type: "SET_NAV_MENU", payload: true });
-        async function sendedFriendRequest() {
-            const res = await fetchSendedFriendRequests();
-            if (res.data) {
-                userDispatch({
-                    type: "SET_FRIENDS_REQUEST_SENDED",
-                    payload: res.data.friends,
+        (async () => {
+            try {
+                const { data } = await callApi({ method: "GET", url: "/user/recommend-users" });
+                setRecommendUsers(data.rows);
+            } catch (err) {
+                uiDispatch({
+                    type: "SET_ALERT_MESSAGE",
+                    payload: { display: true, color: "error", text: err.message },
                 });
             }
-        }
-
-        async function incommingFriendRequest() {
-            const res = await fetchIncommingFriendRequests();
-            if (res && res.data) {
-                userDispatch({
-                    type: "SET_FRIENDS_REQUEST_RECEIVED",
-                    payload: res.data.friends,
-                });
-            }
-        }
-
-        async function recommandedUser() {
-            const res = await fetchRecommandedUsers();
-            if (res && res.data) {
-                userDispatch({
-                    type: "SET_USERS",
-                    payload: res.data.users,
-                });
-            }
-        }
-
-        recommandedUser();
-        incommingFriendRequest();
-        sendedFriendRequest();
-
-        return () => {
-            userDispatch({ type: "REMOVE_SELECTED_USER_PROFILE", payload: null });
-            uiDispatch({ type: "SET_NAV_MENU", payload: false });
-        };
+        })();
     }, []);
 
-    const { acceptFriendRequest, declineFriendRequest, cancelFriendRequest } = useFriendAction();
-
-    const handleAcceptFriendRequest = (request_id) => {
-        acceptFriendRequest(request_id);
-    };
-
-    const handleDeclineFriendRequest = (request_id) => {
-        declineFriendRequest(request_id);
-    };
-
-    const handleCancelFriendRequest = (request_id) => {
-        cancelFriendRequest(request_id);
-    };
-
-    const metaData = (
-        <div className={classes.sidebarContainer}>
-            <Typography variant="h4">Friends</Typography>
-
-            {userState.sendedFriendRequests.length ? (
-                <>
-                    <Typography variant="h6">Sended Friend Request</Typography>
-                    {userState.sendedFriendRequests.map((request) => (
-                        <Friend user={request.user} key={request.id}>
-                            <CardActions>
-                                <Button
-                                    onClick={() => handleCancelFriendRequest(request.id)}
-                                    variant="contained"
-                                    style={{
-                                        background: "tomato",
-                                        color: "white",
-                                    }}
-                                >
-                                    Cancel
-                                </Button>
-                            </CardActions>
-                        </Friend>
-                    ))}
-                </>
-            ) : null}
-
-            {userState.receivedFriendRequests.length ? (
-                <>
-                    <Typography variant="h6">Incomming Friend Requests</Typography>
-
-                    {userState.receivedFriendRequests.map((request) => (
-                        <div>
-                            <Friend user={request.user} key={request.id}>
-                                <CardActions>
-                                    <Button
-                                        onClick={() => handleAcceptFriendRequest(request.id)}
-                                        variant="contained"
-                                        style={{
-                                            background: "seagreen",
-                                            color: "white",
-                                        }}
-                                    >
-                                        Accept
-                                    </Button>
-                                    <Button
-                                        variant="contained"
-                                        style={{
-                                            background: "tomato",
-                                            color: "white",
-                                        }}
-                                        onClick={() => handleDeclineFriendRequest(request.id)}
-                                    >
-                                        Decline
-                                    </Button>
-                                </CardActions>
-                            </Friend>
-                        </div>
-                    ))}
-                </>
-            ) : null}
-        </div>
-    );
     return (
-        <div>
-            {uiState.mdScreen ? (
-                <Grid container spacing={0}>
-                    <Grid item md={3}>
-                        <Sidebar background={uiState.darkMode && "rgb(36,37,38)"}>
-                            {metaData}
-
-                            <UserLists users={userState.users} />
-                        </Sidebar>
-                    </Grid>
-                    <Grid item md={8} style={{ margin: "auto" }}>
-                        {userState.selectedUserProfile && (
-                            <UserProfile user={userState.selectedUserProfile} conScreen={true} />
-                        )}
-                    </Grid>
-                </Grid>
-            ) : (
-                <>
-                    <DrawerBar>
-                        {metaData}
-
-                        <UserLists users={userState.users} />
-                    </DrawerBar>
-                    {userState.selectedUserProfile && (
-                        <UserProfile user={userState.selectedUserProfile} />
-                    )}
-                </>
-            )}
-
-            {!userState.selectedUserProfile && (
+        <Grid
+            style={{
+                display: "flex",
+                marginTop: "64px",
+                height: `calc(100vh - 64px)`,
+                justifyContent: "space-between",
+            }}
+        >
+            <Grid style={{ margin: "10px", display: "flex", flexDirection: "column" }}>
+                {Boolean(sendedFriendRequests.length) && (
+                    <div
+                        style={{
+                            flex: 1,
+                            margin: "5px",
+                            borderRadius: "10px",
+                            overflow: "hidden auto",
+                            backgroundColor: "rgb(255,255,255)",
+                        }}
+                    >
+                        <List style={{ padding: "0px" }}>
+                            <ListSubheader
+                                style={{ textAlign: "center", backgroundColor: "rgb(255,255,255)" }}
+                            >
+                                Friend requests sended
+                            </ListSubheader>
+                            {sendedFriendRequests.map((request) => (
+                                <ListItem key={request._id}>
+                                    <User user={request.receiver} setUserSelected={setUserSelected}>
+                                        <CardActions style={{ padding: "0px", marginLeft: "16px" }}>
+                                            <ButtonAction
+                                                text={"Cancel"}
+                                                backgroundColor={"rgb(255,193,7)"}
+                                                onClick={() =>
+                                                    handleCancelFriendRequest(request._id)
+                                                }
+                                            />
+                                        </CardActions>
+                                    </User>
+                                </ListItem>
+                            ))}
+                        </List>
+                    </div>
+                )}
+                {Boolean(incommingFriendRequests.length) && (
+                    <div
+                        style={{
+                            flex: 1,
+                            margin: "5px",
+                            borderRadius: "10px",
+                            overflow: "hidden auto",
+                            backgroundColor: "rgb(255,255,255)",
+                        }}
+                    >
+                        <List style={{ padding: "0px" }}>
+                            <ListSubheader
+                                style={{ textAlign: "center", backgroundColor: "rgb(255,255,255)" }}
+                            >
+                                Friend requests incomming
+                            </ListSubheader>
+                            {incommingFriendRequests.map((request) => (
+                                <ListItem key={request._id}>
+                                    <User user={request.sender} setUserSelected={setUserSelected}>
+                                        <CardActions
+                                            style={{
+                                                padding: "0px",
+                                                display: "flex",
+                                                marginLeft: "16px",
+                                                flexDirection: "column",
+                                            }}
+                                        >
+                                            <ButtonAction
+                                                text={"Decline"}
+                                                backgroundColor={"rgb(108,117,125)"}
+                                                onClick={() =>
+                                                    handleDeclineFriendRequest(request._id)
+                                                }
+                                            />
+                                            <ButtonAction
+                                                text={"Accept"}
+                                                backgroundColor={"rgb(46,139,87)"}
+                                                onClick={() => handleAcceptFriendRequest(request)}
+                                            />
+                                        </CardActions>
+                                    </User>
+                                </ListItem>
+                            ))}
+                        </List>
+                    </div>
+                )}
+            </Grid>
+            {userSelected ? (
                 <div
-                    className={classes.main}
-                    style={{ backgroundColor: uiState.darkMode ? "rgb(24,25,26)" : null }}
+                    style={{
+                        flex: 1,
+                        margin: "10px",
+                        overflow: "hidden auto",
+                    }}
                 >
-                    <Avatar variant="square" className={classes.avatar}>
-                        <img
-                            src={require("../assets/select-friends.svg")}
-                            className={classes.image}
-                        />
+                    <Profile conScreen userId={userSelected._id} />
+                </div>
+            ) : (
+                <div
+                    style={{
+                        flex: 1,
+                        margin: "10px",
+                        display: "flex",
+                        alignItems: "center",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                    }}
+                >
+                    <Avatar
+                        variant="square"
+                        style={{
+                            width: "120px",
+                            height: "120px",
+                            backgroundColor: "transparent",
+                        }}
+                    >
+                        <img alt={""} src={require("../assets/select-friends.svg")} />
                     </Avatar>
-                    <Typography className={classes.selectText}>
-                        Select people's names to preview their profile.
+                    <Typography
+                        style={{
+                            fontWeight: 700,
+                            fontSize: "20px",
+                            color: "rgb(101,103,107)",
+                        }}
+                    >
+                        Select the name of the person you want to preview the profile.
                     </Typography>
                 </div>
             )}
-        </div>
+            <Grid style={{ margin: "10px", display: "flex" }}>
+                {Boolean(recommendUsers.length) && (
+                    <div
+                        style={{
+                            margin: "5px",
+                            borderRadius: "10px",
+                            overflow: "hidden auto",
+                            backgroundColor: "rgb(255,255,255)",
+                        }}
+                    >
+                        <List style={{ padding: "0px" }}>
+                            <ListSubheader
+                                style={{ textAlign: "center", backgroundColor: "rgb(255,255,255)" }}
+                            >
+                                People you may know
+                            </ListSubheader>
+                            {recommendUsers.map((user) => (
+                                <ListItem key={user._id}>
+                                    <User user={user} setUserSelected={setUserSelected}>
+                                        <CardActions
+                                            style={{
+                                                padding: "0px",
+                                                display: "flex",
+                                                marginLeft: "16px",
+                                                flexDirection: "column",
+                                            }}
+                                        >
+                                            <ButtonAction
+                                                text={"Add"}
+                                                backgroundColor={"rgb(1,133,243)"}
+                                                onClick={() => handleSendFriendRequest(user._id)}
+                                            />
+                                            {currentUser?.block_users.includes(user._id) ? (
+                                                <ButtonAction
+                                                    text={"Unblock"}
+                                                    backgroundColor={"rgb(23,162,184)"}
+                                                    onClick={() => handleUnblockUser(user._id)}
+                                                />
+                                            ) : (
+                                                <ButtonAction
+                                                    text={"Block"}
+                                                    backgroundColor={"rgb(220,53,69)"}
+                                                    onClick={() => handleBlockUser(user._id)}
+                                                />
+                                            )}
+                                        </CardActions>
+                                    </User>
+                                </ListItem>
+                            ))}
+                        </List>
+                    </div>
+                )}
+            </Grid>
+        </Grid>
     );
-}
+};
 
 export default Friends;

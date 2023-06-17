@@ -1,151 +1,121 @@
 export const initialPostState = {
-  posts: [],
-  postPagination: {
-    currentPage: 0,
-    totalPage: 0,
-  },
-  post: {
+    posts: [],
     comments: [],
-    commentPagination: {
-      currentPage: 0,
-      totalPage: 0,
-    },
-  },
-}
+    postSelected: null,
+    commentSelected: null,
+};
 
 export const PostReducer = (state, action) => {
-  switch (action.type) {
-    case 'SET_POSTS':
-      return {
-        ...state,
-        posts: action.payload,
-      }
+    switch (action.type) {
+        case "ADD_POSTS":
+            return { ...state, posts: [...state.posts, ...action.payload] };
 
-    case 'SET_CURRENT_POST':
-      return {
-        ...state,
-        post: action.payload,
-      }
+        case "SET_POSTS":
+            return { ...state, posts: action.payload };
 
-    case 'REMOVE_CURRENT_POST':
-      return {
-        ...state,
-        post: {
-          comments: [],
-          commentPagination: {
-            currentPage: 0,
-            totalPage: 0,
-          },
-        },
-      }
+        case "REACT_POST":
+            const postsAfterReact = [...state.posts];
+            const postSelectedAfterReact = state.postSelected ? { ...state.postSelected } : null;
 
-    case 'ADD_POST':
-      return {
-        ...state,
-        posts: [action.payload, ...state.posts],
-      }
+            if (postSelectedAfterReact) {
+                const indexOfReact = postSelectedAfterReact.react[action.payload.key].findIndex(
+                    (element) => element._id === action.payload.user._id
+                );
 
-    case 'DELETE_COMMENT':
-      return {
-        ...state,
-        post: {
-          ...state.post,
-          comments: [...action.payload],
-        }
-      }
+                if (indexOfReact === -1) {
+                    postSelectedAfterReact.react[action.payload.key].push({
+                        _id: action.payload.user._id,
+                        name: action.payload.user.name,
+                        avatar_image: action.payload.user.avatar_image,
+                    });
+                } else {
+                    postSelectedAfterReact.react[action.payload.key].splice(indexOfReact, 1);
+                }
+            } else {
+                const indexOfPostSelected = postsAfterReact.findIndex(
+                    (element) => element._id === action.payload.post_id
+                );
 
-    case 'DELETE_POST':
-      return {
-        ...state,
-        posts: [...action.payload]
-      }
+                if (indexOfPostSelected !== -1) {
+                    const indexOfReact = postsAfterReact[indexOfPostSelected].react[
+                        action.payload.key
+                    ].findIndex((element) => element._id === action.payload.user._id);
 
-    case 'EDIT_POST':
-      const { posts } = state;
-      posts.forEach(post => {
-        if (post.id === action.payload.id) {
-          post.privacy = action.payload.privacy;
-          post.content = action.payload.content;
-          
-          return;
-        }
-      });
+                    if (indexOfReact === -1) {
+                        postsAfterReact[indexOfPostSelected].react[action.payload.key].push({
+                            _id: action.payload.user._id,
+                            name: action.payload.user.name,
+                            avatar_image: action.payload.user.avatar_image,
+                        });
+                    } else {
+                        postsAfterReact[indexOfPostSelected].react[action.payload.key].splice(
+                            indexOfReact,
+                            1
+                        );
+                    }
+                }
+            }
 
-      return {
-        ...state,
-        posts: [...posts]
-      }
+            const indexOfPostSelected = postsAfterReact.findIndex(
+                (item) => item._id === action.payload.post_id
+            );
 
-    case 'POST_PAGINATION':
-      return {
-        ...state,
-        posts: [...state.posts, ...action.payload.posts],
-        postPagination: {
-          ...state.postPagination,
-          currentPage: action.payload.currentPage,
-          totalPage: action.payload.totalPage,
-        },
-      }
+            return { ...state, posts: postsAfterReact, postSelected: postSelectedAfterReact };
 
-    case 'COMMENT_PAGINATION':
-      return {
-        ...state,
-        post: {
-          ...state.post,
-          commentPagination: {
-            ...state.post.commentPagination,
-            currentPage: action.payload.currentPage,
-            totalPage: action.payload.totalPage,
-          },
-          comments:
-            state.post.comments && state.post.comments.length
-              ? [...state.post.comments, ...action.payload.comments]
-              : [...action.payload.comments],
-        },
-      }
+        case "UPDATE_POST":
+            const postsAfterUpdate = [...state.posts];
 
-    case 'LIKE_UNLIKE_POST':
-      let l_postIndex = state.posts.findIndex(
-        (post) => post.id == action.payload.id,
-      )
-      state.posts[l_postIndex] = action.payload
-      if (state.post.id == action.payload.id) {
-        state.post = action.payload
-      }
+            const postUpdatedIndex = postsAfterUpdate.findIndex(
+                (post) => post._id === action.payload._id
+            );
+            postsAfterUpdate[postUpdatedIndex] = action.payload;
 
-      return {
-        ...state,
-      }
+            return { ...state, posts: postsAfterUpdate };
 
-    case 'SET_POST_COMMENTS':
-      return {
-        ...state,
-        post: {
-          ...state.post,
-          comments: action.payload,
-        },
-      }
+        case "ADD_COMMENT":
+            return { ...state, comments: [action.payload, ...state.comments] };
 
-    case 'ADD_POST_COMMENT':
-      return {
-        ...state,
-        post: {
-          ...state.post,
-          comments: [action.payload, ...state.post.comments],
-        },
-      }
+        case "CREATE_POST":
+            const postsAfterCreate = [...state.posts];
+            postsAfterCreate.unshift(action.payload);
 
-    case 'LIKE_UNLIKE_COMMENT':
-      let index1 = state.post.comments.findIndex(
-        (comment) => comment.id == action.payload.id,
-      )
-      state.post.comments[index1] = action.payload
+            return { ...state, posts: postsAfterCreate };
 
-      return {
-        ...state,
-      }
+        case "DELETE_POST":
+            const postsAfterDelete = state.posts.filter((post) => post._id !== action.payload);
 
-    default:
-      throw new Error(`action type ${action.type} is undefined`)
-  }
-}
+            return { ...state, posts: postsAfterDelete };
+
+        case "ADD_COMMENTS":
+            return { ...state, comments: [...state.comments, ...action.payload] };
+
+        case "SET_COMMENTS":
+            return { ...state, comments: action.payload };
+
+        case "DELETE_COMMENT":
+            const commentsAfterDelete = [...state.comments].filter(
+                (item) => item._id !== action.payload
+            );
+
+            return { ...state, comments: commentsAfterDelete };
+
+        case "SET_CURRENT_POST":
+            return { ...state, postSelected: action.payload };
+
+        case "SET_COMMENT_SELECTED":
+            return { ...state, commentSelected: action.payload };
+
+        case "UPDATE_COMMENT_SELECTED":
+            const commentsAfterUpdate = [...state.comments];
+            const indexOfCommentUpdated = commentsAfterUpdate.findIndex(
+                (item) => item._id === action.payload._id
+            );
+
+            commentsAfterUpdate[indexOfCommentUpdated] = action.payload;
+
+            return { ...state, comments: commentsAfterUpdate };
+
+        default:
+            throw new Error(`Action type ${action.type} is undefined`);
+    }
+};

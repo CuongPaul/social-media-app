@@ -1,76 +1,47 @@
-export const initialUIState = {
-  mdScreen: false,
-  drawer: false,
-  navDrawerMenu: false,
-  postModel: false,
-  message: null,
-  notifications: [],
-  loading: false,
-  darkMode: false,
-  post: null,
-}
+const initialUIState = {
+    darkMode: false,
+    notifications: [],
+    alert_message: null,
+};
 
-export const UIReducer = (state, action) => {
-  switch (action.type) {
-    case 'SET_USER_SCREEN':
-      return {
-        ...state,
-        mdScreen: action.payload,
-      }
+const UIReducer = (state, action) => {
+    switch (action.type) {
+        case "SET_DARK_MODE":
+            localStorage.setItem("dark_mode", action.payload);
 
-    case 'EDIT_POST':
-      return {
-        ...state,
-        post: action.payload,
-      }
+            return { ...state, darkMode: action.payload };
 
-    case 'SET_DRAWER':
-      return {
-        ...state,
-        drawer: action.payload,
-      }
+        case "ADD_NOTIFICATION":
+            return { ...state, notifications: [action.payload, ...state.notifications] };
 
-    case 'SET_MESSAGE':
-      return {
-        ...state,
-        message: action.payload,
-      }
-    case 'SET_NAV_MENU':
-      return {
-        ...state,
-        navDrawerMenu: action.payload,
-      }
+        case "SET_NOTIFICATIONS":
+            return { ...state, notifications: action.payload };
 
-    case 'SET_POST_MODEL':
-      return {
-        ...state,
-        postModel: action.payload,
-      }
+        case "SET_ALERT_MESSAGE":
+            return { ...state, alert_message: action.payload };
 
-    case 'SET_NOTIFICATIONS':
-      return {
-        ...state,
-        notifications: action.payload,
-      }
+        case "ADD_NOTIFICATIONS":
+            return { ...state, notifications: [...state.notifications, ...action.payload] };
 
-    case 'ADD_NOTIFICATION':
-      return {
-        ...state,
-        notifications: [action.payload, ...state.notifications],
-      }
+        case "READ_NOTIFICATION":
+            const notificationReadIndex = state.notifications.findIndex(
+                (item) => item._id === action.payload
+            );
 
-    case 'SET_LOADING':
-      return {
-        ...state,
-        loading: action.payload,
-      }
-    case 'SET_DARK_MODE':
-      return {
-        ...state,
-        darkMode: action.payload,
-      }
+            const notificationsAfterRead = [...state.notifications];
+            notificationsAfterRead[notificationReadIndex].is_read = true;
 
-    default:
-      throw new Error(`action type ${action.type} is undefined`)
-  }
-}
+            return { ...state, notifications: notificationsAfterRead };
+
+        case "READ_ALL_NOTIFICATIONS":
+            const notificationsAfterReadAll = [...state.notifications];
+            notificationsAfterReadAll.forEach((item) => (item.is_read = true));
+
+            return { ...state, notifications: notificationsAfterReadAll };
+
+        default:
+            throw new Error(`Action type ${action.type} is undefined`);
+    }
+};
+
+export { UIReducer, initialUIState };

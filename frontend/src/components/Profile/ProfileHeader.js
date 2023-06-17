@@ -1,80 +1,197 @@
-import React, { useContext } from 'react'
-import { Paper, Typography, makeStyles, Grid, Button } from '@material-ui/core'
-import UpdateProfileImage from './UpdateProfileImage'
-import UpdateCoverImage from './UpdateCoverImage'
-import { UserContext } from '../../App'
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    width: '100%',
-    height: '40vh',
-    marginTop: '60px',
-    position: 'relative',
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'center',
-    backgroundSize: '100% 40vh',
-  },
+import {
+    Grid,
+    Badge,
+    Paper,
+    Avatar,
+    Button,
+    Dialog,
+    CardHeader,
+    IconButton,
+    Typography,
+    DialogActions,
+    DialogContent,
+} from "@material-ui/core";
+import { Close } from "@material-ui/icons";
+import { useParams } from "react-router-dom";
+import { CameraAlt } from "@material-ui/icons";
+import React, { useRef, useState, Fragment, useContext } from "react";
 
-  overlay: {
-    position: 'absolute',
-    background: 'rgba(0,0,0,0.5)',
-    width: '100%',
-    height: '40vh',
-    top: 0,
-  },
-}))
-function ProfileHeader({ user }) {
-  const { userState } = useContext(UserContext)
-  const classes = useStyles()
-  return (
-    <div>
-      <Grid container justify="center" alignItems="center">
-        <Grid item xs={12} sm={12} md={6}>
-          <Paper
-            elevation={10}
-            className={classes.paper}
-            style={{
-              backgroundImage: user.cover_image
-                ? 'url(' + user.cover_image + ')'
-                : null,
-            }}
-          >
-            <UpdateProfileImage user={user} type="profile" />
-            {userState.currentUser.id == user.id && (
-              <>
-                <UpdateCoverImage />
-              </>
-            )}
-            <div className={classes.overlay}></div>
-          </Paper>
-        </Grid>
-      </Grid>
-      <Grid
-        container
-        justify="center"
-        alignItems="center"
-        style={{ marginTop: '30px' }}
-      >
-        <Grid
-          item
-          xs={12}
-          sm={12}
-          md={6}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginBottom: '16px',
-          }}
-        >
-          <Typography style={{ fontSize: '30px', fontWeight: '800' }}>
-            {user.name}
-          </Typography>
-        
-        </Grid>
-      </Grid>
-    </div>
-  )
-}
+import { useUser } from "../../hooks";
+import { UserContext } from "../../App";
+import AvatarIcon from "../common/AvatarIcon";
+import LoadingIcon from "../common/LoadingIcon";
 
-export default ProfileHeader
+const ProfileHeader = ({ user, conScreen }) => {
+    const {
+        userState: { currentUser },
+    } = useContext(UserContext);
+
+    const params = useParams();
+    const fileRef = useRef(null);
+    const [typeUpload, setTyppeUpload] = useState("");
+    const [imageUpload, setImageUpload] = useState(null);
+    const [imagePreview, setImagePreview] = useState("");
+    const [isOpenPreviewImage, setIsOpenPreviewImage] = useState(false);
+
+    const { isLoading, handleUpdateCoverImage, handleUpdateAvatarImage } = useUser();
+
+    const handleChangeImage = (e) => {
+        setImageUpload(e.target.files[0]);
+
+        const reader = new FileReader();
+        reader.readAsDataURL(e.target.files[0]);
+        reader.onload = () => {
+            setIsOpenPreviewImage(true);
+            setImagePreview(reader.result);
+        };
+    };
+
+    const handleClickUpload = () => {
+        if (typeUpload === "avatar-image") {
+            handleUpdateAvatarImage(imageUpload);
+        } else {
+            handleUpdateCoverImage(imageUpload);
+        }
+
+        handleClickCancel();
+    };
+
+    const handleClickCancel = () => {
+        setImagePreview("");
+        setImageUpload(null);
+        setIsOpenPreviewImage(false);
+    };
+
+    return (
+        <Fragment>
+            <Grid container alignItems="center" justifyContent="center">
+                <Grid item md={conScreen ? 12 : 6} xs={12} sm={12}>
+                    <Paper
+                        style={{
+                            height: "40vh",
+                            borderRadius: "10px",
+                            position: "relative",
+                            backgroundPosition: "center",
+                            backgroundColor: !user?.cover_image && "rgba(0,0,0,0.5)",
+                            backgroundImage: user?.cover_image && `url("${user?.cover_image}")`,
+                        }}
+                    >
+                        {currentUser?._id === params.userId && (
+                            <IconButton
+                                onClick={() => {
+                                    fileRef.current.click();
+                                    setTyppeUpload("cover-image");
+                                }}
+                                style={{ left: "20px", bottom: "20px", position: "absolute" }}
+                            >
+                                <Avatar>
+                                    <CameraAlt style={{ color: "black" }} />
+                                </Avatar>
+                            </IconButton>
+                        )}
+                        <Badge
+                            overlap="rectangular"
+                            style={{
+                                left: "0px",
+                                right: "0px",
+                                width: "170px",
+                                bottom: "-50px",
+                                margin: "0px auto",
+                                position: "absolute",
+                            }}
+                            badgeContent={
+                                currentUser?._id === params.userId && (
+                                    <IconButton
+                                        onClick={() => {
+                                            fileRef.current.click();
+                                            setTyppeUpload("avatar-image");
+                                        }}
+                                        style={{ left: "-10px", bottom: "-120px" }}
+                                    >
+                                        <Avatar>
+                                            <CameraAlt style={{ color: "black" }} />
+                                        </Avatar>
+                                    </IconButton>
+                                )
+                            }
+                        >
+                            <AvatarIcon
+                                size="170px"
+                                fontSize="50px"
+                                text={user?.name}
+                                imageUrl={user?.avatar_image}
+                            />
+                        </Badge>
+                        <input
+                            type="file"
+                            ref={fileRef}
+                            accept="image/*"
+                            style={{ display: "none" }}
+                            onChange={handleChangeImage}
+                        />
+                        <Dialog open={isOpenPreviewImage} onClose={handleClickCancel}>
+                            <CardHeader
+                                action={
+                                    <IconButton color="primary" onClick={handleClickCancel}>
+                                        <Close />
+                                    </IconButton>
+                                }
+                                subheader={
+                                    <Typography style={{ fontWeight: 800, fontSize: "20px" }}>
+                                        Upload {typeUpload === "avatar-image" ? "avatar" : "cover"}{" "}
+                                        image
+                                    </Typography>
+                                }
+                            />
+                            <DialogContent>
+                                <img
+                                    alt={""}
+                                    src={imagePreview}
+                                    style={{ width: "100%", borderRadius: "10px" }}
+                                />
+                            </DialogContent>
+                            <DialogActions
+                                style={{
+                                    display: "flex",
+                                    marginBottom: "10px",
+                                    justifyContent: "center",
+                                }}
+                            >
+                                <Button
+                                    variant="contained"
+                                    onClick={handleClickCancel}
+                                    style={{
+                                        color: "rgb(255,255,255)",
+                                        backgroundColor: "rgb(255,99,72)",
+                                    }}
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    color="primary"
+                                    variant="contained"
+                                    disabled={isLoading}
+                                    onClick={handleClickUpload}
+                                >
+                                    <LoadingIcon text={"Upload"} isLoading={isLoading} />
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
+                    </Paper>
+                </Grid>
+            </Grid>
+            <Grid
+                container
+                alignItems="center"
+                justifyContent="center"
+                style={{ marginTop: "60px", marginBottom: "10px" }}
+            >
+                <Typography style={{ fontSize: "30px", fontWeight: "800" }}>
+                    {user?.name}
+                </Typography>
+            </Grid>
+        </Fragment>
+    );
+};
+
+export default ProfileHeader;

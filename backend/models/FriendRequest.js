@@ -2,22 +2,17 @@ import mongoose from "mongoose";
 
 const { model, Schema } = mongoose;
 
-const FriendRequestSchema = new Schema(
+const UserIdType = { ref: "user", type: Schema.Types.ObjectId };
+
+const friendRequestSchema = new Schema(
     {
-        sender: {
-            type: Schema.Types.ObjectId,
-            ref: "User",
-        },
-        receiver: {
-            type: Schema.Types.ObjectId,
-            ref: "User",
-        },
-        isAccepted: {
-            type: Boolean,
-            default: false,
-        },
+        sender: UserIdType,
+        receiver: UserIdType,
+        is_accepted: { type: Boolean, default: false },
     },
-    { timestamps: true }
+    { timestamps: true, versionKey: false }
 );
 
-export default model("FriendRequest", FriendRequestSchema);
+const FriendRequest = model("friend-request", friendRequestSchema);
+
+export default FriendRequest;

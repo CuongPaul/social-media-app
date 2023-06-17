@@ -1,331 +1,268 @@
 import React, {
-  Fragment,
-  lazy,
-  Suspense,
-  createContext,
-  useReducer,
-  useEffect,
-  useState,
-} from 'react'
+    lazy,
+    useRef,
+    useMemo,
+    Suspense,
+    useEffect,
+    useReducer,
+    createContext,
+} from "react";
+import io from "socket.io-client";
+import { createTheme, ThemeProvider } from "@material-ui/core/styles";
+import { Route, Switch, Redirect, BrowserRouter } from "react-router-dom";
 
-import { ThemeProvider } from '@material-ui/core/styles'
+import callApi from "./api";
+import Navbar from "./components/Navbar";
+import Loading from "./components/common/Loading";
+import ProtectedRoute from "./utils/protected-route";
+import Notification from "./components/common/Notification";
+import { UIReducer, initialUIState } from "./context/UIContext";
+import { ChatReducer, initialChatState } from "./context/ChatContext";
+import { PostReducer, initialPostState } from "./context/PostContext";
+import { UserReducer, initialUserState } from "./context/UserContext";
 
-import {
-  Snackbar,
-  useMediaQuery,
-  useTheme,
-  createMuiTheme,
-} from '@material-ui/core'
+export const UIContext = createContext();
+export const ChatContext = createContext();
+export const PostContext = createContext();
+export const UserContext = createContext();
 
-import {
-  BrowserRouter as Router,
-  Redirect,
-  Route,
-  Switch,
-} from 'react-router-dom'
+const Auth = lazy(() => import("./screens/Auth"));
+const Home = lazy(() => import("./screens/Home"));
+const Post = lazy(() => import("./screens/Post"));
+const Friends = lazy(() => import("./screens/Friends"));
+const Profile = lazy(() => import("./screens/Profile"));
+const Settings = lazy(() => import("./screens/Settings"));
+const Messenger = lazy(() => import("./screens/Messenger"));
 
-import Navbar from './components/Navbar/Navbar'
-import Loader from './components/Loader'
-import BottomNav from './components/Navbar/BottomNav.js'
-import { initialUIState, UIReducer } from './context/UIContext'
-import { UserReducer, initialUserState } from './context/UserContext'
-import { PostReducer, initialPostState } from './context/PostContext'
-import { ChatReducer, initialChatState } from './context/ChatContext'
+const App = () => {
+    const socketIO = useRef();
+    const token = localStorage.getItem("token");
 
-import { fetchCurrentUser } from './services/AuthService'
+    const [uiState, uiDispatch] = useReducer(UIReducer, initialUIState);
+    const [chatState, chatDispatch] = useReducer(ChatReducer, initialChatState);
+    const [postState, postDispatch] = useReducer(PostReducer, initialPostState);
+    const [userState, userDispatch] = useReducer(UserReducer, initialUserState);
 
-import jwtDecode from 'jwt-decode'
+    const theme = useMemo(
+        () =>
+            createTheme({
+                active: { success: "rgb(63,162,76)" },
+                palette: {
+                    primary: { main: "rgb(1,133,243)" },
+                    secondary: { main: "rgb(63,162,76)" },
+                    type: uiState.darkMode ? "dark" : "light",
+                },
+            }),
+        [uiState.darkMode]
+    );
 
-import ProtectedRoute from './utils/ProtectedRoute'
-import { Alert } from '@material-ui/lab'
+    useEffect(() => {
+        uiDispatch({
+            type: "SET_DARK_MODE",
+            payload: JSON.parse(localStorage.getItem("dark_mode")) || false,
+        });
+        userDispatch({
+            type: "SET_RECENT_ACCOUNTS",
+            payload: JSON.parse(localStorage.getItem("recent_accounts")) || [],
+        });
+    }, []);
 
-import io from 'socket.io-client'
+    useEffect(() => {
+        const getInitialData = async () => {
+            try {
+                const { data: sendedFriendRequestsData } = await callApi({
+                    method: "GET",
+                    url: "/friend-request/sended",
+                });
+                if (sendedFriendRequestsData) {
+                    userDispatch({
+                        type: "SET_SENDED_FRIEND_REQUEST",
+                        payload: sendedFriendRequestsData.rows,
+                    });
+                }
 
-export const UIContext = createContext()
-export const UserContext = createContext()
-export const PostContext = createContext()
-export const ChatContext = createContext()
+                const { data: incommingFriendRequestsData } = await callApi({
+                    method: "GET",
+                    url: "/friend-request/received",
+                });
+                if (incommingFriendRequestsData) {
+                    userDispatch({
+                        type: "SET_INCOMMING_FRIEND_REQUEST",
+                        payload: incommingFriendRequestsData.rows,
+                    });
+                }
 
-const Home = lazy(() => import('./screens/Home'))
-const Friends = lazy(() => import('./screens/Friends'))
-const Auth = lazy(() => import('./screens/Auth'))
-const Profile = lazy(() => import('./screens/Profile'))
-const Post = lazy(() => import('./screens/Post'))
-const Messenger = lazy(() => import('./screens/Messenger'))
-const Settings = lazy(() => import('./screens/Settings'))
+                const { data: currentUserData } = await callApi({ url: "/user", method: "GET" });
+                if (currentUserData) {
+                    userDispatch({ type: "SET_CURRENT_USER", payload: currentUserData });
+                }
 
-const token = localStorage.token && JSON.parse(localStorage.token)
+                const { data: friendsOnlineData } = await callApi({
+                    method: "GET",
+                    url: "/user/friends-online",
+                });
+                if (friendsOnlineData) {
+                    userDispatch({ type: "SET_FRIENDS_ONLINE", payload: friendsOnlineData.rows });
+                }
 
-function App() {
-  const [uiState, uiDispatch] = useReducer(UIReducer, initialUIState)
-  const [userState, userDispatch] = useReducer(UserReducer, initialUserState)
-  const [postState, postDispatch] = useReducer(PostReducer, initialPostState)
-  const [chatState, chatDispatch] = useReducer(ChatReducer, initialChatState)
+                const { data: chatRoomsData } = await callApi({ method: "GET", url: "/chat-room" });
+                if (chatRoomsData) {
+                    chatDispatch({ type: "SET_CHATROOMS", payload: chatRoomsData.rows });
+                }
+            } catch (err) {
+                uiDispatch({
+                    type: "SET_ALERT_MESSAGE",
+                    payload: { display: true, color: "error", text: err.message },
+                });
+            }
+        };
 
-  const [loading, setLoading] = useState(false)
-
-  const theme = useTheme()
-  const mdScreen = useMediaQuery(theme.breakpoints.up('md'))
-  const Theme = React.useMemo(
-    () =>
-      createMuiTheme({
-        active: {
-          success: 'rgb(63,162,76)',
-        },
-
-        palette: {
-          type: uiState.darkMode ? 'dark' : 'light',
-          primary: {
-            main: 'rgb(1,133,243)',
-          },
-
-          secondary: {
-            main: 'rgb(63,162,76)',
-          },
-        },
-      }),
-    [uiState.darkMode],
-  )
-
-  useEffect(() => {
-    uiDispatch({ type: 'SET_USER_SCREEN', payload: mdScreen })
-  }, [mdScreen])
-
-  useEffect(() => {
-    async function loadCurrentUser() {
-      if (token) {
-        const decodeToken = jwtDecode(token)
-
-        if (decodeToken.exp * 1000 < Date.now()) {
-          userDispatch({ type: 'LOGOUT_USER' })
-        } else {
-          const currentUser = await fetchCurrentUser()
-          if (currentUser && currentUser.data) {
-            userDispatch({
-              type: 'SET_CURRENT_USER',
-              payload: currentUser.data.user,
-            })
-
-            uiDispatch({
-              type: 'SET_NOTIFICATIONS',
-              payload: currentUser.data.notifications,
-            })
-          }
+        if (token) {
+            getInitialData();
         }
-      }
-    }
+    }, [userState.currentUser?._id]);
 
-    function loadRecentAccounts() {
-      const accounts = localStorage.accounts
-        ? JSON.parse(localStorage.accounts)
-        : []
-      userDispatch({ type: 'RECENT_ACCOUNTS', payload: accounts })
-    }
+    useEffect(() => {
+        if (userState.currentUser?._id) {
+            socketIO.current = io(`${process.env.REACT_APP_BASE_API_URL}`);
 
-    loadCurrentUser()
-    loadRecentAccounts()
-  }, [])
+            socketIO.current.emit("client-connection", {
+                _id: userState.currentUser._id,
+                name: userState.currentUser.name,
+                friends_online: userState.friendsOnline,
+                avatar_image: userState.currentUser.avatar_image,
+            });
 
-  useEffect(() => {
-    if (userState.isLoggedIn) {
-      let socketio = io(`${process.env.REACT_APP_ENDPOINT}`)
-      userDispatch({ type: 'SET_SOCKETIO', payload: socketio })
-      socketio.on('connect', () => {
-        console.log('connected')
-      })
+            window.addEventListener("beforeunload", () => {
+                socketIO.current.emit("client-disconnect", {
+                    _id: userState.currentUser._id,
+                    friends_online: userState.friendsOnline,
+                });
+            });
 
-      socketio.on('friend-logout-status', ({ user_id }) => {
-        userDispatch({ type: 'FRIEND_LOGOUT', payload: user_id })
-      })
+            socketIO.current.on("new-message", (data) => {
+                const { chat_room, updatedAt, ...rest } = data;
 
-      socketio.on('friend-login-status', ({ user_id }) => {
-        userDispatch({ type: 'FRIEND_LOGIN', payload: user_id })
-      })
+                chatDispatch({
+                    type: "INCREASE_UNSEND_MESSAGE",
+                    payload: { message: rest, chatRoomId: chat_room },
+                });
+            });
 
-      socketio.on('friend-request-status', ({ sender }) => {
-        userDispatch({
-          type: 'ADD_FRIENDS_REQUEST_RECEIVED',
-          payload: sender,
-        })
-      })
+            socketIO.current.on("user-offline", (_id) => {
+                userDispatch({ payload: _id, type: "REMOVE_FRIEND_ONLINE" });
+            });
 
-      socketio.on('sended-friend-request-cancel', ({ requestId }) => {
-        userDispatch({
-          type: 'REMOVE_FRIENDS_REQUEST_RECEIVED',
-          payload: requestId,
-        })
-      })
+            socketIO.current.on("change-admin-chatroom", (data) => {
+                const { new_admin, notification, chat_room_id } = data;
 
-      socketio.on('friend-request-accept-status', ({ user, request_id }) => {
-        userDispatch({
-          type: 'ADD_FRIEND',
-          payload: user,
-        })
-        userDispatch({
-          type: 'REMOVE_FRIENDS_REQUEST_RECEIVED',
-          payload: request_id,
-        })
-        userDispatch({
-          type: 'REMOVE_FRIENDS_REQUEST_SENDED',
-          payload: request_id,
-        })
-      })
+                chatDispatch({
+                    type: "SET_NEW_ADMIN",
+                    payload: { newAdmin: new_admin, chatRoomId: chat_room_id },
+                });
+                uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
+            });
 
-      socketio.on('received-friend-request-decline', ({ requestId }) => {
-        console.log(requestId)
-        userDispatch({
-          type: 'REMOVE_FRIENDS_REQUEST_SENDED',
-          payload: requestId,
-        })
-      })
+            socketIO.current.on("new-chatroom", (data) => {
+                const { chat_room, notification } = data;
 
-      socketio.on('new-post', ({ data }) => {
-        postDispatch({ type: 'ADD_POST', payload: data })
-      })
+                chatDispatch({ payload: chat_room, type: "ADD_CHATROOM" });
+                uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
+            });
 
-      socketio.on('post-like-change', ({ data }) => {
-        postDispatch({
-          type: 'LIKE_UNLIKE_POST',
-          payload: data,
-        })
-      })
+            socketIO.current.on("update-chatroom", (data) => {
+                const { chat_room, notification } = data;
 
-      socketio.on('post-comment', ({ data }) => {
-        postDispatch({ type: 'ADD_POST_COMMENT', payload: data })
-      })
+                chatDispatch({ payload: chat_room, type: "UPDATE_CHATROOM" });
+                uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
+            });
 
-      socketio.on('comment-like-change', ({ data }) => {
-        postDispatch({
-          type: 'LIKE_UNLIKE_COMMENT',
-          payload: data,
-        })
-      })
+            socketIO.current.on("delete-chatroom", (data) => {
+                const { notification, chat_room_id } = data;
 
-      socketio.on('new-message', ({ data }) => {
-        chatDispatch({ type: 'ADD_MESSAGE', payload: data })
-      })
+                uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
+                chatDispatch({ payload: chat_room_id, type: "REMOVE_CHATROOM" });
+            });
 
-      // Realtime  Notification releted stuff
+            socketIO.current.on("user-online", ({ _id, name, sockets, avatar_image }) => {
+                userDispatch({
+                    type: "ADD_FRIEND_ONLINE",
+                    payload: { _id, name, sockets, avatar_image },
+                });
+            });
 
-      socketio.on('Notification', ({ data }) => {
-        uiDispatch({ type: 'ADD_NOTIFICATION', payload: data })
-      })
+            socketIO.current.on("accept-friend-request", (data) => {
+                const { notification, friend_request_id } = data;
 
-      return () => {
-        socketio.disconnect()
-        userDispatch({ type: 'SET_SOCKETIO', payload: null })
-        console.log('disconnect')
-      }
-    }
-  }, [userState.isLoggedIn])
+                uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
+                userDispatch({ payload: friend_request_id, type: "ACCEPT_FRIEND_REQUEST" });
+            });
 
-  return (
-    <UIContext.Provider value={{ uiState, uiDispatch }}>
-      <UserContext.Provider value={{ userState, userDispatch }}>
-        <PostContext.Provider value={{ postState, postDispatch }}>
-          <ChatContext.Provider value={{ chatState, chatDispatch }}>
-            <ThemeProvider theme={Theme}>
-              <Fragment>
-                <Router>
-                  {userState.isLoggedIn && <Navbar />}
+            socketIO.current.on("add-incomming-friend-request", (data) => {
+                const { notification, friend_request } = data;
 
-                  <div
-                    style={{
-                      backgroundColor: !uiState.darkMode
-                        ? 'rgb(240,242,245)'
-                        : 'rgb(24,25,26)',
-                    }}
-                  >
-                    <Suspense fallback={<Loader />}>
-                      {loading ? (
-                        <Loader />
-                      ) : (
-                        <Switch>
-                          <Route
-                            exact
-                            path="/"
-                            render={(props) =>
-                              !userState.isLoggedIn ? (
-                                <Auth />
-                              ) : (
-                                <Redirect to="/home" />
-                              )
-                            }
-                          />
-                          <ProtectedRoute
-                            exact
-                            path="/friends"
-                            component={Friends}
-                            isLoggedIn={userState.isLoggedIn}
-                          />
-                          <ProtectedRoute
-                            exact
-                            path="/messenger"
-                            component={Messenger}
-                            isLoggedIn={userState.isLoggedIn}
-                          />
-                          <ProtectedRoute
-                            exact
-                            path="/profile/:userId"
-                            component={Profile}
-                            isLoggedIn={userState.isLoggedIn}
-                          />
-                          <ProtectedRoute
-                            exact
-                            path="/home"
-                            component={Home}
-                            isLoggedIn={userState.isLoggedIn}
-                          />
-                          <ProtectedRoute
-                            exact
-                            path="/post/:postId"
-                            component={Post}
-                            isLoggedIn={userState.isLoggedIn}
-                          />
+                uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
+                userDispatch({ payload: friend_request, type: "ADD_INCOMMING_FRIEND_REQUEST" });
+            });
 
-                          <ProtectedRoute
-                            exact
-                            path="/settings"
-                            component={Settings}
-                            isLoggedIn={userState.isLoggedIn}
-                          />
-                        </Switch>
-                      )}
-                    </Suspense>
-                  </div>
+            socketIO.current.on("add-socket-for-user-online", ({ _id, socket }) => {
+                userDispatch({ payload: { _id, socket }, type: "ADD_SOCKET_FOR_FRIEND_ONLINE" });
+            });
+        }
+    }, [userState.currentUser?._id]);
 
-                  {uiState.message && (
-                    <Snackbar
-                      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-                      open={uiState.message.display}
-                      autoHideDuration={6000}
-                      onClose={() =>
-                        uiDispatch({ type: 'SET_MESSAGE', payload: null })
-                      }
-                      style={{ color: '#fff', marginTop: 60 }}
-                    >
-                      <Alert
-                        onClose={() =>
-                          uiDispatch({ type: 'SET_MESSAGE', payload: null })
-                        }
-                        severity={uiState.message.color}
-                      >
-                        {uiState.message.text}
-                      </Alert>
-                    </Snackbar>
-                  )}
+    return (
+        <UIContext.Provider value={{ uiState, socketIO, uiDispatch }}>
+            <UserContext.Provider value={{ userState, userDispatch }}>
+                <PostContext.Provider value={{ postState, postDispatch }}>
+                    <ChatContext.Provider value={{ chatState, chatDispatch }}>
+                        <ThemeProvider theme={theme}>
+                            <BrowserRouter>
+                                {token && <Navbar />}
+                                {uiState.alert_message && <Notification />}
+                                <div
+                                    style={{
+                                        backgroundColor: uiState.darkMode
+                                            ? "rgb(24,25,26)"
+                                            : "rgb(244,245,246)",
+                                    }}
+                                >
+                                    <Suspense fallback={<Loading />}>
+                                        <Switch>
+                                            <ProtectedRoute
+                                                path="/messenger"
+                                                component={Messenger}
+                                            />
+                                            <ProtectedRoute
+                                                component={Profile}
+                                                path="/profile/:userId"
+                                            />
+                                            <ProtectedRoute path="/home" component={Home} />
+                                            <ProtectedRoute path="/friends" component={Friends} />
+                                            <ProtectedRoute path="/settings" component={Settings} />
+                                            <ProtectedRoute path="/post/:postId" component={Post} />
+                                            <Route
+                                                path="/"
+                                                render={() =>
+                                                    token ? <Redirect to="/home" /> : <Auth />
+                                                }
+                                            />
+                                            <Route
+                                                path="*"
+                                                render={() => (
+                                                    <Redirect to={token ? "/home" : "/"} />
+                                                )}
+                                            />
+                                        </Switch>
+                                    </Suspense>
+                                </div>
+                            </BrowserRouter>
+                        </ThemeProvider>
+                    </ChatContext.Provider>
+                </PostContext.Provider>
+            </UserContext.Provider>
+        </UIContext.Provider>
+    );
+};
 
-                  {!uiState.mdScreen && userState.isLoggedIn ? (
-                    <BottomNav />
-                  ) : null}
-                </Router>
-              </Fragment>
-            </ThemeProvider>
-          </ChatContext.Provider>
-        </PostContext.Provider>
-      </UserContext.Provider>
-    </UIContext.Provider>
-  )
-}
-
-export default App
+export default App;

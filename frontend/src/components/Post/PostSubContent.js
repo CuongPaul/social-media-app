@@ -1,47 +1,35 @@
-import { Typography } from '@material-ui/core'
-import React from 'react'
+import React from "react";
+import { Typography } from "@material-ui/core";
 
-function PostSubContent({ post }) {
-  const isContent = () => {
+const PostSubContent = ({ postBody, username }) => {
     return (
-      post.body.feelings ||
-      post.body.with.length ||
-      post.body.at ||
-      post.body.date
-    )
-  }
-  return (
-    <div>
-      <Typography>
-        <b>{isContent() && post.user.name}</b>
-        {post.body.feelings ? (
-          <>
-            &nbsp; is feeling <b>{post.body.feelings}</b>
-          </>
-        ) : null}
-        {post.body.with.length ? (
-          <>
-            {` with `}
-            <b>
-              {post.body.with.map((u) => (
-                <span key={u.id}> &nbsp;{u.name},</span>
-              ))}
-            </b>
-          </>
-        ) : null}
-        {post.body.at ? (
-          <>
-            {` at `} <b>{post.body.at} </b>
-          </>
-        ) : null}
-        {post.body.date ? (
-          <>
-            <b>{new Date(post.body.date).toLocaleDateString()}</b>
-          </>
-        ) : null}
-      </Typography>
-    </div>
-  )
-}
+        <Typography>
+            <b>{username}</b>
+            {postBody?.feelings ? (
+                <>
+                    {` is feeling `}
+                    <b>{postBody.feelings}</b>
+                </>
+            ) : null}
+            {postBody?.tag_friends?.length ? (
+                <>
+                    {" with "}
+                    {postBody.tag_friends.map((friend, index) => (
+                        <span key={index}>
+                            <b>{friend.name}</b>
+                            {index < postBody.tag_friends.length - 1 ? "and " : " "}
+                        </span>
+                    ))}
+                </>
+            ) : null}
+            {postBody?.location ? (
+                <>
+                    {` at `}
+                    <b>{postBody.location}</b>
+                </>
+            ) : null}
+        </Typography>
+    );
+};
 
-export default PostSubContent
+export default PostSubContent;

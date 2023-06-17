@@ -2,63 +2,34 @@ import mongoose from "mongoose";
 
 const { model, Schema } = mongoose;
 
-const UserSchema = new Schema(
+const ObjectIdType = Schema.Types.ObjectId;
+
+const UserIdType = { ref: "user", type: ObjectIdType };
+const DefaultStringType = { trim: true, default: "", type: String };
+const RequiredStringType = { trim: true, type: String, required: true };
+
+const userSchema = new Schema(
     {
-        name: {
-            type: String,
-            trim: true,
-            required: true,
-        },
-        email: {
-            type: String,
-            trim: true,
-            unique: true,
-            required: true,
-        },
-        password: {
-            type: String,
-            required: true,
-        },
-
-        profile_pic: {
-            type: String,
-            default: "",
-        },
-
-        cover_image: {
-            type: String,
-            default: "",
-        },
-
-        bio: {
-            type: String,
-            default: "",
-            trim: true,
-        },
-        active: {
-            type: Boolean,
-            default: false,
-        },
-        socketId: {
-            type: String,
-            default: "",
-        },
-        jwtToken: [String],
-
-        location: {
-            type: Object,
-        },
-        education: {
-            type: String,
-            trim: true,
-        },
-
-        friends: [{ type: Schema.Types.ObjectId, ref: "User" }],
+        friends: [UserIdType],
+        name: RequiredStringType,
+        block_users: [UserIdType],
+        gender: DefaultStringType,
+        hometown: DefaultStringType,
+        education: DefaultStringType,
+        password: RequiredStringType,
+        cover_image: DefaultStringType,
+        avatar_image: DefaultStringType,
+        email: { unique: true, ...RequiredStringType },
+        chat_rooms: [
+            {
+                _id: { ref: "chat-room", type: ObjectIdType },
+                furthest_unseen_message: { ref: "message", type: ObjectIdType },
+            },
+        ],
     },
-
-    { timestamps: true }
+    { timestamps: true, versionKey: false }
 );
 
-UserSchema.index({ name: "text", email: "text" });
+const User = model("user", userSchema);
 
-export default mongoose.model("User", UserSchema);
+export default User;

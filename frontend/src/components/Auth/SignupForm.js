@@ -1,84 +1,66 @@
-import React, { Fragment, useEffect } from 'react'
+import React, { useState } from "react";
+import { Visibility, VisibilityOff } from "@material-ui/icons";
+import { Button, TextField, IconButton, FormControl, InputAdornment } from "@material-ui/core";
 
-import {
-  Button,
-  CircularProgress,
-  FormControl,
-  TextField,
-} from '@material-ui/core'
+import { useSignup } from "../../hooks";
+import LoadingIcon from "../common/LoadingIcon";
 
-import useSignupUser from './hooks/useSignupUser'
+const SignupForm = () => {
+    const [isShowPassword, setIsShowPassword] = useState(false);
 
-function LoginForm() {
-  const {
-    loading,
-    error,
-    handleSignupUser,
-    handleNameChange,
-    handlePasswordChange,
-    handleEmailChange,
-  } = useSignupUser()
+    const { isLoading, handleSignup, handleChangeName, handleChangeEmail, handleChangePassword } =
+        useSignup();
 
-  return (
-    <Fragment>
-      <form onSubmit={handleSignupUser}>
-        <FormControl style={{ width: '100%' }}>
-          <TextField
-            error={error && error.name ? true : false}
-            helperText={error && error.name ? error.name : null}
-            onChange={handleNameChange}
-            label="Name"
-            variant="outlined"
-            style={{ marginTop: '16px' }}
-          />
-        </FormControl>
-        <FormControl style={{ width: '100%' }}>
-          <TextField
-            onChange={handleEmailChange}
-            label="Email"
-            variant="outlined"
-            error={error && error.email ? true : false}
-            helperText={error && error.email ? error.email : null}
-            style={{ marginTop: '16px' }}
+    return (
+        <form onSubmit={handleSignup}>
+            <FormControl style={{ width: "100%" }}>
+                <TextField
+                    label="Name"
+                    variant="outlined"
+                    onChange={(e) => handleChangeName(e.target.value)}
+                />
+            </FormControl>
+            <FormControl style={{ width: "100%" }}>
+                <TextField
+                    label="Email"
+                    variant="outlined"
+                    style={{ marginTop: "16px" }}
+                    onChange={(e) => handleChangeEmail(e.target.value)}
+                />
+            </FormControl>
+            <FormControl style={{ width: "100%" }}>
+                <TextField
+                    label="Password"
+                    variant="outlined"
+                    style={{ marginTop: "16px" }}
+                    type={isShowPassword ? "text" : "password"}
+                    onChange={(e) => handleChangePassword(e.target.value)}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton onClick={() => setIsShowPassword(!isShowPassword)}>
+                                    {isShowPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
+                />
+            </FormControl>
+            <Button
+                type="submit"
+                variant="contained"
+                disabled={isLoading}
+                style={{
+                    width: "100%",
+                    marginTop: "32px",
+                    color: "rgb(255,255,255)",
+                    backgroundColor: "rgb(24,119,242)",
+                }}
+            >
+                <LoadingIcon text={"Sign up"} isLoading={isLoading} />
+            </Button>
+        </form>
+    );
+};
 
-          />
-        </FormControl>
-
-        <FormControl style={{ width: '100%' }}>
-          <TextField
-            error={error && error.password ? true : false}
-            helperText={error && error.password ? error.password : null}
-            onChange={handlePasswordChange}
-            label="Password"
-            variant="outlined"
-            style={{ marginTop: '16px' }}
-            type="password"
-          />
-        </FormControl>
-        <Button
-          type="submit"
-          disabled={loading}
-          style={{
-            width: '100%',
-            background: 'rgb(24,119,242)',
-            color: '#fff',
-            marginTop: '16px',
-          }}
-          variant="contained"
-        >
-          {loading ? (
-            <CircularProgress
-              variant="indeterminate"
-              size={25}
-              style={{ color: '#fff' }}
-            />
-          ) : (
-            ' Sign up'
-          )}
-        </Button>
-      </form>
-    </Fragment>
-  )
-}
-
-export default LoginForm
+export default SignupForm;

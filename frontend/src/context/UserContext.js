@@ -1,234 +1,204 @@
-import { filterArray } from '../utils/FilterArray'
+const initialUserState = {
+    currentUser: null,
+    friendsOnline: [],
+    recentAccounts: [],
+    sendedFriendRequests: [],
+    incommingFriendRequests: [],
+};
 
-export const initialUserState = {
-  currentUser: null,
-  users: [],
-  socketio: null,
-  sendedFriendRequests: [],
-  receivedFriendRequests: [],
-  isLoggedIn: false,
-  recentAccounts: [],
-  selectedUserProfile: null,
-}
+const UserReducer = (state, action) => {
+    switch (action.type) {
+        case "SIGN_OUT":
+            localStorage.removeItem("token");
 
-export const UserReducer = (state, action) => {
-  switch (action.type) {
-    case 'RECENT_ACCOUNTS':
-      const accounts = filterArray(action.payload)
-      return {
-        ...state,
-        recentAccounts: accounts,
-      }
+            return { ...initialUserState, recentAccounts: state.recentAccounts };
 
-    case 'ADD_RECENT_ACCOUNT':
-      let account = state.recentAccounts.find(
-        (account) => account.id == action.payload.id,
-      )
-      if (account) {
-        return {
-          ...state,
-          recentAccounts: [...state.recentAccounts],
-        }
-      } else {
-        let accounts = []
-        accounts = localStorage.accounts
-          ? JSON.parse(localStorage.accounts)
-          : []
-        accounts.push(action.payload)
-        localStorage.setItem('accounts', JSON.stringify(accounts))
+        case "UNFRIEND":
+            const friendsAfterUnfriend = [...state.currentUser.friends].filter(
+                (friend) => friend._id !== action.payload
+            );
 
-        return {
-          ...state,
-          recentAccounts: [action.payload, ...state.recentAccounts],
-        }
-      }
+            return {
+                ...state,
+                currentUser: {
+                    ...state.currentUser,
+                    friends: friendsAfterUnfriend,
+                },
+            };
 
-    case 'UPDATE_PROFILE':
-      return {
-        ...state,
-        currentUser: {
-          ...state.currentUser,
-          [action.payload.label]: action.payload.value,
-        },
-      }
+        case "ADD_FRIEND":
+            return {
+                ...state,
+                currentUser: {
+                    ...state.currentUser,
+                    friends: [...state.currentUser.friends, action.payload],
+                },
+            };
 
-    case 'REMOVE_ACCOUNT':
-      let accountArray = state.recentAccounts.filter(
-        (account) => account.id != action.payload,
-      )
-      let accountsData = []
-      accountsData = localStorage.accounts
-        ? JSON.parse(localStorage.accounts)
-        : []
-      accountsData = accountsData.filter((acc) => acc.id != action.payload)
-      localStorage.setItem('accounts', JSON.stringify(accountsData))
-      return {
-        ...state,
-        recentAccounts: accountArray,
-      }
+        case "BLOCK_USER":
+            return {
+                ...state,
+                currentUser: {
+                    ...state.currentUser,
+                    block_users: [...state.currentUser.block_users, action.payload],
+                },
+            };
 
-    case 'SET_CURRENT_USER':
-      return {
-        ...state,
-        currentUser: action.payload,
-        isLoggedIn: true,
-      }
+        case "UNBLOCK_USER":
+            const blockUsersAfterUnblock = [...state.currentUser.block_users].filter(
+                (item) => item !== action.payload
+            );
 
-    case 'SET_USERS':
-      return {
-        ...state,
-        users: action.payload,
-      }
+            return {
+                ...state,
+                currentUser: {
+                    ...state.currentUser,
+                    block_users: blockUsersAfterUnblock,
+                },
+            };
 
-    case 'ADD_USER':
-      let index_io1 = state.users.findIndex(
-        (user) => user.id == action.payload.id,
-      )
+        case "UPDATE_PROFILE":
+            return { ...state, currentUser: { ...state.currentUser, ...action.payload } };
 
-      if (index_io1 === -1) {
-        return {
-          ...state,
-          users: [action.payload, ...state.users],
-        }
-      } else {
-        return {
-          ...state,
-        }
-      }
+        case "SET_CURRENT_USER":
+            const recentAccountStored = JSON.parse(localStorage.getItem("recent_accounts")) || [];
+            const indexOfCurrentAccount = recentAccountStored.findIndex(
+                (item) => item._id === action.payload._id
+            );
 
-    case 'UPDATE_USER':
-      let i_01 = state.users.findIndex((user) => user.id == action.payload.id)
-      if (i_01 !== -1) {
-        state.users[i_01] = action.payload
-      }
-      return {
-        ...state,
-        currentUser: action.payload,
-      }
+            if (indexOfCurrentAccount === -1) {
+                recentAccountStored.push({
+                    _id: action.payload._id,
+                    name: action.payload.name,
+                    email: action.payload.email,
+                    avatar_image: action.payload.avatar_image,
+                });
 
-    case 'REMOVE_USER':
-      let f_users = state.users.filter((user) => user.id != action.payload)
-      return {
-        ...state,
-        users: f_users,
-      }
+                localStorage.setItem("recent_accounts", JSON.stringify(recentAccountStored));
+            }
+            if (
+                action.payload.avatar_image !==
+                recentAccountStored[indexOfCurrentAccount].avatar_image
+            ) {
+                recentAccountStored[indexOfCurrentAccount].avatar_image =
+                    action.payload.avatar_image;
 
-    case 'LOGOUT_USER':
-      if (localStorage.token) {
-        localStorage.removeItem('token')
-      }
-      return {
-        ...state,
-        currentUser: null,
-        isLoggedIn: false,
-        users: [],
-        sendedFriendRequests: [],
-        receivedFriendRequests: [],
+                localStorage.setItem("recent_accounts", JSON.stringify(recentAccountStored));
+            }
 
-        selectedUserProfile: null,
-      }
+            return {
+                ...state,
+                currentUser: action.payload,
+                recentAccounts: recentAccountStored,
+            };
 
-    case 'FRIEND_LOGOUT':
-      let id1_friend = state.currentUser.friends.findIndex(
-        (user) => user.id == action.payload,
-      )
-      if (id1_friend !== -1) {
-        state.currentUser.friends[id1_friend].active = false
-      }
-      return {
-        ...state,
-      }
+        case "ADD_FRIEND_ONLINE":
+            const friendsOnlineAfterAddFriendsOnline = [...state.friendsOnline];
 
-    case 'FRIEND_LOGIN':
-      let id2_friend = state.currentUser.friends.findIndex(
-        (user) => user.id == action.payload,
-      )
-      if (id2_friend !== -1) {
-        state.currentUser.friends[id2_friend].active = true
-      }
-      return {
-        ...state,
-      }
-    case 'SET_FRIENDS_REQUEST_SENDED':
-      return {
-        ...state,
-        sendedFriendRequests: action.payload,
-      }
+            const indexOfFriendOnlineAdded = friendsOnlineAfterAddFriendsOnline.findIndex(
+                (item) => item._id === action.payload._id
+            );
+            if (indexOfFriendOnlineAdded === -1) {
+                friendsOnlineAfterAddFriendsOnline.push(action.payload);
+            } else {
+                friendsOnlineAfterAddFriendsOnline[indexOfFriendOnlineAdded] = action.payload;
+            }
 
-    case 'ADD_FRIENDS_REQUEST_SENDED':
-      return {
-        ...state,
-        sendedFriendRequests: [action.payload, ...state.sendedFriendRequests],
-      }
-    case 'REMOVE_FRIENDS_REQUEST_SENDED':
-      let rvs_f_filtered = state.sendedFriendRequests.filter(
-        (r) => r.id !== action.payload,
-      )
-      return {
-        ...state,
-        sendedFriendRequests: rvs_f_filtered,
-      }
+            return { ...state, friendsOnline: friendsOnlineAfterAddFriendsOnline };
 
-    case 'SET_FRIENDS_REQUEST_RECEIVED':
-      return {
-        ...state,
-        receivedFriendRequests: action.payload,
-      }
-    case 'ADD_FRIENDS_REQUEST_RECEIVED':
-      return {
-        ...state,
-        receivedFriendRequests: [
-          action.payload,
-          ...state.receivedFriendRequests,
-        ],
-      }
+        case "UPDATE_COVER_IMAGE":
+            return { ...state, currentUser: { ...state.currentUser, cover_image: action.payload } };
 
-    case 'REMOVE_FRIENDS_REQUEST_RECEIVED':
-      let rv_f_filtered = state.receivedFriendRequests.filter(
-        (r) => r.id != action.payload,
-      )
-      return {
-        ...state,
-        receivedFriendRequests: rv_f_filtered,
-      }
+        case "SET_FRIENDS_ONLINE":
+            return { ...state, friendsOnline: action.payload };
 
-    case 'ADD_FRIEND':
-      return {
-        ...state,
-        currentUser: {
-          ...state.currentUser,
-          friends: [action.payload, ...state.currentUser.friends],
-        },
-      }
+        case "UPDATE_AVATAR_IMAGE":
+            return {
+                ...state,
+                currentUser: { ...state.currentUser, avatar_image: action.payload },
+            };
 
-    case 'REMOVE_FRIEND':
-      return {
-        ...state,
-        currentUser: {
-          ...state.currentUser,
-          friends: [...action.payload],
-        },
-      }
+        case "SEND_FRIEND_REQUEST":
+            return {
+                ...state,
+                sendedFriendRequests: [...state.sendedFriendRequests, action.payload],
+            };
 
-    case 'ADD_SELECTED_USER_PROFILE':
-      return {
-        ...state,
-        selectedUserProfile: action.payload,
-      }
+        case "SET_RECENT_ACCOUNTS":
+            return { ...state, recentAccounts: action.payload };
 
-    case 'REMOVE_SELECTED_USER_PROFILE':
-      return {
-        ...state,
-        selectedUserProfile: null,
-      }
+        case "REMOVE_FRIEND_ONLINE":
+            const friendsOnlineAfterRemove = state.friendsOnline.filter(
+                (friend) => friend._id !== action.payload
+            );
 
-    case 'SET_SOCKETIO':
-      return {
-        ...state,
-        socketio: action.payload,
-      }
+            return { ...state, friendsOnline: friendsOnlineAfterRemove };
 
-    default:
-      throw new Error(`action type ${action.type} is undefined`)
-  }
-}
+        case "ACCEPT_FRIEND_REQUEST":
+            const incommingFriendRequestsAfterAccept = [...state.incommingFriendRequests].filter(
+                (friendRequest) => friendRequest._id !== action.payload
+            );
+
+            return {
+                ...state,
+                incommingFriendRequests: incommingFriendRequestsAfterAccept,
+            };
+
+        case "CANCEL_FRIEND_REQUEST":
+            const sendedFriendRequestsAfterCancel = [...state.sendedFriendRequests].filter(
+                (friendRequest) => friendRequest._id !== action.payload
+            );
+
+            return {
+                ...state,
+                sendedFriendRequests: sendedFriendRequestsAfterCancel,
+            };
+
+        case "REMOVE_RECENT_ACCOUNT":
+            const recentAccountsAfterRemove = state.recentAccounts.filter(
+                (account) => account._id !== action.payload
+            );
+
+            localStorage.setItem("recent_accounts", JSON.stringify(recentAccountsAfterRemove));
+
+            return { ...state, recentAccounts: recentAccountsAfterRemove };
+
+        case "DECLINE_FRIEND_REQUEST":
+            const incommingFriendRequestsAfterDecline = [...state.incommingFriendRequests].filter(
+                (friendRequest) => friendRequest._id !== action.payload
+            );
+
+            return {
+                ...state,
+                incommingFriendRequests: incommingFriendRequestsAfterDecline,
+            };
+
+        case "SET_SENDED_FRIEND_REQUEST":
+            return { ...state, sendedFriendRequests: action.payload };
+
+        case "ADD_INCOMMING_FRIEND_REQUEST":
+            return {
+                ...state,
+                incommingFriendRequests: [...state.incommingFriendRequests, action.payload],
+            };
+
+        case "ADD_SOCKET_FOR_FRIEND_ONLINE":
+            const friendsOnlineAfterAddSocket = [...state.friendsOnline];
+            const indexOfFriendOnlineAddedSocket = friendsOnlineAfterAddSocket.findIndex(
+                (item) => item._id === action.payload._id
+            );
+            friendsOnlineAfterAddSocket[indexOfFriendOnlineAddedSocket].sockets.push(
+                action.payload.socket
+            );
+
+            return { ...state, friendsOnline: friendsOnlineAfterAddSocket };
+
+        case "SET_INCOMMING_FRIEND_REQUEST":
+            return { ...state, incommingFriendRequests: action.payload };
+
+        default:
+            throw new Error(`Action type ${action.type} is undefined`);
+    }
+};
+
+export { UserReducer, initialUserState };

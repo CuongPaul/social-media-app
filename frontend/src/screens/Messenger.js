@@ -1,161 +1,237 @@
-import React, { useContext, useEffect, useState } from 'react'
-import {
-  Avatar,
-  Container,
-  Grid,
-  Paper,
-  Typography,
-} from '@material-ui/core'
-import { ChatContext, UIContext } from '../App'
-import Messages from '../components/Chat/Messages'
-import DrawerBar from '../components/Navbar/DrawerBar'
+import { useHistory } from "react-router-dom";
+import React, { useRef, useState, useEffect, useContext } from "react";
+import { Grid, List, Paper, Avatar, Typography } from "@material-ui/core";
 
-import Friends from '../components/Chat/Friends'
-import MessageTextArea from '../components/Chat/MessageTextArea'
-import FriendNotSelected from '../components/Chat/FriendNotSelected'
-import AvartarText from '../components/UI/AvartarText'
+import callApi from "../api";
+import Message from "../components/Messenger/Message";
+import AvatarIcon from "../components/common/AvatarIcon";
+import ChatRooms from "../components/Messenger/ChatRooms";
+import { UIContext, ChatContext, UserContext } from "../App";
+import SearchUsers from "../components/Messenger/SearchUsers";
+import MessageInput from "../components/Messenger/MessageInput";
+import CreateChatRoom from "../components/Messenger/CreateChatRoom";
+import SearchChatRooms from "../components/Messenger/SearchChatRooms";
+import ChatRoomMembers from "../components/Messenger/ChatRoomMembers";
 
-function Messenger() {
-  const { uiDispatch, uiState } = useContext(UIContext)
-  const { chatState, chatDispatch } = useContext(ChatContext)
-  const [textValue, setTextValue] = useState("");
-  useEffect(() => {
-    uiDispatch({ type: 'SET_NAV_MENU', payload: true })
-    uiDispatch({ type: 'SET_DRAWER', payload: false })
+const Messenger = () => {
+    const {
+        uiDispatch,
+        uiState: { darkMode },
+    } = useContext(UIContext);
+    const {
+        userState: { currentUser },
+    } = useContext(UserContext);
+    const {
+        chatDispatch,
+        chatState: { messages, chatRooms, chatRoomSelected },
+    } = useContext(ChatContext);
 
-    return () => {
-      uiDispatch({ type: 'SET_NAV_MENU', payload: false })
-      uiDispatch({ type: 'SET_DRAWER', payload: false })
-      chatDispatch({ type: 'SET_SELECTED_FRIEND', payload: null })
-    }
-  }, [])
+    const history = useHistory();
+    const messageScroll = useRef(null);
+    const chatRoomScroll = useRef(null);
+    const [messagePage, setMessagePage] = useState(1);
+    const [chatRoomPage, setChatRoomPage] = useState(1);
+    const [isOpenGroupMembers, setIsOpenGroupMembers] = useState(false);
 
-  return (
-    <div
-      style={{
-        paddingTop: '100px',
-        paddingBottom: '40px',
-        minHeight: '100vh',
-      }}
-    >
-      {!uiState.mdScreen && (
-        <DrawerBar>
-          <Friends />
-        </DrawerBar>
-      )}
-      <Container>
-        <Paper style={{ backgroundColor: uiState.darkMode && 'rgb(36,37,38)' }}>
-          <Grid
-            container
-            justify="center"
-            alignItems="flex-start"
-            spacing={2}
-            style={{ padding: '16px' }}
-          >
-            {uiState.mdScreen && (
-              <Grid
-                item
-                md={4}
-                xs={12}
-                sm={12}
-                style={{
-                  height: '80vh',
-                  overflowY: 'scroll',
-                  overflowX: 'hidden',
-                  scrollbarColor: !uiState.darkMode
-                    ? '#fff rgb(240,242,245)'
-                    : ' rgb(36,37,38) rgb(24,25,26)',
-                }}
-              >
-                <Paper elevation={0}>
-                  <Friends />
-                </Paper>
-              </Grid>
-            )}
-            {chatState.selectedFriend ? (
-              <Grid
-                item
-                md={8}
-                xs={12}
-                sm={12}
-                style={{
-                  height: '80vh',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  margin: 'auto',
-                }}
-              >
-                <Paper
-                  elevation={0}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: '16px',
-                    width: '100%',
-                    position: 'sticky',
-                    top: 0,
-                    backgroundColor: uiState.darkMode && 'rgb(36,37,38)',
-                  }}
-                >
-                  {chatState.selectedFriend.profile_pic ? (
-                    <Avatar>
-                      <img
-                        src={chatState.selectedFriend.profile_pic}
-                        style={{ width: '100%', height: '100%' }}
-                      />
-                    </Avatar>
-                  ) : (
-                    <AvartarText
-                      text={chatState.selectedFriend.name}
-                      bg={
-                        chatState.selectedFriend.active ? 'seagreen' : 'tomato'
-                      }
-                    />
-                  )}
-                  <Typography style={{ marginLeft: '16px' }}>
-                    {chatState.selectedFriend.name}
-                  </Typography>
-                </Paper>
+    const handleScrollMessage = async (e) => {
+        const { scrollTop, clientHeight, scrollHeight } = e.target;
 
-                <Paper
-                  elevation={0}
-                  style={{
-                    padding: '16px',
-                    width: '100%',
-                    height: '60vh',
-                    overflowY: 'scroll',
-                    overflowX: 'hidden',
-                    scrollbarColor: !uiState.darkMode
-                      ? '#fff #fff'
-                      : ' rgb(36,37,38) rgb(36,37,38)',
+        const isTop = scrollHeight + scrollTop === clientHeight + 1;
 
-                    backgroundColor: uiState.darkMode && 'rgb(36,37,38)',
-                  }}
-                >
-                  <Messages setTextValue={setTextValue}/>
-                </Paper>
+        if (isTop) {
+            try {
+                const { data } = await callApi({
+                    method: "GET",
+                    query: { page: messagePage + 1 },
+                    url: `/message/chat-room/${chatRoomSelected._id}`,
+                });
+                chatDispatch({ payload: data.rows, type: "ADD_MESSAGES" });
 
+                setMessagePage(messagePage + 1);
+            } catch (err) {
+                uiDispatch({
+                    type: "SET_ALERT_MESSAGE",
+                    payload: { display: true, color: "error", text: err.message },
+                });
+            }
+        }
+    };
+
+    const handleScrollChatRoom = async (e) => {
+        const { scrollTop, clientHeight, scrollHeight } = e.target;
+
+        const isBottom = scrollHeight - scrollTop === clientHeight + 0.5;
+
+        if (isBottom) {
+            try {
+                const { data } = await callApi({
+                    method: "GET",
+                    url: `/chat-room`,
+                    query: { page: chatRoomPage + 1 },
+                });
+                chatDispatch({ payload: data.rows, type: "ADD_CHATROOMS" });
+
+                setChatRoomPage(chatRoomPage + 1);
+            } catch (err) {
+                uiDispatch({
+                    type: "SET_ALERT_MESSAGE",
+                    payload: { display: true, color: "error", text: err.message },
+                });
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (messageScroll.current) {
+            messageScroll.current.scrollTo(0, 0);
+        }
+    }, [chatRoomSelected?._id]);
+
+    useEffect(() => {
+        if (messagePage === 1 && messageScroll.current) {
+            messageScroll.current.scrollTo(0, 0);
+        }
+    }, [messages?.length]);
+
+    return (
+        <Grid
+            style={{
+                display: "flex",
+                height: "100vh",
+                paddingTop: "64px",
+                backgroundColor: darkMode && "rgb(36,37,38)",
+            }}
+        >
+            <Grid item md={3} style={{ margin: "20px", display: "flex", flexDirection: "column" }}>
                 <div
-                  style={{
-                    position: 'sticky',
-                    bottom: 0,
-                    left: 0,
-                    width: '100%',
-                  }}
+                    style={{
+                        display: "flex",
+                        padding: "20px 0px",
+                        borderRadius: "10px",
+                        justifyContent: "space-evenly",
+                        backgroundColor: "rgb(255,255,255)",
+                    }}
                 >
-                  <MessageTextArea textValue={textValue} />
+                    <CreateChatRoom />
+                    <SearchChatRooms />
+                    <SearchUsers />
                 </div>
-              </Grid>
-            ) : (
-              <FriendNotSelected />
-            )}
-          </Grid>
-        </Paper>
-      </Container>
-    </div>
-  )
-}
+                <List
+                    ref={chatRoomScroll}
+                    onScroll={handleScrollChatRoom}
+                    style={{
+                        flex: 1,
+                        padding: "10px",
+                        marginTop: "10px",
+                        borderRadius: "10px",
+                        overflow: "hidden auto",
+                        backgroundColor: "rgb(255,255,255)",
+                    }}
+                >
+                    {chatRooms?.map((chatRoom) => (
+                        <ChatRooms
+                            key={chatRoom._id}
+                            chatRoom={chatRoom}
+                            setIsOpenGroupMembers={setIsOpenGroupMembers}
+                        />
+                    ))}
+                </List>
+            </Grid>
+            {chatRoomSelected ? (
+                <Grid
+                    item
+                    md={9}
+                    style={{ margin: "20px", display: "flex", flexDirection: "column" }}
+                >
+                    <Paper
+                        elevation={0}
+                        style={{
+                            display: "flex",
+                            padding: "16px",
+                            alignItems: "center",
+                            borderRadius: "10px",
+                            justifyContent: "space-between",
+                            backgroundColor: darkMode && "rgb(36,37,38)",
+                        }}
+                    >
+                        <div
+                            onClick={() => {
+                                if (chatRoomSelected.members.length === 2) {
+                                    const friend = chatRoomSelected.members.find(
+                                        (item) => item._id !== currentUser._id
+                                    );
 
-export default Messenger
+                                    history.push(`/profile/${friend._id}`);
+                                } else {
+                                    setIsOpenGroupMembers(true);
+                                }
+                            }}
+                            style={{ display: "flex", cursor: "pointer", alignItems: "center" }}
+                        >
+                            <AvatarIcon
+                                text={chatRoomSelected.name}
+                                imageUrl={chatRoomSelected.avatar_image}
+                            />
+                            <Typography style={{ marginLeft: "16px" }}>
+                                {chatRoomSelected.name}
+                            </Typography>
+                        </div>
+                    </Paper>
+                    <ChatRoomMembers
+                        isOpen={isOpenGroupMembers}
+                        setIsOpen={setIsOpenGroupMembers}
+                    />
+                    <Paper
+                        ref={messageScroll}
+                        onScroll={handleScrollMessage}
+                        style={{
+                            flex: 1,
+                            display: "flex",
+                            margin: "10px 0px",
+                            borderRadius: "10px",
+                            padding: "20px 30px ",
+                            overflow: "hidden auto",
+                            flexDirection: "column-reverse",
+                            backgroundColor: darkMode && "rgb(36,37,38)",
+                        }}
+                    >
+                        {messages?.map((message) => (
+                            <Message key={message._id} message={message} />
+                        ))}
+                    </Paper>
+                    <MessageInput chatRoomId={chatRoomSelected._id} />
+                </Grid>
+            ) : (
+                <Grid
+                    item
+                    md={8}
+                    style={{
+                        margin: "20px",
+                        display: "flex",
+                        alignItems: "center",
+                        borderRadius: "10px",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        backgroundColor: "rgb(255,255,255)",
+                    }}
+                >
+                    <Avatar
+                        variant="square"
+                        style={{
+                            width: "120px",
+                            height: "120px",
+                            backgroundColor: "transparent",
+                        }}
+                    >
+                        <img alt={""} src={require("../assets/select-friends.svg")} />
+                    </Avatar>
+                    <Typography style={{ fontWeight: 800, marginTop: "16px" }}>
+                        Select friends from friend lists to start chat
+                    </Typography>
+                </Grid>
+            )}
+        </Grid>
+    );
+};
+
+export default Messenger;

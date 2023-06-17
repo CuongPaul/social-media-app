@@ -2,65 +2,25 @@ import mongoose from "mongoose";
 
 const { model, Schema } = mongoose;
 
+const ObjectIdType = Schema.Types.ObjectId;
+const TrimStringType = { trim: true, type: String };
+const UserIdType = { ref: "user", type: ObjectIdType };
+
 const postSchema = new Schema(
     {
-        user: {
-            type: Schema.Types.ObjectId,
-            ref: "User",
-        },
-        content: {
-            type: String,
-            trim: true,
-        },
-        body: {
-            feelings: {
-                type: String,
-                trim: true,
-            },
-            with: [
-                {
-                    type: Schema.Types.ObjectId,
-                    ref: "User",
-                },
-            ],
-            at: {
-                type: String,
-                trim: true,
-            },
-            date: String,
-        },
-        image: String,
-        isProfilePost: {
-            type: Boolean,
-            default: false,
-        },
-
-        profilePostData: {
-            coverImage: String,
-            profileImage: String,
-        },
-
-        privacy: {
-            type: String,
-            enum: ["Only me", "Public"],
-            default: "Public",
-        },
-
-        likes: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: "User",
-            },
-        ],
-
-        hearts: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: "User",
-            },
-        ],
+        images: [TrimStringType],
+        user: { ...UserIdType, required: true },
+        text: { trim: true, type: String, required: true },
+        react: { ref: "react", required: true, type: ObjectIdType },
+        privacy: { type: String, default: "PUBLIC", enum: ["FRIEND", "PUBLIC", "ONLY_ME"] },
+        body: new Schema(
+            { location: TrimStringType, feelings: TrimStringType, tag_friends: [UserIdType] },
+            { _id: false }
+        ),
     },
-    { timestamps: true }
+    { timestamps: true, versionKey: false }
 );
 
-export default model("Post", postSchema);
+const Post = model("post", postSchema);
+
+export default Post;

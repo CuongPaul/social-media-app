@@ -1,16 +1,14 @@
 import express from "express";
+import { validate } from "express-validation";
 
-import SignupUser from "../controllers/Auth/Signup";
-import LoginUser from "../controllers/Auth/Login";
-import Logout from "../controllers/Auth/Logout";
-import ChangePassword from "../controllers/Auth/ChangePassword";
-import authRequired from "../middleware/AuthRequired";
+import verifyToken from "../middleware/verify-token";
+import { signinValidation, signupValidation, signoutValidation } from "../validator/auth";
+import { signinController, signupController, signoutController } from "../controllers/auth";
 
 const router = express.Router();
 
-router.post("/signup", SignupUser);
-router.post("/login", LoginUser);
-router.get("/logout", authRequired, Logout);
-router.put("/update_password", authRequired, ChangePassword);
+router.post("/signin", validate(signinValidation), signinController);
+router.post("/signup", validate(signupValidation), signupController);
+router.post("/signout", validate(signoutValidation), verifyToken, signoutController);
 
 export default router;

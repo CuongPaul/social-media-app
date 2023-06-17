@@ -1,141 +1,95 @@
-import React, { Fragment, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { PostContext, UIContext, UserContext } from "../App";
-import {
-    List,
-    ListItemIcon,
-    Avatar,
-    ListItem,
-    ListItemText,
-    useTheme,
-    useMediaQuery,
-} from "@material-ui/core";
-import Sidebar from "../components/Sidebar";
-import WritePostCard from "../components/Post/PostForm/WritePostCard";
+import React, { Fragment, useEffect, useContext } from "react";
+import { List, Avatar, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 
-import DrawerBar from "../components/Navbar/DrawerBar";
-
-import AvartarText from "../components/UI/AvartarText";
-
+import callApi from "../api";
 import Posts from "../components/Post/Posts";
-import MyFriendLists from "../components/Friends/MyFriendLists";
-import useFetchPost from "../hooks/useFetchPost";
+import Sidebar from "../components/Home/Sidebar";
+import PostBar from "../components/Post/PostBar";
+import AvatarIcon from "../components/common/AvatarIcon";
+import { UIContext, UserContext, PostContext } from "../App";
+import FriendsOnline from "../components/Home/FriendsOnline";
 
-const homeLeftItems = [
-    { title: "Friends", img: "friends.png", to: "/friends" },
-    { title: "Messenger", img: "messenger.png", to: "/messenger" },
+const leftSidebarItems = [
+    { id: "friends", title: "Friends", path: "/friends", icon: "friends.png" },
+    { id: "messenger", title: "Messenger", path: "/messenger", icon: "messenger.png" },
 ];
 
-function Home() {
-    const { uiState, uiDispatch } = useContext(UIContext);
-    const { userState } = useContext(UserContext);
-    const { postState } = useContext(PostContext);
-    const theme = useTheme();
-    const match = useMediaQuery(theme.breakpoints.between(960, 1400));
+const Home = () => {
+    const {
+        postDispatch,
+        postState: { posts },
+    } = useContext(PostContext);
+    const {
+        userState: { currentUser },
+    } = useContext(UserContext);
+    const { uiDispatch } = useContext(UIContext);
 
-    const { fetchPosts } = useFetchPost();
     useEffect(() => {
-        uiDispatch({ type: "SET_NAV_MENU", payload: true });
-        uiDispatch({ type: "SET_DRAWER", payload: false });
-
-        async function loadPosts() {
-            await fetchPosts();
-        }
-
-        loadPosts();
-
-        return () => {
-            uiDispatch({ type: "SET_NAV_MENU", payload: false });
-            uiDispatch({ type: "SET_DRAWER", payload: false });
-        };
+        (async () => {
+            try {
+                const { data } = await callApi({ url: "/post", method: "GET" });
+                postDispatch({ type: "SET_POSTS", payload: data.rows });
+            } catch (err) {
+                uiDispatch({
+                    type: "SET_ALERT_MESSAGE",
+                    payload: { display: true, color: "error", text: err.message },
+                });
+            }
+        })();
     }, []);
 
     return (
-        <div>
-            {uiState.mdScreen ? (
-                <Fragment>
-                    <Sidebar
-                        anchor="left"
-                        background={!uiState.darkMode ? "rgb(240,242,245)" : "rgb(24,25,26)"}
-                        boxShadow={false}
+        <Fragment>
+            <Sidebar>
+                <List style={{ margin: "0px 10px" }}>
+                    <ListItem
+                        button
+                        component={Link}
+                        style={{ borderRadius: "10px" }}
+                        to={`/profile/${currentUser?._id}`}
                     >
-                        <List>
-                            <ListItem
-                                button
-                                component={Link}
-                                to={`/profile/${userState.currentUser.id}`}
-                            >
-                                <ListItemIcon>
-                                    {userState.currentUser.profile_pic ? (
-                                        <Avatar
-                                            style={{
-                                                width: "50px",
-                                                height: "50px",
-                                            }}
-                                        >
-                                            <img
-                                                src={userState.currentUser.profile_pic}
-                                                width="100%"
-                                                height="100%"
-                                            />
-                                        </Avatar>
-                                    ) : (
-                                        <AvartarText
-                                            text={userState.currentUser.name}
-                                            bg={
-                                                userState.currentUser.active ? "seagreen" : "tomato"
-                                            }
-                                        />
-                                    )}
-                                </ListItemIcon>
-                                <ListItemText
-                                    style={{ marginLeft: "6px" }}
-                                    primary={userState.currentUser.name}
-                                />
-                            </ListItem>
-                            {homeLeftItems.map((list, index) => (
-                                <ListItem button key={index} component={Link} to={list.to}>
-                                    <ListItemIcon>
-                                        <Avatar
-                                            alt={list.title}
-                                            src={require(`../assets/${list.img}`)}
-                                        />
-                                    </ListItemIcon>
-                                    <ListItemText primary={list.title} />
-                                </ListItem>
-                            ))}
-                        </List>
-                    </Sidebar>
-                    <Sidebar
-                        anchor="right"
-                        background={!uiState.darkMode ? "rgb(240,242,245)" : "rgb(24,25,26)"}
-                        boxShadow={false}
-                        drawerWidth={380}
-                    >
-                        <MyFriendLists />
-                    </Sidebar>
-                </Fragment>
-            ) : (
-                <DrawerBar>
-                    <MyFriendLists />
-                </DrawerBar>
-            )}
-
+                        <ListItemIcon>
+                            <AvatarIcon
+                                text={currentUser?.name}
+                                imageUrl={currentUser?.avatar_image}
+                            />
+                        </ListItemIcon>
+                        <ListItemText style={{ margin: "0px 5px" }} primary={currentUser?.name} />
+                    </ListItem>
+                    {leftSidebarItems.map((item) => (
+                        <ListItem
+                            button
+                            key={item.id}
+                            to={item.path}
+                            component={Link}
+                            style={{ borderRadius: "10px" }}
+                        >
+                            <ListItemIcon>
+                                <Avatar alt={""} src={require(`../assets/${item.icon}`)} />
+                            </ListItemIcon>
+                            <ListItemText primary={item.title} style={{ margin: "0px 5px" }} />
+                        </ListItem>
+                    ))}
+                </List>
+            </Sidebar>
             <div
                 style={{
-                    maxWidth: uiState.mdScreen ? (match ? "45vw" : "38vw") : "100vw",
                     margin: "auto",
-                    paddingTop: "100px",
-                    paddingBottom: "100px",
+                    maxWidth: "45vw",
                     minHeight: "100vh",
+                    paddingTop: "80px",
+                    paddingBottom: "100px",
                 }}
             >
-                <WritePostCard user={userState.currentUser} />
-
-                <Posts posts={postState.posts.filter((item) => item.privacy === "Public")} />
+                <PostBar />
+                <Posts posts={posts} />
             </div>
-        </div>
+            <Sidebar anchor="right">
+                <FriendsOnline />
+            </Sidebar>
+        </Fragment>
     );
-}
+};
 
 export default Home;

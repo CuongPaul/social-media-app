@@ -1,135 +1,120 @@
-import React, { useContext, useState } from 'react'
-import {Divider, Grid, Typography } from '@material-ui/core'
-import { UserContext } from '../../App'
-import EditInput from './General/EditInput'
-import useUpdateProfile from '../../hooks/useUpdateProfile'
-function General() {
-  const { userState } = useContext(UserContext)
-  const {
-    loading,
-    editName,
-    editEmail,
-    editBio,
-    editEducation,
-  } = useUpdateProfile()
+import {
+    Grid,
+    Button,
+    Dialog,
+    Divider,
+    TextField,
+    Typography,
+    DialogTitle,
+    DialogActions,
+    DialogContent,
+} from "@material-ui/core";
+import React, { useState, Fragment, useContext } from "react";
 
-  const [name, setName] = useState(userState.currentUser.name)
-  const [email, setEmail] = useState(userState.currentUser.email)
-  const [bio, setBio] = useState(userState.currentUser.bio)
-  const [education, setEducation] = useState(userState.currentUser.education)
+import { useUser } from "../../hooks";
+import { UserContext } from "../../App";
+import LoadingIcon from "../common/LoadingIcon";
 
-  const handleEditName = () => {
-    editName(name)
-  }
-  const handleEditEmail = () => {
-    editEmail(email)
-  }
-  const handleEditBio = () => {
-    editBio(bio)
-  }
+const General = () => {
+    const {
+        userState: { currentUser },
+    } = useContext(UserContext);
 
-  const handleEditEducation = () => {
-    editEducation(education)
-  }
-  return (
-    <div>
-      <Typography
-        style={{
-          fontSize: '24px',
-          fontWeight: '800',
-          marginBottom: '16px',
-          marginTop: '16px',
-        }}
-      >
-        General Account Setting
-      </Typography>
-      <Divider />
-      <div style={{ marginTop: '16px', marginBottom: '16px' }}>
-        <Grid container spacing={2} style={{marginTop:"16px",marginBottom:"8px"}} alignItems="center">
-          <Grid item xs={3} sm={3} md={3}>
-            <Typography style={{ fontWeight: '800' }}>Name</Typography>
-          </Grid>
+    const [isOpen, setIsOpen] = useState(false);
+    const [inputValue, setInputValue] = useState("");
+    const [fieldSelected, setFieldSelected] = useState("");
 
-          <Grid item xs={9} md={7} sm={7}>
-            <Typography>{userState.currentUser.name}</Typography>
-          </Grid>
-          <Grid item xs={12} sm={2} md={2}>
-            <EditInput
-              label="Name"
-              input={name}
-              setInput={setName}
-              editAction={handleEditName}
-              loading={loading}
-            />
-          </Grid>
-        </Grid>
+    const { isLoading, handleUpdateProfile } = useUser();
 
-        <Divider variant="middle" />
+    const handleClickUpdate = () => {
+        handleUpdateProfile({
+            name: fieldSelected === "Name" ? inputValue : currentUser?.name,
+            gender: fieldSelected === "Gender" ? inputValue : currentUser?.gender,
+            hometown: fieldSelected === "Hometown" ? inputValue : currentUser?.hometown,
+            education: fieldSelected === "Education" ? inputValue : currentUser?.education,
+        });
+        setIsOpen(false);
+    };
 
-        <Grid container spacing={2} style={{marginTop:"16px",marginBottom:"8px"}} alignItems="center">
-          <Grid item xs={3} sm={3} md={3}>
-            <Typography style={{ fontWeight: '800' }}>Email</Typography>
-          </Grid>
+    const ItemEdited = ({ value, fieldName }) => {
+        return (
+            <Grid container spacing={2} alignItems="center" style={{ margin: "8px 0px" }}>
+                <Grid item md={3}>
+                    <Typography style={{ fontWeight: 800 }}>{fieldName}</Typography>
+                </Grid>
+                <Grid item sm={7}>
+                    <Typography>{value}</Typography>
+                </Grid>
+                {fieldName !== "Email" && (
+                    <Grid item md={2}>
+                        <Button
+                            color="secondary"
+                            variant="contained"
+                            onClick={() => {
+                                setIsOpen(true);
+                                setInputValue(value);
+                                setFieldSelected(fieldName);
+                            }}
+                        >
+                            Edit
+                        </Button>
+                    </Grid>
+                )}
+            </Grid>
+        );
+    };
 
-          <Grid item xs={9} md={7} sm={7}>
-            <Typography>{userState.currentUser.email}</Typography>
-          </Grid>
-          <Grid item xs={12} sm={2} md={2}>
-            <EditInput
-              label="Email"
-              input={email}
-              setInput={setEmail}
-              editAction={handleEditEmail}
-              loading={loading}
-            />
-          </Grid>
-        </Grid>
-        <Divider variant="middle" />
-
-        <Grid container spacing={2} style={{marginTop:"16px",marginBottom:"8px"}} alignItems="center">
-          <Grid item xs={3} sm={3} md={3}>
-            <Typography style={{ fontWeight: '800' }}>Bio</Typography>
-          </Grid>
-
-          <Grid item xs={9} md={7} sm={7}>
-            <Typography style={{wordWrap:'break-word'}}>{userState.currentUser.bio}</Typography>
-          </Grid>
-          <Grid item xs={12} sm={2} md={2}>
-            <EditInput
-              label="Bio"
-              input={bio}
-              editAction={handleEditBio}
-              setInput={setBio}
-              loading={loading}
-            />
-          </Grid>
-        </Grid>
-        <Divider variant="middle" />
-
-        <Grid container spacing={2} style={{marginTop:"16px",marginBottom:"8px"}} alignItems="center">
-          <Grid item xs={3} sm={3} md={3}>
-            <Typography style={{ fontWeight: '800' }}>Education</Typography>
-          </Grid>
-
-          <Grid item xs={9} md={7} sm={7}>
-            <Typography>
-            {userState.currentUser.education}
+    return (
+        <Fragment>
+            <Typography style={{ fontWeight: 800, fontSize: "24px", margin: "16px 0px" }}>
+                General account setting
             </Typography>
-          </Grid>
-          <Grid item xs={12} sm={2} md={2}>
-            <EditInput
-              label="Education"
-              input={education}
-              editAction={handleEditEducation}
-              setInput={setEducation}
-              loading={loading}
-            />
-          </Grid>
-        </Grid>
-      </div>
-      <Divider />
-    </div>
-  )
-}
+            <Divider />
+            <ItemEdited fieldName="Name" value={currentUser?.name} />
+            <Divider />
+            <ItemEdited fieldName="Email" value={currentUser?.email} />
+            <Divider />
+            <ItemEdited fieldName="Gender" value={currentUser?.gender} />
+            <Divider />
+            <ItemEdited fieldName="Hometown" value={currentUser?.hometown} />
+            <Divider />
+            <ItemEdited fieldName="Education" value={currentUser?.education} />
+            <Dialog fullWidth open={isOpen} onClose={() => setIsOpen(false)}>
+                <DialogTitle>Update {fieldSelected.toLocaleLowerCase()}</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        value={inputValue}
+                        variant="outlined"
+                        style={{ width: "100%" }}
+                        onChange={(e) => setInputValue(e.target.value)}
+                    />
+                </DialogContent>
+                <DialogActions style={{ padding: "20px 24px" }}>
+                    <Button
+                        variant="outlined"
+                        disabled={isLoading}
+                        onClick={() => setIsOpen(false)}
+                        style={{ color: "rgb(24,127,245)", borderColor: "rgb(24,127,245)" }}
+                    >
+                        <LoadingIcon text={"Cancel"} isLoading={isLoading} />
+                    </Button>
+                    <Button
+                        variant="contained"
+                        disabled={isLoading}
+                        onClick={handleClickUpdate}
+                        style={{
+                            marginLeft: "25px",
+                            color: "rgb(255,255,255)",
+                            backgroundColor: "rgb(24,127,245)",
+                        }}
+                    >
+                        <LoadingIcon text={"Update"} isLoading={isLoading} />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </Fragment>
+    );
+};
 
-export default General
+export default General;
