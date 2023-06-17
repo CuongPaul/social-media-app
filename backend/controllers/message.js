@@ -66,7 +66,15 @@ const reactMessageController = async (req, res) => {
             return res.status(400).json({ message: "Message doesn't exist" });
         }
 
-        const react = await React.findById(message.react);
+        let reactId = message.react;
+        if (!reactId) {
+            const emptyReact = await new React().save();
+
+            reactId = emptyReact._id;
+            await message.updateOne({ react: emptyReact._id });
+        }
+
+        const react = await React.findById(reactId);
         const userIndex = react[reactKey].indexOf(userId);
 
         if (userIndex == -1) {
@@ -93,32 +101,16 @@ const createMessageController = async (req, res) => {
             return res.status(400).json({ message: "Group doesn't exist" });
         }
 
-        const emptyReact = await new React().save();
-
         const newMessage = await new Message({
             text,
             image,
+            react: null,
             sender: userId,
-            react: emptyReact._id,
             chat_room: chat_room_id,
         })
             .save()
             .then((res) =>
-                res
-                    .populate("sender", { _id: 1, name: 1, avatar_image: 1 })
-                    .populate({
-                        path: "react",
-                        select: "_id wow sad like love haha angry",
-                        populate: [
-                            { path: "wow", select: "_id name avatar_image" },
-                            { path: "sad", select: "_id name avatar_image" },
-                            { path: "like", select: "_id name avatar_image" },
-                            { path: "love", select: "_id name avatar_image" },
-                            { path: "haha", select: "_id name avatar_image" },
-                            { path: "angry", select: "_id name avatar_image" },
-                        ],
-                    })
-                    .execPopulate()
+                res.populate("sender", { _id: 1, name: 1, avatar_image: 1 }).execPopulate()
             );
 
         const members = await User.find({ _id: { $in: chatRoom.members } });

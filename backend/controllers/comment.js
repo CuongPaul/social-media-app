@@ -11,7 +11,15 @@ const reactCommentController = async (req, res) => {
             return res.status(400).json({ message: "Comment doesn't exist" });
         }
 
-        const react = await React.findById(comment.react);
+        let reactId = comment.react;
+        if (!reactId) {
+            const emptyReact = await new React().save();
+
+            reactId = emptyReact._id;
+            await comment.updateOne({ react: emptyReact._id });
+        }
+
+        const react = await React.findById(reactId);
         const userIndex = react[reactKey].indexOf(userId);
 
         if (userIndex == -1) {
@@ -38,32 +46,16 @@ const createCommentController = async (req, res) => {
             return res.status(400).json({ message: "Post doesn't exist" });
         }
 
-        const emptyReact = await new React().save();
-
         const comment = await new Comment({
             text,
             image,
+            react: null,
             user: userId,
             post: post_id,
-            react: emptyReact._id,
         })
             .save()
             .then((res) =>
-                res
-                    .populate("user", { _id: 1, name: 1, avatar_image: 1 })
-                    .populate({
-                        path: "react",
-                        select: "_id wow sad like love haha angry",
-                        populate: [
-                            { path: "wow", select: "_id name avatar_image" },
-                            { path: "sad", select: "_id name avatar_image" },
-                            { path: "like", select: "_id name avatar_image" },
-                            { path: "love", select: "_id name avatar_image" },
-                            { path: "haha", select: "_id name avatar_image" },
-                            { path: "angry", select: "_id name avatar_image" },
-                        ],
-                    })
-                    .execPopulate()
+                res.populate("user", { _id: 1, name: 1, avatar_image: 1 }).execPopulate()
             );
 
         return res.status(200).json({ data: comment, message: "success" });
