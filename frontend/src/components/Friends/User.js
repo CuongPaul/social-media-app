@@ -34,7 +34,7 @@ const User = ({ user, children, setUserSelected }) => {
                         alignItems: "center",
                     }}
                 >
-                    <AvatarIcon text={user.name} imageUrl={user.avatar_image} />
+                    <AvatarIcon text={user?.name} imageUrl={user?.avatar_image} />
                     <div
                         style={{
                             display: "flex",
@@ -43,7 +43,7 @@ const User = ({ user, children, setUserSelected }) => {
                         }}
                     >
                         <Typography variant="subtitle1" style={{ fontWeight: 600 }}>
-                            {user.name}
+                            {user?.name}
                         </Typography>
                         <Typography variant="body2">
                             {mutualFriends?.length} mutual friends
