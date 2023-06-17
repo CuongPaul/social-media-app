@@ -30,21 +30,20 @@ const FriendsOnline = () => {
         <div style={{ height: "90vh", margin: "10px", overflow: "auto" }}>
             <List subheader={<Subheader />}>
                 {userState?.friendsOnline?.map((user) => (
-                    <div key={user._id}>
-                        <ListItem
-                            button
-                            component={Link}
-                            to={`/profile/${user._id}`}
-                            style={{ borderRadius: "10px" }}
-                        >
-                            <ListItemAvatar>
-                                <StyledBadge isActive={true}>
-                                    <AvatarIcon text={user.name} imageUrl={user.avatar_image} />
-                                </StyledBadge>
-                            </ListItemAvatar>
-                            <ListItemText primary={user.name} />
-                        </ListItem>
-                    </div>
+                    <ListItem
+                        button
+                        key={user._id}
+                        component={Link}
+                        to={`/profile/${user._id}`}
+                        style={{ borderRadius: "10px" }}
+                    >
+                        <ListItemAvatar>
+                            <StyledBadge isActive={true}>
+                                <AvatarIcon text={user.name} imageUrl={user.avatar_image} />
+                            </StyledBadge>
+                        </ListItemAvatar>
+                        <ListItemText primary={user.name} />
+                    </ListItem>
                 ))}
             </List>
         </div>

@@ -91,13 +91,16 @@ const Friends = () => {
                             </ListSubheader>
                             {sendedFriendRequests.map((request) => (
                                 <ListItem key={request?._id}>
-                                    <User user={request.receiver} setUserSelected={setUserSelected}>
+                                    <User
+                                        user={request?.receiver}
+                                        setUserSelected={setUserSelected}
+                                    >
                                         <CardActions style={{ padding: "0px", marginLeft: "16px" }}>
                                             <ButtonAction
                                                 text={"Cancel"}
                                                 backgroundColor={"rgb(255,193,7)"}
                                                 onClick={() =>
-                                                    handleCancelFriendRequest(request._id)
+                                                    handleCancelFriendRequest(request?._id)
                                                 }
                                             />
                                         </CardActions>
