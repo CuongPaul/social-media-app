@@ -25,11 +25,23 @@ import { AvatarIcon } from "../../common";
 import { useSearch } from "../../../hooks";
 
 const TagFriends = ({ tagFriends, setTagFriends }) => {
+    const [page, setPage] = useState(1);
     const [friends, setFriends] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
 
     const { isLoading, handleSearchFriends } = useSearch();
+
+    const handleScroll = async (e) => {
+        const { scrollTop, clientHeight, scrollHeight } = e.target;
+
+        const isBottom = scrollHeight - scrollTop === clientHeight;
+
+        if (isBottom) {
+            setPage(page + 1);
+            handleSearchFriends({ setFriends, page: page + 1, name: searchValue });
+        }
+    };
 
     const handleClickFriend = (friend) => {
         const isSelected = tagFriends.findIndex((item) => item._id === friend._id);
@@ -47,7 +59,12 @@ const TagFriends = ({ tagFriends, setTagFriends }) => {
                     <FontAwesomeIcon icon={faUserTag} color="rgb(24,119,242)" />
                 </IconButton>
             </Tooltip>
-            <Dialog fullWidth open={isOpen} onClose={() => setIsOpen(false)}>
+            <Dialog
+                fullWidth
+                open={isOpen}
+                onScroll={handleScroll}
+                onClose={() => setIsOpen(false)}
+            >
                 <CardHeader
                     avatar={
                         <IconButton onClick={() => setIsOpen(false)}>

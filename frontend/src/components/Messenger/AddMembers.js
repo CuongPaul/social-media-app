@@ -29,12 +29,24 @@ const AddMembers = ({ isOpen, setIsOpen }) => {
         chatState: { chatRoomSelected },
     } = useContext(ChatContext);
 
+    const [page, setPage] = useState(1);
     const [friends, setFriends] = useState([]);
     const [searchValue, setSearchValue] = useState("");
     const [friendsSelected, setFriendsSelected] = useState([]);
 
     const { handleAddMembers, isLoading: isLoadingChatRoom } = useChatRoom();
     const { handleSearchFriends, isLoading: isLoadingSearchFriends } = useSearch();
+
+    const handleScroll = async (e) => {
+        const { scrollTop, clientHeight, scrollHeight } = e.target;
+
+        const isBottom = scrollHeight - scrollTop === clientHeight;
+
+        if (isBottom) {
+            setPage(page + 1);
+            handleSearchFriends({ setFriends, page: page + 1, name: searchValue });
+        }
+    };
 
     const handleClickFriend = async (friend) => {
         const isSelected = friendsSelected.findIndex((item) => item._id === friend._id);
@@ -53,7 +65,7 @@ const AddMembers = ({ isOpen, setIsOpen }) => {
     }, [chatRoomSelected]);
 
     return (
-        <Dialog fullWidth open={isOpen} onClose={() => setIsOpen(false)}>
+        <Dialog fullWidth open={isOpen} onScroll={handleScroll} onClose={() => setIsOpen(false)}>
             <CardHeader
                 action={
                     <IconButton onClick={() => setIsOpen(false)}>
