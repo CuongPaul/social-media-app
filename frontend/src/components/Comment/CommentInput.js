@@ -6,7 +6,7 @@ import { Paper, TextField, IconButton, InputAdornment } from "@material-ui/core"
 
 import { useComment } from "../../hooks";
 import { UIContext, PostContext } from "../../App";
-import { Emoji, FilePreview, FilesUpload } from "../common";
+import { Emoji, FilePreview, FilesUpload, LoadingIcon } from "../common";
 
 const CommentInput = ({ postId }) => {
     const {
@@ -20,7 +20,7 @@ const CommentInput = ({ postId }) => {
     const [filePreview, setFilePreview] = useState("");
     const [fileUpload, setFileUpload] = useState(null);
 
-    const { handleCreateComment, handleUpdateComment } = useComment();
+    const { isLoading, handleCreateComment, handleUpdateComment } = useComment();
 
     const handleClear = () => {
         setText("");
@@ -155,7 +155,7 @@ const CommentInput = ({ postId }) => {
                     backgroundColor: "rgb(10,128,236)",
                 }}
             >
-                <Send fontSize="small" />
+                <LoadingIcon text={<Send fontSize="small" />} isLoading={isLoading} />
             </IconButton>
         </Paper>
     );

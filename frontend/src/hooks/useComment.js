@@ -37,7 +37,7 @@ const useComment = () => {
         try {
             const { text, setText, postId, fileUpload, handleRemoveFile } = commentData;
 
-            let imageUrl = "";
+            let image = { url: "", path: "" };
             if (fileUpload) {
                 const formData = new FormData();
                 formData.append("files", fileUpload);
@@ -49,13 +49,13 @@ const useComment = () => {
                     url: "/upload/files",
                 });
 
-                imageUrl = data.images[0];
+                image = data.images[0];
             }
 
             const { data } = await callApi({
                 method: "POST",
                 url: "/comment",
-                data: { text, image: imageUrl, post_id: postId },
+                data: { text, image: image.url, post_id: postId },
             });
 
             postDispatch({ payload: data, type: "ADD_COMMENT" });
@@ -100,7 +100,7 @@ const useComment = () => {
             const { text, setText, commentId, fileUpload, currentImage, handleRemoveFile } =
                 commentData;
 
-            let imageUrl = "";
+            let image = { url: "", path: "" };
             if (fileUpload) {
                 const formData = new FormData();
                 formData.append("files", fileUpload);
@@ -112,13 +112,13 @@ const useComment = () => {
                     url: "/upload/files",
                 });
 
-                imageUrl = data.images[0];
+                image = data.images[0];
             }
 
             const { data } = await callApi({
                 method: "PUT",
                 url: `/comment/${commentId}`,
-                data: { text, image: imageUrl || currentImage },
+                data: { text, image: image.url || currentImage },
             });
 
             postDispatch({ payload: data, type: "UPDATE_COMMENT_SELECTED" });

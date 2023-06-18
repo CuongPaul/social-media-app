@@ -156,7 +156,7 @@ const useChatRoom = () => {
         try {
             const { isPublic, imageUpload, chatRoomName, chatRoomMembers } = chatRoomData;
 
-            let imageUrl = "";
+            let image = { url: "", path: "" };
             if (imageUpload) {
                 const formData = new FormData();
                 formData.append("files", imageUpload);
@@ -168,7 +168,7 @@ const useChatRoom = () => {
                     url: "/upload/files",
                 });
 
-                imageUrl = data.images[0];
+                image = data.images[0];
             }
 
             const { data } = await callApi({
@@ -177,7 +177,7 @@ const useChatRoom = () => {
                 data: {
                     name: chatRoomName,
                     is_public: isPublic,
-                    avatar_image: imageUrl,
+                    avatar_image: image.url,
                     members: chatRoomMembers,
                 },
             });
@@ -250,7 +250,7 @@ const useChatRoom = () => {
         try {
             const { isPublic, chatRoomId, imageUpload, chatRoomName, currentImage } = chatRoomData;
 
-            let imageUrl = "";
+            let image = { url: "", path: "" };
             if (imageUpload) {
                 const formData = new FormData();
                 formData.append("files", imageUpload);
@@ -262,7 +262,7 @@ const useChatRoom = () => {
                     url: "/upload/files",
                 });
 
-                imageUrl = data.images[0];
+                image = data.images[0];
             }
 
             const { data } = await callApi({
@@ -270,7 +270,7 @@ const useChatRoom = () => {
                 data: {
                     name: chatRoomName,
                     is_public: isPublic,
-                    avatar_image: imageUrl || currentImage,
+                    avatar_image: image.url || currentImage,
                 },
                 url: `/chat-room/update-info/${chatRoomId}`,
             });

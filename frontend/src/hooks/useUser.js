@@ -164,15 +164,15 @@ const useUser = () => {
                 method: "POST",
                 url: "/upload/files",
             });
-            const cover_image = data.images[0];
+            const image = data.images[0];
 
             await callApi({
                 method: "PUT",
-                data: { cover_image },
                 url: "/user/cover-image",
+                data: { cover_image: image.url },
             });
 
-            userDispatch({ payload: cover_image, type: "UPDATE_COVER_IMAGE" });
+            userDispatch({ payload: image.url, type: "UPDATE_COVER_IMAGE" });
 
             setIsLoading(false);
         } catch (err) {
@@ -198,15 +198,15 @@ const useUser = () => {
                 method: "POST",
                 url: "/upload/files",
             });
-            const avatar_image = data.images[0];
+            const image = data.images[0];
 
             await callApi({
                 method: "PUT",
-                data: { avatar_image },
                 url: "/user/avatar-image",
+                data: { avatar_image: image.url },
             });
 
-            userDispatch({ payload: avatar_image, type: "UPDATE_AVATAR_IMAGE" });
+            userDispatch({ payload: image.url, type: "UPDATE_AVATAR_IMAGE" });
 
             setIsLoading(false);
         } catch (err) {

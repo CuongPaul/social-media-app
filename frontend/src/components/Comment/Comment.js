@@ -27,7 +27,10 @@ const Comment = ({ comment }) => {
     const {
         userState: { currentUser },
     } = useContext(UserContext);
-    const { postDispatch } = useContext(PostContext);
+    const {
+        postDispatch,
+        postState: { postSelected },
+    } = useContext(PostContext);
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [isShowReact, setIsShowReact] = useState(false);
@@ -67,8 +70,16 @@ const Comment = ({ comment }) => {
                         </div>
                     }
                 />
-                <div style={{ display: "flex", alignItems: "center", flexDirection: "column" }}>
-                    {currentUser?._id === comment.user._id && (
+                <div
+                    style={{
+                        display: "flex",
+                        minWidth: "48px",
+                        alignItems: "center",
+                        flexDirection: "column",
+                    }}
+                >
+                    {(currentUser?._id === comment.user._id ||
+                        currentUser?._id === postSelected?.user._id) && (
                         <div>
                             <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
                                 <MoreHoriz />
@@ -78,18 +89,20 @@ const Comment = ({ comment }) => {
                                 open={Boolean(anchorEl)}
                                 onClose={() => setAnchorEl(null)}
                             >
-                                <MenuItem
-                                    onClick={() => {
-                                        setAnchorEl(null);
-                                        postDispatch({
-                                            payload: comment,
-                                            type: "SET_COMMENT_SELECTED",
-                                        });
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faPen} />
-                                    <Typography style={{ marginLeft: "20px" }}>Edit</Typography>
-                                </MenuItem>
+                                {currentUser?._id === comment.user._id && (
+                                    <MenuItem
+                                        onClick={() => {
+                                            setAnchorEl(null);
+                                            postDispatch({
+                                                payload: comment,
+                                                type: "SET_COMMENT_SELECTED",
+                                            });
+                                        }}
+                                    >
+                                        <FontAwesomeIcon icon={faPen} />
+                                        <Typography style={{ marginLeft: "20px" }}>Edit</Typography>
+                                    </MenuItem>
+                                )}
                                 <MenuItem
                                     onClick={() => {
                                         setAnchorEl(null);
