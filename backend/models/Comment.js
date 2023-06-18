@@ -6,9 +6,9 @@ const ObjectIdType = Schema.Types.ObjectId;
 
 const commentSchema = new Schema(
     {
+        text: { trim: true, type: String },
         image: { trim: true, type: String },
         react: { ref: "react", type: ObjectIdType },
-        text: { trim: true, type: String, required: true },
         post: { ref: "post", required: true, type: ObjectIdType },
         user: { ref: "user", required: true, type: ObjectIdType },
     },

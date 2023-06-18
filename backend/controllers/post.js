@@ -1,3 +1,6 @@
+import { ref, deleteObject } from "firebase/storage";
+
+import storage from "../helpers/firebase";
 import redisClient from "../helpers/redis";
 import { Post, User, React, Notification } from "../models";
 
@@ -181,6 +184,15 @@ const deletePostController = async (req, res) => {
             return res.status(404).json({ message: "Post does not exist" });
         }
 
+        if (post.images.length) {
+            for (const image of post.images) {
+                const pathName = decodeURIComponent(image.split("/o/")[1].split("?alt=")[0]);
+                const imageRef = ref(storage, pathName);
+
+                await deleteObject(imageRef);
+            }
+        }
+
         await post.remove();
 
         return res.status(200).json({ message: "Post is deleted" });
@@ -241,6 +253,14 @@ const updatePostController = async (req, res) => {
                     }
                 }
             }
+        }
+
+        const imageDeleted = post.images.filter((item) => !old_images.includes(item));
+        for (const image of imageDeleted) {
+            const pathName = decodeURIComponent(image.split("/o/")[1].split("?alt=")[0]);
+            const imageRef = ref(storage, pathName);
+
+            await deleteObject(imageRef);
         }
 
         post.text = text;

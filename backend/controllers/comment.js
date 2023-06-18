@@ -1,3 +1,6 @@
+import { ref, deleteObject } from "firebase/storage";
+
+import storage from "../helpers/firebase";
 import { Post, React, Comment } from "../models";
 
 const reactCommentController = async (req, res) => {
@@ -66,6 +69,11 @@ const deleteCommentController = async (req, res) => {
         const comment = await Comment.findById(commentId).populate("post");
 
         if (comment.user == userId || comment.post.user == userId) {
+            const pathName = decodeURIComponent(comment.image.split("/o/")[1].split("?alt=")[0]);
+            const imageRef = ref(storage, pathName);
+
+            await deleteObject(imageRef);
+
             await comment.remove();
 
             return res.status(200).json({ message: "success" });
@@ -102,6 +110,13 @@ const updateCommentController = async (req, res) => {
         }
 
         const { _id, post, user, react } = comment;
+
+        if (!image) {
+            const pathName = decodeURIComponent(comment.image.split("/o/")[1].split("?alt=")[0]);
+            const imageRef = ref(storage, pathName);
+
+            await deleteObject(imageRef);
+        }
 
         await comment.updateOne({ text, image });
 

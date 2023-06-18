@@ -6,7 +6,7 @@ import { Paper, TextField, IconButton, Typography, InputAdornment } from "@mater
 
 import useMessage from "../../hooks/useMessage";
 import { UIContext, ChatContext } from "../../App";
-import { Emoji, FilePreview, FilesUpload } from "../common";
+import { Emoji, FilePreview, FilesUpload, LoadingIcon } from "../common";
 
 const MessageInput = ({ chatRoomId }) => {
     const {
@@ -20,7 +20,7 @@ const MessageInput = ({ chatRoomId }) => {
     const [filePreview, setFilePreview] = useState("");
     const [fileUpload, setFileUpload] = useState(null);
 
-    const { handleCreateMessage, handleUpdateMessage } = useMessage();
+    const { isLoading, handleCreateMessage, handleUpdateMessage } = useMessage();
 
     const handleClear = () => {
         setText("");
@@ -164,7 +164,7 @@ const MessageInput = ({ chatRoomId }) => {
                             backgroundColor: "rgb(10,128,236)",
                         }}
                     >
-                        <Send fontSize="small" />
+                        <LoadingIcon text={<Send fontSize="small" />} isLoading={isLoading} />
                     </IconButton>
                 </Fragment>
             )}

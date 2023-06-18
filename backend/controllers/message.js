@@ -1,3 +1,6 @@
+import { ref, deleteObject } from "firebase/storage";
+
+import storage from "../helpers/firebase";
 import redisClient from "../helpers/redis";
 import { User, React, Message, ChatRoom } from "../models";
 
@@ -213,6 +216,13 @@ const updateMessagesController = async (req, res) => {
 
         if (!message) {
             return res.status(400).json({ message: "You don't allow edit this message" });
+        }
+
+        if (!image) {
+            const pathName = decodeURIComponent(message.image.split("/o/")[1].split("?alt=")[0]);
+            const imageRef = ref(storage, pathName);
+
+            await deleteObject(imageRef);
         }
 
         await message.updateOne({ text, image });

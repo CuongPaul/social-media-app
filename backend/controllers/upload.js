@@ -27,10 +27,10 @@ const uploadFilesController = async (req, res) => {
             const metatype = { name: originalname, contentType: mimetype };
 
             const imageRef = ref(storage, `${folder}/${originalname}`);
-            await uploadBytes(imageRef, buffer, metatype);
+            const { ref: refResponse } = await uploadBytes(imageRef, buffer, metatype);
 
             const url = await getDownloadURL(imageRef);
-            imagesUrl.push(url);
+            imagesUrl.push({ url, path: refResponse._location.path_ });
         }
 
         return res.status(200).json({ message: "success", data: { images: imagesUrl } });

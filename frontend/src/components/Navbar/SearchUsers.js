@@ -28,14 +28,26 @@ const SearchUsers = () => {
         uiState: { darkMode },
     } = useContext(UIContext);
 
+    const [page, setPage] = useState(1);
     const [users, setUsers] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
 
     const { isLoading, handleSearchUsers } = useSearch();
 
+    const handleScroll = async (e) => {
+        const { scrollTop, clientHeight, scrollHeight } = e.target;
+
+        const isBottom = scrollHeight - scrollTop === clientHeight;
+
+        if (isBottom) {
+            setPage(page + 1);
+            handleSearchUsers({ setUsers, page: page + 1, name: searchValue });
+        }
+    };
+
     return (
-        <div style={{ marginLeft: "16px" }}>
+        <div onScroll={handleScroll} style={{ marginLeft: "16px" }}>
             <Typography
                 style={{
                     display: "flex",

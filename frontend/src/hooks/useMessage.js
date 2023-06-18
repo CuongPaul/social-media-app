@@ -15,7 +15,7 @@ const useMessage = () => {
         try {
             const { text, setText, chatRoomId, fileUpload, handleRemoveFile } = messageData;
 
-            let imageUrl = "";
+            let image = { url: "", path: "" };
             if (fileUpload) {
                 const formData = new FormData();
                 formData.append("files", fileUpload);
@@ -27,13 +27,13 @@ const useMessage = () => {
                     url: "/upload/files",
                 });
 
-                imageUrl = data.images[0];
+                image = data.images[0];
             }
 
             const { data } = await callApi({
                 method: "POST",
                 url: "/message",
-                data: { text, image: imageUrl, chat_room_id: chatRoomId },
+                data: { text, image: image.url, chat_room_id: chatRoomId },
             });
 
             chatDispatch({ payload: data, type: "ADD_MESSAGE" });
@@ -66,7 +66,7 @@ const useMessage = () => {
                 handleRemoveFile,
             } = messageData;
 
-            let imageUrl = "";
+            let image = { url: "", path: "" };
             if (fileUpload) {
                 const formData = new FormData();
                 formData.append("files", fileUpload);
@@ -78,13 +78,13 @@ const useMessage = () => {
                     url: "/upload/files",
                 });
 
-                imageUrl = data.images[0];
+                image = data.images[0];
             }
 
             const { data } = await callApi({
                 method: "PUT",
                 url: `/message/${messageId}`,
-                data: { text, chat_room_id: chatRoomId, image: imageUrl || currentImage },
+                data: { text, chat_room_id: chatRoomId, image: image.url || currentImage },
             });
 
             chatDispatch({ payload: data, type: "UPDATE_MESSAGE_SELECTED" });

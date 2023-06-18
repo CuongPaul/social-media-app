@@ -8,13 +8,17 @@ const useSearch = () => {
 
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleSearchUsers = async ({ name, setUsers }) => {
+    const handleSearchUsers = async ({ name, page, setUsers }) => {
         setIsLoading(true);
 
         try {
-            const { data } = await callApi({ method: "GET", query: { name }, url: "/user/search" });
+            const { data } = await callApi({
+                method: "GET",
+                url: "/user/search",
+                query: { name, page },
+            });
 
-            setUsers(data.rows);
+            setUsers((pre) => [...pre, ...data.rows]);
 
             setIsLoading(false);
         } catch (err) {
@@ -27,17 +31,17 @@ const useSearch = () => {
         }
     };
 
-    const handleSearchFriends = async ({ name, setFriends }) => {
+    const handleSearchFriends = async ({ name, page, setFriends }) => {
         setIsLoading(true);
 
         try {
             const { data } = await callApi({
                 method: "GET",
-                query: { name },
+                query: { name, page },
                 url: "/user/search-friends",
             });
 
-            setFriends(data.rows);
+            setFriends((pre) => [...pre, ...data.rows]);
 
             setIsLoading(false);
         } catch (err) {

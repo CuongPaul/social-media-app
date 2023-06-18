@@ -29,6 +29,7 @@ import { useChatRoom, useSearch } from "../../hooks";
 
 const ChatRoomCreate = () => {
     const inputRef = useRef(null);
+    const [page, setPage] = useState(1);
     const [friends, setFriends] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [isPublic, setIsPublic] = useState(true);
@@ -40,6 +41,17 @@ const ChatRoomCreate = () => {
 
     const { handleCreateChatRoom, isLoading: isLoadingChatRoom } = useChatRoom();
     const { handleSearchFriends, isLoading: isLoadingSearchFriend } = useSearch();
+
+    const handleScroll = async (e) => {
+        const { scrollTop, clientHeight, scrollHeight } = e.target;
+
+        const isBottom = scrollHeight - scrollTop === clientHeight;
+
+        if (isBottom) {
+            setPage(page + 1);
+            handleSearchFriends({ setFriends, page: page + 1, name: searchValue });
+        }
+    };
 
     const handleChangeImage = (e) => {
         setImageUpload(e.target.files[0]);
@@ -69,7 +81,12 @@ const ChatRoomCreate = () => {
             >
                 New group
             </Button>
-            <Dialog fullWidth open={isOpen} onClose={() => setIsOpen(false)}>
+            <Dialog
+                fullWidth
+                open={isOpen}
+                onScroll={handleScroll}
+                onClose={() => setIsOpen(false)}
+            >
                 <CardHeader
                     action={
                         <IconButton onClick={() => setIsOpen(false)}>

@@ -49,8 +49,10 @@ const PostDialog = ({ isOpen, postData, setIsOpen }) => {
         const newFilesPreview = [...filesPreview];
         const newFilesUpload = [...filesUpload];
 
+        if (!newFilesPreview[fileIndex].includes("https://firebasestorage.googleapis")) {
+            newFilesUpload.splice(fileIndex, 1);
+        }
         newFilesPreview.splice(fileIndex, 1);
-        newFilesUpload.splice(fileIndex, 1);
 
         setFilesPreview(newFilesPreview);
         setFilesUpload(newFilesUpload);
