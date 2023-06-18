@@ -1,5 +1,5 @@
 import redisClient from "../helpers/redis";
-import { User, ChatRoom, Message, Notification } from "../models";
+import { User, Message, ChatRoom, Notification } from "../models";
 
 const changeAdminController = async (req, res) => {
     const userId = req.user_id;
@@ -163,7 +163,11 @@ const createChatRoomController = async (req, res) => {
                     chat_room: chatRoom._id,
                     type: "CHATROOM-CREATE",
                     content: `You have been added to the group ${name}`,
-                }).save();
+                })
+                    .save()
+                    .then((res) =>
+                        res.populate("chat_room", { createdAt: 0, updatedAt: 0 }).execPopulate()
+                    );
 
                 const sockets = await redisClient.LRANGE(`socket-io:${memberId}`, 0, -1);
                 if (sockets.length) {
@@ -392,9 +396,9 @@ const updateInfoChatRoomController = async (req, res) => {
         } = chatRoom;
 
         const isTwoPeopleChatRoom =
-            name == "" &&
             admin == null &&
             !chatRoomPrivacy &&
+            chatRoomName == "" &&
             members.length == 2 &&
             chatRoomAvatarImage == "";
 
@@ -409,12 +413,12 @@ const updateInfoChatRoomController = async (req, res) => {
 
         const chatRoomData = {
             name,
+            admin,
+            members,
             is_public,
             avatar_image,
             _id: chatRoom._id,
             unseen_message: 0,
-            admin: chatRoom.admin,
-            members: chatRoom.members,
         };
 
         if (name != chatRoomName) {
@@ -484,13 +488,11 @@ const addMembersToChatRoomController = async (req, res) => {
             { $push: { chat_rooms: { _id: chatRoom._id } } }
         );
 
-        const usersData = users
-            .filter((item) => membersId.includes(item._id))
-            .map((element) => ({
-                _id: element._id,
-                name: element.name,
-                avatar_image: element.avatar_image,
-            }));
+        const usersData = users.map((element) => ({
+            _id: element._id,
+            name: element.name,
+            avatar_image: element.avatar_image,
+        }));
 
         return res.status(200).json({
             data: usersData,

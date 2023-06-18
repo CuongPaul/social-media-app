@@ -23,7 +23,7 @@ const getMessagesController = async (req, res) => {
             .populate("sender", { _id: 1, name: 1, avatar_image: 1 })
             .populate({
                 path: "react",
-                select: "_id wow sad like love haha angry",
+                select: "wow sad like love haha angry",
                 populate: [
                     { path: "wow", select: "_id name avatar_image" },
                     { path: "sad", select: "_id name avatar_image" },
@@ -200,7 +200,7 @@ const updateMessagesController = async (req, res) => {
             .populate("sender", { _id: 1, name: 1, avatar_image: 1 })
             .populate({
                 path: "react",
-                select: "_id wow sad like love haha angry",
+                select: "wow sad like love haha angry",
                 populate: [
                     { path: "wow", select: "_id name avatar_image" },
                     { path: "sad", select: "_id name avatar_image" },
@@ -217,16 +217,11 @@ const updateMessagesController = async (req, res) => {
 
         await message.updateOne({ text, image });
 
+        const { _id, react, sender, createdAt } = message;
+
         return res.status(200).json({
             message: "success",
-            data: {
-                text,
-                image,
-                _id: message._id,
-                react: message.react,
-                sender: message.sender,
-                createdAt: message.createdAt,
-            },
+            data: { _id, text, image, react, sender, createdAt },
         });
     } catch (err) {
         return res.status(500).json({ error: err.message });

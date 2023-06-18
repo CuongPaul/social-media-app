@@ -1,8 +1,8 @@
 import { Paper, Typography } from "@material-ui/core";
 import React, { useState, Fragment, useContext } from "react";
 
+import { AvatarIcon } from "../common";
 import PostDialog from "./PostDialog";
-import AvatarIcon from "../common/AvatarIcon";
 import { UIContext, UserContext } from "../../App";
 
 const PostBar = () => {

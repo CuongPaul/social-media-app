@@ -14,8 +14,7 @@ import React, { useState } from "react";
 import { Close, Visibility, VisibilityOff } from "@material-ui/icons";
 
 import { useSignin } from "../../hooks";
-import AvatarIcon from "../common/AvatarIcon";
-import LoadingIcon from "../common/LoadingIcon";
+import { AvatarIcon, LoadingIcon } from "../common";
 
 const RecentAccountSigninForm = ({ account, isOpenSigninForm, setIsOpenSigninForm }) => {
     const [isShowPassword, setIsShowPassword] = useState(false);

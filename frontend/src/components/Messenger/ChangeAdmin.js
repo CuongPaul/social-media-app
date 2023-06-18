@@ -19,8 +19,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { useChatRoom } from "../../hooks";
-import AvatarIcon from "../common/AvatarIcon";
-import LoadingIcon from "../common/LoadingIcon";
+import { AvatarIcon, LoadingIcon } from "../common";
 import { UIContext, ChatContext, UserContext } from "../../App";
 
 const ChangeAdmin = ({ isOpen, setIsOpen }) => {

@@ -3,8 +3,8 @@ import { useHistory } from "react-router-dom";
 import { IconButton } from "@material-ui/core";
 import React, { useState, Fragment, useContext } from "react";
 
+import { PostDialog } from "../Post";
 import { UIContext } from "../../App";
-import PostDialog from "../Post/PostDialog";
 
 const CreatePost = () => {
     const {

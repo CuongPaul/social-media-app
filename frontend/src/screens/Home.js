@@ -3,12 +3,10 @@ import React, { Fragment, useEffect, useContext } from "react";
 import { List, Avatar, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 
 import callApi from "../api";
-import Posts from "../components/Post/Posts";
-import Sidebar from "../components/Home/Sidebar";
-import PostBar from "../components/Post/PostBar";
-import AvatarIcon from "../components/common/AvatarIcon";
+import { AvatarIcon } from "../components/common";
+import { Posts, PostBar } from "../components/Post";
+import { Sidebar, FriendsOnline } from "../components/Home";
 import { UIContext, UserContext, PostContext } from "../App";
-import FriendsOnline from "../components/Home/FriendsOnline";
 
 const leftSidebarItems = [
     { id: "friends", title: "Friends", path: "/friends", icon: "friends.png" },
@@ -29,7 +27,7 @@ const Home = () => {
         (async () => {
             try {
                 const { data } = await callApi({ url: "/post", method: "GET" });
-                postDispatch({ type: "SET_POSTS", payload: data.rows });
+                postDispatch({ payload: data, type: "SET_POSTS" });
             } catch (err) {
                 uiDispatch({
                     type: "SET_ALERT_MESSAGE",

@@ -3,12 +3,9 @@ import React, { useState, useEffect, useContext } from "react";
 import { Tab, Grid, Tabs, Paper, AppBar, Divider } from "@material-ui/core";
 
 import callApi from "../api";
-import Posts from "../components/Post/Posts";
-import PostBar from "../components/Post/PostBar";
-import Friends from "../components/Profile/Friends";
-import TabPanel from "../components/Profile/TabPanel";
+import { Posts, PostBar } from "../components/Post";
 import { UIContext, UserContext, PostContext } from "../App";
-import ProfileHeader from "../components/Profile/ProfileHeader";
+import { Friends, TabPanel, ProfileHeader } from "../components/Profile";
 
 const Profile = ({ userId, conScreen }) => {
     const {
@@ -45,7 +42,7 @@ const Profile = ({ userId, conScreen }) => {
                     method: "GET",
                     url: `/post/user/${userId ? userId : params.userId}`,
                 });
-                postDispatch({ type: "SET_POSTS", payload: postsData.rows });
+                postDispatch({ type: "SET_POSTS", payload: postsData });
             } catch (err) {
                 uiDispatch({
                     type: "SET_ALERT_MESSAGE",

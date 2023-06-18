@@ -1,3 +1,4 @@
+import redisClient from "../helpers/redis";
 import { Post, User, React, Notification } from "../models";
 
 const getPostController = async (req, res) => {
@@ -9,7 +10,7 @@ const getPostController = async (req, res) => {
             .populate("user", { _id: 1, name: 1, friends: 1, avatar_image: 1 })
             .populate({
                 path: "react",
-                select: "_id wow sad like love haha angry",
+                select: "wow sad like love haha angry",
                 populate: [
                     { path: "wow", select: "_id name avatar_image" },
                     { path: "sad", select: "_id name avatar_image" },
@@ -80,6 +81,34 @@ const reactPostController = async (req, res) => {
     }
 };
 
+const removeTagController = async (req, res) => {
+    const userId = req.user_id;
+    const { postId } = req.params;
+
+    try {
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({ message: "Post doesn't exist" });
+        }
+
+        const {
+            body: { tag_friends },
+        } = post;
+
+        if (!tag_friends.includes(userId)) {
+            return res.status(400).json({ message: "You haven't been tagged in the post" });
+        }
+
+        post.body.tag_friends = tag_friends.filter((friend) => friend != userId);
+
+        await post.save();
+
+        return res.status(200).json({ message: "You've removed the tag from post" });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+};
+
 const createPostController = async (req, res) => {
     const userId = req.user_id;
     const { body, text, images, privacy } = req.body;
@@ -120,12 +149,19 @@ const createPostController = async (req, res) => {
         const user = await User.findById(userId);
         if (post && bodyInvalid?.tag_friends?.length && privacy != "ONLY_ME") {
             for (const friendId of bodyInvalid.tag_friends) {
-                await new Notification({
+                const notification = await new Notification({
                     user: friendId,
                     post: post._id,
                     type: "POST-TAG_FRIEND",
                     content: `${user.name} has tag you in new post`,
                 }).save();
+
+                const sockets = await redisClient.LRANGE(`socket-io:${friendId}`, 0, -1);
+                if (sockets.length) {
+                    sockets.forEach((socketId) => {
+                        req.io.sockets.to(socketId).emit("new-notification", notification);
+                    });
+                }
             }
         }
 
@@ -190,12 +226,19 @@ const updatePostController = async (req, res) => {
 
             if (newFriendsTaged.length && privacy != "ONLY_ME") {
                 for (const friendId of newFriendsTaged) {
-                    await new Notification({
+                    const notification = await new Notification({
                         user: friendId,
                         post: post._id,
                         type: "POST-TAG_FRIEND",
                         content: `${post.user.name} has tag you in new post`,
                     }).save();
+
+                    const sockets = await redisClient.LRANGE(`socket-io:${friendId}`, 0, -1);
+                    if (sockets.length) {
+                        sockets.forEach((socketId) => {
+                            req.io.sockets.to(socketId).emit("new-notification", notification);
+                        });
+                    }
                 }
             }
         }
@@ -210,7 +253,7 @@ const updatePostController = async (req, res) => {
                 .populate("user", { _id: 1, name: 1, avatar_image: 1 })
                 .populate({
                     path: "react",
-                    select: "_id wow sad like love haha angry",
+                    select: "wow sad like love haha angry",
                     populate: [
                         { path: "wow", select: "_id name avatar_image" },
                         { path: "sad", select: "_id name avatar_image" },
@@ -244,7 +287,7 @@ const getAllPostsController = async (req, res) => {
             .populate("user", { _id: 1, name: 1, avatar_image: 1 })
             .populate({
                 path: "react",
-                select: "_id wow sad like love haha angry",
+                select: "wow sad like love haha angry",
                 populate: [
                     { path: "wow", select: "_id name avatar_image" },
                     { path: "sad", select: "_id name avatar_image" },
@@ -271,14 +314,33 @@ const getPostsByUserController = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
 
     try {
+        const postsTagOwner = await Post.find({
+            "body.tag_friends": { $elemMatch: { $eq: ownerId } },
+        }).populate("user", { friends: 1 });
+
+        const postsIdTagOwner = [];
+        postsTagOwner.forEach((post) => {
+            if (
+                post.privacy == "FRIEND" &&
+                (userId == post.user._id || post.user.friends.includes(userId))
+            ) {
+                postsIdTagOwner.push(post._id);
+            }
+            if (post.privacy == "PUBLIC") {
+                postsIdTagOwner.push(post._id);
+            }
+        });
+
         const owner = await User.findById(ownerId);
 
-        const query = { user: ownerId, privacy: "PUBLIC" };
+        const query = {
+            $or: [{ _id: { $in: postsIdTagOwner } }, { user: ownerId, privacy: "PUBLIC" }],
+        };
         if (owner.friends.includes(userId)) {
-            query.privacy = { $in: ["FRIEND", "PUBLIC"] };
+            query["$or"][1].privacy = { $in: ["FRIEND", "PUBLIC"] };
         }
         if (ownerId == userId) {
-            query.privacy = { $in: ["FRIEND", "PUBLIC", "ONLY_ME"] };
+            query["$or"][1].privacy = { $in: ["FRIEND", "PUBLIC", "ONLY_ME"] };
         }
 
         const posts = await Post.find(query)
@@ -288,7 +350,7 @@ const getPostsByUserController = async (req, res) => {
             .populate("user", { _id: 1, name: 1, avatar_image: 1 })
             .populate({
                 path: "react",
-                select: "_id wow sad like love haha angry",
+                select: "wow sad like love haha angry",
                 populate: [
                     { path: "wow", select: "_id name avatar_image" },
                     { path: "sad", select: "_id name avatar_image" },
@@ -311,6 +373,7 @@ const getPostsByUserController = async (req, res) => {
 export {
     getPostController,
     reactPostController,
+    removeTagController,
     createPostController,
     deletePostController,
     updatePostController,

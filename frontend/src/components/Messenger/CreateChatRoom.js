@@ -24,8 +24,7 @@ import React, { useRef, useState, Fragment } from "react";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import AvatarIcon from "../common/AvatarIcon";
-import LoadingIcon from "../common/LoadingIcon";
+import { AvatarIcon, LoadingIcon } from "../common";
 import { useChatRoom, useSearch } from "../../hooks";
 
 const ChatRoomCreate = () => {

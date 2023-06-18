@@ -21,8 +21,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { ChatContext } from "../../App";
-import AvatarIcon from "../common/AvatarIcon";
-import LoadingIcon from "../common/LoadingIcon";
+import { AvatarIcon, LoadingIcon } from "../common";
 import { useChatRoom, useSearch } from "../../hooks";
 
 const AddMembers = ({ isOpen, setIsOpen }) => {

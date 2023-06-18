@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { Button, TextField, IconButton, FormControl, InputAdornment } from "@material-ui/core";
 
+import { LoadingIcon } from "../common";
 import { useSignin } from "../../hooks";
-import LoadingIcon from "../common/LoadingIcon";
 
 const SigninForm = () => {
     const [isShowPassword, setIsShowPassword] = useState(false);

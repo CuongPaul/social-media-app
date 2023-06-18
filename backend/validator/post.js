@@ -15,6 +15,12 @@ const reactPostValidation = {
     }),
 };
 
+const removeTagValidation = {
+    params: Joi.object({
+        postId: Joi.string().trim().required(),
+    }),
+};
+
 const createPostValidation = Joi.object({
     images: Joi.any().strip(),
     text: Joi.string().trim().required(),
@@ -109,6 +115,7 @@ const getPostsByUserValidation = {
 export {
     getPostValidation,
     reactPostValidation,
+    removeTagValidation,
     createPostValidation,
     deletePostValidation,
     updatePostValidation,

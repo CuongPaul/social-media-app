@@ -46,13 +46,7 @@ const createCommentController = async (req, res) => {
             return res.status(400).json({ message: "Post doesn't exist" });
         }
 
-        const comment = await new Comment({
-            text,
-            image,
-            react: null,
-            user: userId,
-            post: post_id,
-        })
+        const comment = await new Comment({ text, image, react: null, user: userId, post: post_id })
             .save()
             .then((res) =>
                 res.populate("user", { _id: 1, name: 1, avatar_image: 1 }).execPopulate()
@@ -93,7 +87,7 @@ const updateCommentController = async (req, res) => {
             .populate("user", { _id: 1, name: 1, avatar_image: 1 })
             .populate({
                 path: "react",
-                select: "_id wow sad like love haha angry",
+                select: "wow sad like love haha angry",
                 populate: [
                     { path: "wow", select: "_id name avatar_image" },
                     { path: "sad", select: "_id name avatar_image" },
@@ -107,19 +101,13 @@ const updateCommentController = async (req, res) => {
             return res.status(400).json({ message: "You don't allow edit this comment" });
         }
 
+        const { _id, post, user, react } = comment;
+
         await comment.updateOne({ text, image });
 
-        return res.status(200).json({
-            message: "success",
-            data: {
-                text,
-                image,
-                _id: comment._id,
-                post: comment.post,
-                user: comment.user,
-                react: comment.react,
-            },
-        });
+        return res
+            .status(200)
+            .json({ message: "success", data: { _id, post, user, text, image, react } });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -140,7 +128,7 @@ const getCommentsByPostController = async (req, res) => {
             .populate("user", { _id: 1, name: 1, avatar_image: 1 })
             .populate({
                 path: "react",
-                select: "_id wow sad like love haha angry",
+                select: "wow sad like love haha angry",
                 populate: [
                     { path: "wow", select: "_id name avatar_image" },
                     { path: "sad", select: "_id name avatar_image" },

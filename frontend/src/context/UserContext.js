@@ -2,6 +2,7 @@ const initialUserState = {
     currentUser: null,
     friendsOnline: [],
     recentAccounts: [],
+    userIdSelected: "",
     sendedFriendRequests: [],
     incommingFriendRequests: [],
 };
@@ -133,6 +134,9 @@ const UserReducer = (state, action) => {
             );
 
             return { ...state, friendsOnline: friendsOnlineAfterRemove };
+
+        case "SET_USER_ID_SELECTED":
+            return { ...state, userIdSelected: action.payload };
 
         case "ACCEPT_FRIEND_REQUEST":
             const incommingFriendRequestsAfterAccept = [...state.incommingFriendRequests].filter(

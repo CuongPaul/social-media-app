@@ -11,10 +11,10 @@ import {
 } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import React, { useState, Fragment } from "react";
-import { faSmile } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSmile, faTimes } from "@fortawesome/free-solid-svg-icons";
 
-import Emoji from "../../common/Emoji";
+import { Emoji } from "../../common";
 
 const Feelings = ({ feelings, setFeelings }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -49,6 +49,13 @@ const Feelings = ({ feelings, setFeelings }) => {
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
+                                    {feelings && (
+                                        <FontAwesomeIcon
+                                            icon={faTimes}
+                                            onClick={() => setFeelings("")}
+                                            style={{ marginRight: "10px", cursor: "pointer" }}
+                                        />
+                                    )}
                                     <Emoji setText={setFeelings} />
                                 </InputAdornment>
                             ),

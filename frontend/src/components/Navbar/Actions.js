@@ -16,8 +16,8 @@ import React, { useState, Fragment, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 
+import { AvatarIcon } from "../common";
 import { useUser } from "../../hooks";
-import AvatarIcon from "../common/AvatarIcon";
 import { UIContext, UserContext } from "../../App";
 
 const ProfileItem = () => {

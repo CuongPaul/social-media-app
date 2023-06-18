@@ -2,9 +2,25 @@ import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { Grid, Paper, Button, Typography } from "@material-ui/core";
 
+import { AvatarIcon } from "../common";
 import { UserContext } from "../../App";
-import AvatarIcon from "../common/AvatarIcon";
 import { useUser, useFriendRequest } from "../../hooks";
+
+const ButtonAction = ({ text, onClick, backgroundColor }) => (
+    <Button
+        onClick={onClick}
+        variant="contained"
+        style={{
+            fontSize: "10px",
+            minWidth: "80px",
+            margin: "10px 0px",
+            color: "rgb(255,255,255)",
+            backgroundColor: backgroundColor,
+        }}
+    >
+        {text}
+    </Button>
+);
 
 const Friends = ({ friends }) => {
     const {
@@ -17,7 +33,7 @@ const Friends = ({ friends }) => {
     const { handleSendFriendRequest, handleCancelFriendRequest } = useFriendRequest();
 
     return (
-        <div style={{ display: "flex", justifyContent: "center" }}>
+        <Grid container justifyContent={"center"}>
             {friends.map((friend) => {
                 const mutualFriends = currentUser?.friends.filter((item) =>
                     friend.friends.includes(item._id)
@@ -26,7 +42,7 @@ const Friends = ({ friends }) => {
                 return (
                     <Grid
                         item
-                        md={4}
+                        md={3}
                         key={friend._id}
                         style={{
                             margin: "20px",
@@ -59,33 +75,19 @@ const Friends = ({ friends }) => {
                                 {mutualFriends.length} mutual friends
                             </Typography>
                         </Paper>
-                        <div style={{ display: "flex", justifyContent: "center" }}>
+                        <div style={{ display: "flex", justifyContent: "space-evenly" }}>
                             {currentUser?.friends.find((item) => item._id === friend._id) ? (
-                                <Button
-                                    variant="contained"
-                                    style={{
-                                        color: "rgb(255,255,255)",
-                                        margin: "10px",
-                                        minWidth: "100px",
-                                        fontSize: "12px",
-                                        backgroundColor: "rgb(108,117,125)",
-                                    }}
+                                <ButtonAction
+                                    text={"Unfriend"}
+                                    backgroundColor={"rgb(108,117,125)"}
                                     onClick={() => handleUnfriend(friend._id)}
-                                >
-                                    Unfriend
-                                </Button>
+                                />
                             ) : sendedFriendRequests?.find(
                                   (item) => item.receiver._id === friend._id
                               ) ? (
-                                <Button
-                                    variant="contained"
-                                    style={{
-                                        color: "rgb(255,255,255)",
-                                        margin: "10px",
-                                        minWidth: "100px",
-                                        fontSize: "12px",
-                                        backgroundColor: "rgb(255,193,7)",
-                                    }}
+                                <ButtonAction
+                                    text={"Cancel"}
+                                    backgroundColor={"rgb(255,193,7)"}
                                     onClick={() =>
                                         handleCancelFriendRequest(
                                             sendedFriendRequests?.find(
@@ -93,58 +95,32 @@ const Friends = ({ friends }) => {
                                             )._id
                                         )
                                     }
-                                >
-                                    Cancel
-                                </Button>
+                                />
                             ) : (
-                                <Button
-                                    variant="contained"
-                                    style={{
-                                        margin: "10px",
-                                        fontSize: "12px",
-                                        minWidth: "100px",
-                                        color: "rgb(255,255,255)",
-                                        backgroundColor: "rgb(0,123,255)",
-                                    }}
+                                <ButtonAction
+                                    text={"Add"}
+                                    backgroundColor={"rgb(0,123,255)"}
                                     onClick={() => handleSendFriendRequest(friend._id)}
-                                >
-                                    Add
-                                </Button>
+                                />
                             )}
                             {currentUser.block_users.includes(friend._id) ? (
-                                <Button
-                                    variant="contained"
-                                    style={{
-                                        color: "rgb(255,255,255)",
-                                        margin: "10px",
-                                        minWidth: "100px",
-                                        fontSize: "12px",
-                                        backgroundColor: "rgb(23,162,184)",
-                                    }}
+                                <ButtonAction
+                                    text={"Unblock"}
+                                    backgroundColor={"rgb(23,162,184)"}
                                     onClick={() => handleUnblockUser(friend._id)}
-                                >
-                                    Unblock
-                                </Button>
+                                />
                             ) : (
-                                <Button
-                                    variant="contained"
-                                    style={{
-                                        color: "rgb(255,255,255)",
-                                        margin: "10px",
-                                        minWidth: "100px",
-                                        fontSize: "12px",
-                                        backgroundColor: "rgb(220,53,69)",
-                                    }}
+                                <ButtonAction
+                                    text={"Block"}
+                                    backgroundColor={"rgb(220,53,69)"}
                                     onClick={() => handleBlockUser(friend._id)}
-                                >
-                                    Block
-                                </Button>
+                                />
                             )}
                         </div>
                     </Grid>
                 );
             })}
-        </div>
+        </Grid>
     );
 };
 

@@ -12,7 +12,7 @@ const BadgeWithStyles = withStyles((theme) => ({
     },
 }))(Badge);
 
-const StyledBadge = ({ max, border, children, isActive, badgeContent }) => {
+const BadgeStyled = ({ max, border, children, isActive, badgeContent }) => {
     return (
         <BadgeWithStyles
             max={max}
@@ -26,4 +26,4 @@ const StyledBadge = ({ max, border, children, isActive, badgeContent }) => {
     );
 };
 
-export default StyledBadge;
+export default BadgeStyled;

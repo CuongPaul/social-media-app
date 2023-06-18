@@ -35,10 +35,10 @@ const ButtonAction = ({ text, onClick, backgroundColor }) => (
 const Friends = () => {
     const { uiDispatch } = useContext(UIContext);
     const {
-        userState: { currentUser, sendedFriendRequests, incommingFriendRequests },
+        userDispatch,
+        userState: { currentUser, userIdSelected, sendedFriendRequests, incommingFriendRequests },
     } = useContext(UserContext);
 
-    const [userSelected, setUserSelected] = useState(null);
     const [recommendUsers, setRecommendUsers] = useState([]);
 
     const {
@@ -61,6 +61,8 @@ const Friends = () => {
                 });
             }
         })();
+
+        return () => userDispatch({ payload: "", type: "SET_USER_ID_SELECTED" });
     }, []);
 
     return (
@@ -91,10 +93,7 @@ const Friends = () => {
                             </ListSubheader>
                             {sendedFriendRequests.map((request) => (
                                 <ListItem key={request?._id}>
-                                    <User
-                                        user={request?.receiver}
-                                        setUserSelected={setUserSelected}
-                                    >
+                                    <User user={request?.receiver}>
                                         <CardActions style={{ padding: "0px", marginLeft: "16px" }}>
                                             <ButtonAction
                                                 text={"Cancel"}
@@ -128,7 +127,7 @@ const Friends = () => {
                             </ListSubheader>
                             {incommingFriendRequests.map((request) => (
                                 <ListItem key={request._id}>
-                                    <User user={request.sender} setUserSelected={setUserSelected}>
+                                    <User user={request.sender}>
                                         <CardActions
                                             style={{
                                                 padding: "0px",
@@ -157,7 +156,7 @@ const Friends = () => {
                     </div>
                 )}
             </Grid>
-            {userSelected ? (
+            {userIdSelected ? (
                 <div
                     style={{
                         flex: 1,
@@ -165,7 +164,7 @@ const Friends = () => {
                         overflow: "hidden auto",
                     }}
                 >
-                    <Profile conScreen userId={userSelected._id} />
+                    <Profile conScreen userId={userIdSelected} />
                 </div>
             ) : (
                 <div
@@ -217,7 +216,7 @@ const Friends = () => {
                             </ListSubheader>
                             {recommendUsers.map((user) => (
                                 <ListItem key={user._id}>
-                                    <User user={user} setUserSelected={setUserSelected}>
+                                    <User user={user}>
                                         <CardActions
                                             style={{
                                                 padding: "0px",

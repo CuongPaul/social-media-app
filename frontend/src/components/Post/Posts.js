@@ -7,16 +7,15 @@ import PostFooter from "./PostFooter";
 import SlideImage from "./SlideImage";
 import usePost from "../../hooks/usePost";
 import PostSubContent from "./PostSubContent";
-import AvatarIcon from "../common/AvatarIcon";
-import LoadingIcon from "../common/LoadingIcon";
 import { UIContext, PostContext } from "../../App";
+import { AvatarIcon, LoadingIcon } from "../common";
 
 const Posts = ({ userId }) => {
     const {
         uiState: { darkMode },
     } = useContext(UIContext);
     const {
-        postState: { posts },
+        postState: { posts, postsTotal },
     } = useContext(PostContext);
 
     const [postsPage, postPage] = useState(1);
@@ -37,7 +36,7 @@ const Posts = ({ userId }) => {
                     <CardHeader
                         action={<PostAction post={post} />}
                         subheader={moment(post.createdAt).fromNow()}
-                        title={<PostSubContent postBody={post.body} username={post.user.name} />}
+                        title={<PostSubContent user={post.user} postBody={post.body} />}
                         avatar={
                             <AvatarIcon text={post.user.name} imageUrl={post.user.avatar_image} />
                         }
@@ -54,25 +53,27 @@ const Posts = ({ userId }) => {
                     <PostFooter post={post} />
                 </Card>
             ))}
-            <div style={{ display: "flex", marginTop: "20px", justifyContent: "center" }}>
-                <Button
-                    color="primary"
-                    variant="contained"
-                    onClick={() => {
-                        const nextpage = postsPage + 1;
+            {Boolean(postsTotal > posts.length) && (
+                <div style={{ display: "flex", marginTop: "20px", justifyContent: "center" }}>
+                    <Button
+                        color="primary"
+                        variant="contained"
+                        onClick={() => {
+                            const nextpage = postsPage + 1;
 
-                        postPage(nextpage);
+                            postPage(nextpage);
 
-                        if (!userId) {
-                            handleGetPosts(nextpage);
-                        } else {
-                            handleGetPostsByUser(nextpage, userId);
-                        }
-                    }}
-                >
-                    <LoadingIcon text={"More posts"} isLoading={isLoading} />
-                </Button>
-            </div>
+                            if (!userId) {
+                                handleGetPosts(nextpage);
+                            } else {
+                                handleGetPostsByUser(nextpage, userId);
+                            }
+                        }}
+                    >
+                        <LoadingIcon text={"More posts"} isLoading={isLoading} />
+                    </Button>
+                </div>
+            )}
         </Fragment>
     );
 };

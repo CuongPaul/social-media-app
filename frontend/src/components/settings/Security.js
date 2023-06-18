@@ -21,7 +21,7 @@ import React, { useState, Fragment } from "react";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 
 import { useUser } from "../../hooks";
-import LoadingIcon from "../common/LoadingIcon";
+import { LoadingIcon } from "../common";
 
 const Security = () => {
     const [password, setPassword] = useState({

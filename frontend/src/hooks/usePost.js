@@ -15,7 +15,30 @@ const usePost = () => {
         try {
             const { data } = await callApi({ url: `/post`, method: "GET", query: { page } });
 
-            postDispatch({ type: "ADD_POSTS", payload: data.rows });
+            postDispatch({ payload: data, type: "ADD_POSTS" });
+
+            setIsLoading(false);
+        } catch (err) {
+            setIsLoading(false);
+
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { display: true, color: "error", text: err.message },
+            });
+        }
+    };
+
+    const handleRemoveTag = async (postId) => {
+        setIsLoading(true);
+
+        try {
+            const { message } = await callApi({ method: "PUT", url: `/post/remove-tag/${postId}` });
+
+            postDispatch({ payload: postId, type: "DELETE_POST" });
+            uiDispatch({
+                type: "SET_ALERT_MESSAGE",
+                payload: { text: message, display: true, color: "success" },
+            });
 
             setIsLoading(false);
         } catch (err) {
@@ -128,7 +151,7 @@ const usePost = () => {
                 url: `/post/user/${userId}`,
             });
 
-            postDispatch({ type: "ADD_POSTS", payload: data.rows });
+            postDispatch({ payload: data, type: "ADD_POSTS" });
 
             setIsLoading(false);
         } catch (err) {
@@ -144,6 +167,7 @@ const usePost = () => {
     return {
         isLoading,
         handleGetPosts,
+        handleRemoveTag,
         handleCreatePost,
         handleDeletePost,
         handleUpdatePost,

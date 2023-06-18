@@ -1,18 +1,19 @@
 import React, { useContext } from "react";
 import { Card, Typography, CardContent } from "@material-ui/core";
 
-import AvatarIcon from "../common/AvatarIcon";
+import { AvatarIcon } from "../common";
 import { UIContext, UserContext } from "../../App";
 
-const User = ({ user, children, setUserSelected }) => {
+const User = ({ user, children }) => {
     const {
         uiState: { darkMode },
     } = useContext(UIContext);
     const {
+        userDispatch,
         userState: { currentUser },
     } = useContext(UserContext);
 
-    const mutualFriends = currentUser?.friends.filter((item) => user.friends.includes(item._id));
+    const mutualFriends = currentUser?.friends.filter((item) => user?.friends.includes(item._id));
 
     return (
         <Card
@@ -26,7 +27,10 @@ const User = ({ user, children, setUserSelected }) => {
                 backgroundColor: darkMode ? "rgb(36,37,38)" : "rgb(255,255,255)",
             }}
         >
-            <div style={{ display: "flex" }} onClick={() => setUserSelected(user)}>
+            <div
+                style={{ display: "flex" }}
+                onClick={() => userDispatch({ payload: user._id, type: "SET_USER_ID_SELECTED" })}
+            >
                 <CardContent
                     style={{
                         padding: "0px",

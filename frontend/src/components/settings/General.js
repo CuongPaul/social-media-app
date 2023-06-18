@@ -12,8 +12,8 @@ import {
 import React, { useState, Fragment, useContext } from "react";
 
 import { useUser } from "../../hooks";
+import { LoadingIcon } from "../common";
 import { UserContext } from "../../App";
-import LoadingIcon from "../common/LoadingIcon";
 
 const General = () => {
     const {

@@ -13,12 +13,12 @@ import {
 import { MoreHoriz } from "@material-ui/icons";
 import React, { useState, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faPen, faTag, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 import { usePost } from "../../hooks";
 import PostDialog from "./PostDialog";
+import { LoadingIcon } from "../common";
 import { UserContext } from "../../App";
-import LoadingIcon from "../common/LoadingIcon";
 
 const PostAction = ({ post }) => {
     const {
@@ -30,10 +30,13 @@ const PostAction = ({ post }) => {
     const [isOpenPostDialog, setIsOpenPostDialog] = useState(false);
     const [isOpenConfirmDialog, setIsOpenConfirmDialog] = useState(false);
 
-    const { isLoading, handleDeletePost } = usePost();
+    const { isLoading, handleRemoveTag, handleDeletePost } = usePost();
+
+    const isOwnerPost = post?.user._id === currentUser?._id;
+    const isTaged = post?.body.tag_friends.some((item) => item._id === currentUser?._id);
 
     return (
-        post?.user._id === currentUser?._id && (
+        (isTaged || isOwnerPost) && (
             <div>
                 <IconButton
                     onClick={(e) => {
@@ -48,24 +51,39 @@ const PostAction = ({ post }) => {
                     open={Boolean(anchorEl)}
                     onClose={() => setAnchorEl(null)}
                 >
-                    <MenuItem
-                        onClick={() => {
-                            setAnchorEl(null);
-                            setIsOpenPostDialog(true);
-                        }}
-                    >
-                        <FontAwesomeIcon icon={faPen} />
-                        <Typography style={{ marginLeft: "20px" }}>Edit</Typography>
-                    </MenuItem>
-                    <MenuItem
-                        onClick={() => {
-                            setAnchorEl(null);
-                            setIsOpenConfirmDialog(true);
-                        }}
-                    >
-                        <FontAwesomeIcon icon={faTrash} />
-                        <Typography style={{ marginLeft: "20px" }}>Delete</Typography>
-                    </MenuItem>
+                    {isOwnerPost && (
+                        <div>
+                            <MenuItem
+                                onClick={() => {
+                                    setAnchorEl(null);
+                                    setIsOpenPostDialog(true);
+                                }}
+                            >
+                                <FontAwesomeIcon icon={faPen} />
+                                <Typography style={{ marginLeft: "20px" }}>Edit</Typography>
+                            </MenuItem>
+                            <MenuItem
+                                onClick={() => {
+                                    setAnchorEl(null);
+                                    setIsOpenConfirmDialog(true);
+                                }}
+                            >
+                                <FontAwesomeIcon icon={faTrash} />
+                                <Typography style={{ marginLeft: "20px" }}>Delete</Typography>
+                            </MenuItem>
+                        </div>
+                    )}
+                    {isTaged && (
+                        <MenuItem
+                            onClick={() => {
+                                setAnchorEl(null);
+                                handleRemoveTag(post?._id);
+                            }}
+                        >
+                            <FontAwesomeIcon icon={faTag} />
+                            <Typography style={{ marginLeft: "20px" }}>Remove tag</Typography>
+                        </MenuItem>
+                    )}
                 </Menu>
                 <PostDialog
                     postData={postData}
