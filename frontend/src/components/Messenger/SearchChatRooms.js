@@ -17,9 +17,9 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import React, { useState, Fragment, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { AvatarIcon } from "../common";
 import { UserContext } from "../../App";
 import { useChatRoom } from "../../hooks";
-import AvatarIcon from "../common/AvatarIcon";
 
 const SearchChatRooms = () => {
     const {

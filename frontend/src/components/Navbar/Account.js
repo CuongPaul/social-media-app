@@ -2,8 +2,8 @@ import { Chip } from "@material-ui/core";
 import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
 
+import { AvatarIcon } from "../common";
 import { UserContext } from "../../App";
-import AvatarIcon from "../common/AvatarIcon";
 
 const Account = () => {
     const {

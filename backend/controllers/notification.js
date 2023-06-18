@@ -30,7 +30,8 @@ const getNotificationsController = async (req, res) => {
         const notifications = await Notification.find(query)
             .limit(pageSize)
             .sort({ createdAt: -1 })
-            .skip((page - 1) * pageSize);
+            .skip((page - 1) * pageSize)
+            .populate("chat_room", { createdAt: 0, updatedAt: 0 });
 
         const count = await Notification.countDocuments(query);
 

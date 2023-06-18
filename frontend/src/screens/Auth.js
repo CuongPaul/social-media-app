@@ -75,7 +75,7 @@ const Auth = () => {
                             }}
                             onClick={() => setIsShowSigninForm(!isShowSigninForm)}
                         >
-                            {isShowSigninForm ? "Create new account" : " Already have an account"}
+                            {isShowSigninForm ? "Create new account" : "Already have an account"}
                         </Button>
                     </Paper>
                 </Grid>

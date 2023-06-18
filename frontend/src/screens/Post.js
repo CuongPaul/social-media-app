@@ -6,13 +6,9 @@ import { Card, Grid, Paper, Divider, CardHeader, Typography, CardContent } from 
 import callApi from "../api";
 import { useComment } from "../hooks";
 import { UIContext, PostContext } from "../App";
-import Comment from "../components/Comment/Comment";
-import PostAction from "../components/Post/PostAction";
-import PostFooter from "../components/Post/PostFooter";
-import SlideImage from "../components/Post/SlideImage";
-import AvatarIcon from "../components/common/AvatarIcon";
-import CommentInput from "../components/Comment/CommentInput";
-import PostSubContent from "../components/Post/PostSubContent";
+import { AvatarIcon } from "../components/common";
+import { Comment, CommentInput } from "../components/Comment";
+import { PostAction, PostFooter, SlideImage, PostSubContent } from "../components/Post";
 
 const Post = () => {
     const {
@@ -66,7 +62,7 @@ const Post = () => {
             postDispatch({ type: "SET_CURRENT_POST", payload: null });
             postDispatch({ type: "SET_COMMENT_SELECTED", payload: null });
         };
-    }, []);
+    }, [postId]);
 
     useEffect(() => {
         setTimeout(() => {
@@ -92,8 +88,8 @@ const Post = () => {
                     <CardHeader
                         title={
                             <PostSubContent
+                                user={postSelected?.user}
                                 postBody={postSelected?.body}
-                                username={postSelected?.user.name}
                             />
                         }
                         action={<PostAction post={postSelected} />}

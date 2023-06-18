@@ -10,8 +10,7 @@ import { Link } from "react-router-dom";
 import React, { useContext } from "react";
 
 import { UserContext } from "../../App";
-import AvatarIcon from "../common/AvatarIcon";
-import StyledBadge from "../common/StyledBadge";
+import { AvatarIcon, BadgeStyled } from "../common";
 
 const Subheader = () => {
     return (
@@ -38,9 +37,9 @@ const FriendsOnline = () => {
                         style={{ borderRadius: "10px" }}
                     >
                         <ListItemAvatar>
-                            <StyledBadge isActive={true}>
+                            <BadgeStyled isActive={true}>
                                 <AvatarIcon text={user.name} imageUrl={user.avatar_image} />
-                            </StyledBadge>
+                            </BadgeStyled>
                         </ListItemAvatar>
                         <ListItemText primary={user.name} />
                     </ListItem>

@@ -5,6 +5,7 @@ import { validate } from "express-validation";
 import {
     getPostValidation,
     reactPostValidation,
+    removeTagValidation,
     deletePostValidation,
     getAllPostsValidation,
     getPostsByUserValidation,
@@ -12,6 +13,7 @@ import {
 import {
     getPostController,
     reactPostController,
+    removeTagController,
     createPostController,
     deletePostController,
     updatePostController,
@@ -37,5 +39,6 @@ router.post("/", verifyToken, upload.any("images"), uploadFiles, createPostContr
 router.put("/:postId", verifyToken, upload.any("images"), uploadFiles, updatePostController);
 router.delete("/:postId", validate(deletePostValidation), verifyToken, deletePostController);
 router.put("/react-post/:postId", validate(reactPostValidation), verifyToken, reactPostController);
+router.put("/remove-tag/:postId", validate(removeTagValidation), verifyToken, removeTagController);
 
 export default router;

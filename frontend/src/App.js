@@ -13,9 +13,8 @@ import { Route, Switch, Redirect, BrowserRouter } from "react-router-dom";
 
 import callApi from "./api";
 import Navbar from "./components/Navbar";
-import Loading from "./components/common/Loading";
 import ProtectedRoute from "./utils/protected-route";
-import Notification from "./components/common/Notification";
+import { Loading, Notification } from "./components/common";
 import { UIReducer, initialUIState } from "./context/UIContext";
 import { ChatReducer, initialChatState } from "./context/ChatContext";
 import { PostReducer, initialPostState } from "./context/PostContext";
@@ -151,6 +150,10 @@ const App = () => {
 
             socketIO.current.on("user-offline", (_id) => {
                 userDispatch({ payload: _id, type: "REMOVE_FRIEND_ONLINE" });
+            });
+
+            socketIO.current.on("new-notification", (notification) => {
+                uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
             });
 
             socketIO.current.on("change-admin-chatroom", (data) => {

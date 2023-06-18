@@ -18,8 +18,7 @@ import React, { useRef, useState, Fragment, useContext } from "react";
 
 import { useUser } from "../../hooks";
 import { UserContext } from "../../App";
-import AvatarIcon from "../common/AvatarIcon";
-import LoadingIcon from "../common/LoadingIcon";
+import { AvatarIcon, LoadingIcon } from "../common";
 
 const ProfileHeader = ({ user, conScreen }) => {
     const {

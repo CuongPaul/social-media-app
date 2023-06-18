@@ -11,13 +11,14 @@ import {
     ListSubheader,
 } from "@material-ui/core";
 import moment from "moment";
+import { useHistory } from "react-router-dom";
 import { faBell } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState, Fragment, useEffect, useContext } from "react";
 import { Label, Forum, PersonAdd, PlaylistAddCheck } from "@material-ui/icons";
 
-import { UIContext } from "../../App";
-import { useNotifications } from "../../hooks";
+import { UIContext, UserContext } from "../../App";
+import { useChatRoom, useNotifications } from "../../hooks";
 
 const Subheader = () => {
     const {
@@ -51,10 +52,16 @@ const Notifications = () => {
     const {
         uiState: { darkMode, notifications },
     } = useContext(UIContext);
+    const {
+        userDispatch,
+        userState: { incommingFriendRequests },
+    } = useContext(UserContext);
 
+    const history = useHistory();
     const [anchorEl, setAnchorEl] = useState(null);
     const [notificationsPage, setNotificationsPage] = useState(1);
 
+    const { handleSelectChatRoom } = useChatRoom();
     const { handleGetNotifications, handleReadNotifications } = useNotifications();
 
     const handleScrollNotifications = async (e) => {
@@ -65,6 +72,33 @@ const Notifications = () => {
         if (isBottom) {
             setNotificationsPage(notificationsPage + 1);
             handleGetNotifications(notificationsPage + 1);
+        }
+    };
+
+    const handleClickNotifications = async (notification) => {
+        if (!notification.is_read) {
+            handleReadNotifications(notification._id);
+        }
+
+        if (notification.type.includes("POST")) {
+            history.push(`/post/${notification.post}`);
+        }
+        if (notification.type.includes("CHATROOM")) {
+            await handleSelectChatRoom(notification.chat_room);
+            history.push("/messenger");
+        }
+        if (notification.type.includes("FRIEND_REQUEST")) {
+            const friendRequest = incommingFriendRequests.find(
+                (item) => item._id === notification.friend_request
+            );
+
+            if (friendRequest) {
+                userDispatch({
+                    type: "SET_USER_ID_SELECTED",
+                    payload: friendRequest.sender._id,
+                });
+                history.push("/friends");
+            }
         }
     };
 
@@ -105,16 +139,16 @@ const Notifications = () => {
                             backgroundColor: "rgb(226,81,65)",
                         };
 
-                        if (notification.type.includes("CHATROOM")) {
-                            avatarAttribute = {
-                                icon: <Forum />,
-                                backgroundColor: "rgb(65,83,175)",
-                            };
-                        }
                         if (notification.type.includes("POST")) {
                             avatarAttribute = {
                                 icon: <Label />,
                                 backgroundColor: "rgb(46,139,87)",
+                            };
+                        }
+                        if (notification.type.includes("CHATROOM")) {
+                            avatarAttribute = {
+                                icon: <Forum />,
+                                backgroundColor: "rgb(65,83,175)",
                             };
                         }
 
@@ -122,10 +156,7 @@ const Notifications = () => {
                             <ListItem
                                 button
                                 key={notification._id}
-                                onClick={() =>
-                                    !notification.is_read &&
-                                    handleReadNotifications(notification._id)
-                                }
+                                onClick={() => handleClickNotifications(notification)}
                                 style={{
                                     width: "auto",
                                     margin: "5px 15px",

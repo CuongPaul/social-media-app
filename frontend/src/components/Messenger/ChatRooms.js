@@ -14,9 +14,8 @@ import React, { useState, useContext, useEffect } from "react";
 import AddMembers from "./AddMembers";
 import ChangeAdmin from "./ChangeAdmin";
 import { useChatRoom } from "../../hooks";
-import AvatarIcon from "../common/AvatarIcon";
 import UpdateChatRoom from "./UpdateChatRoom";
-import StyledBadge from "../common/StyledBadge";
+import { AvatarIcon, BadgeStyled } from "../common";
 import { ChatContext, UserContext } from "../../App";
 
 const ChatRooms = ({ chatRoom, setIsOpenGroupMembers }) => {
@@ -55,7 +54,7 @@ const ChatRooms = ({ chatRoom, setIsOpenGroupMembers }) => {
                 }}
             >
                 <ListItemAvatar>
-                    <StyledBadge
+                    <BadgeStyled
                         max={9}
                         isActive={friendsOnline.some((item) =>
                             chatRoom.members.some((element) => item._id === element._id)
@@ -63,7 +62,7 @@ const ChatRooms = ({ chatRoom, setIsOpenGroupMembers }) => {
                         badgeContent={chatRoom?.unseen_message && chatRoom?.unseen_message}
                     >
                         <AvatarIcon text={chatRoom?.name} imageUrl={chatRoom?.avatar_image} />
-                    </StyledBadge>
+                    </BadgeStyled>
                 </ListItemAvatar>
                 <ListItemText primary={chatRoom?.name} style={{ marginLeft: "16px" }} />
             </ListItem>

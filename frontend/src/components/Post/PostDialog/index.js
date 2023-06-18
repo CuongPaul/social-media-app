@@ -23,14 +23,11 @@ import Camera from "./Camera";
 import Feelings from "./Feelings";
 import Location from "./Location";
 import TagFriends from "./TagFriends";
-import Emoji from "../../common/Emoji";
-import FilesUpload from "./FilesUpload";
-import FilePreview from "./FilePreview";
 import { usePost } from "../../../hooks";
 import PostSubContent from "../PostSubContent";
-import AvatarIcon from "../../common/AvatarIcon";
-import LoadingIcon from "../../common/LoadingIcon";
 import { UIContext, UserContext } from "../../../App";
+import { FilePreview, FilesUpload } from "../../common";
+import { Emoji, AvatarIcon, LoadingIcon } from "../../common";
 
 const PostDialog = ({ isOpen, postData, setIsOpen }) => {
     const {
@@ -69,8 +66,19 @@ const PostDialog = ({ isOpen, postData, setIsOpen }) => {
             setFeelings(postData.body.feelings);
             setLocation(postData.body.location);
             setTagFriends(postData.body.tag_friends);
+        } else {
+            if (!isOpen) {
+                return () => {
+                    setText("");
+                    setFeelings("");
+                    setLocation("");
+                    setTagFriends([]);
+                    setFilesPreview([]);
+                    setPrivacy("PUBLIC");
+                };
+            }
         }
-    }, [postData]);
+    }, [isOpen, postData]);
 
     return (
         <Fragment>
@@ -83,7 +91,7 @@ const PostDialog = ({ isOpen, postData, setIsOpen }) => {
                     }
                     title={
                         <PostSubContent
-                            username={currentUser?.name}
+                            user={currentUser}
                             postBody={{ feelings, location, tag_friends: tagFriends }}
                         />
                     }
@@ -150,7 +158,7 @@ const PostDialog = ({ isOpen, postData, setIsOpen }) => {
                         disabled={isLoading}
                         variant="contained"
                         style={{ width: "100%", margin: "10px" }}
-                        onClick={(e) => {
+                        onClick={() => {
                             if (postData) {
                                 return handleUpdatePost({
                                     setIsOpen,

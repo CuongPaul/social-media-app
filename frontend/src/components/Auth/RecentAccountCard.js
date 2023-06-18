@@ -9,8 +9,8 @@ import {
 import { Close } from "@material-ui/icons";
 import React, { useState, Fragment, useContext } from "react";
 
+import { AvatarIcon } from "../common";
 import { UserContext } from "../../App";
-import AvatarIcon from "../common/AvatarIcon";
 import RecentAccountSigninForm from "./RecentAccountSigninForm";
 
 const RecentAccountCard = ({ account }) => {

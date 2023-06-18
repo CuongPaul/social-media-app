@@ -3,15 +3,17 @@ import React, { useRef, useState, useEffect, useContext } from "react";
 import { Grid, List, Paper, Avatar, Typography } from "@material-ui/core";
 
 import callApi from "../api";
-import Message from "../components/Messenger/Message";
-import AvatarIcon from "../components/common/AvatarIcon";
-import ChatRooms from "../components/Messenger/ChatRooms";
+import {
+    Message,
+    ChatRooms,
+    SearchUsers,
+    MessageInput,
+    CreateChatRoom,
+    SearchChatRooms,
+    ChatRoomMembers,
+} from "../components/Messenger";
+import { AvatarIcon } from "../components/common";
 import { UIContext, ChatContext, UserContext } from "../App";
-import SearchUsers from "../components/Messenger/SearchUsers";
-import MessageInput from "../components/Messenger/MessageInput";
-import CreateChatRoom from "../components/Messenger/CreateChatRoom";
-import SearchChatRooms from "../components/Messenger/SearchChatRooms";
-import ChatRoomMembers from "../components/Messenger/ChatRoomMembers";
 
 const Messenger = () => {
     const {

@@ -1,6 +1,7 @@
 export const initialPostState = {
     posts: [],
     comments: [],
+    postsTotal: 0,
     postSelected: null,
     commentSelected: null,
 };
@@ -8,10 +9,14 @@ export const initialPostState = {
 export const PostReducer = (state, action) => {
     switch (action.type) {
         case "ADD_POSTS":
-            return { ...state, posts: [...state.posts, ...action.payload] };
+            return {
+                ...state,
+                postsTotal: action.payload.count,
+                posts: [...state.posts, ...action.payload.rows],
+            };
 
         case "SET_POSTS":
-            return { ...state, posts: action.payload };
+            return { ...state, posts: action.payload.rows, postsTotal: action.payload.count };
 
         case "REACT_POST":
             const postsAfterReact = [...state.posts];
@@ -78,12 +83,17 @@ export const PostReducer = (state, action) => {
             const postsAfterCreate = [...state.posts];
             postsAfterCreate.unshift(action.payload);
 
-            return { ...state, posts: postsAfterCreate };
+            return {
+                ...state,
+                posts: postsAfterCreate,
+                postsTotal:
+                    action.payload.privacy === "ONLY_ME" ? state.postsTotal : state.postsTotal + 1,
+            };
 
         case "DELETE_POST":
             const postsAfterDelete = state.posts.filter((post) => post._id !== action.payload);
 
-            return { ...state, posts: postsAfterDelete };
+            return { ...state, posts: postsAfterDelete, postsTotal: state.postsTotal - 1 };
 
         case "ADD_COMMENTS":
             return { ...state, comments: [...state.comments, ...action.payload] };

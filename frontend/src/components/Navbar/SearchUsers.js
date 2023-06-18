@@ -21,9 +21,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { UIContext } from "../../App";
 import { useSearch } from "../../hooks";
-import AvatarIcon from "../common/AvatarIcon";
-import LoadingIcon from "../common/LoadingIcon";
-import ButtonGroupUserActions from "../common/ButtonGroupUserActions";
+import { AvatarIcon, LoadingIcon, ButtonGroupUserActions } from "../common";
 
 const SearchUsers = () => {
     const {

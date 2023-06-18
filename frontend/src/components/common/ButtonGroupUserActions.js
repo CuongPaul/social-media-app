@@ -9,10 +9,10 @@ const ButtonAction = ({ text, onClick, backgroundColor }) => (
         onClick={onClick}
         variant="contained"
         style={{
-            color: "rgb(255,255,255)",
             margin: "10px",
-            minWidth: "80px",
             fontSize: "10px",
+            minWidth: "80px",
+            color: "rgb(255,255,255)",
             backgroundColor: backgroundColor,
         }}
     >
