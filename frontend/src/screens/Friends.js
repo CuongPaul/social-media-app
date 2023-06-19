@@ -40,6 +40,9 @@ const Friends = () => {
     } = useContext(UserContext);
 
     const [recommendUsers, setRecommendUsers] = useState([]);
+    const [pageRecommendUsers, setPageRecommendUsers] = useState(1);
+    const [pageSendedFriendRequests, setPageSendedFriendRequests] = useState(1);
+    const [pageIncommingFriendRequests, setPageIncommingFriendRequests] = useState(1);
 
     const {
         handleSendFriendRequest,
@@ -49,10 +52,96 @@ const Friends = () => {
     } = useFriendRequest();
     const { handleBlockUser, handleUnblockUser } = useUser();
 
+    const handleScrollSendedFriendRequests = async (e) => {
+        const { scrollTop, clientHeight, scrollHeight } = e.target;
+
+        const isBottom = scrollHeight - scrollTop === clientHeight;
+
+        if (isBottom) {
+            setPageSendedFriendRequests(pageSendedFriendRequests + 1);
+
+            try {
+                const { data } = await callApi({
+                    method: "GET",
+                    url: "/friend-request/sended",
+                    query: { page: pageSendedFriendRequests + 1 },
+                });
+
+                if (data) {
+                    userDispatch({
+                        payload: data.rows,
+                        type: "ADD_SENDED_FRIEND_REQUEST",
+                    });
+                }
+            } catch (err) {
+                uiDispatch({
+                    type: "SET_ALERT_MESSAGE",
+                    payload: { display: true, color: "error", text: err.message },
+                });
+            }
+        }
+    };
+
+    const handleScrollIncommingFriendRequests = async (e) => {
+        const { scrollTop, clientHeight, scrollHeight } = e.target;
+
+        const isBottom = scrollHeight - scrollTop === clientHeight;
+
+        if (isBottom) {
+            setPageIncommingFriendRequests(pageIncommingFriendRequests + 1);
+
+            try {
+                const { data } = await callApi({
+                    method: "GET",
+                    url: "/friend-request/received",
+                    query: { page: pageIncommingFriendRequests + 1 },
+                });
+
+                if (data) {
+                    userDispatch({
+                        payload: data.rows,
+                        type: "ADD_INCOMMING_FRIEND_REQUEST",
+                    });
+                }
+            } catch (err) {
+                uiDispatch({
+                    type: "SET_ALERT_MESSAGE",
+                    payload: { display: true, color: "error", text: err.message },
+                });
+            }
+        }
+    };
+
+    const handleScrollRecommendUsers = async (e) => {
+        const { scrollTop, clientHeight, scrollHeight } = e.target;
+
+        const isBottom = scrollHeight - scrollTop === clientHeight;
+
+        if (isBottom) {
+            setPageRecommendUsers(pageRecommendUsers + 1);
+
+            try {
+                const { data } = await callApi({
+                    method: "GET",
+                    url: "/user/recommend-users",
+                    query: { page: pageRecommendUsers + 1 },
+                });
+
+                setRecommendUsers([...recommendUsers, ...data.row]);
+            } catch (err) {
+                uiDispatch({
+                    type: "SET_ALERT_MESSAGE",
+                    payload: { display: true, color: "error", text: err.message },
+                });
+            }
+        }
+    };
+
     useEffect(() => {
         (async () => {
             try {
                 const { data } = await callApi({ method: "GET", url: "/user/recommend-users" });
+
                 setRecommendUsers(data.rows);
             } catch (err) {
                 uiDispatch({
@@ -84,6 +173,7 @@ const Friends = () => {
                             overflow: "hidden auto",
                             backgroundColor: "rgb(255,255,255)",
                         }}
+                        onScroll={handleScrollSendedFriendRequests}
                     >
                         <List style={{ padding: "0px" }}>
                             <ListSubheader
@@ -118,6 +208,7 @@ const Friends = () => {
                             overflow: "hidden auto",
                             backgroundColor: "rgb(255,255,255)",
                         }}
+                        onScroll={handleScrollIncommingFriendRequests}
                     >
                         <List style={{ padding: "0px" }}>
                             <ListSubheader
@@ -201,6 +292,7 @@ const Friends = () => {
             <Grid style={{ margin: "10px", display: "flex" }}>
                 {Boolean(recommendUsers.length) && (
                     <div
+                        onScroll={handleScrollRecommendUsers}
                         style={{
                             margin: "5px",
                             borderRadius: "10px",

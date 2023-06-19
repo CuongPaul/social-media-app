@@ -205,7 +205,7 @@ const App = () => {
                 const { notification, friend_request } = data;
 
                 uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
-                userDispatch({ payload: friend_request, type: "ADD_INCOMMING_FRIEND_REQUEST" });
+                userDispatch({ payload: [friend_request], type: "ADD_INCOMMING_FRIEND_REQUEST" });
             });
 
             socketIO.current.on("add-socket-for-user-online", ({ _id, socket }) => {
