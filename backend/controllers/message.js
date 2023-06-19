@@ -218,11 +218,15 @@ const updateMessagesController = async (req, res) => {
             return res.status(400).json({ message: "You don't allow edit this message" });
         }
 
-        if (!image) {
+        if (!image && message.image) {
             const pathName = decodeURIComponent(message.image.split("/o/")[1].split("?alt=")[0]);
             const imageRef = ref(storage, pathName);
 
-            await deleteObject(imageRef);
+            try {
+                await deleteObject(imageRef);
+            } catch (error) {
+                console.log(error);
+            }
         }
 
         await message.updateOne({ text, image });

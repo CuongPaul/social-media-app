@@ -11,8 +11,15 @@ const PostFooter = ({ post }) => {
     const { postId } = useParams();
 
     return (
-        <div style={{ display: "flex", margin: "20px", justifyContent: "center" }}>
-            <PostReact post={post} />
+        <div
+            style={{
+                display: "flex",
+                padding: "20px",
+                justifyContent: "center",
+                backgroundColor: "rgb(200,200,200)",
+            }}
+        >
+            <PostReact post={post} isDetail={Boolean(postId)} />
             {!postId && (
                 <Button
                     component={Link}

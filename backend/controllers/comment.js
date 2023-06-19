@@ -69,10 +69,18 @@ const deleteCommentController = async (req, res) => {
         const comment = await Comment.findById(commentId).populate("post");
 
         if (comment.user == userId || comment.post.user == userId) {
-            const pathName = decodeURIComponent(comment.image.split("/o/")[1].split("?alt=")[0]);
-            const imageRef = ref(storage, pathName);
+            if (comment.image) {
+                const pathName = decodeURIComponent(
+                    comment.image.split("/o/")[1].split("?alt=")[0]
+                );
+                const imageRef = ref(storage, pathName);
 
-            await deleteObject(imageRef);
+                try {
+                    await deleteObject(imageRef);
+                } catch (error) {
+                    console.log(error);
+                }
+            }
 
             await comment.remove();
 
@@ -111,11 +119,15 @@ const updateCommentController = async (req, res) => {
 
         const { _id, post, user, react } = comment;
 
-        if (!image) {
+        if (!image && comment.image) {
             const pathName = decodeURIComponent(comment.image.split("/o/")[1].split("?alt=")[0]);
             const imageRef = ref(storage, pathName);
 
-            await deleteObject(imageRef);
+            try {
+                await deleteObject(imageRef);
+            } catch (error) {
+                console.log(error);
+            }
         }
 
         await comment.updateOne({ text, image });

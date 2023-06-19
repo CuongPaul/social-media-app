@@ -189,7 +189,11 @@ const deletePostController = async (req, res) => {
                 const pathName = decodeURIComponent(image.split("/o/")[1].split("?alt=")[0]);
                 const imageRef = ref(storage, pathName);
 
-                await deleteObject(imageRef);
+                try {
+                    await deleteObject(imageRef);
+                } catch (error) {
+                    console.log(error);
+                }
             }
         }
 
@@ -213,7 +217,9 @@ const updatePostController = async (req, res) => {
     }
 
     try {
-        const post = await Post.findOne({ user: userId, _id: postId });
+        const post = await Post.findOne({ user: userId, _id: postId }).populate("user", {
+            name: 1,
+        });
         if (!post) {
             return res.status(404).json({ message: "Post does not exist" });
         }
@@ -242,7 +248,7 @@ const updatePostController = async (req, res) => {
                         user: friendId,
                         post: post._id,
                         type: "POST-TAG_FRIEND",
-                        content: `${post.user.name} has tag you in new post`,
+                        content: `${post.user.name} has tag you in a post`,
                     }).save();
 
                     const sockets = await redisClient.LRANGE(`socket-io:${friendId}`, 0, -1);
@@ -260,7 +266,11 @@ const updatePostController = async (req, res) => {
             const pathName = decodeURIComponent(image.split("/o/")[1].split("?alt=")[0]);
             const imageRef = ref(storage, pathName);
 
-            await deleteObject(imageRef);
+            try {
+                await deleteObject(imageRef);
+            } catch (error) {
+                console.log(error);
+            }
         }
 
         post.text = text;

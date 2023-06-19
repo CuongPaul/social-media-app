@@ -1,6 +1,6 @@
 const generateColor = (str) => {
-    const firstCharacter = str[0].toLowerCase();
-    const asciiCode = firstCharacter.charCodeAt(0).toString();
+    const firstCharacter = str[0]?.toLowerCase();
+    const asciiCode = firstCharacter?.charCodeAt(0).toString();
 
     const num = Math.round(0xffffff * parseInt(asciiCode + asciiCode + asciiCode));
 

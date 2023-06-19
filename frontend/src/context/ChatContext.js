@@ -106,6 +106,17 @@ export const ChatReducer = (state, action) => {
                 chatRoomSelected: { ...state.chatRoomSelected, members: membersAfterRemoveMembers },
             };
 
+        case "SET_TYPE_BLOCK":
+            if (action.payload) {
+                return {
+                    ...state,
+                    chatRoomSelected: { ...state.chatRoomSelected, type_block: action.payload },
+                };
+            } else {
+                const { type_block, ...rest } = { ...state.chatRoomSelected };
+                return { ...state, chatRoomSelected: rest };
+            }
+
         case "REMOVE_CHATROOM":
             const chatRoomsAfterRemoveChatRoom = [...state.chatRooms].filter(
                 (item) => item._id !== action.payload
