@@ -19,7 +19,7 @@ const useFriendRequest = () => {
                 data: { receiver_id: userId },
             });
 
-            userDispatch({ type: "SEND_FRIEND_REQUEST", payload: data });
+            userDispatch({ payload: [data], type: "ADD_SENDED_FRIEND_REQUEST" });
             uiDispatch({
                 type: "SET_ALERT_MESSAGE",
                 payload: { display: true, text: message, color: "success" },

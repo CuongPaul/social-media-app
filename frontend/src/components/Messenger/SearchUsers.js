@@ -26,12 +26,24 @@ const SearchUsers = () => {
         chatState: { chatRooms },
     } = useContext(ChatContext);
 
+    const [page, setPage] = useState(1);
     const [users, setUsers] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
 
     const { isLoading, handleSearchUsers } = useSearch();
     const { handleSelectChatRoom, handleCreateChatRoomForTwoPeople } = useChatRoom();
+
+    const handleScroll = async (e) => {
+        const { scrollTop, clientHeight, scrollHeight } = e.target;
+
+        const isBottom = scrollHeight - scrollTop === clientHeight;
+
+        if (isBottom) {
+            setPage(page + 1);
+            handleSearchUsers({ setUsers, page: page + 1, name: searchValue });
+        }
+    };
 
     const handleClickUserItem = async (user) => {
         const chatRoomExisted = chatRooms.find(
@@ -59,7 +71,12 @@ const SearchUsers = () => {
             >
                 Search users
             </Button>
-            <Dialog fullWidth open={isOpen} onClose={() => setIsOpen(false)}>
+            <Dialog
+                fullWidth
+                open={isOpen}
+                onScroll={handleScroll}
+                onClose={() => setIsOpen(false)}
+            >
                 <CardHeader
                     action={
                         <IconButton onClick={() => setIsOpen(false)}>

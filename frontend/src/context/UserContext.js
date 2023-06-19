@@ -119,12 +119,6 @@ const UserReducer = (state, action) => {
                 currentUser: { ...state.currentUser, avatar_image: action.payload },
             };
 
-        case "SEND_FRIEND_REQUEST":
-            return {
-                ...state,
-                sendedFriendRequests: [...state.sendedFriendRequests, action.payload],
-            };
-
         case "SET_RECENT_ACCOUNTS":
             return { ...state, recentAccounts: action.payload };
 
@@ -177,13 +171,19 @@ const UserReducer = (state, action) => {
                 incommingFriendRequests: incommingFriendRequestsAfterDecline,
             };
 
+        case "ADD_SENDED_FRIEND_REQUEST":
+            return {
+                ...state,
+                sendedFriendRequests: [...state.sendedFriendRequests, ...action.payload],
+            };
+
         case "SET_SENDED_FRIEND_REQUEST":
             return { ...state, sendedFriendRequests: action.payload };
 
         case "ADD_INCOMMING_FRIEND_REQUEST":
             return {
                 ...state,
-                incommingFriendRequests: [...state.incommingFriendRequests, action.payload],
+                incommingFriendRequests: [...state.incommingFriendRequests, ...action.payload],
             };
 
         case "ADD_SOCKET_FOR_FRIEND_ONLINE":
