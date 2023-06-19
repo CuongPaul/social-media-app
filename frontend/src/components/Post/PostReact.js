@@ -27,7 +27,7 @@ import callApi from "../../api";
 import { AvatarIcon, ButtonGroupUserActions } from "../common";
 import { UIContext, PostContext, UserContext } from "../../App";
 
-const PostReact = ({ post }) => {
+const PostReact = ({ post, isDetail }) => {
     const {
         uiDispatch,
         uiState: { darkMode },
@@ -74,12 +74,15 @@ const PostReact = ({ post }) => {
                 { icon: faSadCry, reactKey: "sad", color: "rgb(251,202,102)" },
                 { icon: faAngry, reactKey: "angry", color: "rgb(248,134,20)" },
             ].map((item) => (
-                <div key={item.reactKey} style={{ margin: "0px 10px", position: "relative" }}>
+                <div
+                    key={item.reactKey}
+                    style={{ margin: isDetail ? "0px 15px" : "0px 5px", position: "relative" }}
+                >
                     <Badge
                         overlap="rectangular"
                         style={{
                             borderRadius: "50%",
-                            backgroundColor: "rgb(169,169,169)",
+                            backgroundColor: "rgb(255,255,255)",
                         }}
                         badgeContent={
                             post?.react[item.reactKey]?.length && (

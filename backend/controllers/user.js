@@ -1,5 +1,7 @@
 import bcrypt from "bcrypt";
+import { ref, deleteObject } from "firebase/storage";
 
+import storage from "../helpers/firebase";
 import redisClient from "../helpers/redis";
 import { User, FriendRequest } from "../models";
 
@@ -240,6 +242,17 @@ const updateCoverImageController = async (req, res) => {
             return res.status(400).json({ message: "User doesn't exist" });
         }
 
+        if (user.cover_image) {
+            const pathName = decodeURIComponent(user.cover_image.split("/o/")[1].split("?alt=")[0]);
+            const imageRef = ref(storage, pathName);
+
+            try {
+                await deleteObject(imageRef);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
         await user.updateOne({ cover_image });
 
         return res.status(200).json({ message: "success" });
@@ -317,6 +330,19 @@ const updateAvatarImageController = async (req, res) => {
 
         if (!user) {
             return res.status(400).json({ message: "User doesn't exist" });
+        }
+
+        if (user.avatar_image) {
+            const pathName = decodeURIComponent(
+                user.avatar_image.split("/o/")[1].split("?alt=")[0]
+            );
+            const imageRef = ref(storage, pathName);
+
+            try {
+                await deleteObject(imageRef);
+            } catch (error) {
+                console.log(error);
+            }
         }
 
         await user.updateOne({ avatar_image });

@@ -157,6 +157,14 @@ const ProfileHeader = ({ user, conScreen }) => {
                                 }}
                             >
                                 <Button
+                                    color="primary"
+                                    variant="contained"
+                                    disabled={isLoading}
+                                    onClick={handleClickUpload}
+                                >
+                                    <LoadingIcon text={"Upload"} isLoading={isLoading} />
+                                </Button>
+                                <Button
                                     variant="contained"
                                     onClick={handleClickCancel}
                                     style={{
@@ -165,14 +173,6 @@ const ProfileHeader = ({ user, conScreen }) => {
                                     }}
                                 >
                                     Cancel
-                                </Button>
-                                <Button
-                                    color="primary"
-                                    variant="contained"
-                                    disabled={isLoading}
-                                    onClick={handleClickUpload}
-                                >
-                                    <LoadingIcon text={"Upload"} isLoading={isLoading} />
                                 </Button>
                             </DialogActions>
                         </Dialog>

@@ -151,13 +151,13 @@ const useUser = () => {
         }
     };
 
-    const handleUpdateCoverImage = async (image) => {
+    const handleUpdateCoverImage = async (imageUpload) => {
         setIsLoading(true);
 
         try {
             const formData = new FormData();
-            formData.append("files", image);
-            formData.append("folder", "avatar-image");
+            formData.append("files", imageUpload);
+            formData.append("folder", "cover-image");
 
             const { data } = await callApi({
                 data: formData,
@@ -185,12 +185,12 @@ const useUser = () => {
         }
     };
 
-    const handleUpdateAvatarImage = async (image) => {
+    const handleUpdateAvatarImage = async (imageUpload) => {
         setIsLoading(true);
 
         try {
             const formData = new FormData();
-            formData.append("files", image);
+            formData.append("files", imageUpload);
             formData.append("folder", "avatar-image");
 
             const { data } = await callApi({

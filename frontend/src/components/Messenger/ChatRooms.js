@@ -7,33 +7,41 @@ import {
     ListItemText,
     ListItemAvatar,
 } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
 import { MoreHoriz } from "@material-ui/icons";
-import React, { useState, useContext, useEffect } from "react";
+import React, { useMemo, useState, useContext, useEffect } from "react";
 
 import AddMembers from "./AddMembers";
 import ChangeAdmin from "./ChangeAdmin";
-import { useChatRoom } from "../../hooks";
 import UpdateChatRoom from "./UpdateChatRoom";
+import { useUser, useChatRoom } from "../../hooks";
 import { AvatarIcon, BadgeStyled } from "../common";
 import { ChatContext, UserContext } from "../../App";
 
 const ChatRooms = ({ chatRoom, setIsOpenGroupMembers }) => {
     const {
+        chatDispatch,
         chatState: { chatRoomSelected },
     } = useContext(ChatContext);
     const {
         userState: { currentUser, friendsOnline },
     } = useContext(UserContext);
 
-    const history = useHistory();
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpenActions, setIsOpenActions] = useState(false);
     const [isOpenAddMembers, setIsOpenAddMembers] = useState(false);
     const [isOpenChangeAdmin, setIsOpenChangeAdmin] = useState(false);
     const [isOpenUpdateChatRoom, setIsOpenUpdateChatRoom] = useState(false);
 
+    const { handleBlockUser, handleUnblockUser } = useUser();
     const { handleLeaveChatRoom, handleDeleteChatRoom, handleSelectChatRoom } = useChatRoom();
+
+    const isBlockUser = useMemo(() => {
+        if (chatRoom.members.length === 2) {
+            const reciver = chatRoom.members.find((item) => item._id !== currentUser._id);
+
+            return currentUser?.block_users.includes(reciver._id);
+        }
+    }, [chatRoom._id, currentUser?.block_users]);
 
     useEffect(() => {
         if (chatRoom._id === chatRoomSelected?._id && chatRoom.members.length > 1) {
@@ -86,10 +94,19 @@ const ChatRooms = ({ chatRoom, setIsOpenGroupMembers }) => {
                                         (item) => item._id !== currentUser._id
                                     );
 
-                                    history.push(`/profile/${reciver._id}`);
+                                    if (isBlockUser) {
+                                        handleUnblockUser(reciver._id);
+                                        chatDispatch({ type: "SET_TYPE_BLOCK" });
+                                    } else {
+                                        handleBlockUser(reciver._id);
+                                        chatDispatch({
+                                            type: "SET_TYPE_BLOCK",
+                                            payload: "block_reciver",
+                                        });
+                                    }
                                 }}
                             >
-                                <Typography>View profile</Typography>
+                                <Typography>{isBlockUser ? "Unblock" : "Block"}</Typography>
                             </MenuItem>
                         )}
                         {chatRoom.admin !== currentUser?._id && chatRoom.members.length > 2 && (
