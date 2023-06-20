@@ -16,13 +16,29 @@ import { useParams } from "react-router-dom";
 import { CameraAlt } from "@material-ui/icons";
 import React, { useRef, useState, Fragment, useContext } from "react";
 
-import { useUser } from "../../hooks";
 import { UserContext } from "../../App";
 import { AvatarIcon, LoadingIcon } from "../common";
+import { useUser, useFriendRequest } from "../../hooks";
+
+const ButtonAction = ({ text, onClick, backgroundColor }) => (
+    <Button
+        onClick={onClick}
+        variant="contained"
+        style={{
+            fontSize: "10px",
+            minWidth: "80px",
+            color: "rgb(255,255,255)",
+            margin: "20px 0px 10px 20px",
+            backgroundColor: backgroundColor,
+        }}
+    >
+        {text}
+    </Button>
+);
 
 const ProfileHeader = ({ user, conScreen }) => {
     const {
-        userState: { currentUser },
+        userState: { currentUser, sendedFriendRequests },
     } = useContext(UserContext);
 
     const params = useParams();
@@ -32,7 +48,15 @@ const ProfileHeader = ({ user, conScreen }) => {
     const [imagePreview, setImagePreview] = useState("");
     const [isOpenPreviewImage, setIsOpenPreviewImage] = useState(false);
 
-    const { isLoading, handleUpdateCoverImage, handleUpdateAvatarImage } = useUser();
+    const {
+        isLoading,
+        handleUnfriend,
+        handleBlockUser,
+        handleUnblockUser,
+        handleUpdateCoverImage,
+        handleUpdateAvatarImage,
+    } = useUser();
+    const { handleSendFriendRequest, handleCancelFriendRequest } = useFriendRequest();
 
     const handleChangeImage = (e) => {
         setImageUpload(e.target.files[0]);
@@ -81,7 +105,7 @@ const ProfileHeader = ({ user, conScreen }) => {
                                     fileRef.current.click();
                                     setTyppeUpload("cover-image");
                                 }}
-                                style={{ left: "20px", bottom: "20px", position: "absolute" }}
+                                style={{ right: "20px", bottom: "20px", position: "absolute" }}
                             >
                                 <Avatar>
                                     <CameraAlt style={{ color: "black" }} />
@@ -91,10 +115,9 @@ const ProfileHeader = ({ user, conScreen }) => {
                         <Badge
                             overlap="rectangular"
                             style={{
-                                left: "0px",
-                                right: "0px",
+                                left: "43px",
                                 width: "170px",
-                                bottom: "-50px",
+                                bottom: "-60px",
                                 margin: "0px auto",
                                 position: "absolute",
                             }}
@@ -105,7 +128,7 @@ const ProfileHeader = ({ user, conScreen }) => {
                                             fileRef.current.click();
                                             setTyppeUpload("avatar-image");
                                         }}
-                                        style={{ left: "-10px", bottom: "-120px" }}
+                                        style={{ left: "-20px", bottom: "-135px" }}
                                     >
                                         <Avatar>
                                             <CameraAlt style={{ color: "black" }} />
@@ -183,8 +206,58 @@ const ProfileHeader = ({ user, conScreen }) => {
                 container
                 alignItems="center"
                 justifyContent="center"
-                style={{ marginTop: "60px", marginBottom: "10px" }}
+                style={{ minHeight: "55px" }}
             >
+                {user?._id !== currentUser?._id && (
+                    <Grid
+                        item
+                        md={conScreen ? 12 : 6}
+                        style={{ display: "flex", justifyContent: "end" }}
+                    >
+                        {currentUser?.friends.find((item) => item._id === user?._id) ? (
+                            <ButtonAction
+                                text={"Unfriend"}
+                                backgroundColor={"rgb(108,117,125)"}
+                                onClick={() => handleUnfriend(user?._id)}
+                            />
+                        ) : sendedFriendRequests?.find(
+                              (item) => item.receiver._id === user?._id
+                          ) ? (
+                            <ButtonAction
+                                text={"Cancel"}
+                                backgroundColor={"rgb(255,193,7)"}
+                                onClick={() =>
+                                    handleCancelFriendRequest(
+                                        sendedFriendRequests?.find(
+                                            (item) => item.receiver._id === user?._id
+                                        )._id
+                                    )
+                                }
+                            />
+                        ) : (
+                            <ButtonAction
+                                text={"Add"}
+                                backgroundColor={"rgb(0,123,255)"}
+                                onClick={() => handleSendFriendRequest(user?._id)}
+                            />
+                        )}
+                        {currentUser?.block_users.includes(user?._id) ? (
+                            <ButtonAction
+                                text={"Unblock"}
+                                backgroundColor={"rgb(23,162,184)"}
+                                onClick={() => handleUnblockUser(user?._id)}
+                            />
+                        ) : (
+                            <ButtonAction
+                                text={"Block"}
+                                backgroundColor={"rgb(220,53,69)"}
+                                onClick={() => handleBlockUser(user?._id)}
+                            />
+                        )}
+                    </Grid>
+                )}
+            </Grid>
+            <Grid container alignItems="center" justifyContent="center">
                 <Typography style={{ fontSize: "30px", fontWeight: "800" }}>
                     {user?.name}
                 </Typography>
