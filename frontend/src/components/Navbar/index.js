@@ -21,8 +21,6 @@ const Navbar = () => {
     const history = useHistory();
     const { pathname } = useLocation();
 
-    console.log("isMobileScreen: ", isMobileScreen);
-
     return (
         <AppBar
             style={{
