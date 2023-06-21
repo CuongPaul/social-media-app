@@ -6,7 +6,7 @@ import { UIContext } from "../../App";
 
 const Notification = () => {
     const {
-        uiState: { alert_message },
+        uiState: { alertMessage },
         uiDispatch,
     } = useContext(UIContext);
 
@@ -18,12 +18,12 @@ const Notification = () => {
         <Snackbar
             onClose={handleClose}
             autoHideDuration={3000}
-            open={alert_message.display}
+            open={alertMessage.display}
             style={{ color: "rgb(255,255,255)", marginTop: "60px" }}
             anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
-            <Alert onClose={handleClose} severity={alert_message.color}>
-                {alert_message.text}
+            <Alert onClose={handleClose} severity={alertMessage.color}>
+                {alertMessage.text}
             </Alert>
         </Snackbar>
     );

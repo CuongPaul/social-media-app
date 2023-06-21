@@ -1,7 +1,8 @@
 const initialUIState = {
     darkMode: false,
     notifications: [],
-    alert_message: null,
+    alertMessage: null,
+    isMobileScreen: false,
 };
 
 const UIReducer = (state, action) => {
@@ -14,11 +15,14 @@ const UIReducer = (state, action) => {
         case "ADD_NOTIFICATION":
             return { ...state, notifications: [action.payload, ...state.notifications] };
 
+        case "SET_MOBILE_SCREEN":
+            return { ...state, isMobileScreen: action.payload };
+
         case "SET_NOTIFICATIONS":
             return { ...state, notifications: action.payload };
 
         case "SET_ALERT_MESSAGE":
-            return { ...state, alert_message: action.payload };
+            return { ...state, alertMessage: action.payload };
 
         case "ADD_NOTIFICATIONS":
             return { ...state, notifications: [...state.notifications, ...action.payload] };
