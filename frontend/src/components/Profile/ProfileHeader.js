@@ -28,7 +28,7 @@ const ButtonAction = ({ text, onClick, backgroundColor }) => (
             fontSize: "10px",
             minWidth: "80px",
             color: "rgb(255,255,255)",
-            margin: "20px 0px 10px 20px",
+            margin: "20px 20px 0px 10px",
             backgroundColor: backgroundColor,
         }}
     >

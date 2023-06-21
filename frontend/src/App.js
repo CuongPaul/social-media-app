@@ -64,6 +64,13 @@ const App = () => {
             type: "SET_RECENT_ACCOUNTS",
             payload: JSON.parse(localStorage.getItem("recent_accounts")) || [],
         });
+
+        const handleResize = () =>
+            uiDispatch({ payload: window.innerWidth < 720, type: "SET_MOBILE_SCREEN" });
+
+        window.addEventListener("resize", handleResize);
+
+        return () => window.removeEventListener("resize", handleResize);
     }, []);
 
     useEffect(() => {
@@ -222,7 +229,7 @@ const App = () => {
                         <ThemeProvider theme={theme}>
                             <BrowserRouter>
                                 {token && <Navbar />}
-                                {uiState.alert_message && <Notification />}
+                                {uiState.alertMessage && <Notification />}
                                 <div
                                     style={{
                                         backgroundColor: uiState.darkMode

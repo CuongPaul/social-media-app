@@ -15,11 +15,13 @@ import Notifications from "./Notifications";
 
 const Navbar = () => {
     const {
-        uiState: { darkMode },
+        uiState: { darkMode, isMobileScreen },
     } = useContext(UIContext);
 
     const history = useHistory();
     const { pathname } = useLocation();
+
+    console.log("isMobileScreen: ", isMobileScreen);
 
     return (
         <AppBar
