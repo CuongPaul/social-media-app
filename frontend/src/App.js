@@ -64,9 +64,13 @@ const App = () => {
             type: "SET_RECENT_ACCOUNTS",
             payload: JSON.parse(localStorage.getItem("recent_accounts")) || [],
         });
+        uiDispatch({ payload: window.innerWidth < 720, type: "SET_MOBILE_SCREEN" });
+    }, []);
 
-        const handleResize = () =>
+    useEffect(() => {
+        const handleResize = () => {
             uiDispatch({ payload: window.innerWidth < 720, type: "SET_MOBILE_SCREEN" });
+        };
 
         window.addEventListener("resize", handleResize);
 
