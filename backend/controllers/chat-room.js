@@ -576,7 +576,7 @@ const createChatRoomForTwoPeopleController = async (req, res) => {
         await sender.updateOne({ $push: { chat_rooms: { _id: chatRoom._id } } });
         await reciver.updateOne({ $push: { chat_rooms: { _id: chatRoom._id } } });
 
-        const responseData = {
+        const chatRoomData = {
             _id: chatRoom._id,
             unseen_message: 0,
             name: reciver.name,
@@ -594,13 +594,14 @@ const createChatRoomForTwoPeopleController = async (req, res) => {
         const sockets = await redisClient.LRANGE(`socket-io:${reciver._id}`, 0, -1);
         if (sockets.length) {
             sockets.forEach((socketId) => {
-                req.io.sockets
-                    .to(socketId)
-                    .emit("new-chatroom", { notification, chat_room: responseData });
+                req.io.sockets.to(socketId).emit("new-chatroom", {
+                    chat_room: chatRoomData,
+                    notification: { ...notification._doc, chat_room: chatRoomData },
+                });
             });
         }
 
-        res.status(200).json({ message: "success", data: responseData });
+        res.status(200).json({ message: "success", data: chatRoomData });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }

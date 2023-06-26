@@ -31,7 +31,30 @@ const getNotificationsController = async (req, res) => {
             .limit(pageSize)
             .sort({ createdAt: -1 })
             .skip((page - 1) * pageSize)
-            .populate("chat_room", { createdAt: 0, updatedAt: 0 });
+            .populate({
+                path: "chat_room",
+                select: "name admin members is_public avatar_image",
+                populate: [{ path: "members", select: "_id name avatar_image" }],
+            });
+
+        for (const notification of notifications) {
+            if (notification.type.includes("CHATROOM")) {
+                if (
+                    !notification.chat_room.name &&
+                    !notification.chat_room.admin &&
+                    !notification.chat_room.is_public &&
+                    !notification.chat_room.avatar_image &&
+                    notification.chat_room.members.length == 2
+                ) {
+                    const sender = notification.chat_room.members.find(
+                        (member) => userId != member._id
+                    );
+
+                    notification.chat_room.name = sender.name;
+                    notification.chat_room.avatar_image = sender.avatar_image;
+                }
+            }
+        }
 
         const count = await Notification.countDocuments(query);
 
