@@ -94,6 +94,10 @@ const acceptFriendRequestController = async (req, res) => {
             .populate("sender")
             .populate("receiver");
 
+        if (!friendRequest) {
+            return res.status(400).json({ message: "Request hasn't been sent for you" });
+        }
+
         const {
             sender: { _id: senderId, name: senderName },
             receiver: { _id: receiverId, name: receiverName },
@@ -101,9 +105,6 @@ const acceptFriendRequestController = async (req, res) => {
 
         if (userId != receiverId) {
             return res.status(400).json({ message: "Request hasn't been sent for you" });
-        }
-        if (!friendRequest) {
-            return res.status(400).json({ message: "Request hasn't been sent" });
         }
         if (!friendRequest.is_accepted) {
             await friendRequest.updateOne({ is_accepted: true });
