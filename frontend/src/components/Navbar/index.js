@@ -15,7 +15,7 @@ import Notifications from "./Notifications";
 
 const Navbar = () => {
     const {
-        uiState: { darkMode, isMobileScreen },
+        uiState: { darkMode },
     } = useContext(UIContext);
 
     const history = useHistory();
