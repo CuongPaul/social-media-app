@@ -4,10 +4,10 @@ Facebook clone
 
 ## Tech stack
 
+-   Container: Docker
 -   Frontend: ReactJS
 -   Database: MongoDB
--   Infrastructure: Docker
--   Backend: ExpressJS, Redis
+-   Backend: Redis, Firebase, ExpressJS
 
 ## Run project in local
 

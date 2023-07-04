@@ -38,7 +38,7 @@ const getNotificationsController = async (req, res) => {
             });
 
         for (const notification of notifications) {
-            if (notification.type.includes("CHATROOM")) {
+            if (notification.chat_room && notification.type.includes("CHATROOM")) {
                 if (
                     !notification.chat_room.name &&
                     !notification.chat_room.admin &&
