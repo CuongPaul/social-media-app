@@ -3,6 +3,7 @@ import callApi from "../api";
 export const initialChatState = {
     messages: [],
     chatRooms: [],
+    videoCall: null,
     messageSelected: null,
     chatRoomSelected: null,
 };
@@ -140,6 +141,9 @@ export const ChatReducer = (state, action) => {
                         ? action.payload
                         : state.chatRoomSelected,
             };
+
+        case "PHONE_CALL_INCOMING":
+            return { ...state, videoCall: action.payload };
 
         case "SET_MESSAGE_SELECTED":
             return { ...state, messageSelected: action.payload };

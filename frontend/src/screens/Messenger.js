@@ -1,6 +1,7 @@
+import { Phone } from "@material-ui/icons";
 import { useHistory } from "react-router-dom";
 import React, { useRef, useState, useEffect, useContext } from "react";
-import { Grid, List, Paper, Avatar, Typography } from "@material-ui/core";
+import { Grid, List, Paper, Avatar, Typography, IconButton } from "@material-ui/core";
 
 import callApi from "../api";
 import {
@@ -178,6 +179,9 @@ const Messenger = () => {
                                 {chatRoomSelected.name}
                             </Typography>
                         </div>
+                        <IconButton color="primary" onClick={() => history.push("/video-call")}>
+                            <Phone />
+                        </IconButton>
                     </Paper>
                     <ChatRoomMembers
                         isOpen={isOpenGroupMembers}

@@ -14,11 +14,11 @@ import { Route, Switch, Redirect, BrowserRouter } from "react-router-dom";
 import callApi from "./api";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./utils/protected-route";
-import { Loading, Notification } from "./components/common";
 import { UIReducer, initialUIState } from "./context/UIContext";
 import { ChatReducer, initialChatState } from "./context/ChatContext";
 import { PostReducer, initialPostState } from "./context/PostContext";
 import { UserReducer, initialUserState } from "./context/UserContext";
+import { Loading, Notification, VideoCallNotifications } from "./components/common";
 
 export const UIContext = createContext();
 export const ChatContext = createContext();
@@ -32,6 +32,7 @@ const Friends = lazy(() => import("./screens/Friends"));
 const Profile = lazy(() => import("./screens/Profile"));
 const Settings = lazy(() => import("./screens/Settings"));
 const Messenger = lazy(() => import("./screens/Messenger"));
+const VideoCall = lazy(() => import("./screens/VideoCall"));
 
 const App = () => {
     const socketIO = useRef();
@@ -212,15 +213,22 @@ const App = () => {
                 userDispatch({ payload: friend_request_id, type: "ACCEPT_FRIEND_REQUEST" });
             });
 
+            socketIO.current.on("phone-call-incoming", ({ sender, sender_signal_data }) => {
+                chatDispatch({
+                    type: "PHONE_CALL_INCOMING",
+                    payload: { sender, sender_signal_data },
+                });
+            });
+
+            socketIO.current.on("add-socket-for-user-online", ({ _id, socket }) => {
+                userDispatch({ payload: { _id, socket }, type: "ADD_SOCKET_FOR_FRIEND_ONLINE" });
+            });
+
             socketIO.current.on("add-incomming-friend-request", (data) => {
                 const { notification, friend_request } = data;
 
                 uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
                 userDispatch({ payload: [friend_request], type: "ADD_INCOMMING_FRIEND_REQUEST" });
-            });
-
-            socketIO.current.on("add-socket-for-user-online", ({ _id, socket }) => {
-                userDispatch({ payload: { _id, socket }, type: "ADD_SOCKET_FOR_FRIEND_ONLINE" });
             });
         }
     }, [userState.currentUser?._id]);
@@ -234,6 +242,7 @@ const App = () => {
                             <BrowserRouter>
                                 {token && <Navbar />}
                                 {uiState.alertMessage && <Notification />}
+                                {chatState.videoCall && <VideoCallNotifications />}
                                 <div
                                     style={{
                                         backgroundColor: uiState.darkMode
@@ -246,6 +255,10 @@ const App = () => {
                                             <ProtectedRoute
                                                 path="/messenger"
                                                 component={Messenger}
+                                            />
+                                            <ProtectedRoute
+                                                path="/video-call"
+                                                component={VideoCall}
                                             />
                                             <ProtectedRoute
                                                 component={Profile}
