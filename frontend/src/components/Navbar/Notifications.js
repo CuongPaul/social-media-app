@@ -83,7 +83,7 @@ const Notifications = () => {
         if (notification.type.includes("POST")) {
             history.push(`/post/${notification.post}`);
         }
-        if (notification.type.includes("CHATROOM")) {
+        if (notification.chat_room && notification.type.includes("CHATROOM")) {
             await handleSelectChatRoom(notification.chat_room);
             history.push("/messenger");
         }
