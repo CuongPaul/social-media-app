@@ -84,6 +84,18 @@ const Messenger = () => {
         }
     };
 
+    const handleMakePhoneCall = () => {
+        const partner = chatRoomSelected.members.find((item) => item._id !== currentUser._id);
+
+        chatDispatch({
+            type: "SET_PARTNER_VIDEO_CALL",
+            payload: { _id: partner._id, name: partner.name, avatar_image: partner.avatar_image },
+        });
+        chatDispatch({ payload: true, type: "SET_IS_CALLER" });
+
+        history.push("/video-call");
+    };
+
     useEffect(() => {
         if (messageScroll.current) {
             messageScroll.current.scrollTo(0, 0);
@@ -179,9 +191,11 @@ const Messenger = () => {
                                 {chatRoomSelected.name}
                             </Typography>
                         </div>
-                        <IconButton color="primary" onClick={() => history.push("/video-call")}>
-                            <Phone />
-                        </IconButton>
+                        {chatRoomSelected.members.length === 2 && (
+                            <IconButton color="primary" onClick={handleMakePhoneCall}>
+                                <Phone />
+                            </IconButton>
+                        )}
                     </Paper>
                     <ChatRoomMembers
                         isOpen={isOpenGroupMembers}

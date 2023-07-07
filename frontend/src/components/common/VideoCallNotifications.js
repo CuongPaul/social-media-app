@@ -15,7 +15,7 @@ const VideoCallNotifications = () => {
             onClick={() => history.push("/video-call")}
             style={{ zIndex: 9999, right: "50px", bottom: "25px", position: "fixed" }}
         >
-            {videoCall.sender.name}
+            {videoCall.partner.name}
         </div>
     );
 };

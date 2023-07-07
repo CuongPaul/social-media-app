@@ -164,6 +164,11 @@ const App = () => {
                 userDispatch({ payload: _id, type: "REMOVE_FRIEND_ONLINE" });
             });
 
+            socketIO.current.on("phone-call-incoming", (sender) => {
+                chatDispatch({ payload: sender, type: "SET_PARTNER_VIDEO_CALL" });
+                chatDispatch({ payload: false, type: "SET_IS_CALLER" });
+            });
+
             socketIO.current.on("new-notification", (notification) => {
                 uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
             });
@@ -213,13 +218,6 @@ const App = () => {
                 userDispatch({ payload: friend_request_id, type: "ACCEPT_FRIEND_REQUEST" });
             });
 
-            socketIO.current.on("phone-call-incoming", ({ sender, sender_signal_data }) => {
-                chatDispatch({
-                    type: "PHONE_CALL_INCOMING",
-                    payload: { sender, sender_signal_data },
-                });
-            });
-
             socketIO.current.on("add-socket-for-user-online", ({ _id, socket }) => {
                 userDispatch({ payload: { _id, socket }, type: "ADD_SOCKET_FOR_FRIEND_ONLINE" });
             });
@@ -242,7 +240,9 @@ const App = () => {
                             <BrowserRouter>
                                 {token && <Navbar />}
                                 {uiState.alertMessage && <Notification />}
-                                {chatState.videoCall && <VideoCallNotifications />}
+                                {chatState.videoCall.isCaller === false && (
+                                    <VideoCallNotifications />
+                                )}
                                 <div
                                     style={{
                                         backgroundColor: uiState.darkMode
