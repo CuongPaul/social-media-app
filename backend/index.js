@@ -47,6 +47,8 @@ app.use("/chat-room", ChatRoomRoutes);
 app.use("/notification", NotificationRoutes);
 app.use("/friend-request", FriendRequestRoutes);
 
+app.get("/healthcheck", (_req, res) => res.send("Ok"));
+
 app.use((err, _req, res, _next) => {
     if (err instanceof ValidationError) {
         const { params, query, body } = err.details;
