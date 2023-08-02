@@ -66,7 +66,7 @@ const VideoCall = () => {
     useEffect(() => {
         if (stream && videoCall.isCaller === false) {
             setIsPartnerAnswer(true);
-            const peer = new Peer({ stream, trickle: false, initiator: true });
+            const peer = new Peer({ stream, trickle: false, initiator: false });
 
             peer.on("signal", (data) => {
                 socketIO.current.emit("answer-phone-call", {
