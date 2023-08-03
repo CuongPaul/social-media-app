@@ -1,6 +1,8 @@
 import Peer from "simple-peer";
+import { Phone } from "@material-ui/icons";
 import { useHistory } from "react-router-dom";
-import React, { useRef, useState, Fragment, useEffect, useContext } from "react";
+import { IconButton } from "@material-ui/core";
+import React, { useRef, useState, useEffect, useContext } from "react";
 
 import { UIContext, ChatContext, UserContext } from "../App";
 
@@ -17,6 +19,7 @@ const VideoCall = () => {
     const myVideo = useRef();
     const history = useHistory();
     const partnerVideo = useRef();
+    const connectionRef = useRef();
     const [stream, setStream] = useState();
     const [isPartnerAnswer, setIsPartnerAnswer] = useState(false);
 
@@ -27,7 +30,7 @@ const VideoCall = () => {
                 myVideo.current.srcObject = stream;
             });
         } else {
-            history.push("/home");
+            history.push("/messenger");
         }
     }, []);
 
@@ -66,6 +69,8 @@ const VideoCall = () => {
                     },
                 });
             });
+
+            connectionRef.current = peer;
         }
     }, [stream]);
 
@@ -93,16 +98,63 @@ const VideoCall = () => {
             peer.on("stream", (stream) => (partnerVideo.current.srcObject = stream));
 
             peer.signal(videoCall.partner.signal_data);
+
+            connectionRef.current = peer;
         }
     }, [stream]);
 
+    useEffect(() => {
+        if (stream) {
+            socketIO.current.on("end-phone-call-to-partner", () => {
+                stream.getTracks().forEach((track) => track.stop());
+
+                history.push("/messenger");
+            });
+
+            return () => {
+                stream.getTracks().forEach((track) => track.stop());
+                socketIO.current.emit("end-phone-call-when-exit-page", {
+                    receiver_id: videoCall.partner._id,
+                });
+            };
+        }
+    }, [stream]);
+
+    const handleClickEndCall = () => {
+        connectionRef.current.destroy();
+        chatDispatch({ type: "SET_INITIAL_VIDEO_CALL" });
+        stream.getTracks().forEach((track) => track.stop());
+
+        socketIO.current.emit("end-phone-call", { receiver_id: videoCall.partner._id });
+
+        history.push("/messenger");
+    };
+
     return (
-        (videoCall.me || videoCall.partner) && (
-            <Fragment>
-                <video muted autoPlay playsInline ref={myVideo} />
-                {isPartnerAnswer && <video autoPlay playsInline ref={partnerVideo} />}
-            </Fragment>
-        )
+        <div
+            style={{
+                display: "flex",
+                marginTop: "64px",
+                alignItems: "center",
+                flexDirection: "column",
+                height: `calc(100vh - 64px)`,
+                justifyContent: "space-evenly",
+            }}
+        >
+            {(videoCall.me || videoCall.partner) && (
+                <div style={{ width: "100vw", display: "flex", justifyContent: "space-evenly" }}>
+                    <video muted autoPlay playsInline ref={myVideo} />
+                    {isPartnerAnswer && <video autoPlay playsInline ref={partnerVideo} />}
+                </div>
+            )}
+            {stream && connectionRef.current && (
+                <div style={{ borderRadius: "50%", backgroundColor: "rgb(255,0,0)" }}>
+                    <IconButton color="default" onClick={handleClickEndCall}>
+                        <Phone />
+                    </IconButton>
+                </div>
+            )}
+        </div>
     );
 };
 

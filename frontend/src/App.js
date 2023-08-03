@@ -151,6 +151,10 @@ const App = () => {
                 });
             });
 
+            socketIO.current.on("end-phone-call-to-partner", () => {
+                chatDispatch({ type: "SET_INITIAL_VIDEO_CALL" });
+            });
+
             socketIO.current.on("new-message", (data) => {
                 const { chat_room, updatedAt, ...rest } = data;
 
@@ -240,9 +244,10 @@ const App = () => {
                             <BrowserRouter>
                                 {token && <Navbar />}
                                 {uiState.alertMessage && <Notification />}
-                                {chatState.videoCall.isCaller === false && (
-                                    <VideoCallNotifications />
-                                )}
+                                {chatState.videoCall.isCaller === false &&
+                                    window.location.pathname !== "/video-call" && (
+                                        <VideoCallNotifications />
+                                    )}
                                 <div
                                     style={{
                                         backgroundColor: uiState.darkMode

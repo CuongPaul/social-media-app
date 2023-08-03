@@ -172,6 +172,9 @@ export const ChatReducer = (state, action) => {
         case "SET_PARTNER_VIDEO_CALL":
             return { ...state, videoCall: { ...state.videoCall, partner: action.payload } };
 
+        case "SET_INITIAL_VIDEO_CALL":
+            return { ...state, videoCall: { me: null, partner: null, isCaller: undefined } };
+
         case "INCREASE_UNSEND_MESSAGE":
             const messagesAfterIncreaseUnsendMessage = [...state.messages];
             const chatRoomsAfterIncreaseUnsendMessage = [...state.chatRooms];
