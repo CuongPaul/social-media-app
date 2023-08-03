@@ -108,6 +108,8 @@ const Messenger = () => {
         }
     }, [messages?.length]);
 
+    useEffect(() => () => chatDispatch({ payload: null, type: "SET_CHATROOM_SELECTED" }), []);
+
     return (
         <Grid
             style={{
