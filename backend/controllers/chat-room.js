@@ -267,7 +267,7 @@ const searchChatRoomsController = async (req, res) => {
         const count = await ChatRoom.countDocuments(query);
 
         const chatRoomsData = chatRooms.map((item) => {
-            const { name, admin, members, is_public, avatar_image } = item;
+            const { _id, name, admin, members, is_public, avatar_image } = item;
 
             const isTwoPeopleChatRoom =
                 !is_public &&
