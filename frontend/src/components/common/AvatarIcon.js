@@ -4,6 +4,8 @@ import { Avatar, Typography } from "@material-ui/core";
 import generateColor from "../../utils/generate-color";
 
 const AvatarIcon = ({
+    style,
+    onClick,
     variant,
     imageUrl,
     text = "?",
@@ -14,8 +16,10 @@ const AvatarIcon = ({
     return (
         <Avatar
             alt={""}
+            onClick={onClick}
             variant={imageUrl ? variant : "circular"} // If imageUrl === "" => Text avatar => Avatar shape alaways is circl. On the other hand shape of avatar dependent value of variable variant
             style={{
+                ...style,
                 backgroundColor: generateColor(text),
                 width: variant === "square" && imageUrl ? "100%" : size,
                 height: variant === "square" && imageUrl ? "100%" : size,

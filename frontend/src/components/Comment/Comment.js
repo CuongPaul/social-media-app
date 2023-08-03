@@ -10,6 +10,7 @@ import {
     ListItemText,
     ListItemAvatar,
 } from "@material-ui/core";
+import { Link } from "react-router-dom";
 import { MoreHoriz } from "@material-ui/icons";
 import React, { useState, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -45,9 +46,12 @@ const Comment = ({ comment }) => {
                 </ListItemAvatar>
                 <ListItemText
                     primary={
-                        <Typography style={{ color: darkMode && "rgb(255,255,255)" }}>
+                        <Link
+                            style={{ textDecoration: "none" }}
+                            to={`/profile/${comment.user._id}`}
+                        >
                             {comment.user.name}
-                        </Typography>
+                        </Link>
                     }
                     secondary={
                         <div style={{ marginTop: "5px" }}>
@@ -59,12 +63,17 @@ const Comment = ({ comment }) => {
                                     controls
                                     title={""}
                                     image={comment.image}
+                                    style={{
+                                        width: "100%",
+                                        height: "100%",
+                                        borderRadius: "5px",
+                                        objectFit: "contain",
+                                    }}
                                     component={
                                         comment.image.split(".").pop().substring(0, 3) === "mp4"
                                             ? "video"
                                             : "img"
                                     }
-                                    style={{ width: "100%", height: "100%", objectFit: "contain" }}
                                 />
                             )}
                         </div>

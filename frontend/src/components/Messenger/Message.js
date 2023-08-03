@@ -9,9 +9,11 @@ import {
     Typography,
 } from "@material-ui/core";
 import moment from "moment";
+import { useHistory } from "react-router-dom";
 import { MoreHoriz } from "@material-ui/icons";
 import React, { useState, useContext } from "react";
 
+import { AvatarIcon } from "../common";
 import MessageReact from "./MessageReact";
 import { UIContext, ChatContext, UserContext } from "../../App";
 
@@ -48,6 +50,7 @@ const Message = ({ message }) => {
     } = useContext(UserContext);
 
     const classes = useStyles();
+    const history = useHistory();
     const [anchorEl, setAnchorEl] = useState(null);
     const [isShowActions, setIsShowActions] = useState(false);
 
@@ -64,12 +67,21 @@ const Message = ({ message }) => {
             onMouseEnter={() => setIsShowActions(true)}
             onMouseLeave={() => setIsShowActions(false)}
             style={{
+                display: "flex",
                 marginTop: "24px",
-                display: isSender && "flex",
-                alignItems: isSender && "center",
+                alignItems: "center",
                 flexDirection: isSender && "row-reverse",
             }}
         >
+            {!isSender && (
+                <div style={{ marginRight: "10px" }}>
+                    <AvatarIcon
+                        style={{ cursor: "pointer" }}
+                        imageUrl={message.sender.avatar_image}
+                        onClick={() => history.push(`/profile/${message.sender._id}`)}
+                    />
+                </div>
+            )}
             <Paper
                 style={{
                     position: "relative",

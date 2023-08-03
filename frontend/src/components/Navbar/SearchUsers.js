@@ -35,6 +35,13 @@ const SearchUsers = () => {
 
     const { isLoading, handleSearchUsers } = useSearch();
 
+    const handleCloseDialog = () => {
+        setPage(1);
+        setUsers([]);
+        setIsOpen(false);
+        setSearchValue("");
+    };
+
     const handleScroll = async (e) => {
         const { scrollTop, clientHeight, scrollHeight } = e.target;
 
@@ -67,10 +74,10 @@ const SearchUsers = () => {
                     <Search />
                 </IconButton>
             </Typography>
-            <Dialog fullWidth open={isOpen} onClose={() => setIsOpen(false)}>
+            <Dialog fullWidth open={isOpen} onClose={handleCloseDialog}>
                 <CardHeader
                     action={
-                        <IconButton onClick={() => setIsOpen(false)}>
+                        <IconButton onClick={handleCloseDialog}>
                             <Close />
                         </IconButton>
                     }
@@ -143,7 +150,7 @@ const SearchUsers = () => {
                                 <ListItem
                                     component={Link}
                                     to={`/profile/${user._id}`}
-                                    onClick={() => setIsOpen(false)}
+                                    onClick={handleCloseDialog}
                                 >
                                     <ListItemIcon>
                                         <AvatarIcon text={user.name} imageUrl={user.avatar_image} />
