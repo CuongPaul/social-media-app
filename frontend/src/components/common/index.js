@@ -7,6 +7,7 @@ import FilesUpload from "./FilesUpload";
 import LoadingIcon from "./LoadingIcon";
 import Notification from "./Notification";
 import ButtonGroupUserActions from "./ButtonGroupUserActions";
+import VideoCallNotifications from "./VideoCallNotifications";
 
 export {
     Emoji,
@@ -18,4 +19,5 @@ export {
     LoadingIcon,
     Notification,
     ButtonGroupUserActions,
+    VideoCallNotifications,
 };

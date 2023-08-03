@@ -1,6 +1,7 @@
+import { Phone } from "@material-ui/icons";
 import { useHistory } from "react-router-dom";
 import React, { useRef, useState, useEffect, useContext } from "react";
-import { Grid, List, Paper, Avatar, Typography } from "@material-ui/core";
+import { Grid, List, Paper, Avatar, Typography, IconButton } from "@material-ui/core";
 
 import callApi from "../api";
 import {
@@ -81,6 +82,18 @@ const Messenger = () => {
                 });
             }
         }
+    };
+
+    const handleMakePhoneCall = () => {
+        const partner = chatRoomSelected.members.find((item) => item._id !== currentUser._id);
+
+        chatDispatch({
+            type: "SET_PARTNER_VIDEO_CALL",
+            payload: { _id: partner._id, name: partner.name, avatar_image: partner.avatar_image },
+        });
+        chatDispatch({ payload: true, type: "SET_IS_CALLER" });
+
+        history.push("/video-call");
     };
 
     useEffect(() => {
@@ -178,6 +191,11 @@ const Messenger = () => {
                                 {chatRoomSelected.name}
                             </Typography>
                         </div>
+                        {chatRoomSelected.members.length === 2 && (
+                            <IconButton color="primary" onClick={handleMakePhoneCall}>
+                                <Phone />
+                            </IconButton>
+                        )}
                     </Paper>
                     <ChatRoomMembers
                         isOpen={isOpenGroupMembers}
