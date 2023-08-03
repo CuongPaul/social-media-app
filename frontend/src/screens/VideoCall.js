@@ -1,4 +1,5 @@
 import Peer from "simple-peer";
+import { useHistory } from "react-router-dom";
 import React, { useRef, useState, Fragment, useEffect, useContext } from "react";
 
 import { UIContext, ChatContext, UserContext } from "../App";
@@ -14,15 +15,20 @@ const VideoCall = () => {
     const { socketIO } = useContext(UIContext);
 
     const myVideo = useRef();
+    const history = useHistory();
     const partnerVideo = useRef();
     const [stream, setStream] = useState();
     const [isPartnerAnswer, setIsPartnerAnswer] = useState(false);
 
     useEffect(() => {
-        navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((stream) => {
-            setStream(stream);
-            myVideo.current.srcObject = stream;
-        });
+        if (videoCall.me || videoCall.partner) {
+            navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((stream) => {
+                setStream(stream);
+                myVideo.current.srcObject = stream;
+            });
+        } else {
+            history.push("/home");
+        }
     }, []);
 
     useEffect(() => {
@@ -91,10 +97,12 @@ const VideoCall = () => {
     }, [stream]);
 
     return (
-        <Fragment>
-            <video muted autoPlay playsInline ref={myVideo} />
-            {isPartnerAnswer && <video autoPlay playsInline ref={partnerVideo} />}
-        </Fragment>
+        (videoCall.me || videoCall.partner) && (
+            <Fragment>
+                <video muted autoPlay playsInline ref={myVideo} />
+                {isPartnerAnswer && <video autoPlay playsInline ref={partnerVideo} />}
+            </Fragment>
+        )
     );
 };
 
