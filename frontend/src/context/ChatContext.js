@@ -5,6 +5,7 @@ export const initialChatState = {
     chatRooms: [],
     messageSelected: null,
     chatRoomSelected: null,
+    videoCall: { me: null, partner: null, isCaller: undefined },
 };
 
 export const ChatReducer = (state, action) => {
@@ -70,6 +71,9 @@ export const ChatReducer = (state, action) => {
 
         case "SET_CHATROOMS":
             return { ...state, chatRooms: action.payload };
+
+        case "SET_IS_CALLER":
+            return { ...state, videoCall: { ...state.videoCall, isCaller: action.payload } };
 
         case "SET_NEW_ADMIN":
             const chatRoomsAfterSetNewAdmin = [...state.chatRooms];
@@ -141,6 +145,9 @@ export const ChatReducer = (state, action) => {
                         : state.chatRoomSelected,
             };
 
+        case "SET_MY_VIDEO_CALL":
+            return { ...state, videoCall: { ...state.videoCall, me: action.payload } };
+
         case "SET_MESSAGE_SELECTED":
             return { ...state, messageSelected: action.payload };
 
@@ -161,6 +168,9 @@ export const ChatReducer = (state, action) => {
             }
 
             return { ...state, chatRoomSelected: action.payload };
+
+        case "SET_PARTNER_VIDEO_CALL":
+            return { ...state, videoCall: { ...state.videoCall, partner: action.payload } };
 
         case "INCREASE_UNSEND_MESSAGE":
             const messagesAfterIncreaseUnsendMessage = [...state.messages];

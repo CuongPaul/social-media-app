@@ -60,6 +60,22 @@ const socketServer = (io) => {
                 }
             }
         });
+
+        socket.on("make-phone-call", async ({ sender, receiver_id }) => {
+            const sockets = await redisClient.LRANGE(`socket-io:${receiver_id}`, 0, -1);
+
+            for (const socketId of sockets) {
+                io.to(socketId).emit("phone-call-incoming", sender);
+            }
+        });
+
+        socket.on("answer-phone-call", async ({ called_by_user, receiver_signal_data }) => {
+            const sockets = await redisClient.LRANGE(`socket-io:${called_by_user}`, 0, -1);
+
+            for (const socketId of sockets) {
+                io.to(socketId).emit("receiver-answer-phone-call", receiver_signal_data);
+            }
+        });
     });
 };
 
