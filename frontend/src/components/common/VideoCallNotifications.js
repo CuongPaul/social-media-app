@@ -31,7 +31,7 @@ const VideoCallNotifications = () => {
             >
                 <div className="icon">
                     <AvatarIcon
-                        size="50px"
+                        size="55px"
                         text={videoCall.partner.name}
                         imageUrl={videoCall.partner.avatar_image}
                     />
