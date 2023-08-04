@@ -145,6 +145,7 @@ const ChatRoomMembers = ({ isOpen, setIsOpen }) => {
                                     members: membersSelected.map((item) => item._id),
                                 })
                             }
+                            disabled={chatRoomSelected.members.length - membersSelected.length < 3}
                         >
                             Remove
                         </Button>

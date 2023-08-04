@@ -106,6 +106,9 @@ const leaveChatRoomController = async (req, res) => {
     try {
         const chatRoom = await ChatRoom.findById(chatRoomId);
 
+        if (chatRoom.members.length <= 3) {
+            return res.status(400).json({ message: "Minimum 3 members" });
+        }
         if (!chatRoom) {
             return res.status(400).json({ message: "Group doesn't exist" });
         }
@@ -515,6 +518,10 @@ const removeMembersFromChatRoomController = async (req, res) => {
         }
 
         const { name, admin, is_public, avatar_image, members: chatRoomMembers } = chatRoom;
+
+        if (chatRoomMembers.length - members.length < 3) {
+            return res.status(400).json({ message: "Minimum 3 members" });
+        }
 
         const isTwoPeopleChatRoom =
             !is_public &&

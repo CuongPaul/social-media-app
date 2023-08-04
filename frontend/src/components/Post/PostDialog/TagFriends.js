@@ -14,15 +14,14 @@ import {
     ListItemText,
     DialogContent,
     InputAdornment,
-    CircularProgress,
 } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import React, { useState, Fragment } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faUserTag } from "@fortawesome/free-solid-svg-icons";
 
-import { AvatarIcon } from "../../common";
 import { useSearch } from "../../../hooks";
+import { AvatarIcon, LoadingIcon } from "../../common";
 
 const TagFriends = ({ tagFriends, setTagFriends }) => {
     const [page, setPage] = useState(1);
@@ -124,18 +123,10 @@ const TagFriends = ({ tagFriends, setTagFriends }) => {
                             color="primary"
                             variant="contained"
                             disabled={isLoading}
-                            onClick={() => handleSearchFriends({ setFriends, name: searchValue })}
                             style={{ flex: 1, width: "100%", borderRadius: "5px" }}
+                            onClick={() => handleSearchFriends({ setFriends, name: searchValue })}
                         >
-                            {isLoading ? (
-                                <CircularProgress
-                                    size={25}
-                                    variant="indeterminate"
-                                    style={{ color: "rgb(255,255,255)" }}
-                                />
-                            ) : (
-                                "Search"
-                            )}
+                            <LoadingIcon text={"Search"} isLoading={isLoading} />
                         </Button>
                     </div>
                     <List>
