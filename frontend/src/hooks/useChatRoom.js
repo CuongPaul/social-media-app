@@ -181,6 +181,7 @@ const useChatRoom = () => {
                     members: chatRoomMembers,
                 },
             });
+            chatDispatch({ payload: [], type: "SET_MESSAGES" });
             chatDispatch({ payload: data, type: "ADD_CHATROOM" });
             chatDispatch({ payload: data, type: "SET_CHATROOM_SELECTED" });
 
