@@ -40,7 +40,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const Message = ({ message }) => {
+const Message = ({ message, isShowAvatar }) => {
     const {
         uiState: { darkMode },
     } = useContext(UIContext);
@@ -68,13 +68,15 @@ const Message = ({ message }) => {
             onMouseLeave={() => setIsShowActions(false)}
             style={{
                 display: "flex",
-                marginTop: "24px",
                 alignItems: "center",
                 flexDirection: isSender && "row-reverse",
+                marginTop: isShowAvatar ? "30px" : "6px",
             }}
         >
             {!isSender && (
-                <div style={{ marginRight: "10px" }}>
+                <div
+                    style={{ marginRight: "10px", visibility: isShowAvatar ? "visible" : "hidden" }}
+                >
                     <AvatarIcon
                         text={message.sender.name}
                         style={{ cursor: "pointer" }}

@@ -217,9 +217,35 @@ const Messenger = () => {
                             backgroundColor: darkMode && "rgb(36,37,38)",
                         }}
                     >
-                        {messages?.map((message) => (
-                            <Message key={message._id} message={message} />
-                        ))}
+                        {messages?.map((message, index) => {
+                            // Beacause list message is reversed so preMessage = messages[index + 1] and nextMessage = messages[index - 1]
+                            const preMessage = messages[index + 1];
+                            const nextMessage = messages[index - 1];
+
+                            let isShowAvatar = false;
+
+                            const isFirstMessage = !Boolean(preMessage);
+                            const isLatestMessage =
+                                preMessage &&
+                                !nextMessage &&
+                                message.sender._id !== preMessage.sender._id;
+                            const isMiddleMessage =
+                                preMessage &&
+                                nextMessage &&
+                                message.sender._id !== preMessage.sender._id;
+
+                            if (isFirstMessage || isMiddleMessage || isLatestMessage) {
+                                isShowAvatar = true;
+                            }
+
+                            return (
+                                <Message
+                                    key={message._id}
+                                    message={message}
+                                    isShowAvatar={isShowAvatar}
+                                />
+                            );
+                        })}
                     </Paper>
                     <MessageInput chatRoomId={chatRoomSelected._id} />
                 </Grid>
