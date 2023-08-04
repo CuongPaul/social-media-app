@@ -76,6 +76,7 @@ const Message = ({ message }) => {
             {!isSender && (
                 <div style={{ marginRight: "10px" }}>
                     <AvatarIcon
+                        text={message.sender.name}
                         style={{ cursor: "pointer" }}
                         imageUrl={message.sender.avatar_image}
                         onClick={() => history.push(`/profile/${message.sender._id}`)}

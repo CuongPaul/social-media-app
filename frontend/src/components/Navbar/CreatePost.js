@@ -18,10 +18,7 @@ const CreatePost = () => {
     return (
         <Fragment>
             <IconButton
-                onClick={() => {
-                    setIsOpen(true);
-                    history.push("/home");
-                }}
+                onClick={() => setIsOpen(true)}
                 style={{
                     marginLeft: "32px",
                     color: darkMode ? "rgb(227,229,233)" : "rgb(5,5,5)",

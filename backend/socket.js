@@ -61,6 +61,22 @@ const socketServer = (io) => {
             }
         });
 
+        socket.on("end-phone-call", async ({ receiver_id }) => {
+            const sockets = await redisClient.LRANGE(`socket-io:${receiver_id}`, 0, -1);
+
+            for (const socketId of sockets) {
+                io.to(socketId).emit("end-phone-call-to-partner");
+            }
+        });
+
+        socket.on("end-phone-call-when-exit-page", async ({ receiver_id }) => {
+            const sockets = await redisClient.LRANGE(`socket-io:${receiver_id}`, 0, -1);
+
+            for (const socketId of sockets) {
+                io.to(socketId).emit("end-phone-call-to-partner");
+            }
+        });
+
         socket.on("make-phone-call", async ({ sender, receiver_id }) => {
             const sockets = await redisClient.LRANGE(`socket-io:${receiver_id}`, 0, -1);
 
