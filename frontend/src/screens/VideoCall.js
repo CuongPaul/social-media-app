@@ -143,8 +143,21 @@ const VideoCall = () => {
         >
             {(videoCall.me || videoCall.partner) && (
                 <div style={{ width: "100vw", display: "flex", justifyContent: "space-evenly" }}>
-                    <video muted autoPlay playsInline ref={myVideo} />
-                    {isPartnerAnswer && <video autoPlay playsInline ref={partnerVideo} />}
+                    <video
+                        muted
+                        autoPlay
+                        playsInline
+                        ref={myVideo}
+                        style={{ borderRadius: "10px" }}
+                    />
+                    {isPartnerAnswer && (
+                        <video
+                            autoPlay
+                            playsInline
+                            ref={partnerVideo}
+                            style={{ borderRadius: "10px" }}
+                        />
+                    )}
                 </div>
             )}
             {stream && connectionRef.current && (

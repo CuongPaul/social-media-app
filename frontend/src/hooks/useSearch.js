@@ -2,6 +2,7 @@ import { useState, useContext } from "react";
 
 import callApi from "../api";
 import { UIContext } from "../App";
+import uniqueArray from "../utils/unique-array";
 
 const useSearch = () => {
     const { uiDispatch } = useContext(UIContext);
@@ -41,7 +42,7 @@ const useSearch = () => {
                 url: "/user/search-friends",
             });
 
-            setFriends((pre) => [...pre, ...data.rows]);
+            setFriends((pre) => uniqueArray([...pre, ...data.rows]));
 
             setIsLoading(false);
         } catch (err) {
