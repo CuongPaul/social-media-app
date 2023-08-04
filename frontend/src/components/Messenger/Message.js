@@ -70,7 +70,7 @@ const Message = ({ message, isShowAvatar }) => {
                 display: "flex",
                 alignItems: "center",
                 flexDirection: isSender && "row-reverse",
-                marginTop: isShowAvatar ? "30px" : "6px",
+                marginTop: isShowAvatar ? "30px" : "15px",
             }}
         >
             {!isSender && (

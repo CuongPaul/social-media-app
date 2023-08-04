@@ -161,9 +161,9 @@ const MessageReact = ({ message }) => {
     return (
         <div
             style={{
-                bottom: "-14px",
+                bottom: "-10px",
                 position: "absolute",
-                left: isSender && "-14px",
+                left: isSender && "-10px",
                 right: !isSender && "-14px",
             }}
         >
