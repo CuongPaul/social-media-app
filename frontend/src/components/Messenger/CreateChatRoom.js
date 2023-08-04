@@ -47,7 +47,7 @@ const ChatRoomCreate = () => {
 
         const isBottom = scrollHeight - scrollTop === clientHeight;
 
-        if (isBottom) {
+        if (isBottom && searchValue) {
             setPage(page + 1);
             handleSearchFriends({ setFriends, page: page + 1, name: searchValue });
         }
@@ -153,8 +153,8 @@ const ChatRoomCreate = () => {
                         <Button
                             color="primary"
                             variant="contained"
-                            disabled={isLoadingChatRoom}
                             style={{ flex: 1, borderRadius: "5px" }}
+                            disabled={isLoadingChatRoom || chatRoomMembers.length < 2}
                             onClick={() => {
                                 handleCreateChatRoom({
                                     isPublic,
