@@ -7,6 +7,7 @@ import {
     ListItemText,
     ListItemAvatar,
 } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
 import { MoreHoriz } from "@material-ui/icons";
 import React, { useMemo, useState, useContext, useEffect } from "react";
 
@@ -26,6 +27,7 @@ const ChatRooms = ({ chatRoom, setIsOpenGroupMembers }) => {
         userState: { currentUser, friendsOnline },
     } = useContext(UserContext);
 
+    const history = useHistory();
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpenActions, setIsOpenActions] = useState(false);
     const [isOpenAddMembers, setIsOpenAddMembers] = useState(false);
@@ -57,6 +59,7 @@ const ChatRooms = ({ chatRoom, setIsOpenGroupMembers }) => {
                 button
                 onClick={() => handleSelectChatRoom(chatRoom)}
                 style={{
+                    margin: "5px 0",
                     borderRadius: "10px",
                     backgroundColor: chatRoomSelected?._id === chatRoom._id && "rgb(245,245,245)",
                 }}
@@ -88,26 +91,39 @@ const ChatRooms = ({ chatRoom, setIsOpenGroupMembers }) => {
                         onClose={() => setAnchorEl(null)}
                     >
                         {chatRoom.members.length === 2 && (
-                            <MenuItem
-                                onClick={() => {
-                                    const reciver = chatRoom.members.find(
-                                        (item) => item._id !== currentUser._id
-                                    );
+                            <>
+                                <MenuItem
+                                    onClick={() => {
+                                        const reciver = chatRoom.members.find(
+                                            (item) => item._id !== currentUser._id
+                                        );
 
-                                    if (isBlockUser) {
-                                        handleUnblockUser(reciver._id);
-                                        chatDispatch({ type: "SET_TYPE_BLOCK" });
-                                    } else {
-                                        handleBlockUser(reciver._id);
-                                        chatDispatch({
-                                            type: "SET_TYPE_BLOCK",
-                                            payload: "block_reciver",
-                                        });
-                                    }
-                                }}
-                            >
-                                <Typography>{isBlockUser ? "Unblock" : "Block"}</Typography>
-                            </MenuItem>
+                                        if (isBlockUser) {
+                                            handleUnblockUser(reciver._id);
+                                            chatDispatch({ type: "SET_TYPE_BLOCK" });
+                                        } else {
+                                            handleBlockUser(reciver._id);
+                                            chatDispatch({
+                                                type: "SET_TYPE_BLOCK",
+                                                payload: "block_reciver",
+                                            });
+                                        }
+                                    }}
+                                >
+                                    <Typography>{isBlockUser ? "Unblock" : "Block"}</Typography>
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={() => {
+                                        const friend = chatRoom.members.find(
+                                            (item) => item._id !== currentUser._id
+                                        );
+
+                                        history.push(`/profile/${friend._id}`);
+                                    }}
+                                >
+                                    <Typography>View profile</Typography>
+                                </MenuItem>
+                            </>
                         )}
                         {chatRoom.admin !== currentUser?._id && chatRoom.members.length > 2 && (
                             <div>
@@ -128,6 +144,14 @@ const ChatRooms = ({ chatRoom, setIsOpenGroupMembers }) => {
                             <div>
                                 <MenuItem onClick={() => handleDeleteChatRoom(chatRoom._id)}>
                                     <Typography>Delete</Typography>
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={() => {
+                                        setAnchorEl(null);
+                                        setIsOpenGroupMembers(true);
+                                    }}
+                                >
+                                    <Typography>Members</Typography>
                                 </MenuItem>
                                 <MenuItem
                                     onClick={() => {

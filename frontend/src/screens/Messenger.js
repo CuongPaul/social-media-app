@@ -1,7 +1,5 @@
-import { Phone } from "@material-ui/icons";
-import { useHistory } from "react-router-dom";
 import React, { useRef, useState, useEffect, useContext } from "react";
-import { Grid, List, Paper, Avatar, Typography, IconButton } from "@material-ui/core";
+import { Grid, List, Paper, Avatar, Typography } from "@material-ui/core";
 
 import callApi from "../api";
 import {
@@ -13,8 +11,7 @@ import {
     SearchChatRooms,
     ChatRoomMembers,
 } from "../components/Messenger";
-import { AvatarIcon } from "../components/common";
-import { UIContext, ChatContext, UserContext } from "../App";
+import { UIContext, ChatContext } from "../App";
 
 const Messenger = () => {
     const {
@@ -22,14 +19,10 @@ const Messenger = () => {
         uiState: { darkMode },
     } = useContext(UIContext);
     const {
-        userState: { currentUser },
-    } = useContext(UserContext);
-    const {
         chatDispatch,
         chatState: { messages, chatRooms, chatRoomSelected },
     } = useContext(ChatContext);
 
-    const history = useHistory();
     const messageScroll = useRef(null);
     const chatRoomScroll = useRef(null);
     const [messagePage, setMessagePage] = useState(1);
@@ -82,18 +75,6 @@ const Messenger = () => {
                 });
             }
         }
-    };
-
-    const handleMakePhoneCall = () => {
-        const partner = chatRoomSelected.members.find((item) => item._id !== currentUser._id);
-
-        chatDispatch({
-            type: "SET_PARTNER_VIDEO_CALL",
-            payload: { _id: partner._id, name: partner.name, avatar_image: partner.avatar_image },
-        });
-        chatDispatch({ payload: true, type: "SET_IS_CALLER" });
-
-        history.push("/video-call");
     };
 
     useEffect(() => {
@@ -160,45 +141,6 @@ const Messenger = () => {
                     md={9}
                     style={{ margin: "20px", display: "flex", flexDirection: "column" }}
                 >
-                    <Paper
-                        elevation={0}
-                        style={{
-                            display: "flex",
-                            padding: "16px",
-                            alignItems: "center",
-                            borderRadius: "10px",
-                            justifyContent: "space-between",
-                            backgroundColor: darkMode && "rgb(36,37,38)",
-                        }}
-                    >
-                        <div
-                            onClick={() => {
-                                if (chatRoomSelected.members.length === 2) {
-                                    const friend = chatRoomSelected.members.find(
-                                        (item) => item._id !== currentUser._id
-                                    );
-
-                                    history.push(`/profile/${friend._id}`);
-                                } else {
-                                    setIsOpenGroupMembers(true);
-                                }
-                            }}
-                            style={{ display: "flex", cursor: "pointer", alignItems: "center" }}
-                        >
-                            <AvatarIcon
-                                text={chatRoomSelected.name}
-                                imageUrl={chatRoomSelected.avatar_image}
-                            />
-                            <Typography style={{ marginLeft: "16px" }}>
-                                {chatRoomSelected.name}
-                            </Typography>
-                        </div>
-                        {chatRoomSelected.members.length === 2 && (
-                            <IconButton color="primary" onClick={handleMakePhoneCall}>
-                                <Phone />
-                            </IconButton>
-                        )}
-                    </Paper>
                     <ChatRoomMembers
                         isOpen={isOpenGroupMembers}
                         setIsOpen={setIsOpenGroupMembers}
@@ -209,8 +151,8 @@ const Messenger = () => {
                         style={{
                             flex: 1,
                             display: "flex",
-                            margin: "10px 0px",
                             borderRadius: "10px",
+                            marginBottom: "10px",
                             padding: "20px 30px ",
                             overflow: "hidden auto",
                             flexDirection: "column-reverse",

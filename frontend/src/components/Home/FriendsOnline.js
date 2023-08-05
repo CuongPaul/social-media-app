@@ -1,16 +1,18 @@
 import {
     List,
     ListItem,
+    IconButton,
     Typography,
     ListItemText,
     ListSubheader,
     ListItemAvatar,
 } from "@material-ui/core";
-import { Link } from "react-router-dom";
-import React, { useContext } from "react";
+import { Phone } from "@material-ui/icons";
+import { useHistory } from "react-router-dom";
+import React, { useState, useContext } from "react";
 
-import { UserContext } from "../../App";
 import { AvatarIcon, BadgeStyled } from "../common";
+import { ChatContext, UserContext } from "../../App";
 
 const Subheader = () => {
     return (
@@ -24,6 +26,20 @@ const Subheader = () => {
 
 const FriendsOnline = () => {
     const { userState } = useContext(UserContext);
+    const { chatDispatch } = useContext(ChatContext);
+
+    const history = useHistory();
+    const [isShowCallVideo, setIsShowCallVideo] = useState(false);
+
+    const handleMakePhoneCall = (user) => {
+        chatDispatch({
+            type: "SET_PARTNER_VIDEO_CALL",
+            payload: { _id: user._id, name: user.name, avatar_image: user.avatar_image },
+        });
+        chatDispatch({ payload: true, type: "SET_IS_CALLER" });
+
+        history.push("/video-call");
+    };
 
     return (
         <div style={{ height: "90vh", margin: "10px", overflow: "auto" }}>
@@ -32,16 +48,30 @@ const FriendsOnline = () => {
                     <ListItem
                         button
                         key={user._id}
-                        component={Link}
-                        to={`/profile/${user._id}`}
-                        style={{ borderRadius: "10px" }}
+                        style={{
+                            display: "flex",
+                            borderRadius: "10px",
+                            justifyContent: "space-between",
+                        }}
+                        onMouseEnter={() => setIsShowCallVideo(true)}
+                        onMouseLeave={() => setIsShowCallVideo(false)}
                     >
-                        <ListItemAvatar>
-                            <BadgeStyled isActive={true}>
-                                <AvatarIcon text={user.name} imageUrl={user.avatar_image} />
-                            </BadgeStyled>
-                        </ListItemAvatar>
-                        <ListItemText primary={user.name} />
+                        <div
+                            style={{ display: "flex", alignItems: "center" }}
+                            onClick={() => history.push(`/profile/${user._id}`)}
+                        >
+                            <ListItemAvatar>
+                                <BadgeStyled isActive={true}>
+                                    <AvatarIcon text={user.name} imageUrl={user.avatar_image} />
+                                </BadgeStyled>
+                            </ListItemAvatar>
+                            <ListItemText primary={user.name} style={{ marginLeft: "10px" }} />
+                        </div>
+                        {isShowCallVideo && (
+                            <IconButton color="primary" onClick={() => handleMakePhoneCall(user)}>
+                                <Phone />
+                            </IconButton>
+                        )}
                     </ListItem>
                 ))}
             </List>
