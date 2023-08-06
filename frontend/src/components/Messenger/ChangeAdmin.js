@@ -19,19 +19,19 @@ import React, { useState, useEffect, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { useChatRoom } from "../../hooks";
-import { AvatarIcon, LoadingIcon } from "../common";
 import { UIContext, ChatContext, UserContext } from "../../App";
+import { AvatarIcon, BadgeStyled, LoadingIcon } from "../common";
 
 const ChangeAdmin = ({ isOpen, setIsOpen }) => {
     const {
         uiState: { darkMode },
     } = useContext(UIContext);
     const {
-        userState: { currentUser },
-    } = useContext(UserContext);
-    const {
         chatState: { chatRoomSelected },
     } = useContext(ChatContext);
+    const {
+        userState: { currentUser, friendsOnline },
+    } = useContext(UserContext);
 
     const [members, setMembers] = useState([]);
     const [searchValue, setSearchValue] = useState("");
@@ -122,9 +122,18 @@ const ChangeAdmin = ({ isOpen, setIsOpen }) => {
                                 }
                             >
                                 <ListItemIcon>
-                                    <AvatarIcon text={member.name} imageUrl={member.avatar_image} />
+                                    <BadgeStyled
+                                        isActive={friendsOnline.some(
+                                            (item) => item._id === member._id
+                                        )}
+                                    >
+                                        <AvatarIcon
+                                            text={member.name}
+                                            imageUrl={member.avatar_image}
+                                        />
+                                    </BadgeStyled>
                                 </ListItemIcon>
-                                <ListItemText style={{ marginLeft: "32px" }}>
+                                <ListItemText style={{ marginLeft: "16px" }}>
                                     <Typography
                                         style={{
                                             fontWeight: 700,

@@ -20,8 +20,8 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import React, { useState, useEffect, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { AvatarIcon } from "../common";
 import { useChatRoom } from "../../hooks";
+import { AvatarIcon, BadgeStyled } from "../common";
 import { UIContext, ChatContext, UserContext } from "../../App";
 
 const ChatRoomMembers = ({ isOpen, setIsOpen }) => {
@@ -29,7 +29,7 @@ const ChatRoomMembers = ({ isOpen, setIsOpen }) => {
         uiState: { darkMode },
     } = useContext(UIContext);
     const {
-        userState: { currentUser },
+        userState: { currentUser, friendsOnline },
     } = useContext(UserContext);
     const {
         chatState: { chatRooms, chatRoomSelected },
@@ -204,9 +204,18 @@ const ChatRoomMembers = ({ isOpen, setIsOpen }) => {
                         >
                             <ListItem onClick={() => handleClickMemberItem(member)}>
                                 <ListItemIcon>
-                                    <AvatarIcon text={member.name} imageUrl={member.avatar_image} />
+                                    <BadgeStyled
+                                        isActive={friendsOnline.some(
+                                            (item) => item._id === member._id
+                                        )}
+                                    >
+                                        <AvatarIcon
+                                            text={member.name}
+                                            imageUrl={member.avatar_image}
+                                        />
+                                    </BadgeStyled>
                                 </ListItemIcon>
-                                <ListItemText style={{ marginLeft: "32px" }}>
+                                <ListItemText style={{ marginLeft: "16px" }}>
                                     <Typography
                                         style={{
                                             fontWeight: 700,
