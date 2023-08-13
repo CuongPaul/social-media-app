@@ -24,8 +24,7 @@ const Subheader = () => {
     );
 };
 
-const FriendsOnline = () => {
-    const { userState } = useContext(UserContext);
+const FriendsOnlineItem = ({ user }) => {
     const { chatDispatch } = useContext(ChatContext);
 
     const history = useHistory();
@@ -42,37 +41,44 @@ const FriendsOnline = () => {
     };
 
     return (
+        <ListItem
+            button
+            style={{
+                display: "flex",
+                borderRadius: "10px",
+                justifyContent: "space-between",
+            }}
+            onMouseEnter={() => setIsShowCallVideo(true)}
+            onMouseLeave={() => setIsShowCallVideo(false)}
+        >
+            <div
+                style={{ display: "flex", alignItems: "center" }}
+                onClick={() => history.push(`/profile/${user._id}`)}
+            >
+                <ListItemAvatar>
+                    <BadgeStyled isActive={true}>
+                        <AvatarIcon text={user.name} imageUrl={user.avatar_image} />
+                    </BadgeStyled>
+                </ListItemAvatar>
+                <ListItemText primary={user.name} style={{ marginLeft: "10px" }} />
+            </div>
+            {isShowCallVideo && (
+                <IconButton color="primary" onClick={() => handleMakePhoneCall(user)}>
+                    <Phone />
+                </IconButton>
+            )}
+        </ListItem>
+    );
+};
+
+const FriendsOnline = () => {
+    const { userState } = useContext(UserContext);
+
+    return (
         <div style={{ height: "90vh", margin: "10px", overflow: "auto" }}>
             <List subheader={<Subheader />}>
                 {userState?.friendsOnline?.map((user) => (
-                    <ListItem
-                        button
-                        key={user._id}
-                        style={{
-                            display: "flex",
-                            borderRadius: "10px",
-                            justifyContent: "space-between",
-                        }}
-                        onMouseEnter={() => setIsShowCallVideo(true)}
-                        onMouseLeave={() => setIsShowCallVideo(false)}
-                    >
-                        <div
-                            style={{ display: "flex", alignItems: "center" }}
-                            onClick={() => history.push(`/profile/${user._id}`)}
-                        >
-                            <ListItemAvatar>
-                                <BadgeStyled isActive={true}>
-                                    <AvatarIcon text={user.name} imageUrl={user.avatar_image} />
-                                </BadgeStyled>
-                            </ListItemAvatar>
-                            <ListItemText primary={user.name} style={{ marginLeft: "10px" }} />
-                        </div>
-                        {isShowCallVideo && (
-                            <IconButton color="primary" onClick={() => handleMakePhoneCall(user)}>
-                                <Phone />
-                            </IconButton>
-                        )}
-                    </ListItem>
+                    <FriendsOnlineItem user={user} key={user._id} />
                 ))}
             </List>
         </div>

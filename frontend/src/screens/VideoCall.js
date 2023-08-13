@@ -113,9 +113,12 @@ const VideoCall = () => {
 
             return () => {
                 stream.getTracks().forEach((track) => track.stop());
-                socketIO.current.emit("end-phone-call-when-exit-page", {
-                    receiver_id: videoCall.partner._id,
-                });
+
+                if (videoCall.partner.signal_data) {
+                    socketIO.current.emit("end-phone-call-when-exit-page", {
+                        receiver_id: videoCall.partner._id,
+                    });
+                }
             };
         }
     }, [stream]);
@@ -125,7 +128,9 @@ const VideoCall = () => {
         chatDispatch({ type: "SET_INITIAL_VIDEO_CALL" });
         stream.getTracks().forEach((track) => track.stop());
 
-        socketIO.current.emit("end-phone-call", { receiver_id: videoCall.partner._id });
+        if (videoCall.partner.signal_data) {
+            socketIO.current.emit("end-phone-call", { receiver_id: videoCall.partner._id });
+        }
 
         history.push("/messenger");
     };

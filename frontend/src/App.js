@@ -168,11 +168,6 @@ const App = () => {
                 userDispatch({ payload: _id, type: "REMOVE_FRIEND_ONLINE" });
             });
 
-            socketIO.current.on("phone-call-incoming", (sender) => {
-                chatDispatch({ payload: sender, type: "SET_PARTNER_VIDEO_CALL" });
-                chatDispatch({ payload: false, type: "SET_IS_CALLER" });
-            });
-
             socketIO.current.on("new-notification", (notification) => {
                 uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
             });
@@ -206,6 +201,13 @@ const App = () => {
 
                 uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
                 chatDispatch({ payload: chat_room_id, type: "REMOVE_CHATROOM" });
+            });
+
+            socketIO.current.on("phone-call-incoming", (sender) => {
+                if (window.location.pathname !== "/video-call") {
+                    chatDispatch({ payload: sender, type: "SET_PARTNER_VIDEO_CALL" });
+                    chatDispatch({ payload: false, type: "SET_IS_CALLER" });
+                }
             });
 
             socketIO.current.on("user-online", ({ _id, name, sockets, avatar_image }) => {
