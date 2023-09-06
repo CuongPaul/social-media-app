@@ -11,9 +11,7 @@ Facebook clone
 
 ## Run project in local
 
--   Create file .env in fronend folder
--   Create file .env in backend folder
--   Run command `docker compose up`
+`docker compose up`
 
 ## UI library
 

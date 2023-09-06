@@ -276,7 +276,7 @@ const Friends = () => {
                             backgroundColor: "transparent",
                         }}
                     >
-                        <img alt={""} src={require("../assets/select-friends.svg")} />
+                        <img alt={""} src={require("../assets/icons/select-friends.svg")} />
                     </Avatar>
                     <Typography
                         style={{

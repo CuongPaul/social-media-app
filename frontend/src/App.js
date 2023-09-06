@@ -18,6 +18,7 @@ import { UIReducer, initialUIState } from "./context/UIContext";
 import { ChatReducer, initialChatState } from "./context/ChatContext";
 import { PostReducer, initialPostState } from "./context/PostContext";
 import { UserReducer, initialUserState } from "./context/UserContext";
+import { MessageSound, PhoneCallSound, NotificationSound } from "./assets/sounds";
 import { Loading, Notification, VideoCallNotifications } from "./components/common";
 
 export const UIContext = createContext();
@@ -37,6 +38,9 @@ const VideoCall = lazy(() => import("./screens/VideoCall"));
 const App = () => {
     const socketIO = useRef();
     const token = localStorage.getItem("token");
+    const messageAudio = new Audio(MessageSound);
+    const phoneCallAudio = new Audio(PhoneCallSound);
+    const notificationAudio = new Audio(NotificationSound);
 
     const [uiState, uiDispatch] = useReducer(UIReducer, initialUIState);
     const [chatState, chatDispatch] = useReducer(ChatReducer, initialChatState);
@@ -152,12 +156,14 @@ const App = () => {
             });
 
             socketIO.current.on("end-phone-call-to-partner", () => {
+                phoneCallAudio.loop = false;
                 chatDispatch({ type: "SET_INITIAL_VIDEO_CALL" });
             });
 
             socketIO.current.on("new-message", (data) => {
                 const { chat_room, updatedAt, ...rest } = data;
 
+                messageAudio.play();
                 chatDispatch({
                     type: "INCREASE_UNSEND_MESSAGE",
                     payload: { message: rest, chatRoomId: chat_room },
@@ -169,12 +175,14 @@ const App = () => {
             });
 
             socketIO.current.on("new-notification", (notification) => {
+                notificationAudio.play();
                 uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
             });
 
             socketIO.current.on("change-admin-chatroom", (data) => {
                 const { new_admin, notification, chat_room_id } = data;
 
+                notificationAudio.play();
                 chatDispatch({
                     type: "SET_NEW_ADMIN",
                     payload: { newAdmin: new_admin, chatRoomId: chat_room_id },
@@ -185,6 +193,7 @@ const App = () => {
             socketIO.current.on("new-chatroom", (data) => {
                 const { chat_room, notification } = data;
 
+                notificationAudio.play();
                 chatDispatch({ payload: chat_room, type: "ADD_CHATROOM" });
                 uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
             });
@@ -192,6 +201,7 @@ const App = () => {
             socketIO.current.on("update-chatroom", (data) => {
                 const { chat_room, notification } = data;
 
+                notificationAudio.play();
                 chatDispatch({ payload: chat_room, type: "UPDATE_CHATROOM" });
                 uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
             });
@@ -199,12 +209,15 @@ const App = () => {
             socketIO.current.on("delete-chatroom", (data) => {
                 const { notification, chat_room_id } = data;
 
+                notificationAudio.play();
                 uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
                 chatDispatch({ payload: chat_room_id, type: "REMOVE_CHATROOM" });
             });
 
             socketIO.current.on("phone-call-incoming", (sender) => {
                 if (window.location.pathname !== "/video-call") {
+                    // phoneCallAudio.loop = true;
+                    // phoneCallAudio.play();
                     chatDispatch({ payload: sender, type: "SET_PARTNER_VIDEO_CALL" });
                     chatDispatch({ payload: false, type: "SET_IS_CALLER" });
                 }
@@ -220,6 +233,7 @@ const App = () => {
             socketIO.current.on("accept-friend-request", (data) => {
                 const { notification, friend_request_id } = data;
 
+                notificationAudio.play();
                 uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
                 userDispatch({ payload: friend_request_id, type: "ACCEPT_FRIEND_REQUEST" });
             });
@@ -231,6 +245,7 @@ const App = () => {
             socketIO.current.on("add-incomming-friend-request", (data) => {
                 const { notification, friend_request } = data;
 
+                notificationAudio.play();
                 uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
                 userDispatch({ payload: [friend_request], type: "ADD_INCOMMING_FRIEND_REQUEST" });
             });

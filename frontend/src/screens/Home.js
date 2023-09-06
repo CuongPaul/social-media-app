@@ -64,7 +64,7 @@ const Home = () => {
                             style={{ borderRadius: "10px" }}
                         >
                             <ListItemIcon>
-                                <Avatar alt={""} src={require(`../assets/${item.icon}`)} />
+                                <Avatar alt={""} src={require(`../assets/icons/${item.icon}`)} />
                             </ListItemIcon>
                             <ListItemText primary={item.title} style={{ margin: "0px 5px" }} />
                         </ListItem>
