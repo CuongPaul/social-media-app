@@ -47,6 +47,11 @@ const App = () => {
     const [postState, postDispatch] = useReducer(PostReducer, initialPostState);
     const [userState, userDispatch] = useReducer(UserReducer, initialUserState);
 
+    const pausePhoneCallAudio = () => {
+        phoneCallAudio.pause();
+        phoneCallAudio.loop = false;
+    };
+
     const theme = useMemo(
         () =>
             createTheme({
@@ -156,7 +161,7 @@ const App = () => {
             });
 
             socketIO.current.on("end-phone-call-to-partner", () => {
-                phoneCallAudio.loop = false;
+                pausePhoneCallAudio();
                 chatDispatch({ type: "SET_INITIAL_VIDEO_CALL" });
             });
 

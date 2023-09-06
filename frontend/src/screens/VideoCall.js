@@ -30,8 +30,14 @@ const VideoCall = () => {
                 myVideo.current.srcObject = stream;
             });
         } else {
-            history.push("/messenger");
+            history.push("/home");
         }
+
+        return () => {
+            if (videoCall.partner._id) {
+                socketIO.current.emit("end-phone-call", { receiver_id: videoCall.partner._id });
+            }
+        };
     }, []);
 
     useEffect(() => {
@@ -108,7 +114,7 @@ const VideoCall = () => {
             socketIO.current.on("end-phone-call-to-partner", () => {
                 stream.getTracks().forEach((track) => track.stop());
 
-                history.push("/messenger");
+                history.push("/home");
             });
 
             return () => {
@@ -128,11 +134,11 @@ const VideoCall = () => {
         chatDispatch({ type: "SET_INITIAL_VIDEO_CALL" });
         stream.getTracks().forEach((track) => track.stop());
 
-        if (videoCall.partner.signal_data) {
+        if (videoCall.partner._id) {
             socketIO.current.emit("end-phone-call", { receiver_id: videoCall.partner._id });
         }
 
-        history.push("/messenger");
+        history.push("/home");
     };
 
     return (
