@@ -265,7 +265,7 @@ const App = () => {
                                     window.location.pathname !== "/video-call" && (
                                         <VideoCallNotifications />
                                     )}
-                                <div style={{ display: "none" }}>
+                                <iframe allow="autoplay" style={{ display: "none" }}>
                                     <audio
                                         type="audio/mpeg"
                                         src={MessageSound}
@@ -281,7 +281,7 @@ const App = () => {
                                         src={NotificationSound}
                                         id="notification-audio"
                                     />
-                                </div>
+                                </iframe>
                                 <div
                                     style={{
                                         backgroundColor: uiState.darkMode
