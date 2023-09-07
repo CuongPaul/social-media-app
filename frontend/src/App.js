@@ -14,6 +14,7 @@ import { Route, Switch, Redirect, BrowserRouter } from "react-router-dom";
 import callApi from "./api";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./utils/protected-route";
+import { playAudio, pauseAudio } from "./utils/audio";
 import { UIReducer, initialUIState } from "./context/UIContext";
 import { ChatReducer, initialChatState } from "./context/ChatContext";
 import { PostReducer, initialPostState } from "./context/PostContext";
@@ -38,19 +39,11 @@ const VideoCall = lazy(() => import("./screens/VideoCall"));
 const App = () => {
     const socketIO = useRef();
     const token = localStorage.getItem("token");
-    const messageAudio = new Audio(MessageSound);
-    const phoneCallAudio = new Audio(PhoneCallSound);
-    const notificationAudio = new Audio(NotificationSound);
 
     const [uiState, uiDispatch] = useReducer(UIReducer, initialUIState);
     const [chatState, chatDispatch] = useReducer(ChatReducer, initialChatState);
     const [postState, postDispatch] = useReducer(PostReducer, initialPostState);
     const [userState, userDispatch] = useReducer(UserReducer, initialUserState);
-
-    const pausePhoneCallAudio = () => {
-        phoneCallAudio.pause();
-        phoneCallAudio.loop = false;
-    };
 
     const theme = useMemo(
         () =>
@@ -161,18 +154,18 @@ const App = () => {
             });
 
             socketIO.current.on("end-phone-call-to-partner", () => {
-                pausePhoneCallAudio();
                 chatDispatch({ type: "SET_INITIAL_VIDEO_CALL" });
+                pauseAudio(document.getElementById("phone-call-audio"));
             });
 
             socketIO.current.on("new-message", (data) => {
                 const { chat_room, updatedAt, ...rest } = data;
 
-                messageAudio.play();
                 chatDispatch({
                     type: "INCREASE_UNSEND_MESSAGE",
                     payload: { message: rest, chatRoomId: chat_room },
                 });
+                playAudio({ audio: document.getElementById("message-audio") });
             });
 
             socketIO.current.on("user-offline", (_id) => {
@@ -180,49 +173,51 @@ const App = () => {
             });
 
             socketIO.current.on("new-notification", (notification) => {
-                notificationAudio.play();
                 uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
+                playAudio({ audio: document.getElementById("notification-audio") });
             });
 
             socketIO.current.on("change-admin-chatroom", (data) => {
                 const { new_admin, notification, chat_room_id } = data;
 
-                notificationAudio.play();
                 chatDispatch({
                     type: "SET_NEW_ADMIN",
                     payload: { newAdmin: new_admin, chatRoomId: chat_room_id },
                 });
                 uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
+                playAudio({ audio: document.getElementById("notification-audio") });
             });
 
             socketIO.current.on("new-chatroom", (data) => {
                 const { chat_room, notification } = data;
 
-                notificationAudio.play();
                 chatDispatch({ payload: chat_room, type: "ADD_CHATROOM" });
                 uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
+                playAudio({ audio: document.getElementById("notification-audio") });
             });
 
             socketIO.current.on("update-chatroom", (data) => {
                 const { chat_room, notification } = data;
 
-                notificationAudio.play();
                 chatDispatch({ payload: chat_room, type: "UPDATE_CHATROOM" });
                 uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
+                playAudio({ audio: document.getElementById("notification-audio") });
             });
 
             socketIO.current.on("delete-chatroom", (data) => {
                 const { notification, chat_room_id } = data;
 
-                notificationAudio.play();
                 uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
                 chatDispatch({ payload: chat_room_id, type: "REMOVE_CHATROOM" });
+                playAudio({ audio: document.getElementById("notification-audio") });
             });
 
             socketIO.current.on("phone-call-incoming", (sender) => {
                 if (window.location.pathname !== "/video-call") {
-                    // phoneCallAudio.loop = true;
-                    // phoneCallAudio.play();
+                    playAudio({
+                        isReplay: true,
+                        audio: document.getElementById("phone-call-audio"),
+                    });
                     chatDispatch({ payload: sender, type: "SET_PARTNER_VIDEO_CALL" });
                     chatDispatch({ payload: false, type: "SET_IS_CALLER" });
                 }
@@ -238,8 +233,8 @@ const App = () => {
             socketIO.current.on("accept-friend-request", (data) => {
                 const { notification, friend_request_id } = data;
 
-                notificationAudio.play();
                 uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
+                playAudio({ audio: document.getElementById("notification-audio") });
                 userDispatch({ payload: friend_request_id, type: "ACCEPT_FRIEND_REQUEST" });
             });
 
@@ -250,8 +245,8 @@ const App = () => {
             socketIO.current.on("add-incomming-friend-request", (data) => {
                 const { notification, friend_request } = data;
 
-                notificationAudio.play();
                 uiDispatch({ payload: notification, type: "ADD_NOTIFICATION" });
+                playAudio({ audio: document.getElementById("notification-audio") });
                 userDispatch({ payload: [friend_request], type: "ADD_INCOMMING_FRIEND_REQUEST" });
             });
         }
@@ -270,6 +265,23 @@ const App = () => {
                                     window.location.pathname !== "/video-call" && (
                                         <VideoCallNotifications />
                                     )}
+                                <div style={{ display: "none" }}>
+                                    <audio
+                                        type="audio/mpeg"
+                                        src={MessageSound}
+                                        id="message-audio"
+                                    />
+                                    <audio
+                                        type="audio/mpeg"
+                                        src={PhoneCallSound}
+                                        id="phone-call-audio"
+                                    />
+                                    <audio
+                                        type="audio/mpeg"
+                                        src={NotificationSound}
+                                        id="notification-audio"
+                                    />
+                                </div>
                                 <div
                                     style={{
                                         backgroundColor: uiState.darkMode

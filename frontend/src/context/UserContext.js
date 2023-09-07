@@ -181,9 +181,16 @@ const UserReducer = (state, action) => {
             return { ...state, sendedFriendRequests: action.payload };
 
         case "ADD_INCOMMING_FRIEND_REQUEST":
+            const incommingFriendRequestsAfterAdd = Object.values(
+                [...state.incommingFriendRequests, ...action.payload].reduce((acc, cur) => {
+                    acc[cur.sender._id] = cur;
+                    return acc;
+                }, {})
+            );
+
             return {
                 ...state,
-                incommingFriendRequests: [...state.incommingFriendRequests, ...action.payload],
+                incommingFriendRequests: incommingFriendRequestsAfterAdd,
             };
 
         case "ADD_SOCKET_FOR_FRIEND_ONLINE":
