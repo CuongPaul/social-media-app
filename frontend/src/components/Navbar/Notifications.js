@@ -129,6 +129,7 @@ const Notifications = () => {
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 style={{ marginTop: "50px" }}
+                className="menu-notifications"
                 onClose={() => setAnchorEl(null)}
                 onScroll={handleScrollNotifications}
             >
@@ -158,7 +159,7 @@ const Notifications = () => {
                                 key={notification._id}
                                 onClick={() => handleClickNotifications(notification)}
                                 style={{
-                                    width: "auto",
+                                    width: "350px",
                                     margin: "5px 15px",
                                     borderRadius: "10px",
                                     backgroundColor: notification.is_read && "rgba(0,0,0,0.08)",

@@ -29,7 +29,7 @@ const PostSubContent = ({ user, postBody }) => {
                                     {friend.name}
                                 </Link>
                             </b>
-                            {index < postBody.tag_friends.length - 1 ? "and " : " "}
+                            {index < postBody.tag_friends.length - 1 ? " and " : " "}
                         </span>
                     ))}
                 </>
