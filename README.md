@@ -1,6 +1,6 @@
 # social-media-app
 
-Facebook clone
+Fansoan
 
 ## Tech stack
 
