@@ -1,6 +1,6 @@
 # social-media-app
 
-Fansoan
+Fansipan
 
 ## Tech stack
 

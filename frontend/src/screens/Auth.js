@@ -24,7 +24,7 @@ const Auth = () => {
                         color: darkMode ? "rgb(255,255,255)" : "rgb(24,119,242)",
                     }}
                 >
-                    Fansoan
+                    Fansipan
                 </Typography>
                 <Typography
                     variant="h6"
