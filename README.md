@@ -9,10 +9,6 @@ Fansipan
 -   Database: MongoDB
 -   Backend: Redis, Firebase, ExpressJS
 
-## Run project in local
-
-`docker compose up`
-
 ## UI library
 
 -   [Icons](https://fontawesome.com/search)
