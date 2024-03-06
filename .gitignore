@@ -1,5 +1,5 @@
-#data
-/data
+# docker
+/.docker
 
 # testing
 */coverage
@@ -8,7 +8,7 @@
 */build
 
 # dependencies
-/.pnp
+*/.pnp
 .pnp.js
 */node_modules
 

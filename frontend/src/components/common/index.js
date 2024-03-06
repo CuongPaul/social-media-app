@@ -10,14 +10,14 @@ import ButtonGroupUserActions from "./ButtonGroupUserActions";
 import VideoCallNotifications from "./VideoCallNotifications";
 
 export {
-    Emoji,
-    Loading,
-    AvatarIcon,
-    BadgeStyled,
-    FilePreview,
-    FilesUpload,
-    LoadingIcon,
-    Notification,
-    ButtonGroupUserActions,
-    VideoCallNotifications,
+  Emoji,
+  Loading,
+  AvatarIcon,
+  BadgeStyled,
+  FilePreview,
+  FilesUpload,
+  LoadingIcon,
+  Notification,
+  ButtonGroupUserActions,
+  VideoCallNotifications,
 };

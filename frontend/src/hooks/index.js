@@ -10,14 +10,14 @@ import useFriendRequest from "./useFriendRequest";
 import useNotifications from "./useNotifications";
 
 export {
-    usePost,
-    useUser,
-    useSearch,
-    useSignin,
-    useSignup,
-    useComment,
-    useMessage,
-    useChatRoom,
-    useFriendRequest,
-    useNotifications,
+  usePost,
+  useUser,
+  useSearch,
+  useSignin,
+  useSignup,
+  useComment,
+  useMessage,
+  useChatRoom,
+  useFriendRequest,
+  useNotifications,
 };

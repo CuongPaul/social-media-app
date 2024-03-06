@@ -7,179 +7,194 @@ import React, { useRef, useState, useEffect, useContext } from "react";
 import { UIContext, ChatContext, UserContext } from "../App";
 
 const VideoCall = () => {
-    const {
-        chatDispatch,
-        chatState: { videoCall },
-    } = useContext(ChatContext);
-    const {
-        userState: { currentUser },
-    } = useContext(UserContext);
-    const { socketIO } = useContext(UIContext);
+  const {
+    chatDispatch,
+    chatState: { videoCall },
+  } = useContext(ChatContext);
+  const {
+    userState: { currentUser },
+  } = useContext(UserContext);
+  const { socketIO } = useContext(UIContext);
 
-    const myVideo = useRef();
-    const history = useHistory();
-    const partnerVideo = useRef();
-    const connectionRef = useRef();
-    const [stream, setStream] = useState();
-    const [isPartnerAnswer, setIsPartnerAnswer] = useState(false);
+  const myVideo = useRef();
+  const history = useHistory();
+  const partnerVideo = useRef();
+  const connectionRef = useRef();
+  const [stream, setStream] = useState();
+  const [isPartnerAnswer, setIsPartnerAnswer] = useState(false);
 
-    useEffect(() => {
-        if (videoCall.me || videoCall.partner) {
-            navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((stream) => {
-                setStream(stream);
-                myVideo.current.srcObject = stream;
-            });
-        } else {
-            history.push("/home");
-        }
+  useEffect(() => {
+    if (videoCall.me || videoCall.partner) {
+      navigator.mediaDevices
+        .getUserMedia({ audio: true, video: true })
+        .then((stream) => {
+          setStream(stream);
+          myVideo.current.srcObject = stream;
+        });
+    } else {
+      history.push("/home");
+    }
 
-        return () => {
-            if (videoCall.partner._id) {
-                socketIO.current.emit("end-phone-call", { receiver_id: videoCall.partner._id });
-            }
+    return () => {
+      if (videoCall.partner._id) {
+        socketIO.current.emit("end-phone-call", {
+          receiver_id: videoCall.partner._id,
+        });
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (stream && videoCall.isCaller) {
+      const peer = new Peer({ stream, trickle: false, initiator: true });
+
+      peer.on("signal", (data) => {
+        const senderData = {
+          signal_data: data,
+          _id: currentUser._id,
+          name: currentUser.name,
+          avatar_image: currentUser.avatar_image,
         };
-    }, []);
 
-    useEffect(() => {
-        if (stream && videoCall.isCaller) {
-            const peer = new Peer({ stream, trickle: false, initiator: true });
+        socketIO.current.emit("make-phone-call", {
+          sender: senderData,
+          receiver_id: videoCall.partner._id,
+        });
 
-            peer.on("signal", (data) => {
-                const senderData = {
-                    signal_data: data,
-                    _id: currentUser._id,
-                    name: currentUser.name,
-                    avatar_image: currentUser.avatar_image,
-                };
+        chatDispatch({ payload: senderData, type: "SET_MY_VIDEO_CALL" });
+      });
+      peer.on("stream", (stream) => (partnerVideo.current.srcObject = stream));
 
-                socketIO.current.emit("make-phone-call", {
-                    sender: senderData,
-                    receiver_id: videoCall.partner._id,
-                });
+      socketIO.current.on(
+        "receiver-answer-phone-call",
+        (receiver_signal_data) => {
+          setIsPartnerAnswer(true);
+          peer.signal(receiver_signal_data);
 
-                chatDispatch({ payload: senderData, type: "SET_MY_VIDEO_CALL" });
-            });
-            peer.on("stream", (stream) => (partnerVideo.current.srcObject = stream));
-
-            socketIO.current.on("receiver-answer-phone-call", (receiver_signal_data) => {
-                setIsPartnerAnswer(true);
-                peer.signal(receiver_signal_data);
-
-                chatDispatch({
-                    type: "SET_PARTNER_VIDEO_CALL",
-                    payload: {
-                        _id: videoCall.partner._id,
-                        name: videoCall.partner.name,
-                        signal_data: receiver_signal_data,
-                        avatar_image: videoCall.partner.avatar_image,
-                    },
-                });
-            });
-
-            connectionRef.current = peer;
+          chatDispatch({
+            type: "SET_PARTNER_VIDEO_CALL",
+            payload: {
+              _id: videoCall.partner._id,
+              name: videoCall.partner.name,
+              signal_data: receiver_signal_data,
+              avatar_image: videoCall.partner.avatar_image,
+            },
+          });
         }
-    }, [stream]);
+      );
 
-    useEffect(() => {
-        if (stream && videoCall.isCaller === false) {
-            setIsPartnerAnswer(true);
-            const peer = new Peer({ stream, trickle: false, initiator: false });
+      connectionRef.current = peer;
+    }
+  }, [stream]);
 
-            peer.on("signal", (data) => {
-                socketIO.current.emit("answer-phone-call", {
-                    receiver_signal_data: data,
-                    called_by_user: videoCall.partner._id,
-                });
+  useEffect(() => {
+    if (stream && videoCall.isCaller === false) {
+      setIsPartnerAnswer(true);
+      const peer = new Peer({ stream, trickle: false, initiator: false });
 
-                chatDispatch({
-                    type: "SET_MY_VIDEO_CALL",
-                    payload: {
-                        signal_data: data,
-                        _id: currentUser._id,
-                        name: currentUser.name,
-                        avatar_image: currentUser.avatar_image,
-                    },
-                });
-            });
-            peer.on("stream", (stream) => (partnerVideo.current.srcObject = stream));
+      peer.on("signal", (data) => {
+        socketIO.current.emit("answer-phone-call", {
+          receiver_signal_data: data,
+          called_by_user: videoCall.partner._id,
+        });
 
-            peer.signal(videoCall.partner.signal_data);
+        chatDispatch({
+          type: "SET_MY_VIDEO_CALL",
+          payload: {
+            signal_data: data,
+            _id: currentUser._id,
+            name: currentUser.name,
+            avatar_image: currentUser.avatar_image,
+          },
+        });
+      });
+      peer.on("stream", (stream) => (partnerVideo.current.srcObject = stream));
 
-            connectionRef.current = peer;
-        }
-    }, [stream]);
+      peer.signal(videoCall.partner.signal_data);
 
-    useEffect(() => {
-        if (stream) {
-            socketIO.current.on("end-phone-call-to-partner", () => {
-                stream.getTracks().forEach((track) => track.stop());
+      connectionRef.current = peer;
+    }
+  }, [stream]);
 
-                history.push("/home");
-            });
-
-            return () => {
-                stream.getTracks().forEach((track) => track.stop());
-
-                if (videoCall.partner.signal_data) {
-                    socketIO.current.emit("end-phone-call-when-exit-page", {
-                        receiver_id: videoCall.partner._id,
-                    });
-                }
-            };
-        }
-    }, [stream]);
-
-    const handleClickEndCall = () => {
-        connectionRef.current.destroy();
-        chatDispatch({ type: "SET_INITIAL_VIDEO_CALL" });
+  useEffect(() => {
+    if (stream) {
+      socketIO.current.on("end-phone-call-to-partner", () => {
         stream.getTracks().forEach((track) => track.stop());
 
-        if (videoCall.partner._id) {
-            socketIO.current.emit("end-phone-call", { receiver_id: videoCall.partner._id });
-        }
-
         history.push("/home");
-    };
+      });
 
-    return (
+      return () => {
+        stream.getTracks().forEach((track) => track.stop());
+
+        if (videoCall.partner.signal_data) {
+          socketIO.current.emit("end-phone-call-when-exit-page", {
+            receiver_id: videoCall.partner._id,
+          });
+        }
+      };
+    }
+  }, [stream]);
+
+  const handleClickEndCall = () => {
+    connectionRef.current.destroy();
+    chatDispatch({ type: "SET_INITIAL_VIDEO_CALL" });
+    stream.getTracks().forEach((track) => track.stop());
+
+    if (videoCall.partner._id) {
+      socketIO.current.emit("end-phone-call", {
+        receiver_id: videoCall.partner._id,
+      });
+    }
+
+    history.push("/home");
+  };
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        marginTop: "64px",
+        alignItems: "center",
+        flexDirection: "column",
+        height: `calc(100vh - 64px)`,
+        justifyContent: "space-evenly",
+      }}
+    >
+      {(videoCall.me || videoCall.partner) && (
         <div
-            style={{
-                display: "flex",
-                marginTop: "64px",
-                alignItems: "center",
-                flexDirection: "column",
-                height: `calc(100vh - 64px)`,
-                justifyContent: "space-evenly",
-            }}
+          style={{
+            width: "100vw",
+            display: "flex",
+            justifyContent: "space-evenly",
+          }}
         >
-            {(videoCall.me || videoCall.partner) && (
-                <div style={{ width: "100vw", display: "flex", justifyContent: "space-evenly" }}>
-                    <video
-                        muted
-                        autoPlay
-                        playsInline
-                        ref={myVideo}
-                        style={{ borderRadius: "10px" }}
-                    />
-                    {isPartnerAnswer && (
-                        <video
-                            autoPlay
-                            playsInline
-                            ref={partnerVideo}
-                            style={{ borderRadius: "10px" }}
-                        />
-                    )}
-                </div>
-            )}
-            {stream && connectionRef.current && (
-                <div style={{ borderRadius: "50%", backgroundColor: "rgb(255,0,0)" }}>
-                    <IconButton color="default" onClick={handleClickEndCall}>
-                        <Phone />
-                    </IconButton>
-                </div>
-            )}
+          <video
+            muted
+            autoPlay
+            playsInline
+            ref={myVideo}
+            style={{ borderRadius: "10px" }}
+          />
+          {isPartnerAnswer && (
+            <video
+              autoPlay
+              playsInline
+              ref={partnerVideo}
+              style={{ borderRadius: "10px" }}
+            />
+          )}
         </div>
-    );
+      )}
+      {stream && connectionRef.current && (
+        <div style={{ borderRadius: "50%", backgroundColor: "rgb(255,0,0)" }}>
+          <IconButton color="default" onClick={handleClickEndCall}>
+            <Phone />
+          </IconButton>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default VideoCall;

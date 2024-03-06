@@ -8,12 +8,12 @@ import SlideImage from "./SlideImage";
 import PostSubContent from "./PostSubContent";
 
 export {
-    Posts,
-    PostBar,
-    PostReact,
-    PostAction,
-    PostDialog,
-    PostFooter,
-    SlideImage,
-    PostSubContent,
+  Posts,
+  PostBar,
+  PostReact,
+  PostAction,
+  PostDialog,
+  PostFooter,
+  SlideImage,
+  PostSubContent,
 };

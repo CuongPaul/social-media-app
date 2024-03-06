@@ -7,18 +7,26 @@ const TrimStringType = { trim: true, type: String };
 const UserIdType = { ref: "user", type: ObjectIdType };
 
 const postSchema = new Schema(
-    {
-        images: [TrimStringType],
-        user: { ...UserIdType, required: true },
-        react: { ref: "react", type: ObjectIdType },
-        text: { trim: true, type: String, required: true },
-        privacy: { type: String, default: "PUBLIC", enum: ["FRIEND", "PUBLIC", "ONLY_ME"] },
-        body: new Schema(
-            { location: TrimStringType, feelings: TrimStringType, tag_friends: [UserIdType] },
-            { _id: false }
-        ),
+  {
+    images: [TrimStringType],
+    user: { ...UserIdType, required: true },
+    react: { ref: "react", type: ObjectIdType },
+    text: { trim: true, type: String, required: true },
+    privacy: {
+      type: String,
+      default: "PUBLIC",
+      enum: ["FRIEND", "PUBLIC", "ONLY_ME"],
     },
-    { timestamps: true, versionKey: false }
+    body: new Schema(
+      {
+        location: TrimStringType,
+        feelings: TrimStringType,
+        tag_friends: [UserIdType],
+      },
+      { _id: false }
+    ),
+  },
+  { timestamps: true, versionKey: false }
 );
 
 const Post = model("post", postSchema);

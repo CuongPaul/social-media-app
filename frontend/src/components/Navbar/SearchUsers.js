@@ -1,16 +1,16 @@
 import {
-    List,
-    Button,
-    Dialog,
-    ListItem,
-    TextField,
-    CardHeader,
-    IconButton,
-    Typography,
-    ListItemIcon,
-    ListItemText,
-    DialogContent,
-    InputAdornment,
+  List,
+  Button,
+  Dialog,
+  ListItem,
+  TextField,
+  CardHeader,
+  IconButton,
+  Typography,
+  ListItemIcon,
+  ListItemText,
+  DialogContent,
+  InputAdornment,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { Close } from "@material-ui/icons";
@@ -24,159 +24,157 @@ import { useSearch } from "../../hooks";
 import { AvatarIcon, LoadingIcon, ButtonGroupUserActions } from "../common";
 
 const SearchUsers = () => {
-    const {
-        uiState: { darkMode },
-    } = useContext(UIContext);
+  const {
+    uiState: { darkMode },
+  } = useContext(UIContext);
 
-    const [page, setPage] = useState(1);
-    const [users, setUsers] = useState([]);
-    const [isOpen, setIsOpen] = useState(false);
-    const [searchValue, setSearchValue] = useState("");
+  const [page, setPage] = useState(1);
+  const [users, setUsers] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
-    const { isLoading, handleSearchUsers } = useSearch();
+  const { isLoading, handleSearchUsers } = useSearch();
 
-    const handleCloseDialog = () => {
-        setPage(1);
-        setUsers([]);
-        setIsOpen(false);
-        setSearchValue("");
-    };
+  const handleCloseDialog = () => {
+    setPage(1);
+    setUsers([]);
+    setIsOpen(false);
+    setSearchValue("");
+  };
 
-    const handleScroll = async (e) => {
-        const { scrollTop, clientHeight, scrollHeight } = e.target;
+  const handleScroll = async (e) => {
+    const { scrollTop, clientHeight, scrollHeight } = e.target;
 
-        const isBottom = scrollHeight - scrollTop === clientHeight;
+    const isBottom = scrollHeight - scrollTop === clientHeight;
 
-        if (isBottom) {
-            setPage(page + 1);
-            handleSearchUsers({ setUsers, page: page + 1, name: searchValue });
-        }
-    };
+    if (isBottom) {
+      setPage(page + 1);
+      handleSearchUsers({ setUsers, page: page + 1, name: searchValue });
+    }
+  };
 
-    return (
-        <div onScroll={handleScroll} style={{ marginLeft: "16px" }}>
+  return (
+    <div onScroll={handleScroll} style={{ marginLeft: "16px" }}>
+      <Typography
+        style={{
+          display: "flex",
+          cursor: "pointer",
+          minWidth: "200px",
+          paddingLeft: "20px",
+          alignItems: "center",
+          borderRadius: "20px",
+          color: "rgb(176,179,184)",
+          justifyContent: "space-between",
+          backgroundColor: darkMode ? "rgb(58,59,60)" : "rgb(240,242,245)",
+        }}
+        onClick={() => setIsOpen(true)}
+      >
+        Search
+        <IconButton onClick={() => setIsOpen(true)}>
+          <Search />
+        </IconButton>
+      </Typography>
+      <Dialog fullWidth open={isOpen} onClose={handleCloseDialog}>
+        <CardHeader
+          action={
+            <IconButton onClick={handleCloseDialog}>
+              <Close />
+            </IconButton>
+          }
+          subheader={
             <Typography
-                style={{
-                    display: "flex",
-                    cursor: "pointer",
-                    minWidth: "200px",
-                    paddingLeft: "20px",
-                    alignItems: "center",
-                    borderRadius: "20px",
-                    color: "rgb(176,179,184)",
-                    justifyContent: "space-between",
-                    backgroundColor: darkMode ? "rgb(58,59,60)" : "rgb(240,242,245)",
-                }}
-                onClick={() => setIsOpen(true)}
+              style={{ fontWeight: 800, fontSize: "20px", marginLeft: "10px" }}
             >
-                Search
-                <IconButton onClick={() => setIsOpen(true)}>
-                    <Search />
-                </IconButton>
+              Search users
             </Typography>
-            <Dialog fullWidth open={isOpen} onClose={handleCloseDialog}>
-                <CardHeader
-                    action={
-                        <IconButton onClick={handleCloseDialog}>
-                            <Close />
-                        </IconButton>
-                    }
-                    subheader={
-                        <Typography
-                            style={{ fontWeight: 800, fontSize: "20px", marginLeft: "10px" }}
-                        >
-                            Search users
-                        </Typography>
-                    }
-                />
-                <DialogContent>
-                    <div style={{ display: "flex", marginBottom: "20px" }}>
-                        <TextField
-                            autoFocus
-                            label="Name"
-                            variant="outlined"
-                            value={searchValue}
-                            placeholder="Enter name"
-                            style={{ flex: 4, width: "100%" }}
-                            onChange={(e) => setSearchValue(e.target.value)}
-                            InputProps={{
-                                endAdornment: searchValue && (
-                                    <InputAdornment position="end">
-                                        <FontAwesomeIcon
-                                            icon={faTimes}
-                                            onClick={() => {
-                                                setUsers([]);
-                                                setSearchValue("");
-                                            }}
-                                            style={{ marginRight: "10px", cursor: "pointer" }}
-                                        />
-                                    </InputAdornment>
-                                ),
-                            }}
-                            onKeyPress={(e) =>
-                                e.key === "Enter" &&
-                                handleSearchUsers({ setUsers, name: searchValue })
-                            }
-                        />
-                        <Button
-                            color="primary"
-                            variant="contained"
-                            disabled={isLoading}
-                            style={{
-                                flex: 1,
-                                width: "100%",
-                                marginLeft: "16px",
-                                borderRadius: "10px",
-                            }}
-                            onClick={() => handleSearchUsers({ setUsers, name: searchValue })}
-                        >
-                            <LoadingIcon text={"Search"} isLoading={isLoading} />
-                        </Button>
-                    </div>
-                    <List>
-                        {users.map((user) => (
-                            <div
-                                key={user._id}
-                                style={{
-                                    display: "flex",
-                                    cursor: "pointer",
-                                    borderRadius: "5px",
-                                    marginBottom: "10px",
-                                    backgroundColor: darkMode
-                                        ? "rgb(58,59,60)"
-                                        : "rgb(240,242,245)",
-                                }}
-                            >
-                                <ListItem
-                                    component={Link}
-                                    to={`/profile/${user._id}`}
-                                    onClick={handleCloseDialog}
-                                >
-                                    <ListItemIcon>
-                                        <AvatarIcon text={user.name} imageUrl={user.avatar_image} />
-                                    </ListItemIcon>
-                                    <ListItemText style={{ marginLeft: "6px" }}>
-                                        <Typography
-                                            style={{
-                                                fontWeight: 700,
-                                                fontSize: "17px",
-                                                color: darkMode
-                                                    ? "rgb(255,255,255)"
-                                                    : "rgb(33,33,33)",
-                                            }}
-                                        >
-                                            {user.name}
-                                        </Typography>
-                                    </ListItemText>
-                                </ListItem>
-                                <ButtonGroupUserActions userId={user._id} />
-                            </div>
-                        ))}
-                    </List>
-                </DialogContent>
-            </Dialog>
-        </div>
-    );
+          }
+        />
+        <DialogContent>
+          <div style={{ display: "flex", marginBottom: "20px" }}>
+            <TextField
+              autoFocus
+              label="Name"
+              variant="outlined"
+              value={searchValue}
+              placeholder="Enter name"
+              style={{ flex: 4, width: "100%" }}
+              onChange={(e) => setSearchValue(e.target.value)}
+              InputProps={{
+                endAdornment: searchValue && (
+                  <InputAdornment position="end">
+                    <FontAwesomeIcon
+                      icon={faTimes}
+                      onClick={() => {
+                        setUsers([]);
+                        setSearchValue("");
+                      }}
+                      style={{ marginRight: "10px", cursor: "pointer" }}
+                    />
+                  </InputAdornment>
+                ),
+              }}
+              onKeyPress={(e) =>
+                e.key === "Enter" &&
+                handleSearchUsers({ setUsers, name: searchValue })
+              }
+            />
+            <Button
+              color="primary"
+              variant="contained"
+              disabled={isLoading}
+              style={{
+                flex: 1,
+                width: "100%",
+                marginLeft: "16px",
+                borderRadius: "10px",
+              }}
+              onClick={() => handleSearchUsers({ setUsers, name: searchValue })}
+            >
+              <LoadingIcon text={"Search"} isLoading={isLoading} />
+            </Button>
+          </div>
+          <List>
+            {users.map((user) => (
+              <div
+                key={user._id}
+                style={{
+                  display: "flex",
+                  cursor: "pointer",
+                  borderRadius: "5px",
+                  marginBottom: "10px",
+                  backgroundColor: darkMode
+                    ? "rgb(58,59,60)"
+                    : "rgb(240,242,245)",
+                }}
+              >
+                <ListItem
+                  component={Link}
+                  to={`/profile/${user._id}`}
+                  onClick={handleCloseDialog}
+                >
+                  <ListItemIcon>
+                    <AvatarIcon text={user.name} imageUrl={user.avatar_image} />
+                  </ListItemIcon>
+                  <ListItemText style={{ marginLeft: "6px" }}>
+                    <Typography
+                      style={{
+                        fontWeight: 700,
+                        fontSize: "17px",
+                        color: darkMode ? "rgb(255,255,255)" : "rgb(33,33,33)",
+                      }}
+                    >
+                      {user.name}
+                    </Typography>
+                  </ListItemText>
+                </ListItem>
+                <ButtonGroupUserActions userId={user._id} />
+              </div>
+            ))}
+          </List>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
 };
 
 export default SearchUsers;

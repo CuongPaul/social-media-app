@@ -17,82 +17,107 @@ import redisClient from "./helpers/redis";
 // };
 
 const socketServer = (io) => {
-    io.on("connection", (socket) => {
-        socket.on("client-connection", async ({ _id, name, avatar_image, friends_online }) => {
-            if (friends_online.length) {
-                const sockets = await redisClient.LRANGE(`socket-io:${_id}`, 0, -1);
+  io.on("connection", (socket) => {
+    socket.on(
+      "client-connection",
+      async ({ _id, name, avatar_image, friends_online }) => {
+        if (friends_online.length) {
+          const sockets = await redisClient.LRANGE(`socket-io:${_id}`, 0, -1);
 
-                for (const friend of friends_online) {
-                    for (const item of friend.sockets) {
-                        if (sockets.length) {
-                            io.to(item).emit("add-socket-for-user-online", {
-                                _id,
-                                socket: socket.id,
-                            });
-                        } else {
-                            io.to(item).emit("user-online", {
-                                _id,
-                                name,
-                                avatar_image,
-                                sockets: [socket.id],
-                            });
-                        }
-                    }
-                }
+          for (const friend of friends_online) {
+            for (const item of friend.sockets) {
+              if (sockets.length) {
+                io.to(item).emit("add-socket-for-user-online", {
+                  _id,
+                  socket: socket.id,
+                });
+              } else {
+                io.to(item).emit("user-online", {
+                  _id,
+                  name,
+                  avatar_image,
+                  sockets: [socket.id],
+                });
+              }
             }
+          }
+        }
 
-            await redisClient.RPUSH(`socket-io:${_id}`, socket.id);
-            await redisClient.expire(`socket-io:${_id}`, 12 * 60 * 60);
-        });
+        await redisClient.RPUSH(`socket-io:${_id}`, socket.id);
+        await redisClient.expire(`socket-io:${_id}`, 12 * 60 * 60);
+      }
+    );
 
-        socket.on("client-disconnect", async ({ _id, friends_online }) => {
-            await redisClient.LREM(`socket-io:${_id}`, 0, socket.id);
+    socket.on("client-disconnect", async ({ _id, friends_online }) => {
+      await redisClient.LREM(`socket-io:${_id}`, 0, socket.id);
 
-            if (friends_online.length) {
-                const sockets = await redisClient.LRANGE(`socket-io:${_id}`, 0, -1);
+      if (friends_online.length) {
+        const sockets = await redisClient.LRANGE(`socket-io:${_id}`, 0, -1);
 
-                if (!sockets.length) {
-                    for (const friend of friends_online) {
-                        for (const item of friend.sockets) {
-                            io.to(item).emit("user-offline", _id);
-                        }
-                    }
-                }
+        if (!sockets.length) {
+          for (const friend of friends_online) {
+            for (const item of friend.sockets) {
+              io.to(item).emit("user-offline", _id);
             }
-        });
-
-        socket.on("end-phone-call", async ({ receiver_id }) => {
-            const sockets = await redisClient.LRANGE(`socket-io:${receiver_id}`, 0, -1);
-
-            for (const socketId of sockets) {
-                io.to(socketId).emit("end-phone-call-to-partner");
-            }
-        });
-
-        socket.on("end-phone-call-when-exit-page", async ({ receiver_id }) => {
-            const sockets = await redisClient.LRANGE(`socket-io:${receiver_id}`, 0, -1);
-
-            for (const socketId of sockets) {
-                io.to(socketId).emit("end-phone-call-to-partner");
-            }
-        });
-
-        socket.on("make-phone-call", async ({ sender, receiver_id }) => {
-            const sockets = await redisClient.LRANGE(`socket-io:${receiver_id}`, 0, -1);
-
-            for (const socketId of sockets) {
-                io.to(socketId).emit("phone-call-incoming", sender);
-            }
-        });
-
-        socket.on("answer-phone-call", async ({ called_by_user, receiver_signal_data }) => {
-            const sockets = await redisClient.LRANGE(`socket-io:${called_by_user}`, 0, -1);
-
-            for (const socketId of sockets) {
-                io.to(socketId).emit("receiver-answer-phone-call", receiver_signal_data);
-            }
-        });
+          }
+        }
+      }
     });
+
+    socket.on("end-phone-call", async ({ receiver_id }) => {
+      const sockets = await redisClient.LRANGE(
+        `socket-io:${receiver_id}`,
+        0,
+        -1
+      );
+
+      for (const socketId of sockets) {
+        io.to(socketId).emit("end-phone-call-to-partner");
+      }
+    });
+
+    socket.on("end-phone-call-when-exit-page", async ({ receiver_id }) => {
+      const sockets = await redisClient.LRANGE(
+        `socket-io:${receiver_id}`,
+        0,
+        -1
+      );
+
+      for (const socketId of sockets) {
+        io.to(socketId).emit("end-phone-call-to-partner");
+      }
+    });
+
+    socket.on("make-phone-call", async ({ sender, receiver_id }) => {
+      const sockets = await redisClient.LRANGE(
+        `socket-io:${receiver_id}`,
+        0,
+        -1
+      );
+
+      for (const socketId of sockets) {
+        io.to(socketId).emit("phone-call-incoming", sender);
+      }
+    });
+
+    socket.on(
+      "answer-phone-call",
+      async ({ called_by_user, receiver_signal_data }) => {
+        const sockets = await redisClient.LRANGE(
+          `socket-io:${called_by_user}`,
+          0,
+          -1
+        );
+
+        for (const socketId of sockets) {
+          io.to(socketId).emit(
+            "receiver-answer-phone-call",
+            receiver_signal_data
+          );
+        }
+      }
+    );
+  });
 };
 
 export default socketServer;

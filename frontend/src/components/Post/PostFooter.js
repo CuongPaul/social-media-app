@@ -8,30 +8,30 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PostReact from "./PostReact";
 
 const PostFooter = ({ post }) => {
-    const { postId } = useParams();
+  const { postId } = useParams();
 
-    return (
-        <div
-            style={{
-                display: "flex",
-                padding: "20px",
-                justifyContent: "center",
-                backgroundColor: "rgb(200,200,200)",
-            }}
+  return (
+    <div
+      style={{
+        display: "flex",
+        padding: "20px",
+        justifyContent: "center",
+        backgroundColor: "rgb(200,200,200)",
+      }}
+    >
+      <PostReact post={post} isDetail={Boolean(postId)} />
+      {!postId && (
+        <Button
+          component={Link}
+          to={`/post/${post?._id}`}
+          style={{ width: "100%" }}
+          startIcon={<FontAwesomeIcon icon={faComment} />}
         >
-            <PostReact post={post} isDetail={Boolean(postId)} />
-            {!postId && (
-                <Button
-                    component={Link}
-                    to={`/post/${post?._id}`}
-                    style={{ width: "100%" }}
-                    startIcon={<FontAwesomeIcon icon={faComment} />}
-                >
-                    Comment
-                </Button>
-            )}
-        </div>
-    );
+          Comment
+        </Button>
+      )}
+    </div>
+  );
 };
 
 export default PostFooter;

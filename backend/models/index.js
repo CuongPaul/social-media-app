@@ -7,4 +7,13 @@ import ChatRoom from "./ChatRoom";
 import Notification from "./Notification";
 import FriendRequest from "./FriendRequest";
 
-export { Post, User, React, Comment, Message, ChatRoom, Notification, FriendRequest };
+export {
+  Post,
+  User,
+  React,
+  Comment,
+  Message,
+  ChatRoom,
+  Notification,
+  FriendRequest,
+};

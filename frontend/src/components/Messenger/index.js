@@ -10,14 +10,14 @@ import ChatRoomMembers from "./ChatRoomMembers";
 import SearchChatRooms from "./SearchChatRooms";
 
 export {
-    Message,
-    ChatRooms,
-    AddMembers,
-    ChangeAdmin,
-    SearchUsers,
-    MessageInput,
-    CreateChatRoom,
-    UpdateChatRoom,
-    ChatRoomMembers,
-    SearchChatRooms,
+  Message,
+  ChatRooms,
+  AddMembers,
+  ChangeAdmin,
+  SearchUsers,
+  MessageInput,
+  CreateChatRoom,
+  UpdateChatRoom,
+  ChatRoomMembers,
+  SearchChatRooms,
 };

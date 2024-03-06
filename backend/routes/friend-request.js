@@ -2,47 +2,52 @@ import express from "express";
 import { validate } from "express-validation";
 
 import {
-    sendFriendRequestValidation,
-    acceptFriendRequestValidation,
-    declineOrCancelRequestValidation,
-    getSendedFriendRequestsValidation,
-    getReceivedFriendRequestsValidation,
+  sendFriendRequestValidation,
+  acceptFriendRequestValidation,
+  declineOrCancelRequestValidation,
+  getSendedFriendRequestsValidation,
+  getReceivedFriendRequestsValidation,
 } from "../validator/friend-request";
 import {
-    sendFriendRequestController,
-    acceptFriendRequestController,
-    declineOrCancelRequestController,
-    getSendedFriendRequestsController,
-    getReceivedFriendRequestsController,
+  sendFriendRequestController,
+  acceptFriendRequestController,
+  declineOrCancelRequestController,
+  getSendedFriendRequestsController,
+  getReceivedFriendRequestsController,
 } from "../controllers/friend-request";
 import verifyToken from "../middleware/verify-token";
 
 const router = express.Router();
 
 router.put(
-    "/:friendRequestId",
-    validate(acceptFriendRequestValidation),
-    verifyToken,
-    acceptFriendRequestController
+  "/:friendRequestId",
+  validate(acceptFriendRequestValidation),
+  verifyToken,
+  acceptFriendRequestController
 );
 router.delete(
-    "/:friendRequestId",
-    validate(declineOrCancelRequestValidation),
-    verifyToken,
-    declineOrCancelRequestController
+  "/:friendRequestId",
+  validate(declineOrCancelRequestValidation),
+  verifyToken,
+  declineOrCancelRequestController
 );
 router.get(
-    "/sended",
-    validate(getSendedFriendRequestsValidation),
-    verifyToken,
-    getSendedFriendRequestsController
+  "/sended",
+  validate(getSendedFriendRequestsValidation),
+  verifyToken,
+  getSendedFriendRequestsController
 );
 router.get(
-    "/received",
-    validate(getReceivedFriendRequestsValidation),
-    verifyToken,
-    getReceivedFriendRequestsController
+  "/received",
+  validate(getReceivedFriendRequestsValidation),
+  verifyToken,
+  getReceivedFriendRequestsController
 );
-router.post("", validate(sendFriendRequestValidation), verifyToken, sendFriendRequestController);
+router.post(
+  "",
+  validate(sendFriendRequestValidation),
+  verifyToken,
+  sendFriendRequestController
+);
 
 export default router;
