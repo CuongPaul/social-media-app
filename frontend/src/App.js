@@ -137,7 +137,7 @@ const App = () => {
 
     useEffect(() => {
         if (userState.currentUser?._id) {
-            socketIO.current = io(`${process.env.REACT_APP_BASE_API_URL}`);
+            socketIO.current = io(`${process.env.REACT_APP_API_URL}`);
 
             socketIO.current.emit("client-connection", {
                 _id: userState.currentUser._id,
