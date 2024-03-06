@@ -1,6 +1,6 @@
 #  Social network website
 
-[Fansipan Social network](https://web-social-media-app.onrender.com)
+[Fansipan](https://fansipan-web.onrender.com)
 
 ## Tech stack
 
