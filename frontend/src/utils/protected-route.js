@@ -6,7 +6,7 @@ const ProtectedRoute = ({ path, component: Component }) => {
 
     const renderComponent = () => (token ? <Component /> : <Redirect to="/" />);
 
-    return <Route exact path={path} render={renderComponent} />;
+    return <Route path={path} render={renderComponent} />;
 };
 
 export default ProtectedRoute;
