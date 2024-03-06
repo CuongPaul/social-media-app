@@ -29,7 +29,7 @@ app.use((req, _res, next) => {
   next();
 });
 
-app.use("/api", routes);
+app.use(routes);
 
 app.get("/healthcheck", (_req, res) => res.send("Ok"));
 
