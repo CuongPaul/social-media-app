@@ -3,7 +3,7 @@ import axios from "axios";
 const callApi = async ({ url, data, query, method }) => {
   const token = localStorage.getItem("token");
   const baseURL = process.env.REACT_APP_API_URL;
-  const options = { url, method, baseURL, timeout: 30 * 1000 };
+  const options = { url, method, baseURL, timeout: 60 * 1000 };
 
   if (data) {
     options.data = data;
@@ -17,7 +17,7 @@ const callApi = async ({ url, data, query, method }) => {
 
   const res = await axios(options).catch((err) => {
     if (err.response) {
-      if (err.response.status === 401) {
+      if ([302, 401].includes(err.response.status)) {
         localStorage.removeItem("token");
       }
       if (err.response.status === 500) {

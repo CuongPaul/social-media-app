@@ -206,7 +206,7 @@ const getCurrentUserController = async (req, res) => {
     }).populate("friends", { _id: 1, name: 1, friends: 1, avatar_image: 1 });
 
     if (!user) {
-      return res.status(400).json({ message: "User doesn't exist" });
+      return res.status(302).json({ message: "User doesn't exist" });
     }
 
     return res.status(200).json({ data: user, message: "success" });
